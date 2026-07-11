@@ -77,10 +77,12 @@ def _persone_da_testo(testo: str):
         return []
     # Pattern: sequenze di 2-4 parole iniziali maiuscole, escludendo inizio frase
     pattern = re.compile(r"(?<![.!?]\s)(?<![A-Z])([A-Z][a-zàèéìòù]+\s+[A-Z][a-zàèéìòù]+(?:\s+[A-Z][a-zàèéìòù]+)?)")
+    cortesia = {"grazie", "caro", "cara", "saluti", "tuo", "tua", "tanti", "affettuosi", "cordiali"}
     trovati = set()
     for m in pattern.finditer(testo):
         nome = m.group(1).strip()
-        if len(nome) > 3 and nome not in {"Grazie", "Caro", "Cara", "Saluti", "Tuo", "Tua"}:
+        parole = nome.lower().split()
+        if len(nome) > 3 and not any(p in cortesia for p in parole):
             trovati.add(nome)
     return sorted(trovati)
 

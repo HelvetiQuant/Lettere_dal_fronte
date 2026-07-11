@@ -390,7 +390,10 @@ def auto_index_if_not_found(query: str) -> dict:
     """
     # Step 1: search locale
     local = search_all(query, limit=10)
-    local_count = sum(len(v) for v in local.values() if isinstance(v, list))
+    local_count = sum(
+        len(v) for k, v in local.items()
+        if isinstance(v, list) and k not in ("tokens", "term")
+    )
 
     if local_count > 0:
         return {

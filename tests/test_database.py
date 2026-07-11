@@ -14,7 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _helpers import TempDBTestCase
-from factories import make_internato, make_decorato, make_entita, make_collegamento
+from factories import make_internato, make_decorato, make_entita, make_collegamento, make_caduto_albooro
 
 import database
 
@@ -139,6 +139,8 @@ class TestSearchAll(TempDBTestCase):
 
 
 class TestEntitaCollegamenti(TempDBTestCase):
+    schema_modules = ("caduti_albooro",)
+
     def test_save_entita_e_collegamenti(self):
         conn = self.conn()
         eid = make_entita(conn, tipo="persona", valore="Rossi Mario")
@@ -160,32 +162,20 @@ class TestEntitaCollegamenti(TempDBTestCase):
         self.assertEqual(len(dettaglio["collegamenti"]), 1)
         self.assertEqual(dettaglio["collegamenti"][0]["tabella"], "internati")
 
-    def test_get_collegamenti_entita_ignora_tabelle_non_mappate(self):
-        """GAP REALE (trovato scrivendo questo test, non solo ipotetico):
-        get_collegamenti_entita() risolve solo 4 tabelle hardcoded
-        (internati, decorati, fondi_archivistici, menzioni). Un collegamento
-        verso caduti_albooro/caduti_cwgc/caduti_ministero/caduti_sardi/
-        caduti_bologna/decorati_nastroazzurro/fonti_narrative/lettere_personali
-        viene silenziosamente scartato, anche se il record collegato esiste.
-        Dato che questi dataset da soli generano la maggioranza dei
-        collegamenti nel grafo reale (vedi CHANGELOG: caduti_albooro
-        1.092.843 link, quasi il doppio di internati+decorati insieme),
-        la vista dettaglio entita' e' oggi strutturalmente incompleta per
-        la maggior parte dei nodi del grafo.
-        Questo test documenta il comportamento ATTUALE (collegamento
-        scartato). Se in futuro get_collegamenti_entita() viene esteso per
-        risolvere anche caduti_albooro, questo test va aggiornato per
-        aspettarsi il record risolto, non piu' scartato."""
+    def test_get_collegamenti_entita_risolve_tutte_le_tabelle(self):
+        """Dopo il fix, get_collegamenti_entita() deve risolvere
+        dinamicamente qualunque tabella esista nel DB (inclusa
+        caduti_albooro), non solo le 4 hardcoded originali."""
         conn = self.conn()
         eid = make_entita(conn)
-        make_collegamento(conn, eid, tabella_origine="caduti_albooro", record_id=1)
+        rid = make_caduto_albooro(conn, nominativo="Bianchi Luigi")
+        make_collegamento(conn, eid, tabella_origine="caduti_albooro", record_id=rid)
         conn.close()
 
         dettaglio = database.get_collegamenti_entita(eid)
-        self.assertEqual(len(dettaglio["collegamenti"]), 0,
-            "Se questo assert fallisce con collegamenti > 0, "
-            "get_collegamenti_entita() e' stata estesa: bella notizia, "
-            "aggiorna il commento/assert di questo test.")
+        self.assertEqual(len(dettaglio["collegamenti"]), 1)
+        self.assertEqual(dettaglio["collegamenti"][0]["tabella"], "caduti_albooro")
+        self.assertEqual(dettaglio["collegamenti"][0]["record"]["nominativo"], "Bianchi Luigi")
 
 
 class TestExport(TempDBTestCase):

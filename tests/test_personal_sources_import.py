@@ -57,23 +57,14 @@ class TestPersoneDaTesto(unittest.TestCase):
         self.assertIn("Giuseppe Verdi", persone)
         self.assertIn("Anna Bianchi", persone)
 
-    def test_BUG_filtro_cortesia_confronta_stringa_intera_con_parola_singola(self):
-        """BUG REALE (trovato eseguendo questo test, non ipotizzato): il
-        filtro esclude {"Grazie", "Caro", "Cara", "Saluti", "Tuo", "Tua"},
-        ma il pattern regex cattura sempre 2-3 parole insieme (es. "Caro
-        Amico"), mai una parola isolata. Il confronto
-        `nome not in {"Caro", ...}` non e' MAI vero per un match reale
-        (che e' sempre multi-parola), quindi il filtro di cortesia non
-        esclude nulla nella pratica: "Caro Amico", "Cara Mamma", "Tua
-        Sorella" ecc. finiscono nel grafo entita' come se fossero persone.
-        Fix suggerito: confrontare la PRIMA PAROLA del match contro
-        l'insieme di cortesia, non l'intera stringa catturata.
-        Questo test documenta il comportamento attuale; va invertito
-        (assertNotIn) quando il fix viene applicato."""
+    def test_filtro_cortesia_esclude_parole_false_positive(self):
+        """Dopo il fix, il filtro controlla ogni parola del match contro
+        l'insieme di cortesia, non solo la stringa intera: "Caro Amico",
+        "Tua Anna" ecc. non devono finire nel grafo entita'."""
         persone = ilp._persone_da_testo("Caro Amico, grazie di tutto. Tua Anna.")
-        self.assertIn("Caro Amico", persone,
-            "Se questo assert fallisce, il filtro di cortesia e' stato "
-            "corretto: cambia questo test in assertNotIn.")
+        self.assertNotIn("Caro Amico", persone)
+        self.assertNotIn("Tua Anna", persone)
+        # "Grazie" da solo non matcha perche' il pattern richiede 2+ parole maiuscole
 
 
 class TestMigratePipeline(TempDBTestCase):

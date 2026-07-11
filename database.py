@@ -742,11 +742,17 @@ def save_entita(tipo: str, valore: str, fonte_tabella: str, fonte_id: int,
              fonte_tabella, fonte_id, datetime.now().isoformat()),
         )
         eid = cur.lastrowid
-    conn.execute(
-        """INSERT INTO collegamenti (entita_id, tabella_origine, record_id, tipo_collegamento, elaborato_il)
-           VALUES (?, ?, ?, ?, ?)""",
-        (eid, fonte_tabella, fonte_id, tipo, datetime.now().isoformat()),
-    )
+    existing_link = conn.execute(
+        """SELECT 1 FROM collegamenti
+           WHERE entita_id = ? AND tabella_origine = ? AND record_id = ? LIMIT 1""",
+        (eid, fonte_tabella, fonte_id),
+    ).fetchone()
+    if not existing_link:
+        conn.execute(
+            """INSERT INTO collegamenti (entita_id, tabella_origine, record_id, tipo_collegamento, elaborato_il)
+               VALUES (?, ?, ?, ?, ?)""",
+            (eid, fonte_tabella, fonte_id, tipo, datetime.now().isoformat()),
+        )
     conn.commit()
     conn.close()
     return eid
@@ -795,15 +801,11 @@ def get_collegamenti_entita(entita_id: int) -> dict:
     for c in colls:
         tabella = c["tabella_origine"]
         rid = c["record_id"]
-        if tabella == "internati":
-            row = conn.execute("SELECT * FROM internati WHERE id = ?", (rid,)).fetchone()
-        elif tabella == "decorati":
-            row = conn.execute("SELECT * FROM decorati WHERE id = ?", (rid,)).fetchone()
-        elif tabella == "fondi_archivistici":
-            row = conn.execute("SELECT * FROM fondi_archivistici WHERE id = ?", (rid,)).fetchone()
-        elif tabella == "menzioni":
-            row = conn.execute("SELECT * FROM menzioni WHERE id = ?", (rid,)).fetchone()
-        else:
+        try:
+            row = conn.execute(
+                f"SELECT * FROM {tabella} WHERE id = ?", (rid,)
+            ).fetchone()
+        except sqlite3.OperationalError:
             row = None
         if row:
             risultati.append({"tabella": tabella, "record": dict(row)})

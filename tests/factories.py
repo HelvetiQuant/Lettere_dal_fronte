@@ -99,3 +99,20 @@ def make_fonte_indice(conn, **overrides):
     cur = conn.execute(f"INSERT INTO fonti_indice ({cols}) VALUES ({marks})", tuple(data.values()))
     conn.commit()
     return cur.lastrowid
+
+
+def make_caduto_albooro(conn, **overrides):
+    data = {
+        "source_id": "TEST-ALBO-1", "volume_id": "1",
+        "volume_name": "Abruzzo e Molise", "nominativo": "Rossi Mario",
+        "paternita": "di Giuseppe", "classe": "1890", "comune_attuale": "Roma",
+        "grado": "Soldato", "reparto": "3° Reggimento", "anno_morte": "1916",
+        "luogo_morte": "Carso", "causa_morte": "Caduto in azione",
+        "detail_url": "", "img_url": "", "elaborato_il": _now(),
+    }
+    data.update(overrides)
+    cols = ", ".join(data)
+    marks = ", ".join("?" for _ in data)
+    cur = conn.execute(f"INSERT INTO caduti_albooro ({cols}) VALUES ({marks})", tuple(data.values()))
+    conn.commit()
+    return cur.lastrowid

@@ -86,48 +86,31 @@ class TestAutoIndexIfNotFound(TempDBTestCase):
         self.assertTrue(risultato["found_locally"])
         self.assertIsNone(risultato["subject_id"])
 
-    def test_BUG_local_count_conta_anche_la_lista_tokens(self):
-        """BUG REALE trovato scrivendo questo test (non un difetto del test).
-
-        auto_index_if_not_found() calcola:
-            local = search_all(query, limit=10)
-            local_count = sum(len(v) for v in local.values() if isinstance(v, list))
-        Ma search_all() include SEMPRE la chiave 'tokens' (lista dei token
-        della query) accanto alle liste di risultati veri (internati,
-        menzioni, decorati, caduti, documenti, fonti_narrative). 'tokens' e'
-        quasi sempre non vuota per qualunque query non banale, quindi
-        local_count e' quasi sempre >= 1 anche quando TUTTE le liste di
-        risultati reali sono vuote: found_locally risulta True per errore,
-        e il ramo "crea soggetto + arricchisci da fonti federate" — una
-        delle 4 innovazioni chiave presentate in CONCORSI_EUROPEI.md
-        ("Research-to-Index: nessuna ricerca persa") — di fatto non si
-        attiva quasi mai per query realistiche.
-        Fix suggerito: sommare solo le chiavi risultato reali, escludendo
-        esplicitamente 'term' e 'tokens' (es. usando un set di chiavi
-        risultato dedicato invece di `isinstance(v, list)` su tutto il dict).
-        Questo test va aggiornato (o rimosso) quando il fix viene applicato."""
+    def test_local_count_esclude_tokens_e_term(self):
+        """Dopo il fix, auto_index_if_not_found() conta solo le liste di
+        risultati reali, escludendo 'tokens' e 'term'. Una query senza
+        risultati reali deve attivare il ramo di creazione soggetto."""
         risultati_ricerca = rti.search_all("QueryCheNonMatchaNienteZzz123")
-        local_count = sum(len(v) for v in risultati_ricerca.values() if isinstance(v, list))
-        self.assertGreater(local_count, 0,
-            "Se questo assert fallisce, il bug e' stato corretto: "
-            "aggiorna/rimuovi questo test di regressione.")
-        # ...e di conseguenza il flusso pensa di aver "trovato localmente":
+        local_count_buggy = sum(len(v) for v in risultati_ricerca.values() if isinstance(v, list))
+        local_count_fixed = sum(
+            len(v) for k, v in risultati_ricerca.items()
+            if isinstance(v, list) and k not in ("tokens", "term")
+        )
+        # tokens esiste ed e' non vuota, ma non deve contare
+        self.assertGreater(len(risultati_ricerca.get("tokens", [])), 0)
+        self.assertEqual(local_count_fixed, 0)
+        self.assertGreater(local_count_buggy, 0)
+
         risultato = rti.auto_index_if_not_found("QueryCheNonMatchaNienteZzz123")
-        self.assertTrue(risultato["found_locally"],
-            "Comportamento attuale (bug): found_locally=True anche senza "
-            "risultati reali, a causa della chiave 'tokens' nel conteggio.")
+        self.assertFalse(risultato["found_locally"])
+        self.assertIsNotNone(risultato["subject_id"])
 
     @patch("research_to_index.federated_search")
     def test_non_trovato_crea_soggetto_e_indicizza_fonti_federate(self, mock_federated):
-        """NOTA: a causa del bug documentato in test_BUG_local_count_conta_anche_la_lista_tokens,
-        il ramo 'non trovato' di auto_index_if_not_found() e' in pratica
-        irraggiungibile passando da search_all() con una query normale.
-        Per testare comunque la logica di indicizzazione delle fonti
-        federate (upsert_source_locator + link_subject_to_source +
-        update_subject_confidence + identify_research_gaps), chiamiamo
-        create_minimal_subject_from_query() direttamente e replichiamo il
-        resto del flusso, cosi' questo test resta valido sia prima sia dopo
-        il fix del bug qui sopra."""
+        """Verifica che una query senza risultati locali crei un soggetto
+        e indicizzi le fonti federate (upsert_source_locator +
+        link_subject_to_source + update_subject_confidence +
+        identify_research_gaps)."""
         mock_federated.return_value = [
             {"archivio": "NARA", "titolo": "Documento su Gaiaschi", "provider": "nara",
              "score": 0.8, "url_file": "https://catalog.archives.gov/id/123",

@@ -48,6 +48,7 @@ MODULES_WITH_SCHEMA_INIT = {
     "source_locator": "_init_tables",
     "research_to_index": "_init_tables",
     "archivio_fonti": "_init_table",
+    "caduti_albooro": "_init_table",
 }
 
 # ─── Registro moduli con DB_PATH proprio (non da database.py) ─────────────
@@ -158,7 +159,13 @@ class TempDBTestCase(unittest.TestCase):
             conn.close()
 
     def tearDown(self):
-        self._tmpdir.cleanup()
+        try:
+            self._tmpdir.cleanup()
+        except (PermissionError, OSError):
+            # Su Windows i file SQLite (anche in modalita' WAL) possono
+            # risultare ancora bloccati da connessioni non rilasciate
+            # in tempo dai provider; ignoriamo l'errore di cleanup.
+            pass
 
     def _set_db_path(self, module, path):
         module.DB_PATH = path

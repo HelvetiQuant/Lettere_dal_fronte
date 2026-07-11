@@ -69,14 +69,10 @@ class TestBuildLinks(TempDBTestCase):
         conn.close()
         self.assertEqual(n_persona, 1, "save_entita deve deduplicare per (tipo, valore_normalizzato)")
 
-    def test_rerun_duplica_collegamenti_per_internati(self):
-        """Documenta il comportamento ATTUALE (vedi docstring del modulo):
-        internati/decorati/menzioni non hanno logica di resume, quindi un
-        secondo giro di build_links() rielabora le stesse righe e duplica
-        gli archi in `collegamenti` (l'entita' resta deduplicata, l'arco no).
-        Se in futuro viene aggiunta una dedup anche per queste tre tabelle
-        (es. tramite _already_linked come per le altre), questo test va
-        aggiornato per aspettarsi conteggio invariato, non raddoppiato."""
+    def test_rerun_non_duplica_collegamenti_per_internati(self):
+        """Dopo il fix, save_entita() deduplica anche i collegamenti per
+        (entita_id, tabella_origine, record_id); un secondo giro di
+        build_links() non deve piu' duplicare gli archi per nessuna tabella."""
         conn = self.conn()
         make_internato(conn, cognome="Verdi", nome="Anna", luogo_nascita="Roma")
         conn.close()
@@ -91,11 +87,8 @@ class TestBuildLinks(TempDBTestCase):
 
         self.assertEqual(entita_dopo_secondo_run, entita_dopo_primo_run,
             "Le entita' devono restare dedupliate tra un run e l'altro.")
-        self.assertEqual(collegamenti_dopo_secondo_run, collegamenti_dopo_primo_run * 2,
-            "Comportamento attuale noto: i collegamenti per internati/decorati/"
-            "menzioni raddoppiano ad ogni ri-esecuzione. Se questo assert "
-            "fallisce perche' il conteggio NON e' raddoppiato, il bug e' stato "
-            "risolto: aggiorna questo test per riflettere il nuovo comportamento.")
+        self.assertEqual(collegamenti_dopo_secondo_run, collegamenti_dopo_primo_run,
+            "I collegamenti non devono duplicarsi tra un run e l'altro.")
 
 
 if __name__ == "__main__":

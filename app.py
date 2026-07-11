@@ -36,6 +36,7 @@ import memory_router
 import source_locator
 import soldier_dashboard
 import biography
+from fastapi.responses import FileResponse
 from source_providers.federation import (
     list_providers, get_provider, federated_search,
     fetch_source as fed_fetch_source, get_federation_stats,
@@ -1409,3 +1410,38 @@ def api_research_stats():
         return rti.get_research_stats()
     except Exception as e:
         return {"initialized": False, "error": str(e)}
+
+
+@app.get("/api/source/file")
+def api_source_file(table: str, id: int):
+    """Serve un file locale di fonti_narrative o lettere_personali (es. immagine)."""
+    allowed = {"fonti_narrative", "lettere_personali"}
+    if table not in allowed:
+        raise HTTPException(status_code=400, detail="Tabella non consentita")
+    from database import get_conn
+    conn = get_conn()
+    conn.row_factory = sqlite3.Row
+    try:
+        if table == "fonti_narrative":
+            row = conn.execute(
+                "SELECT path_locale, nome_file FROM fonti_narrative WHERE id = ?", (id,)
+            ).fetchone()
+            path = row["path_locale"] if row else None
+            filename = row["nome_file"] if row else None
+        else:
+            row = conn.execute(
+                "SELECT file_path, filename FROM lettere_personali WHERE id = ?", (id,)
+            ).fetchone()
+            path = row["file_path"] if row else None
+            filename = row["filename"] if row else None
+    finally:
+        conn.close()
+    if not path or not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="File non trovato")
+    ext = os.path.splitext(path)[1].lower()
+    media_type = {
+        ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+        ".gif": "image/gif", ".bmp": "image/bmp", ".webp": "image/webp",
+        ".pdf": "application/pdf",
+    }.get(ext, "application/octet-stream")
+    return FileResponse(path, filename=filename, media_type=media_type)

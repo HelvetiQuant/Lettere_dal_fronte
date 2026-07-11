@@ -2075,6 +2075,10 @@ function renderCrossDBLinks(searchRes) {
         if (f.archivio) details.push(f.archivio.replace('Desktop — ', ''));
         if (f.data_documento) details.push(f.data_documento);
         const persone = (f.soggetti_json ? JSON.parse(f.soggetti_json).map(p => `${p.cognome||''} ${p.nome||''}`.trim()).filter(Boolean).join(', ') : '');
+        const isImg = isImageFile(f.path_locale);
+        const preview = isImg
+            ? `<img src="/api/source/file?table=fonti_narrative&id=${f.id}" alt="${f.nome_file||''}" style="max-width:100%;max-height:60vh;border-radius:8px;margin-top:12px;box-shadow:var(--shadow-md)">`
+            : (f.testo_ocr ? `<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Testo estratto</summary><div style="white-space:pre-wrap;font-size:0.8rem;background:var(--bg-soft);padding:10px;border-radius:6px;margin-top:6px">${f.testo_ocr}</div></details>` : '');
         const html = `
             <div style="font-size:0.85rem;line-height:1.5">
                 <p><strong>File:</strong> ${f.nome_file||''}</p>
@@ -2083,7 +2087,8 @@ function renderCrossDBLinks(searchRes) {
                 ${f.data_documento ? `<p><strong>Data:</strong> ${f.data_documento}</p>` : ''}
                 ${persone ? `<p><strong>Persone:</strong> ${persone}</p>` : ''}
                 ${f.descrizione ? `<p><strong>Descrizione:</strong> ${f.descrizione}</p>` : ''}
-                ${f.testo_ocr ? `<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Testo estratto</summary><div style="white-space:pre-wrap;font-size:0.8rem;background:var(--bg-soft);padding:10px;border-radius:6px;margin-top:6px">${f.testo_ocr}</div></details>` : ''}
+                ${preview}
+                <p style="margin-top:10px"><a class="btn btn-sm" href="/api/source/file?table=fonti_narrative&id=${f.id}" target="_blank" download>📥 Scarica / Apri file</a></p>
             </div>`;
         links.push({
             type: 'fonte',
@@ -2238,6 +2243,10 @@ function renderSourcesTab(searchRes) {
         parts.push(fontiNarrative.map(f => {
             const persone = (f.soggetti_json ? JSON.parse(f.soggetti_json).map(p => `${p.cognome||''} ${p.nome||''}`.trim()).filter(Boolean).join(', ') : '');
             const title = f.titolo || f.nome_file || 'Fonte personale';
+            const isImg = isImageFile(f.path_locale);
+            const preview = isImg
+                ? `<img src="/api/source/file?table=fonti_narrative&id=${f.id}" alt="${f.nome_file||''}" style="max-width:100%;max-height:60vh;border-radius:8px;margin-top:12px;box-shadow:var(--shadow-md)">`
+                : (f.testo_ocr ? `<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Testo estratto</summary><div style="white-space:pre-wrap;font-size:0.8rem;background:var(--bg-soft);padding:10px;border-radius:6px;margin-top:6px">${f.testo_ocr}</div></details>` : '');
             const html = `
                 <div style="font-size:0.85rem;line-height:1.5">
                     <p><strong>File:</strong> ${f.nome_file||''}</p>
@@ -2246,7 +2255,8 @@ function renderSourcesTab(searchRes) {
                     ${f.data_documento ? `<p><strong>Data:</strong> ${f.data_documento}</p>` : ''}
                     ${persone ? `<p><strong>Persone:</strong> ${persone}</p>` : ''}
                     ${f.descrizione ? `<p><strong>Descrizione:</strong> ${f.descrizione}</p>` : ''}
-                    ${f.testo_ocr ? `<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Testo estratto</summary><div style="white-space:pre-wrap;font-size:0.8rem;background:var(--bg-soft);padding:10px;border-radius:6px;margin-top:6px">${f.testo_ocr}</div></details>` : ''}
+                    ${preview}
+                    <p style="margin-top:10px"><a class="btn btn-sm" href="/api/source/file?table=fonti_narrative&id=${f.id}" target="_blank" download>📥 Scarica / Apri file</a></p>
                 </div>`;
             const sid = registerSourceDetail(title, html);
             return `<tr class="source-clickable-row" onclick="openSourceDetailById(${sid})" title="Clicca per dettagli"><td style="font-size:0.75rem">${f.tipo_fonte||''}</td><td>${f.titolo||f.nome_file||''}</td><td style="font-size:0.75rem">${(f.archivio||'').replace('Desktop — ', '')}</td><td style="font-size:0.75rem">${persone}</td></tr>`;
@@ -2314,6 +2324,11 @@ async function fetchSource(sourceId, providerName) {
 
 let _sourceDetailId = 0;
 const _sourceDetails = {};
+function isImageFile(path) {
+    if (!path) return false;
+    const ext = path.split('.').pop().toLowerCase();
+    return ['jpg','jpeg','png','gif','bmp','webp','tiff','tif'].includes(ext);
+}
 function registerSourceDetail(title, html) {
     const id = ++_sourceDetailId;
     _sourceDetails[id] = { title, html };
