@@ -25,8 +25,10 @@ import ai_research
 import caduti_albooro
 import caduti_bologna
 import caduti_cwgc
+import caduti_francia_ww1
 import caduti_ministero
 import caduti_sardi
+import decorati_nastroazzurro
 import nara_t315_ocr
 import nara_catalog
 import archivio_fonti
@@ -69,6 +71,7 @@ _nara_lock = threading.Lock()
 def startup():
     init_db()
     init_usage_table()
+    rti._init_tables()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -446,6 +449,26 @@ def api_cwgc_scrape():
 def api_cwgc_stop():
     caduti_cwgc.request_stop()
     return {"ok": True, "message": "Richiesta arresto ricevuta"}
+
+
+# ─── Caduti Francia WW1 (Mémoire des Hommes) ───
+
+@app.get("/api/francia_ww1")
+def api_francia_ww1_stats():
+    return {
+        "count": caduti_francia_ww1.count_caduti_francia_ww1(),
+        "progress": caduti_francia_ww1.get_progress(),
+    }
+
+
+# ─── Decorati Nastro Azzurro ───
+
+@app.get("/api/nastroazzurro")
+def api_nastroazzurro_stats():
+    return {
+        "count": decorati_nastroazzurro.count_decorati_na(),
+        "progress": decorati_nastroazzurro.get_progress(),
+    }
 
 
 # ─── Ministero Difesa - Caduti 1a GM ───

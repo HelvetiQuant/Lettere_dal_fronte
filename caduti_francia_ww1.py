@@ -73,6 +73,10 @@ def _count_saved() -> int:
         conn.close()
 
 
+def count_caduti_francia_ww1() -> int:
+    return _count_saved()
+
+
 def _download_csv(url: str, filename: str) -> str:
     os.makedirs(DATA_DIR, exist_ok=True)
     filepath = os.path.join(DATA_DIR, filename)

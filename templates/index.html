@@ -77,7 +77,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .conv-input::placeholder { color: var(--text-light); }
 .conv-btn { background: var(--primary); color: #fff; border: none; padding: 16px 32px; border-radius: 12px; cursor: pointer; font-size: 1.05rem; transition: all 0.2s; white-space: nowrap; font-weight: 700; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
 .conv-btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
-#bioBtn:hover { background: #6d28d9 !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(124,58,237,0.4); }
+#bioBtn:hover { background: #1f2937 !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(55,65,81,0.4); }
 #bioBtn:disabled { background: var(--text-light) !important; }
 .conv-btn:disabled { background: var(--text-light); cursor: not-allowed; box-shadow: none; }
 .conv-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 14px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.5; }
@@ -132,6 +132,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .link-card .lc-datasets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
 .link-card .lc-dataset { font-size: 0.65rem; padding: 2px 8px; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); font-weight: 600; }
 .link-card .lc-detail { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
+.link-card.source-clickable { cursor: pointer; border-left: 3px solid var(--primary); }
+.link-card.source-clickable:hover { box-shadow: var(--shadow-md); border-color: var(--primary); }
+.source-clickable-row { cursor: pointer; }
+.source-clickable-row:hover { background: var(--primary-light) !important; }
 
 /* Timeline */
 .timeline { position: relative; padding-left: 20px; }
@@ -417,7 +421,7 @@ tr.row-review:hover { background: #fef3c7; }
   <div class="conv-input-wrap">
     <input type="text" class="conv-input" id="convInput" placeholder="Cerca un soldato: es. Rossi Mario, 64 reggimento fanteria, Bergamo 1920..." onkeydown="if(event.key==='Enter')convSearch()">
     <button class="conv-btn" id="convBtn" onclick="convSearch()">Cerca</button>
-    <button class="conv-btn" id="bioBtn" style="background:var(--accent)" onclick="generateBiography()" title="Biografia narrativa con citazioni, scritta SOLO da dati e fonti gia' verificate (le fonti trovate ma non ancora recuperate vengono elencate a parte, mai usate nel testo)">📖 Dossier verificato</button>
+    <button class="conv-btn" id="bioBtn" style="background:#374151" onclick="generateBiography()" title="Biografia narrativa con citazioni, scritta SOLO da dati e fonti gia' verificate (le fonti trovate ma non ancora recuperate vengono elencate a parte, mai usate nel testo)">📖 Dossier verificato</button>
   </div>
   <div class="conv-hint">Ricerca cross-DB su tutti i dataset locali + grafo entita, poi interroga in parallelo i provider AI (GPT, Mistral, Perplexity, Claude) e gli archivi federati (NARA, Antenati, CWGC, Arolsen, Bundesarchiv, Europeana).</div>
   <div class="conv-examples">
@@ -473,6 +477,15 @@ tr.row-review:hover { background: #fef3c7; }
 
 <div class="toast" id="toast"></div>
 
+<!-- ─── Source Detail Modal ─── -->
+<div class="modal-overlay" id="sourceDetailOverlay">
+  <div class="modal" style="max-width:800px;max-height:85vh;overflow-y:auto">
+    <span class="close" onclick="closeSourceDetail()">&times;</span>
+    <h3 id="sourceDetailTitle">Dettaglio fonte</h3>
+    <div id="sourceDetailContent" style="margin-top:12px"></div>
+  </div>
+</div>
+
 <script>
 const FIELDS = [
     ['cognome', 'Cognome'], ['nome', 'Nome'],
@@ -514,15 +527,21 @@ async function refresh() {
 const res = await fetch('/api/status');
 const data = await res.json();
     updateExtractionBars(data.letters.filter(l => l.progress && l.progress.status === 'done').length, data.letters.length);
-document.getElementById('statTotal').textContent = data.total_internati;
-document.getElementById('statReview').textContent = data.needs_review || 0;
+const statTotal = document.getElementById('statTotal');
+const statReview = document.getElementById('statReview');
+const statDownloaded = document.getElementById('statDownloaded');
+const statDone = document.getElementById('statDone');
+const statRunning = document.getElementById('statRunning');
+if (statTotal) statTotal.textContent = data.total_internati;
+if (statReview) statReview.textContent = data.needs_review || 0;
 const downloaded = data.letters.filter(l => l.downloaded).length;
 const done = data.letters.filter(l => l.progress && l.progress.status === 'done').length;
-document.getElementById('statDownloaded').textContent = `${downloaded}/20`;
-document.getElementById('statDone').textContent = `${done}/20`;
-document.getElementById('statRunning').textContent = data.running || '-';
+if (statDownloaded) statDownloaded.textContent = `${downloaded}/20`;
+if (statDone) statDone.textContent = `${done}/20`;
+if (statRunning) statRunning.textContent = data.running || '-';
 
 const grid = document.getElementById('letterGrid');
+if (!grid) return;
 grid.innerHTML = '';
 for (const l of data.letters) {
     const prog = l.progress;
@@ -576,12 +595,14 @@ else { showToast((await res.json()).detail, 'error'); }
 
 async function loadInternati() {
 const filter = currentFilter ? `&lettera=${currentFilter}` : '';
-const reviewFilter = document.getElementById('filterReview').checked ? '&needs_review=true' : '';
+const reviewEl = document.getElementById('filterReview');
+const reviewFilter = reviewEl && reviewEl.checked ? '&needs_review=true' : '';
 const res = await fetch(`/api/internati?limit=${pageSize}&offset=${currentPage * pageSize}${filter}${reviewFilter}`);
 const data = await res.json();
 totalCount = data.total;
 currentInternati = data.internati;
 const body = document.getElementById('internatiBody');
+if (!body) return;
 if (!data.internati.length) {
     body.innerHTML = '<tr><td colspan="18" class="empty-state"><p>Nessun dato.</p></td></tr>';
 } else {
@@ -609,9 +630,12 @@ if (!data.internati.length) {
         </tr>`;
     }).join('');
 }
-document.getElementById('pageInfo').textContent = `Pag ${currentPage + 1} di ${Math.max(1, Math.ceil(totalCount / pageSize))} (${totalCount} totali)`;
-document.getElementById('prevBtn').disabled = currentPage === 0;
-document.getElementById('nextBtn').disabled = (currentPage + 1) * pageSize >= totalCount;
+const pageInfo = document.getElementById('pageInfo');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+if (pageInfo) pageInfo.textContent = `Pag ${currentPage + 1} di ${Math.max(1, Math.ceil(totalCount / pageSize))} (${totalCount} totali)`;
+if (prevBtn) prevBtn.disabled = currentPage === 0;
+if (nextBtn) nextBtn.disabled = (currentPage + 1) * pageSize >= totalCount;
 }
 
 function openEdit(id) {
@@ -750,11 +774,14 @@ async function updateExtractionStatus() {
 
 function updateExtractionBars(doneLetters, totalLetters) {
     const fill = document.getElementById('totalProgressBarFill');
+    if (!fill) return;
     const pct = totalLetters ? Math.min(100, Math.round(doneLetters / totalLetters * 100)) : 0;
     fill.style.width = `${pct}%`;
     fill.className = 'progress-bar-fill' + (pct >= 90 ? ' critical' : pct >= 60 ? ' low' : '');
-    document.getElementById('totalProgressText').textContent = `${doneLetters}/${totalLetters}`;
-    document.getElementById('totalProgressPct').textContent = `${pct}%`;
+    const txt = document.getElementById('totalProgressText');
+    const pctx = document.getElementById('totalProgressPct');
+    if (txt) txt.textContent = `${doneLetters}/${totalLetters}`;
+    if (pctx) pctx.textContent = `${pct}%`;
 }
 async function validateAllLocations() {
     showToast('Validazione localita in corso (puo richiedere alcuni minuti)...');
@@ -951,10 +978,14 @@ let fondiPollTimer = null;
 async function loadFondi() {
     const res = await fetch('/api/fondi');
     const data = await res.json();
-    document.getElementById('statFondi').textContent = data.count_fondi;
-    document.getElementById('statMenzioni').textContent = data.count_menzioni;
-    document.getElementById('statFondoRunning').textContent = data.running || '-';
+    const sf = document.getElementById('statFondi');
+    const sm = document.getElementById('statMenzioni');
+    const sfr = document.getElementById('statFondoRunning');
+    if (sf) sf.textContent = data.count_fondi;
+    if (sm) sm.textContent = data.count_menzioni;
+    if (sfr) sfr.textContent = data.running || '-';
     const body = document.getElementById('fondiBody');
+    if (!body) return;
     if (!data.fondi.length) {
         body.innerHTML = '<tr><td colspan="4" class="empty-state"><p>Nessun fondo elaborato.</p></td></tr>';
     } else {
@@ -1023,12 +1054,15 @@ let decoratiPollTimer = null;
 async function loadDecorati() {
     const res = await fetch('/api/decorati');
     const data = await res.json();
-    document.getElementById('statDecorati').textContent = data.count;
+    const sd = document.getElementById('statDecorati');
+    const sdr = document.getElementById('statDecoratiRunning');
+    const di = document.getElementById('decoratiInfo');
+    if (sd) sd.textContent = data.count;
     const pr = data.progress || {};
     const running = pr.status === 'processing';
-    document.getElementById('statDecoratiRunning').textContent = running ? `${pr.processed}/${pr.total}` : '-';
+    if (sdr) sdr.textContent = running ? `${pr.processed}/${pr.total}` : '-';
     const albiTxt = (data.albi||[]).map(a => `${a.albo_nome||'?'}: ${a.n}`).join(' | ');
-    document.getElementById('decoratiInfo').textContent = albiTxt || 'Nessun decorato in DB. Avvia lo scaricamento.';
+    if (di) di.textContent = albiTxt || 'Nessun decorato in DB. Avvia lo scaricamento.';
     if (running) { if (!decoratiPollTimer) decoratiPollTimer = setInterval(loadDecorati, 4000); }
     else { if (decoratiPollTimer) { clearInterval(decoratiPollTimer); decoratiPollTimer = null; } }
 }
@@ -1044,16 +1078,19 @@ async function decoratiStop() {
 }
 
 updateEngineInfo();
-refresh();
-loadCredits();
-loadFondi();
-loadDecorati();
-loadEntita();
-loadAIHistory();
-loadAlboOro();
-memLoadTraces();
-bgRefresh();
-setInterval(bgRefresh, 30000);
+(async function initLegacy() {
+    const safe = fn => fn().catch(e => console.log('init legacy error:', e));
+    await safe(refresh);
+    await safe(loadCredits);
+    await safe(loadFondi);
+    await safe(loadDecorati);
+    await safe(loadEntita);
+    await safe(loadAIHistory);
+    await safe(loadAlboOro);
+    await safe(memLoadTraces);
+    await safe(bgRefresh);
+})();
+setInterval(() => bgRefresh().catch(() => {}), 30000);
 
 // ─── Caduti Albo d'Oro ───
 let albooroPollTimer = null;
@@ -1061,13 +1098,17 @@ async function loadAlboOro() {
     try {
         const res = await fetch('/api/albooro');
         const data = await res.json();
-        document.getElementById('statAlboOro').textContent = data.count;
-        document.getElementById('statAlboOroVol').textContent = (data.volumes||[]).length;
+        const sa = document.getElementById('statAlboOro');
+        const sav = document.getElementById('statAlboOroVol');
+        const sar = document.getElementById('statAlboOroRunning');
+        const ai = document.getElementById('albooroInfo');
+        if (sa) sa.textContent = data.count;
+        if (sav) sav.textContent = (data.volumes||[]).length;
         const pr = data.progress || {};
         const running = pr.status === 'processing';
-        document.getElementById('statAlboOroRunning').textContent = running ? `${pr.processed}/${pr.total}` : (pr.status || '-');
+        if (sar) sar.textContent = running ? `${pr.processed}/${pr.total}` : (pr.status || '-');
         const volInfo = (data.volumes||[]).slice(0,5).map(v => `${v.volume_name.substring(0,20)}: ${v.n}`).join(' | ');
-        document.getElementById('albooroInfo').textContent = volInfo || (data.count ? `${data.count} caduti in DB` : 'Nessun dato. Avvia lo scaricamento.');
+        if (ai) ai.textContent = volInfo || (data.count ? `${data.count} caduti in DB` : 'Nessun dato. Avvia lo scaricamento.');
         if (running) { if (!albooroPollTimer) albooroPollTimer = setInterval(loadAlboOro, 4000); }
         else { if (albooroPollTimer) { clearInterval(albooroPollTimer); albooroPollTimer = null; } }
     } catch(e) { console.log('loadAlboOro error:', e); }
@@ -1089,14 +1130,20 @@ async function loadEntita() {
     try {
         const res = await fetch('/api/entita');
         const data = await res.json();
-        document.getElementById('statEntita').textContent = data.count_entita || 0;
-        document.getElementById('statCollegamenti').textContent = data.count_collegamenti || 0;
+        const se = document.getElementById('statEntita');
+        const sc = document.getElementById('statCollegamenti');
+        const sls = document.getElementById('statLinkerStatus');
+        const li = document.getElementById('linkerInfo');
+        if (se) se.textContent = data.count_entita || 0;
+        if (sc) sc.textContent = data.count_collegamenti || 0;
         const pr = data.progress || {};
         const running = pr.status === 'processing';
-        document.getElementById('statLinkerStatus').textContent = running ? `${pr.processed}/${pr.total}` : (pr.status || '-');
-        if (pr.current) document.getElementById('linkerInfo').textContent = 'In elaborazione: ' + pr.current;
-        else if (pr.status === 'done') document.getElementById('linkerInfo').textContent = 'Estrazione completata.';
-        else document.getElementById('linkerInfo').textContent = '';
+        if (sls) sls.textContent = running ? `${pr.processed}/${pr.total}` : (pr.status || '-');
+        if (li) {
+            if (pr.current) li.textContent = 'In elaborazione: ' + pr.current;
+            else if (pr.status === 'done') li.textContent = 'Estrazione completata.';
+            else li.textContent = '';
+        }
         if (running) { if (!linkerPollTimer) linkerPollTimer = setInterval(loadEntita, 3000); }
         else { if (linkerPollTimer) { clearInterval(linkerPollTimer); linkerPollTimer = null; } }
     } catch(e) { console.log('loadEntita error:', e); }
@@ -1156,22 +1203,25 @@ async function entitaDetail(id) {
 
 // ─── Memory Router ───
 async function memSearch() {
-    const q = document.getElementById('memQueryInput').value.trim();
+    const qEl = document.getElementById('memQueryInput');
+    const cfEl = document.getElementById('memCloudFallback');
+    const q = qEl ? qEl.value.trim() : '';
     if (!q) { showToast('Inserisci una query', 'error'); return; }
-    const useCloud = document.getElementById('memCloudFallback').value === 'true';
+    const useCloud = cfEl ? cfEl.value === 'true' : true;
     const loading = document.getElementById('memLoading');
     const box = document.getElementById('memResults');
-    loading.style.display = 'block';
-    box.innerHTML = '';
+    if (loading) loading.style.display = 'block';
+    if (box) box.innerHTML = '';
     try {
         const res = await fetch('/api/memory/query', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: q, use_cloud_fallback: useCloud })
         });
-        loading.style.display = 'none';
+        if (loading) loading.style.display = 'none';
         if (!res.ok) { showToast((await res.json()).detail, 'error'); return; }
         const d = await res.json();
+        if (!box) return;
         const confColor = d.confidence >= 0.5 ? 'var(--success)' : d.confidence >= 0.2 ? 'var(--warning)' : 'var(--danger)';
         let html = `<div style="background:var(--bg-soft);border-radius:8px;padding:14px;margin-bottom:12px;border-left:3px solid var(--accent)">`;
         html += `<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">`;
@@ -1237,16 +1287,19 @@ async function memLoadTraces() {
         if (!tRes.ok || !sRes.ok) return;
         const td = await tRes.json();
         const sd = await sRes.json();
-        document.getElementById('memStats').textContent =
-            `Totale: ${sd.total_traces} query | Tempo medio: ${sd.avg_response_ms}ms | Token risparmiati: ~${sd.tokens_saved_estimate}`;
-        document.getElementById('bgMemTraces').textContent = sd.total_traces;
+        const memStats = document.getElementById('memStats');
+        const bgMemTraces = document.getElementById('bgMemTraces');
         const box = document.getElementById('memTraces');
+        if (memStats) memStats.textContent =
+            `Totale: ${sd.total_traces} query | Tempo medio: ${sd.avg_response_ms}ms | Token risparmiati: ~${sd.tokens_saved_estimate}`;
+        if (bgMemTraces) bgMemTraces.textContent = sd.total_traces;
+        if (!box) return;
         if (!td.traces.length) { box.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem">Nessuna query ancora.</p>'; return; }
         box.innerHTML = td.traces.map(t => {
             const confColor = t.confidence >= 0.5 ? 'var(--success)' : t.confidence >= 0.2 ? 'var(--warning)' : 'var(--text-muted)';
             const cloud = t.used_cloud_ai ? '&#127760;' : '';
             const ts = (t.created_at||'').substring(0,16);
-            return `<div style="background:var(--bg-soft);border-radius:4px;padding:7px 10px;margin:3px 0;font-size:0.78rem;cursor:pointer" onclick="document.getElementById('memQueryInput').value='${t.query_text.replace(/'/g,"\\'")}'">
+            return `<div style="background:var(--bg-soft);border-radius:4px;padding:7px 10px;margin:3px 0;font-size:0.78rem;cursor:pointer" onclick="const el=document.getElementById('memQueryInput'); if(el) el.value='${t.query_text.replace(/'/g,"\\'")}'">
                 <span style="color:var(--accent)">${ts}</span>
                 &nbsp;<strong>${t.query_text.substring(0,80)}</strong>
                 &nbsp;<span style="color:${confColor}">${(t.confidence*100).toFixed(0)}%</span>
@@ -1262,49 +1315,61 @@ async function bgRefresh() {
     try {
         const res = await fetch('/api/entita');
         const d = await res.json();
-        document.getElementById('bgEntita').textContent = Number(d.count_entita||0).toLocaleString('it');
-        document.getElementById('bgCollegamenti').textContent = Number(d.count_collegamenti||0).toLocaleString('it');
+        const bgEntita = document.getElementById('bgEntita');
+        const bgCollegamenti = document.getElementById('bgCollegamenti');
+        if (bgEntita) bgEntita.textContent = Number(d.count_entita||0).toLocaleString('it');
+        if (bgCollegamenti) bgCollegamenti.textContent = Number(d.count_collegamenti||0).toLocaleString('it');
     } catch(e) {}
     try {
         const res = await fetch('/api/cwgc');
         const d = await res.json();
-        document.getElementById('bgCwgc').textContent = Number(d.count||0).toLocaleString('it');
+        const bgCwgc = document.getElementById('bgCwgc');
+        const bgCwgcDetail = document.getElementById('bgCwgcDetail');
+        if (bgCwgc) bgCwgc.textContent = Number(d.count||0).toLocaleString('it');
         const pr = d.progress||{};
-        document.getElementById('bgCwgcDetail').textContent = pr.current
+        if (bgCwgcDetail) bgCwgcDetail.textContent = pr.current
             ? `CWGC in corso: ${pr.current} | salvati: ${Number(pr.total_saved||0).toLocaleString('it')}`
             : `CWGC: ${d.count ? Number(d.count).toLocaleString('it')+' record' : 'idle'}`;
     } catch(e) {
-        document.getElementById('bgCwgcDetail').textContent = 'CWGC: api non raggiungibile';
+        const bgCwgcDetail = document.getElementById('bgCwgcDetail');
+        if (bgCwgcDetail) bgCwgcDetail.textContent = 'CWGC: api non raggiungibile';
     }
     try {
         const res = await fetch('/api/nara_catalog');
         const d = await res.json();
-        document.getElementById('bgNara').textContent = Number(d.count||0).toLocaleString('it');
+        const bgNara = document.getElementById('bgNara');
+        const bgNaraDetail = document.getElementById('bgNaraDetail');
+        if (bgNara) bgNara.textContent = Number(d.count||0).toLocaleString('it');
         const pr = d.progress||{};
-        document.getElementById('bgNaraDetail').textContent = pr.current
+        if (bgNaraDetail) bgNaraDetail.textContent = pr.current
             ? `NARA in corso: ${pr.current} | offset: ${pr.processed||0}`
             : `NARA Catalog: ${d.count ? Number(d.count).toLocaleString('it')+' record' : 'idle'}`;
     } catch(e) {
-        document.getElementById('bgNaraDetail').textContent = 'NARA: api non raggiungibile';
+        const bgNaraDetail = document.getElementById('bgNaraDetail');
+        if (bgNaraDetail) bgNaraDetail.textContent = 'NARA: api non raggiungibile';
     }
     try {
         const res = await fetch('/api/memory/stats');
         const d = await res.json();
-        document.getElementById('bgMemTraces').textContent = d.total_traces||0;
+        const bgMemTraces = document.getElementById('bgMemTraces');
+        if (bgMemTraces) bgMemTraces.textContent = d.total_traces||0;
     } catch(e) {}
 }
 
 // ─── Ricerca AI ───
 async function aiResearch() {
-    const query = document.getElementById('aiQueryInput').value.trim();
-    const provider = document.getElementById('aiProviderSelect').value;
+    const queryEl = document.getElementById('aiQueryInput');
+    const providerEl = document.getElementById('aiProviderSelect');
+    const query = queryEl ? queryEl.value.trim() : '';
+    const provider = providerEl ? providerEl.value : 'gpt';
     if (!query) { showToast('Inserisci una query', 'error'); return; }
     const loading = document.getElementById('aiResearchLoading');
     const results = document.getElementById('aiResearchResults');
-    loading.style.display = 'block';
-    results.innerHTML = '';
+    const dotsEl = document.getElementById('aiLoadingDots');
+    if (loading) loading.style.display = 'block';
+    if (results) results.innerHTML = '';
     let dots = '';
-    const dotsTimer = setInterval(() => { dots += '.'; if (dots.length > 3) dots = ''; document.getElementById('aiLoadingDots').textContent = dots; }, 500);
+    const dotsTimer = setInterval(() => { dots += '.'; if (dots.length > 3) dots = ''; if (dotsEl) dotsEl.textContent = dots; }, 500);
     try {
         const res = await fetch('/api/ai-research', {
             method: 'POST',
@@ -1312,9 +1377,10 @@ async function aiResearch() {
             body: JSON.stringify({ query, provider, limit: 30 })
         });
         clearInterval(dotsTimer);
-        loading.style.display = 'none';
+        if (loading) loading.style.display = 'none';
         if (!res.ok) { const e = await res.json(); showToast(e.detail, 'error'); return; }
         const d = await res.json();
+        if (!results) return;
         if (provider === 'all') {
             let html = '';
             for (const [p, r] of Object.entries(d)) {
@@ -1335,7 +1401,7 @@ async function aiResearch() {
         showToast('Ricerca AI completata', 'success');
     } catch(e) {
         clearInterval(dotsTimer);
-        loading.style.display = 'none';
+        if (loading) loading.style.display = 'none';
         showToast('Errore: ' + e.message, 'error');
     }
 }
@@ -1344,6 +1410,7 @@ async function loadAIHistory() {
         const res = await fetch('/api/ai-research/history?limit=10');
         const d = await res.json();
         const box = document.getElementById('aiHistory');
+        if (!box) return;
         if (!d.ricerche || !d.ricerche.length) { box.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem">Nessuna ricerca precedente.</p>'; return; }
         box.innerHTML = d.ricerche.map(r => `<div style="background:var(--bg-soft);border-radius:4px;padding:8px;margin:4px 0;font-size:0.8rem;cursor:pointer" onclick="showAIHistoryDetail(${r.id})"><span style="color:var(--warning)">[${r.provider}]</span> ${r.query.substring(0,80)} <span style="color:var(--text-muted)">${r.elaborato_il.substring(0,16)}</span></div>`).join('');
     } catch(e) { console.log('AI history error:', e); }
@@ -1352,7 +1419,9 @@ function showAIHistoryDetail(id) {
     fetch('/api/ai-research/history?limit=50').then(r=>r.json()).then(d=>{
         const r = d.ricerche.find(x=>x.id===id);
         if (!r) return;
-        document.getElementById('aiResearchResults').innerHTML = `<div style="background:var(--bg-soft);border-radius:8px;padding:14px;border-left:3px solid var(--warning)">
+        const box = document.getElementById('aiResearchResults');
+        if (!box) return;
+        box.innerHTML = `<div style="background:var(--bg-soft);border-radius:8px;padding:14px;border-left:3px solid var(--warning)">
         <h3 style="color:var(--warning);font-size:0.9rem">[${r.provider}] ${r.model} - ${r.query}</h3>
         <div style="white-space:pre-wrap;font-size:0.85rem;line-height:1.6;margin-top:8px">${r.risposta||''}</div>
         </div>`;
@@ -1364,24 +1433,32 @@ try {
     const res = await fetch('/api/credits');
     const data = await res.json();
     const widget = document.getElementById('creditsWidget');
-    widget.style.display = 'block';
+    if (widget) widget.style.display = 'block';
     const remaining = data.remaining_usd;
     const pct = 100 - data.pct_used;
     const remEl = document.getElementById('cwRemaining');
-    remEl.textContent = `$${remaining.toFixed(2)}`;
-    remEl.className = 'cw-remaining' + (remaining < 5 ? ' critical' : remaining < 15 ? ' low' : '');
+    if (remEl) {
+        remEl.textContent = `$${remaining.toFixed(2)}`;
+        remEl.className = 'cw-remaining' + (remaining < 5 ? ' critical' : remaining < 15 ? ' low' : '');
+    }
     const bar = document.getElementById('cwBarFill');
-    bar.style.width = Math.max(0, pct) + '%';
-    bar.className = 'cw-bar-fill' + (remaining < 5 ? ' critical' : remaining < 15 ? ' low' : '');
-    document.getElementById('cwToday').textContent = `$${data.today_cost_usd.toFixed(2)}`;
-    document.getElementById('cwTotal').textContent = `$${data.total_cost_usd.toFixed(2)}`;
+    if (bar) {
+        bar.style.width = Math.max(0, pct) + '%';
+        bar.className = 'cw-bar-fill' + (remaining < 5 ? ' critical' : remaining < 15 ? ' low' : '');
+    }
+    const cwToday = document.getElementById('cwToday');
+    const cwTotal = document.getElementById('cwTotal');
+    const cwOpenAI = document.getElementById('cwOpenAI');
+    const cwMistral = document.getElementById('cwMistral');
+    if (cwToday) cwToday.textContent = `$${data.today_cost_usd.toFixed(2)}`;
+    if (cwTotal) cwTotal.textContent = `$${data.total_cost_usd.toFixed(2)}`;
     let openaiCost = 0, mistralCost = 0;
     for (const p of data.by_provider) {
         if (p.provider === 'openai') openaiCost = p.cost;
         if (p.provider === 'mistral') mistralCost = p.cost;
     }
-    document.getElementById('cwOpenAI').textContent = `$${openaiCost.toFixed(2)}`;
-    document.getElementById('cwMistral').textContent = `$${mistralCost.toFixed(2)}`;
+    if (cwOpenAI) cwOpenAI.textContent = `$${openaiCost.toFixed(2)}`;
+    if (cwMistral) cwMistral.textContent = `$${mistralCost.toFixed(2)}`;
 } catch (e) {
     console.log('Credits load error:', e);
 }
@@ -1997,11 +2074,52 @@ function renderCrossDBLinks(searchRes) {
         if (f.tipo_fonte) details.push(f.tipo_fonte);
         if (f.archivio) details.push(f.archivio.replace('Desktop — ', ''));
         if (f.data_documento) details.push(f.data_documento);
+        const persone = (f.soggetti_json ? JSON.parse(f.soggetti_json).map(p => `${p.cognome||''} ${p.nome||''}`.trim()).filter(Boolean).join(', ') : '');
+        const html = `
+            <div style="font-size:0.85rem;line-height:1.5">
+                <p><strong>File:</strong> ${f.nome_file||''}</p>
+                <p><strong>Percorso:</strong> <code style="font-size:0.75rem;background:var(--bg-soft);padding:2px 4px;border-radius:4px">${f.path_locale||''}</code></p>
+                <p><strong>Tipo:</strong> ${f.tipo_fonte||''} | <strong>Archivio:</strong> ${f.archivio||''}</p>
+                ${f.data_documento ? `<p><strong>Data:</strong> ${f.data_documento}</p>` : ''}
+                ${persone ? `<p><strong>Persone:</strong> ${persone}</p>` : ''}
+                ${f.descrizione ? `<p><strong>Descrizione:</strong> ${f.descrizione}</p>` : ''}
+                ${f.testo_ocr ? `<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Testo estratto</summary><div style="white-space:pre-wrap;font-size:0.8rem;background:var(--bg-soft);padding:10px;border-radius:6px;margin-top:6px">${f.testo_ocr}</div></details>` : ''}
+            </div>`;
         links.push({
             type: 'fonte',
             title: title,
             datasets: ['Fonte personale'],
-            detail: details.join(' | ')
+            detail: details.join(' | '),
+            sourceId: registerSourceDetail(title, html)
+        });
+    }
+
+    // Lettere personali OCR
+    const letterePersonali = searchRes.lettere_personali || [];
+    for (const l of letterePersonali.slice(0, 10)) {
+        const title = l.oggetto || l.filename || 'Lettera personale';
+        const details = [];
+        if (l.mittente) details.push(`da: ${l.mittente}`);
+        if (l.destinatario) details.push(`a: ${l.destinatario}`);
+        if (l.data_lettera) details.push(l.data_lettera);
+        if (l.luogo) details.push(l.luogo);
+        const html = `
+            <div style="font-size:0.85rem;line-height:1.5">
+                <p><strong>File:</strong> ${l.filename||''}</p>
+                <p><strong>Percorso:</strong> <code style="font-size:0.75rem;background:var(--bg-soft);padding:2px 4px;border-radius:4px">${l.file_path||''}</code></p>
+                ${l.mittente ? `<p><strong>Da:</strong> ${l.mittente}</p>` : ''}
+                ${l.destinatario ? `<p><strong>A:</strong> ${l.destinatario}</p>` : ''}
+                ${l.data_lettera ? `<p><strong>Data:</strong> ${l.data_lettera}</p>` : ''}
+                ${l.luogo ? `<p><strong>Luogo:</strong> ${l.luogo}</p>` : ''}
+                ${l.lingua ? `<p><strong>Lingua:</strong> ${l.lingua}</p>` : ''}
+                ${l.corpo_testo ? `<details open style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Testo della lettera</summary><div style="white-space:pre-wrap;font-size:0.8rem;background:var(--bg-soft);padding:10px;border-radius:6px;margin-top:6px">${l.corpo_testo}</div></details>` : ''}
+            </div>`;
+        links.push({
+            type: 'lettera',
+            title: title,
+            datasets: ['Lettera personale'],
+            detail: details.join(' | '),
+            sourceId: registerSourceDetail(title, html)
         });
     }
 
@@ -2034,7 +2152,7 @@ function renderCrossDBLinks(searchRes) {
     }
 
     box.innerHTML = links.map(l => `
-        <div class="link-card">
+        <div class="link-card${l.sourceId ? ' source-clickable' : ''}" ${l.sourceId ? `onclick="openSourceDetailById(${l.sourceId})" title="Clicca per vedere il dettaglio della fonte"` : ''}>
             <div class="lc-header">
                 <span class="lc-type ${l.type}">${l.type}</span>
                 <span class="lc-title">${l.title}</span>
@@ -2043,6 +2161,7 @@ function renderCrossDBLinks(searchRes) {
             <div class="lc-datasets">
                 ${l.datasets.map(d => `<span class="lc-dataset">${d}</span>`).join('')}
             </div>
+            ${l.sourceId ? '<div style="margin-top:6px;font-size:0.7rem;color:var(--primary)">👆 clicca per dettagli</div>' : ''}
         </div>
     `).join('');
 }
@@ -2118,7 +2237,19 @@ function renderSourcesTab(searchRes) {
         parts.push('<div class="table-container" style="max-height:200px;margin-bottom:16px"><table><thead><tr><th>Tipo</th><th>Titolo/File</th><th>Archivio</th><th>Persone</th></tr></thead><tbody>');
         parts.push(fontiNarrative.map(f => {
             const persone = (f.soggetti_json ? JSON.parse(f.soggetti_json).map(p => `${p.cognome||''} ${p.nome||''}`.trim()).filter(Boolean).join(', ') : '');
-            return `<tr><td style="font-size:0.75rem">${f.tipo_fonte||''}</td><td>${f.titolo||f.nome_file||''}</td><td style="font-size:0.75rem">${(f.archivio||'').replace('Desktop — ', '')}</td><td style="font-size:0.75rem">${persone}</td></tr>`;
+            const title = f.titolo || f.nome_file || 'Fonte personale';
+            const html = `
+                <div style="font-size:0.85rem;line-height:1.5">
+                    <p><strong>File:</strong> ${f.nome_file||''}</p>
+                    <p><strong>Percorso:</strong> <code style="font-size:0.75rem;background:var(--bg-soft);padding:2px 4px;border-radius:4px">${f.path_locale||''}</code></p>
+                    <p><strong>Tipo:</strong> ${f.tipo_fonte||''} | <strong>Archivio:</strong> ${f.archivio||''}</p>
+                    ${f.data_documento ? `<p><strong>Data:</strong> ${f.data_documento}</p>` : ''}
+                    ${persone ? `<p><strong>Persone:</strong> ${persone}</p>` : ''}
+                    ${f.descrizione ? `<p><strong>Descrizione:</strong> ${f.descrizione}</p>` : ''}
+                    ${f.testo_ocr ? `<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Testo estratto</summary><div style="white-space:pre-wrap;font-size:0.8rem;background:var(--bg-soft);padding:10px;border-radius:6px;margin-top:6px">${f.testo_ocr}</div></details>` : ''}
+                </div>`;
+            const sid = registerSourceDetail(title, html);
+            return `<tr class="source-clickable-row" onclick="openSourceDetailById(${sid})" title="Clicca per dettagli"><td style="font-size:0.75rem">${f.tipo_fonte||''}</td><td>${f.titolo||f.nome_file||''}</td><td style="font-size:0.75rem">${(f.archivio||'').replace('Desktop — ', '')}</td><td style="font-size:0.75rem">${persone}</td></tr>`;
         }).join(''));
         parts.push('</tbody></table></div>');
     }
@@ -2127,7 +2258,20 @@ function renderSourcesTab(searchRes) {
         parts.push('<h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:8px">Lettere Personali OCR</h4>');
         parts.push('<div class="table-container" style="max-height:200px;margin-bottom:16px"><table><thead><tr><th>File</th><th>Mittente</th><th>Destinatario</th><th>Data</th><th>Lingua</th></tr></thead><tbody>');
         parts.push(letterePersonali.map(l => {
-            return `<tr><td style="font-size:0.75rem">${l.filename||''}</td><td>${l.mittente||''}</td><td>${l.destinatario||''}</td><td>${l.data_lettera||''}</td><td style="font-size:0.75rem">${l.lingua||''}</td></tr>`;
+            const title = l.oggetto || l.filename || 'Lettera personale';
+            const html = `
+                <div style="font-size:0.85rem;line-height:1.5">
+                    <p><strong>File:</strong> ${l.filename||''}</p>
+                    <p><strong>Percorso:</strong> <code style="font-size:0.75rem;background:var(--bg-soft);padding:2px 4px;border-radius:4px">${l.file_path||''}</code></p>
+                    ${l.mittente ? `<p><strong>Da:</strong> ${l.mittente}</p>` : ''}
+                    ${l.destinatario ? `<p><strong>A:</strong> ${l.destinatario}</p>` : ''}
+                    ${l.data_lettera ? `<p><strong>Data:</strong> ${l.data_lettera}</p>` : ''}
+                    ${l.luogo ? `<p><strong>Luogo:</strong> ${l.luogo}</p>` : ''}
+                    ${l.lingua ? `<p><strong>Lingua:</strong> ${l.lingua}</p>` : ''}
+                    ${l.corpo_testo ? `<details open style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Testo della lettera</summary><div style="white-space:pre-wrap;font-size:0.8rem;background:var(--bg-soft);padding:10px;border-radius:6px;margin-top:6px">${l.corpo_testo}</div></details>` : ''}
+                </div>`;
+            const sid = registerSourceDetail(title, html);
+            return `<tr class="source-clickable-row" onclick="openSourceDetailById(${sid})" title="Clicca per dettagli"><td style="font-size:0.75rem">${l.filename||''}</td><td>${l.mittente||''}</td><td>${l.destinatario||''}</td><td>${l.data_lettera||''}</td><td style="font-size:0.75rem">${l.lingua||''}</td></tr>`;
         }).join(''));
         parts.push('</tbody></table></div>');
     }
@@ -2167,6 +2311,34 @@ async function fetchSource(sourceId, providerName) {
         showToast('Errore fetch: ' + e.message, 'error');
     }
 }
+
+let _sourceDetailId = 0;
+const _sourceDetails = {};
+function registerSourceDetail(title, html) {
+    const id = ++_sourceDetailId;
+    _sourceDetails[id] = { title, html };
+    return id;
+}
+function openSourceDetailById(id) {
+    const s = _sourceDetails[id];
+    if (s) openSourceDetail(s.title, s.html);
+}
+function openSourceDetail(title, html) {
+    const overlay = document.getElementById('sourceDetailOverlay');
+    const t = document.getElementById('sourceDetailTitle');
+    const c = document.getElementById('sourceDetailContent');
+    if (!overlay || !t || !c) return;
+    t.textContent = title;
+    c.innerHTML = html;
+    overlay.classList.add('active');
+}
+function closeSourceDetail() {
+    const overlay = document.getElementById('sourceDetailOverlay');
+    if (overlay) overlay.classList.remove('active');
+}
+document.getElementById('sourceDetailOverlay').addEventListener('click', e => {
+    if (e.target.id === 'sourceDetailOverlay') closeSourceDetail();
+});
 
 // ─── Init ───
 loadAnalytics();
