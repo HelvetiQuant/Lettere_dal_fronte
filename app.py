@@ -35,6 +35,7 @@ import nara_catalog
 import archivio_fonti
 import memory_router
 import source_locator
+import events
 import soldier_dashboard
 import biography
 from fastapi.responses import FileResponse
@@ -1190,6 +1191,40 @@ def api_sources_analyze(body: dict = Body(...)):
     if not source_ids:
         raise HTTPException(status_code=400, detail="source_ids mancante")
     return soldier_dashboard.analyze_sources(source_ids, query)
+
+
+# ─── Eventi Curati (fonti multilaterali) ───
+
+@app.get("/api/events")
+def api_events_list():
+    """Lista eventi curati con conteggio fonti."""
+    return {"eventi": events.get_eventi_curati()}
+
+
+@app.get("/api/events/{event_name}/sources")
+def api_event_sources(event_name: str, limit: int = 100):
+    """Fonti multilaterali per un evento (fazione italiana, Asse, Alleati)."""
+    nome_decoded = event_name.replace("+", " ")
+    result = events.get_evento_fonti(nome_decoded, limit=limit)
+    if result["total"] == 0:
+        raise HTTPException(status_code=404, detail="evento non trovato o senza fonti")
+    return result
+
+
+@app.get("/api/events/{event_name}/internati")
+def api_event_internati(event_name: str, limit: int = 50, offset: int = 0):
+    """Internati probabilmente collegati a un evento."""
+    nome_decoded = event_name.replace("+", " ")
+    return events.get_internati_per_evento(nome_decoded, limit=limit, offset=offset)
+
+
+@app.get("/api/internati/{rid}/events")
+def api_internato_events(rid: int):
+    """Eventi curati collegati a un singolo internato."""
+    result = events.get_internato_eventi(rid)
+    if not result.get("ok"):
+        raise HTTPException(status_code=404, detail=result.get("error"))
+    return result
 
 
 # ─── Research-to-Index ───

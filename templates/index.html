@@ -403,6 +403,11 @@ tr.row-review:hover { background: #fef3c7; }
     <div class="ac-label">Fonti indicizzate</div>
     <div class="ac-sub" id="anSourcesSub"></div>
   </div>
+  <div class="analytics-cell" onclick="loadEventsPanel()" style="cursor:pointer;border-top-color:#0891b2" title="Clicca per esplorare gli eventi storici curati">
+    <div class="ac-value" id="anEvents" style="color:#0891b2">-</div>
+    <div class="ac-label">Eventi curati</div>
+    <div class="ac-sub" id="anEventsSub"></div>
+  </div>
 </div>
 
 <!-- ─── DB View Modal ─── -->
@@ -430,6 +435,9 @@ tr.row-review:hover { background: #fef3c7; }
     <span class="conv-example" onclick="setConvExample('117 Jager Division Balcani')">117 Jager Division Balcani</span>
     <span class="conv-example" onclick="setConvExample('caduti Cassino 1944')">caduti Cassino 1944</span>
     <span class="conv-example" onclick="setConvExample('internati Arolsen')">internati Arolsen</span>
+    <span class="conv-example" onclick="setConvExample('Cefalonia 1943')">Cefalonia 1943</span>
+    <span class="conv-example" onclick="setConvExample('Mauthausen italiani')">Mauthausen italiani</span>
+    <span class="conv-example" onclick="setConvExample('Tobruk prigionieri italiani')">Tobruk prigionieri italiani</span>
   </div>
   <div id="convStatus" style="margin-top:14px;font-size:0.8rem;color:var(--text-muted);display:none"></div>
 </div>
@@ -440,6 +448,7 @@ tr.row-review:hover { background: #fef3c7; }
     <div class="invest-tab active" onclick="switchInvestTab('tabAI')">Risposta AI</div>
     <div class="invest-tab" onclick="switchInvestTab('tabLinks')">Collegamenti Cross-DB</div>
     <div class="invest-tab" onclick="switchInvestTab('tabSources')">Fonti</div>
+    <div class="invest-tab" onclick="switchInvestTab('tabEvents')">Eventi</div>
   </div>
 
   <!-- Tab: Risposta AI (discorsiva) -->
@@ -459,6 +468,12 @@ tr.row-review:hover { background: #fef3c7; }
   <div class="invest-section" id="tabSources" style="display:none">
     <h3>Fonti locali ed esterne <span style="color:var(--primary)" id="sourcesCount"></span></h3>
     <div id="investSources"></div>
+  </div>
+
+  <!-- Tab: Eventi -->
+  <div class="invest-section" id="tabEvents" style="display:none">
+    <h3>Eventi storici curati e fonti multilaterali</h3>
+    <div id="investEvents"></div>
   </div>
 </div>
 
@@ -1560,6 +1575,16 @@ async function loadAnalytics() {
         const srcCount = fedRes.total_sources || 0;
         document.getElementById('anSources').textContent = srcCount.toLocaleString('it');
         document.getElementById('anSourcesSub').textContent = (fedRes.cache_count || 0) + ' in cache';
+
+        // Eventi curati
+        try {
+            const evRes = await fetch('/api/events').then(r => r.json()).catch(() => ({}));
+            const evList = evRes.eventi || [];
+            const evCount = evList.length;
+            const evWithSources = evList.filter(e => e.fonti_count > 0).length;
+            document.getElementById('anEvents').textContent = evCount;
+            document.getElementById('anEventsSub').textContent = evWithSources + ' con fonti';
+        } catch {}
     } catch(e) {
         console.log('Analytics load error:', e);
     }

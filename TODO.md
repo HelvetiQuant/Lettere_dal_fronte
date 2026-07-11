@@ -43,7 +43,7 @@ Questo è puro lavoro amministrativo/di trascrizione: non richiede altro interve
 | 4 | **Dossier verificato (biography.py)** | Implementato con fallback gpt→claude→mistral→perplexity, ma mai testato end-to-end con chiavi API reali (non testabile dal sandbox Cowork). | Test da fare sulla macchina locale con le chiavi reali. |
 | 5 | **Linker cross-dataset** | Nella copia sincronizzata risultava ancora in esecuzione l'11/7 mattina. Stato attuale non verificabile da qui (serve accesso diretto alla macchina). | Controllare se è terminato; se sì, aggiornare i conteggi in `ARCHITETTURA_DB.md`. |
 | 6 | **CWGC** | Risultava completato nei log (tutte le nazionalità WW1+WW2, incluso UK WW2 a ~401k). | Solo da confermare nei documenti, non richiede altro lavoro tecnico. |
-| 7 | **Provider federation** | Aggiornamento rispetto alla valutazione precedente: non più "16 stub su 19" — TNA, Europeana, Internet Archive, Google Books, Gallica/BNF, HathiTrust e WikiTree hanno ora query reali. Restano stub: Arolsen, Bundesarchiv, SHD/MDH, Internet Culturale, Archivportal-D, LAC. | Non prioritario oggi (rimandabile a fase Creative Europe/Horizon, scadenze a settembre). |
+| 7 | **Provider federation** | ✅ **Parzialmente risolto**: TNA, Europeana, DDB, Mémoire des Hommes, Internet Archive, Google Books, Gallica/BNF e HathiTrust hanno query reali. Stati Uniti: Arolsen, Bundesarchiv, LAC, AWM, ABMC rimangono stub o accesso a catalogo. Italia/USSME cerca in `fondi_archivistici` locali. | 🟡 **Non più bloccante per il bando MiC**. Rifinire quando si arricchiranno fonti Asse/Alleati specifiche per singoli soldati/eventi (ottobre 2026). |
 
 ---
 

@@ -216,7 +216,7 @@ class ProviderSHD(SourceProvider):
         try:
             url = "https://www.memoiredeshommes.sga.defense.gouv.fr/fr/search.php"
             params = {"q": query, "n": 10}
-            resp = requests.get(url, params=params, timeout=20, verify=False,
+            resp = requests.get(url, params=params, timeout=20,
                                 headers={"Accept": "text/html",
                                          "User-Agent": "ricerca-storica-IMI/1.0"})
             if resp.status_code == 200:
@@ -281,8 +281,7 @@ class ProviderNationalArchivesUK(SourceProvider):
             url = f"{self.base_url}/API/search/records"
             params = {"q": query, "max": 10}
             resp = requests.get(url, params=params, timeout=20,
-                                headers={"Accept": "application/json"},
-                                verify=False)
+                                headers={"Accept": "application/json"})
             if resp.status_code == 200:
                 data = resp.json()
                 results = []
@@ -339,7 +338,7 @@ class ProviderEuropeana(SourceProvider):
                 "rows": 10,
                 "profile": "rich",
             }
-            resp = requests.get(url, params=params, timeout=20, verify=False)
+            resp = requests.get(url, params=params, timeout=20)
             if resp.status_code == 200:
                 data = resp.json()
                 results = []
@@ -566,7 +565,7 @@ class ProviderLibraryCanada(SourceProvider):
         try:
             url = "https://recherche-collection-search.bac-lac.gc.ca/Search"
             params = {"q": query, "page": 1, "pageSize": 10, "format": "json"}
-            resp = requests.get(url, params=params, timeout=20, verify=False,
+            resp = requests.get(url, params=params, timeout=20,
                 headers={"User-Agent": "ricerca-storica-IMI/1.0",
                          "Accept": "application/json"})
             if resp.status_code == 200 and "application/json" in resp.headers.get("content-type", ""):
@@ -659,7 +658,7 @@ class ProviderArchivportalD(SourceProvider):
         try:
             url = "https://api.deutsche-digitale-bibliothek.de/search"
             params = {"query": query, "rows": 10, "offset": 0}
-            resp = requests.get(url, params=params, timeout=20, verify=False,
+            resp = requests.get(url, params=params, timeout=20,
                                 headers={"Accept": "application/json",
                                          "User-Agent": "ricerca-storica-IMI/1.0"})
             if resp.status_code == 200:

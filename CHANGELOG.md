@@ -1,5 +1,29 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-11 (sera) — Fix pipeline arricchimento fonti + copertura test
+
+### Catalogazione fonti (`c741bea`)
+- Catalogate **25 fonti** da `fonti_scrapabili_metadata.xlsx` in `fonti_indice` tramite `import_fonti_catalogo.py`.
+- Ogni fonte include archivio, dominio, access_type, confidence, note legali/tecniche.
+
+### Arricchimento entità (`4481266`, `093e24c`)
+- `enrich_entities.py`: pipeline di arricchimento con federated_search concorrente e resume.
+- Risultato reale: **20.190 internati processati**, **19.868 nuove schede** in `fonti_indice`, **0 errori**.
+
+### Arricchimento eventi (`d326552`)
+- `enrich_events.py`: 6 eventi storici curati con fonti multilaterali (Italia / Asse / Alleati).
+- Registrate **28 fonti** multilaterali in `fonti_indice` (Cefalonia, Mauthausen/Gusen, Tobruk, ARMIR Russia, Operazione Achse, lavoro forzato).
+
+### Fix di questa sessione
+- `enrich_entities.py`: resume granulare per ID completato; `fetch_internati` usa `WHERE id > ?` anziché OFFSET.
+- `source_providers/providers.py`: rimosso `verify=False` da TNA Discovery, Europeana, Deutsche Digitale Bibliothek (Archivportal-D) e Mémoire des Hommes.
+- `import_fonti_catalogo.py`: rimossa `_extract_domain()` non utilizzata (codice morto con `NameError` latente).
+- `source_locator.py`: `last_checked_at` aggiunto alla whitelist di `register_source_metadata()` e popolato in insert/update.
+- `enrich_events.py`: luogo geografico reale per evento, rimosso `time.sleep(0.2)`, rimosso `import json` duplicato.
+- Test: `tests/test_enrich_entities.py`, `tests/test_enrich_events.py`, `tests/test_source_providers.py::TestTLSVerification`.
+
+---
+
 ## 2026-07-11 (pomeriggio) — Integrazione lettere personali + upload GitHub
 
 ### Unificazione DB lettere personali (TODO fix tecnico #1)

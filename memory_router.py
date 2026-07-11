@@ -20,6 +20,7 @@ from typing import Optional
 
 from database import get_conn
 from search_service import search_entities, get_entity_network
+import events
 
 # Import lazy per evitare dipendenza circolare (ai_research importa database)
 _ai_research = None
@@ -78,6 +79,19 @@ _ARCHIVE_KEYWORDS = ["nara", "aussme", "bundesarchiv", "tna", "shd", "t315", "wo
 _DOC_REQUEST_KEYWORDS = ["documento", "pdf", "immagine", "jpeg", "originale",
                           "scansione", "diario", "aar", "war diary", "ktb",
                           "kriegstagebuch", "journal de marche", "jmo"]
+
+# Eventi storici curati per arricchimento multilaterale
+_EVENT_KEYWORDS = {
+    "cefalonia": ["cefalonia", "acqui", "corfù", "corfu", "massacro acqui"],
+    "mauthausen": ["mauthausen", "gusen", "linz"],
+    "tobruk": ["tobruk", "tobruch", "tripoli"],
+    "armir": ["armir", "russia", "stalingrado", "stalingrad", "fronte russo",
+              "bessarabia", "renci", "don"],
+    "achse": ["operazione achse", "internati militari", "imi", "8 settembre",
+             "armistizio"],
+    "lavoro_forzato": ["lavoro forzato", "arbeitskommando", "campo lavoro",
+                       "schiavo", "forzato"],
+}
 
 
 # ─── Tabelle ───────────────────────────────────────────────────────────────────
@@ -224,8 +238,15 @@ def extract_cues(query: str) -> dict:
     # Richiesta documento originale
     richiede_doc = any(kw in q for kw in _DOC_REQUEST_KEYWORDS)
 
+    # Eventi curati (es. Cefalonia, Mauthausen, Tobruk, ARMIR, Achse)
+    evento = None
+    for ev_id, kws in _EVENT_KEYWORDS.items():
+        if any(kw in q for kw in kws):
+            evento = ev_id
+            break
+
     # Query vaga: nessun cue strutturato preciso
-    is_vague = not persona and not reparto and not archivio
+    is_vague = not persona and not reparto and not archivio and not evento
 
     return {
         "persona": persona,
@@ -236,6 +257,7 @@ def extract_cues(query: str) -> dict:
         "guerra": guerra,
         "archivio": archivio,
         "richiede_documento": richiede_doc,
+        "evento": evento,
         "is_vague": is_vague,
         "raw": query,
     }
@@ -249,6 +271,10 @@ def _select_route(cues: dict) -> list:
 
     if cues["archivio"] or cues["richiede_documento"] or cues["reparto"] or cues["guerra"]:
         route.append("archivio_fonti")
+
+    # Eventi curati: attiva subito la ricerca di fonti multilaterali
+    if cues.get("evento"):
+        route.append("event_sources")
 
     if cues["persona"] or cues["reparto"]:
         route.append("sql_exact")
@@ -437,6 +463,45 @@ def _search_archivio_fonti(cues: dict) -> list:
             "file_url": f"/api/archivio/file/{r['hash_sha256']}",
             "readable": bool(r["readable"]),
             "ocr_status": r["ocr_status"],
+        })
+    return results
+
+
+def _search_event_sources(cues: dict) -> list:
+    """Recupera fonti multilaterali per eventi curati da fonti_indice."""
+    evento_id = cues.get("evento")
+    if not evento_id:
+        return []
+
+    # mappa id evento -> nome canonico in fonti_indice
+    event_map = {
+        "cefalonia": "Eccidio di Cefalonia (settembre 1943)",
+        "mauthausen": "Campi di concentramento di Mauthausen e Gusen",
+        "tobruk": "Battaglia di Tobruk e prigionia (gennaio 1941)",
+        "armir": "Campagna italiana in Russia (ARMIR, 1941-1943)",
+        "achse": "Operazione Achse e internamento militare italiano (1943-1945)",
+        "lavoro_forzato": "Lavoro forzato italiano nel Terzo Reich (1943-1945)",
+    }
+    event_name = event_map.get(evento_id)
+    if not event_name:
+        return []
+
+    import source_locator
+    base = source_locator.find_sources_by_subject(event_name, limit=50)
+    results = []
+    for f in base["candidates"]:
+        fazione = "Altro"
+        np = f.get("note_parsed") or {}
+        if isinstance(np, dict) and np.get("fazione"):
+            fazione = np["fazione"]
+        score = min(1.0, 0.7 + (f.get("confidence") or 0.5) * 0.3)
+        results.append({
+            "source": "event_sources",
+            "table": "fonti_indice",
+            "evento": event_name,
+            "fazione": fazione,
+            "data": f,
+            "score": round(score, 3),
         })
     return results
 
@@ -659,6 +724,11 @@ def route_query(query: str, depth: int = None, use_cloud_fallback: bool = True) 
     if "archivio_fonti" in route or cues.get("reparto") or cues.get("archivio"):
         af_hits = _search_archivio_fonti(cues)
         all_results.extend(af_hits)
+
+    # Layer 5 — Fonti multilaterali per eventi curati
+    if "event_sources" in route:
+        ev_hits = _search_event_sources(cues)
+        all_results.extend(ev_hits)
 
     # Scoring e merge
     scored = _score_and_merge(all_results, cues)

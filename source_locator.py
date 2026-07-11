@@ -26,7 +26,12 @@ from urllib.parse import urlparse
 import requests
 
 from database import get_conn
-from memory_router import extract_cues
+
+# lazy import: memory_router importa source_locator (per event sources),
+# quindi evitiamo il circular import a livello di modulo.
+def _extract_cues(query: str):
+    from memory_router import extract_cues
+    return extract_cues(query)
 
 # ─── Config ────────────────────────────────────────────────────────────────────
 
@@ -155,6 +160,7 @@ def _init_tables():
         "CREATE INDEX IF NOT EXISTS idx_fi_luogo ON fonti_indice(luogo)",
         "CREATE INDEX IF NOT EXISTS idx_fi_archivio ON fonti_indice(archivio)",
         "CREATE INDEX IF NOT EXISTS idx_fi_fetch_status ON fonti_indice(fetch_status)",
+        "CREATE INDEX IF NOT EXISTS idx_fi_soggetti ON fonti_indice(soggetti_collegati)",
         "CREATE INDEX IF NOT EXISTS idx_sfc_source ON source_fetch_cache(source_id)",
     ]:
         conn.execute(idx)
@@ -175,7 +181,7 @@ def register_source_metadata(**meta) -> dict:
         "soggetti_collegati", "persone_possibili", "reparto", "luogo",
         "data_inizio", "data_fine", "url_catalogo", "url_file",
         "iiif_manifest", "page_start", "page_end", "hash_se_disponibile",
-        "access_type", "confidence", "note",
+        "access_type", "confidence", "note", "last_checked_at",
     }
     data = {k: v for k, v in meta.items() if k in allowed and v not in (None, "")}
     for k in ("soggetti_collegati", "persone_possibili"):
@@ -192,16 +198,19 @@ def register_source_metadata(**meta) -> dict:
     )
     row = cur.fetchone()
     now = datetime.now().isoformat(timespec="seconds")
+    # last_checked_at: usa il valore passato o il timestamp corrente
+    checked_at = data.pop("last_checked_at", now) or now
     if row:
         sets = ", ".join(f"{k}=?" for k in data)
         cur.execute(
             f"UPDATE fonti_indice SET {sets}, last_checked_at=? WHERE id=?",
-            (*data.values(), now, row[0]),
+            (*data.values(), checked_at, row[0]),
         )
         conn.commit()
         conn.close()
         return {"id": row[0], "created": False}
     data["created_at"] = now
+    data["last_checked_at"] = checked_at
     cols = ", ".join(data)
     marks = ", ".join("?" for _ in data)
     cur.execute(f"INSERT INTO fonti_indice ({cols}) VALUES ({marks})", tuple(data.values()))
@@ -221,7 +230,7 @@ def find_candidate_sources(query: str, limit: int = 20) -> dict:
       - 'richiamabile'  : online con URL noto e dominio autorizzato
       - 'da_richiedere' : accesso solo su richiesta / login / dominio non autorizzato
     """
-    cues = extract_cues(query)
+    cues = _extract_cues(query)
     conn = get_conn()
     conn.row_factory = _dict_factory
     cur = conn.cursor()
@@ -273,6 +282,78 @@ def find_candidate_sources(query: str, limit: int = 20) -> dict:
         candidates.append(r)
     conn.close()
     return {"cues": cues, "candidates": candidates, "total": len(candidates)}
+
+
+def find_sources_by_subject(subject: str, limit: int = 100) -> dict:
+    """Recupera tutte le fonti in fonti_indice collegate a un soggetto/evento esatto.
+
+    Utile per mostrare le fonti multilaterali di un evento (es. 'Eccidio di Cefalonia').
+    """
+    if not subject or not subject.strip():
+        return {"subject": subject, "candidates": [], "total": 0}
+    subject = subject.strip()
+    conn = get_conn()
+    conn.row_factory = _dict_factory
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM fonti_indice WHERE soggetti_collegati = ? "
+        "ORDER BY confidence DESC, archivio LIMIT ?",
+        (subject, limit),
+    )
+    rows = cur.fetchall()
+    candidates = []
+    for r in rows:
+        r["availability"] = _classify_availability(cur, r)
+        # decodifica eventuale nota JSON per estrarre fazione/descrizione
+        if r.get("note"):
+            try:
+                r["note_parsed"] = json.loads(r["note"])
+            except Exception:
+                r["note_parsed"] = None
+        candidates.append(r)
+    conn.close()
+    return {"subject": subject, "candidates": candidates, "total": len(candidates)}
+
+
+def list_event_subjects(limit: int = 100) -> list:
+    """Restituisce i soggetti_collegati distinti che rappresentano eventi curati.
+
+    Euristicamente considera eventi le voci la cui prima parola inizia con
+    una lettera maiuscola e contengono date/location (es. 'Eccidio di Cefalonia',
+    'Battaglia di Tobruk').
+    """
+    conn = get_conn()
+    conn.row_factory = _dict_factory
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT DISTINCT soggetti_collegati FROM fonti_indice "
+        "WHERE soggetti_collegati IS NOT NULL AND soggetti_collegati != '' "
+        "ORDER BY soggetti_collegati LIMIT ?",
+        (limit,),
+    )
+    rows = [r["soggetti_collegati"] for r in cur.fetchall()]
+    conn.close()
+    # filtra: almeno 2 parole, prima parola capitalizzata, contiene un anno o luogo noto
+    event_like = []
+    for s in rows:
+        if not s:
+            continue
+        parts = s.split()
+        if len(parts) < 2:
+            continue
+        first = parts[0]
+        if not first[0].isupper():
+            continue
+        # pattern evento: contiene anno 19xx o luogo evento noto
+        if (
+            re.search(r"\b(19[3-5][0-9])\b", s)
+            or any(k in s.lower() for k in [
+                "cefalonia", "mauthausen", "gusen", "tobruk", "russia", "armir",
+                "achse", "lavoro forzato", "internamento", "campagna",
+            ])
+        ):
+            event_like.append(s)
+    return event_like
 
 
 def _classify_availability(cur, row: dict) -> str:

@@ -11,7 +11,6 @@ Non scarica documenti; memorizza solo metadati + URL diretti.
 
 import json
 import logging
-import time
 from source_locator import register_source_metadata
 
 logging.basicConfig(
@@ -26,6 +25,7 @@ logger = logging.getLogger(__name__)
 EVENTS = [
     {
         "evento": "Eccidio di Cefalonia (settembre 1943)",
+        "luogo": "Cefalonia, Grecia",
         "descrizione": "Scontri e rappresaglia tedesca contro la Divisione Acqui dopo l'8 settembre 1943",
         "fonti": [
             {
@@ -86,6 +86,7 @@ EVENTS = [
     },
     {
         "evento": "Campi di concentramento di Mauthausen e Gusen",
+        "luogo": "Mauthausen, Austria",
         "descrizione": "Internamento, lavoro forzato e morte di prigionieri italiani nei campi del sistema Mauthausen-Gusen",
         "fonti": [
             {
@@ -147,6 +148,7 @@ EVENTS = [
     },
     {
         "evento": "Battaglia di Tobruk e prigionia (gennaio 1941)",
+        "luogo": "Tobruk, Libia",
         "descrizione": "Caduta di Tobruk in Libia e cattura di decine di migliaia di soldati italiani dalle forze australiane/britanniche",
         "fonti": [
             {
@@ -198,6 +200,7 @@ EVENTS = [
     },
     {
         "evento": "Campagna italiana in Russia (ARMIR, 1941-1943)",
+        "luogo": "Fronte orientale (Russia)",
         "descrizione": "Operazioni dell'ARMIR sul fronte orientale e disastro della ritirata invernale 1942-1943",
         "fonti": [
             {
@@ -232,6 +235,7 @@ EVENTS = [
     },
     {
         "evento": "Operazione Achse e internamento militare italiano (1943-1945)",
+        "luogo": "Italia / Germania",
         "descrizione": "Disarmo delle forze armate italiane nei territori occupati e deportazione come 'Internati Militari Italiani' (IMI) nel Terzo Reich",
         "fonti": [
             {
@@ -275,6 +279,7 @@ EVENTS = [
     },
     {
         "evento": "Lavoro forzato italiano nel Terzo Reich (1943-1945)",
+        "luogo": "Germania",
         "descrizione": "Impiego di Internati Militari Italiani (IMI) e altri prigionieri italiani come manodopera coatta in Germania",
         "fonti": [
             {
@@ -322,6 +327,7 @@ def main():
     stats = {"events": 0, "registered": 0, "updated": 0, "errors": 0}
     for event in EVENTS:
         event_name = event["evento"]
+        event_luogo = event.get("luogo", "")
         logger.info("Evento: %s", event_name)
         for f in event["fonti"]:
             try:
@@ -335,7 +341,7 @@ def main():
                     titolo=f["titolo"],
                     tipo_fonte=f["tipo_fonte"],
                     soggetti_collegati=event_name,
-                    luogo=event_name.split("(")[0].strip(),
+                    luogo=event_luogo,
                     data_inizio=None,
                     data_fine=None,
                     url_catalogo=f["url_catalogo"],
@@ -352,13 +358,12 @@ def main():
             except Exception as e:
                 stats["errors"] += 1
                 logger.error("  ERRORE %s: %s", f.get("archivio"), e)
-            time.sleep(0.2)
         stats["events"] += 1
 
     logger.info("Riepilogo: eventi=%d, registrate=%d, aggiornate=%d, errori=%d",
                 stats["events"], stats["registered"], stats["updated"], stats["errors"])
+    return stats
 
 
 if __name__ == "__main__":
-    import json
     main()

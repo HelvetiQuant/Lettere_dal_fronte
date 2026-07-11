@@ -23,13 +23,6 @@ def _looks_like_url(value: str) -> bool:
     return value.startswith(("http://", "https://"))
 
 
-def _extract_domain(url: str) -> str:
-    try:
-        return urlparse(url).netloc
-    except Exception:
-        return ""
-
-
 def _priority_to_confidence(priority: str) -> float:
     return {"alto": 0.8, "medio": 0.6, "basso": 0.4}.get(str(priority).lower().strip(), 0.5)
 

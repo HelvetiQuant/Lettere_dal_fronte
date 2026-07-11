@@ -108,6 +108,55 @@ class TestScoreSource(TempDBTestCase):
         self.assertLessEqual(estremo, 1.0)
 
 
+class TestTLSVerification(TempDBTestCase):
+    """Verifica che i provider con certificato valido non usino verify=False.
+
+    Il test di connessione live e' condizionale: se la rete non e' disponibile
+    o l'archivio e' momentaneamente irraggiungibile, il test viene saltato
+    invece di fallire, per non bloccare la CI offline.
+    """
+
+    def _tls_endpoints(self):
+        from source_providers.providers import (
+            ProviderNationalArchivesUK, ProviderEuropeana,
+            ProviderArchivportalD, ProviderSHD,
+        )
+        return {
+            "tna": (ProviderNationalArchivesUK(),
+                    "https://discovery.nationalarchives.gov.uk/API/search/records"),
+            "europeana": (ProviderEuropeana(),
+                          "https://api.europeana.eu/record/v2/search.json"),
+            "ddb": (ProviderArchivportalD(),
+                    "https://api.deutsche-digitale-bibliothek.de/search"),
+            "mdh": (ProviderSHD(),
+                    "https://www.memoiredeshommes.sga.defense.gouv.fr/fr/search.php"),
+        }
+
+    def test_provider_con_certificato_valido_non_usa_verify_false(self):
+        import inspect
+        import requests
+        for name, (provider, _) in self._tls_endpoints().items():
+            with self.subTest(provider=name):
+                source = inspect.getsource(provider.search)
+                self.assertNotIn("verify=False", source,
+                    f"{name}.search() non deve piu' usare verify=False")
+
+    def test_connessione_tls_attiva_risponde(self):
+        import requests
+        for name, (_, url) in self._tls_endpoints().items():
+            with self.subTest(provider=name):
+                try:
+                    # verify=True e' il default di requests
+                    resp = requests.get(url, timeout=15, params={"q": "test"})
+                except requests.exceptions.ConnectionError as e:
+                    self.skipTest(f"rete/archivio {name} non raggiungibile: {e}")
+                except requests.exceptions.Timeout:
+                    self.skipTest(f"timeout verso {name}")
+                # Accettiamo 200, 301, 302, 400 (bad request per query vuota)
+                self.assertLess(resp.status_code, 500,
+                    f"{name} ha risposto con errore server {resp.status_code}")
+
+
 if __name__ == "__main__":
     import unittest
     unittest.main()

@@ -131,16 +131,21 @@ def _result_to_meta(result: dict, internato: dict) -> dict:
 
 def fetch_internati(
     limit: int = 200,
-    offset: int = 0,
+    after_id: int = 0,
 ) -> List[dict]:
+    """Recupera internati con id > after_id, ordinati per id.
+
+    Usare after_id permette di riprendere in modo robusto anche se il batch
+    precedente è stato interrotto a metà: non si fa affidamento sull'offset.
+    """
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
     cur.execute(
         "SELECT id, nome, cognome, data_nascita, luogo_nascita, residenza, "
         "data_cattura, luogo_cattura, luogo_internamento, matricola, grado "
-        "FROM internati ORDER BY id LIMIT ? OFFSET ?",
-        (limit, offset),
+        "FROM internati WHERE id > ? ORDER BY id LIMIT ?",
+        (after_id, limit),
     )
     rows = [dict(r) for r in cur.fetchall()]
     conn.close()
@@ -149,7 +154,6 @@ def fetch_internati(
 
 def _process_one(
     internato: dict,
-    offset: int,
     idx: int,
     max_results_per_entity: int,
     rate_lock: threading.Lock,
@@ -157,12 +161,12 @@ def _process_one(
     min_interval: float,
     logger: logging.Logger,
     stats: dict,
-) -> int:
-    """Processa un singolo internato. Thread-safe. Ritorna ultimo ID."""
+) -> bool:
+    """Processa un singolo internato. Thread-safe. Ritorna True se completato con successo."""
     query = _build_query(internato)
     if not query.strip():
         logger.info(f"[{idx}] ID {internato['id']}: query vuota, salto")
-        return internato["id"]
+        return True  # considerato completato (non va ripetuto)
 
     # rate limiting globale
     with rate_lock:
@@ -183,7 +187,7 @@ def _process_one(
         logger.error(f"[{idx}] ID {internato['id']} ERRORE query '{query}': {e}")
         with db_lock:
             stats["errors"] += 1
-        return internato["id"]
+        return False
 
     kept = 0
     for r in results[:max_results_per_entity]:
@@ -205,7 +209,7 @@ def _process_one(
                 stats["errors"] += 1
 
     logger.info(f"[{idx}] ID {internato['id']} '{query}': {kept} candidati")
-    return internato["id"]
+    return True
 
 
 def enrich(
@@ -217,7 +221,10 @@ def enrich(
     logger: logging.Logger = None,
 ) -> dict:
     logger = logger or logging.getLogger("enrich_entities")
-    internati = fetch_internati(limit=limit, offset=offset)
+    # offset viene interpretato come after_id per compatibilità con il vecchio stato
+    # (dove offset era l'ID più alto già processato)
+    after_id = offset
+    internati = fetch_internati(limit=limit, after_id=after_id)
     total = len(internati)
 
     stats = {
@@ -228,44 +235,52 @@ def enrich(
     }
     rate_lock = threading.Lock()
     db_lock = threading.Lock()
-    last_id = offset
+    completed_ids = set()
+    completed_lock = threading.Lock()
+    last_processed_id = after_id
 
     # minimo intervallo tra l'inizio di due query (globale su tutti i worker)
     min_interval = delay / workers if workers > 0 else delay
 
     with ThreadPoolExecutor(max_workers=workers) as executor:
-        future_to_idx = {
+        future_to_internato = {
             executor.submit(
                 _process_one,
                 internato,
-                offset,
-                offset + i + 1,
+                after_id + i + 1,
                 max_results_per_entity,
                 rate_lock,
                 db_lock,
                 min_interval,
                 logger,
                 stats,
-            ): i
+            ): internato
             for i, internato in enumerate(internati)
         }
 
-        for future in as_completed(future_to_idx):
+        for future in as_completed(future_to_internato):
+            internato = future_to_internato[future]
             try:
-                last_id = max(last_id, future.result())
+                success = future.result()
+                if success:
+                    with completed_lock:
+                        completed_ids.add(internato["id"])
+                        if internato["id"] > last_processed_id:
+                            last_processed_id = internato["id"]
             except Exception as e:
                 logger.error(f"Errore worker: {e}")
                 with db_lock:
                     stats["errors"] += 1
-            # salva stato periodicamente
-            _save_state({"last_processed_id": last_id, "offset": offset + len(internati)})
+            # salva stato periodicamente: last_processed_id è il più alto ID completato
+            _save_state({"last_processed_id": last_processed_id})
 
     return {
         "processed": total,
         "created": stats["created"],
         "updated": stats["updated"],
         "errors": stats["errors"],
-        "last_processed_id": last_id,
+        "last_processed_id": last_processed_id,
+        "completed": len(completed_ids),
     }
 
 
@@ -282,7 +297,11 @@ def main():
 
     logger = _setup_logging()
     state = _load_state()
-    offset = state.get("offset", 0) if args.resume else args.offset
+    if args.resume:
+        # compatibilità con vecchi stati che avevano 'offset'
+        offset = state.get("last_processed_id") or state.get("offset", 0)
+    else:
+        offset = args.offset
 
     logger.info(f"Inizio arricchimento: offset={offset}, limit={args.limit}, delay={args.delay}, workers={args.workers}")
     stats = enrich(
