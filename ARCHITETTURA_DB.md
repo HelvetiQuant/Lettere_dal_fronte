@@ -62,7 +62,7 @@ Campi chiave: `cognome`, `nome`, `paternita`, `luogo_nascita`, `comune_residenza
 UNIQUE(cognome, nome, data_morte, luogo_nascita).
 
 ### `caduti_cwgc` (Commonwealth War Graves Commission)
-Caduti Commonwealth WW1+WW2. **446.443 record** (in corso, target ~1.76M). Paginazione HTML + export CSV per nazionalità.
+Caduti Commonwealth WW1+WW2. **~1.07M record** (completato per le nazionalità principali, UK WW2 chiuso a 401k). Paginazione HTML + export CSV per nazionalità.
 
 Campi chiave: `cwgc_id` (UNIQUE), `nome`, `cognome`, `rank`, `service_number`, `service`, `regiment`, `nationality`, `data_morte`, `eta`, `cimitero`, `paese_cimitero`, `guerra`.
 
@@ -128,6 +128,31 @@ Alimentata dallo script `import_personal_sources.py`:
 
 Indici su: `tipo_fonte`, `persone_possibili`, `archivio`, `data_documento`, `ocr_status`.
 
+### `lettere_personali` (lettere e diari personali OCR)
+Lettere, cartoline e diari personali estratti con OCR dal modulo `import_ocr_lettere`. **1 record** (migrato da `ocr_lettere.db`).
+
+Alimentata dallo script `import_lettere_personali.py`:
+- lettura dalla tabella `lettere` di `import_ocr_lettere/ocr_lettere.db`;
+- deduplicazione via `sha256` del file originale;
+- inserimento nello star schema tramite `entita` (`mittente`, `destinatario`, `luogo`, persone estraibili dal `corpo_testo`) e `collegamenti` (`tabella_origine='lettere_personali'`).
+
+| Colonna | Tipo | Note |
+|---|---|---|
+| id | INTEGER PK | autoincrement |
+| filename | TEXT | nome file originale |
+| file_path | TEXT | percorso fisico |
+| mittente, destinatario | TEXT | persone coinvolte |
+| data_lettera, luogo | TEXT | contesto spazio-temporale |
+| oggetto | TEXT | oggetto/intestazione |
+| corpo_testo | TEXT | testo OCR completo |
+| note, lingua, confidenza | TEXT/REAL | metadati OCR |
+| raw_response | TEXT | risposta grezza del modello OCR |
+| sha256 | TEXT UNIQUE | hash file originale |
+| sorgente_db, sorgente_id | TEXT/INTEGER | tracciabilita' origine |
+| elaborato_il | TEXT | timestamp import |
+
+Indici su: `mittente`, `destinatario`, `luogo`, `data_lettera`.
+
 ---
 
 ## LIVELLO 2 - Livello Semantico (Cross-Dataset)
@@ -135,7 +160,7 @@ Indici su: `tipo_fonte`, `persone_possibili`, `archivio`, `data_documento`, `ocr
 ### `entita`
 Entità normalizzate (persone, luoghi, eventi) estratte da TUTTI i dataset. **~688.738 record**.
 Distribuzione: persona 560.133 · luogo 102.319 · evento 14.952 · unita 10.348 · periodo 920 · decorazione 66.
-Deduplicazione tramite `valore_normalizzato` + `tipo`. Alimentato dal linker in background e dallo script `import_personal_sources.py` per le `fonti_narrative`.
+Deduplicazione tramite `valore_normalizzato` + `tipo`. Alimentato dal linker in background e dagli script `import_personal_sources.py` (`fonti_narrative`) e `import_lettere_personali.py` (`lettere_personali`).
 
 | Colonna | Tipo | Note |
 |---|---|---|
@@ -148,7 +173,7 @@ Deduplicazione tramite `valore_normalizzato` + `tipo`. Alimentato dal linker in 
 
 ### `collegamenti`
 Grafo che collega ogni entità ai record sorgente. **~4.832.063 archi**.
-Distribuzione per tabella: internati 574.141 · caduti_ministero 1.499.794 · caduti_albooro 1.359.175 · caduti_cwgc 1.073.575 · caduti_sardi 126.860 · decorati 42.040 · fondi_archivistici 68.399 · menzioni 54.854 · fonti_narrative 69.
+Distribuzione per tabella: internati 574.141 · caduti_ministero 1.499.794 · caduti_albooro 1.359.175 · caduti_cwgc 1.073.575 · caduti_sardi 126.860 · decorati 42.040 · fondi_archivistici 68.399 · menzioni 54.854 · fonti_narrative 69 · lettere_personali 0 (1 record migrato, nessun mittente/destinatario estratto dalla lettera OCR campione).
 **FK** `entita_id` → `entita(id)`.
 
 | Colonna | Tipo | Note |

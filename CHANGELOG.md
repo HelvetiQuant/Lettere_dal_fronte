@@ -1,5 +1,29 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-11 (pomeriggio) — Integrazione lettere personali + upload GitHub
+
+### Unificazione DB lettere personali (TODO fix tecnico #1)
+- Creata tabella `lettere_personali` in `imi_internati.db` come nuova tabella sorgente.
+- Scritto e eseguito `import_lettere_personali.py` per migrare i record da `import_ocr_lettere/ocr_lettere.db`.
+- Migrato **1 record**; inserimento nello star schema via `entita`/`collegamenti` (quando `mittente`/`destinatario`/`luogo` sono popolati).
+- Integrata `lettere_personali` in `database.py::search_all()` e `get_all_records_for_ai()`.
+- Aggiornato frontend `templates/index.html`: card in `renderCrossDBLinks()` e tabella in `renderSourcesTab()`.
+
+### Requirements.txt (TODO fix tecnico #2)
+- Aggiornato con `uvicorn[standard]`, `pydantic`, `urllib3`, `schedule` e altri pacchetti mancanti.
+
+### Upload GitHub
+- Repository: `https://github.com/helvetiquant/lettere_dal_fronte`
+- Inizializzato repo locale, creato `.gitignore` per escludere `.env`, DB SQLite e file grandi.
+- Commit e push del codice (DB e secret esclusi).
+- Token GitHub salvato in `.env` come `GITHUB_TOKEN`.
+
+### Architettura e dati
+- `ARCHITETTURA_DB.md` aggiornato con `lettere_personali`, conteggi `entita`/`collegamenti` aggiornati, CWGC segnato come completato.
+- `caduti_cwgc`: stato aggiornato a **completato** (~1.07M record, UK WW2 chiuso a 401k).
+
+---
+
 ## 2026-07-11 — Chiusura todo + aggiornamento architettura
 
 ### Aggiornamento documentazione architettura (`ARCHITETTURA_DB.md`)

@@ -2123,6 +2123,15 @@ function renderSourcesTab(searchRes) {
         parts.push('</tbody></table></div>');
     }
 
+    if (letterePersonali.length) {
+        parts.push('<h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:8px">Lettere Personali OCR</h4>');
+        parts.push('<div class="table-container" style="max-height:200px;margin-bottom:16px"><table><thead><tr><th>File</th><th>Mittente</th><th>Destinatario</th><th>Data</th><th>Lingua</th></tr></thead><tbody>');
+        parts.push(letterePersonali.map(l => {
+            return `<tr><td style="font-size:0.75rem">${l.filename||''}</td><td>${l.mittente||''}</td><td>${l.destinatario||''}</td><td>${l.data_lettera||''}</td><td style="font-size:0.75rem">${l.lingua||''}</td></tr>`;
+        }).join(''));
+        parts.push('</tbody></table></div>');
+    }
+
     if (!parts.length) {
         box.innerHTML = '<p style="color:var(--text-muted);padding:20px;text-align:center">Nessuna fonte locale trovata. La ricerca AI ha comunque interrogato i provider cloud.</p>';
     } else {

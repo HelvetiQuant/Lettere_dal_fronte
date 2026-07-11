@@ -411,10 +411,10 @@ def search_all(term: str, limit: int = 100) -> dict:
     tokens = _tokenize(term)
     if not tokens:
         conn.close()
-        return {"internati": [], "menzioni": [], "decorati": [], "caduti": [], "documenti": [], "fonti_narrative": [], "term": term, "tokens": []}
+        return {"internati": [], "menzioni": [], "decorati": [], "caduti": [], "documenti": [], "fonti_narrative": [], "lettere_personali": [], "term": term, "tokens": []}
 
-    per_table = max(10, limit // 6)
-    results = {"internati": [], "menzioni": [], "decorati": [], "caduti": [], "documenti": [], "fonti_narrative": [], "term": term, "tokens": tokens}
+    per_table = max(10, limit // 7)
+    results = {"internati": [], "menzioni": [], "decorati": [], "caduti": [], "documenti": [], "fonti_narrative": [], "lettere_personali": [], "term": term, "tokens": tokens}
 
     # ─── IMI internati ───
     cols_i = ["cognome", "nome", "luogo_nascita", "residenza", "luogo_internamento", "grado", "matricola", "sorte", "raw_text"]
@@ -511,6 +511,19 @@ def search_all(term: str, limit: int = 100) -> dict:
             params + [per_table],
         ).fetchall()
         results["fonti_narrative"] = [{"table": "fonti_narrative", "source": "Fonte personale", **dict(r)} for r in rows]
+    except Exception:
+        pass
+
+    # ─── Lettere personali OCR ───
+    try:
+        where, params = _where_like_clause(["mittente", "destinatario", "luogo", "oggetto", "corpo_testo", "note", "filename"], tokens)
+        rows = conn.execute(
+            f"""SELECT id, filename, file_path, mittente, destinatario, data_lettera, luogo, oggetto,
+                       SUBSTR(corpo_testo, 1, 500) as excerpt, lingua, confidenza, elaborato_il
+                FROM lettere_personali WHERE {where} ORDER BY data_lettera DESC, id DESC LIMIT ?""",
+            params + [per_table],
+        ).fetchall()
+        results["lettere_personali"] = [{"table": "lettere_personali", "source": "Lettera personale", **dict(r)} for r in rows]
     except Exception:
         pass
 
@@ -805,7 +818,7 @@ def get_all_records_for_ai(term: str, limit_per_table: int = 20) -> dict:
     tokens = _tokenize(term)
     if not tokens:
         conn.close()
-        return {"internati": [], "decorati": [], "menzioni": [], "fondi_archivistici": [], "entita": [], "caduti": [], "documenti": [], "fonti_narrative": [], "term": term, "tokens": []}
+        return {"internati": [], "decorati": [], "menzioni": [], "fondi_archivistici": [], "entita": [], "caduti": [], "documenti": [], "fonti_narrative": [], "lettere_personali": [], "term": term, "tokens": []}
 
     # IMI internati
     cols_i = ["cognome", "nome", "data_nascita", "luogo_nascita", "residenza", "grado", "luogo_cattura", "luogo_internamento", "sorte", "data", "lettera", "pagina", "matricola"]
@@ -917,6 +930,20 @@ def get_all_records_for_ai(term: str, limit_per_table: int = 20) -> dict:
     except Exception:
         pass
 
+    # Lettere personali OCR
+    lettere_personali = []
+    try:
+        where, params = _where_like_clause(["mittente", "destinatario", "luogo", "oggetto", "corpo_testo", "note", "filename"], tokens)
+        rows = conn.execute(
+            f"""SELECT id, filename, file_path, mittente, destinatario, data_lettera, luogo, oggetto,
+                       corpo_testo, lingua, confidenza, elaborato_il
+                FROM lettere_personali WHERE {where} LIMIT ?""",
+            params + [limit_per_table],
+        ).fetchall()
+        lettere_personali = [{"table": "lettere_personali", "source": "Lettera personale", **dict(r)} for r in rows]
+    except Exception:
+        pass
+
     conn.close()
     return {
         "internati": [dict(r) for r in internati],
@@ -927,6 +954,7 @@ def get_all_records_for_ai(term: str, limit_per_table: int = 20) -> dict:
         "caduti": caduti,
         "documenti": documenti,
         "fonti_narrative": fonti_narrative,
+        "lettere_personali": lettere_personali,
         "term": term,
         "tokens": tokens,
     }
