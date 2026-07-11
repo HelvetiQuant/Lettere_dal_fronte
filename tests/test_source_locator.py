@@ -8,6 +8,7 @@ errore, o un dominio aggiunto senza intenzione).
 """
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _helpers import TempDBTestCase
@@ -176,6 +177,56 @@ class TestCatalogDomainsWhitelist(TempDBTestCase):
         for d in catalog_domains:
             with self.subTest(dominio=d):
                 self.assertTrue(sl._domain_authorized(f"https://{d}/record/123"))
+
+
+class TestEnrichEntities(TempDBTestCase):
+    schema_modules = ("source_locator",)
+
+    def _insert_internati(self, rows):
+        conn = self.conn()
+        conn.executemany(
+            "INSERT INTO internati (id, lettera, file_pdf, pagina, cognome, nome, "
+            "data_nascita, luogo_nascita, elaborato_il) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                (r[0], "test", "test.pdf", 1, r[1], r[2], r[3], r[4], "2026-01-01")
+                for r in rows
+            ],
+        )
+        conn.commit()
+        conn.close()
+
+    @patch("enrich_entities.federated_search")
+    def test_arricchisce_internati_con_fonti_candidate(self, mock_search):
+        from enrich_entities import enrich
+        self._insert_internati([
+            (1, "Rossi", "Mario", "1895-01-01", "Torino"),
+            (2, "Bianchi", "Luigi", "1896-02-02", "Milano"),
+        ])
+        mock_search.return_value = [
+            {
+                "provider": "europeana",
+                "archivio": "Europeana",
+                "titolo": "Test document",
+                "source_type": "digitized_document",
+                "catalog_url": "https://www.europeana.eu/item/123",
+                "direct_url": "",
+                "access_type": "online",
+                "score": 0.75,
+            }
+        ]
+
+        stats = enrich(limit=2, max_results_per_entity=1)
+        self.assertEqual(stats["processed"], 2)
+        self.assertEqual(stats["created"], 2)
+        self.assertEqual(stats["errors"], 0)
+
+        conn = self.conn()
+        count = conn.execute(
+            "SELECT COUNT(*) FROM fonti_indice WHERE archivio='Europeana'"
+        ).fetchone()[0]
+        conn.close()
+        self.assertEqual(count, 2)
 
 
 if __name__ == "__main__":

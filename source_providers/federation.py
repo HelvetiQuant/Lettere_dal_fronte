@@ -183,6 +183,13 @@ def _match_provider(archivio: str) -> Optional[SourceProvider]:
         "hathitrust": "hathitrust",
         "ussme": "ussme",
         "ufficio storico": "ussme",
+        "memoire des hommes": "memoiredeshommes",
+        "deutsche digitale bibliothek": "ddb",
+        "ddb": "ddb",
+        "iwm lives": "iwm_lives",
+        "lives of the first world war": "iwm_lives",
+        "grand memorial": "grand_memorial",
+        "donnees.culture.gouv.fr": "grand_memorial",
     }
     for key, pname in mapping.items():
         if key in archivio:
