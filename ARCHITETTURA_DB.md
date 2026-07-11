@@ -327,6 +327,43 @@ QUERY UTENTE
   AI riceve minimo indispensabile · documento originale = fonte primaria
 ```
 
+### Pipeline di Arricchimento Automatico (fonti esterne)
+
+Due script batch arricchiscono gli `internati` collegandoli a fonti esterne autorizzate.
+
+**1. Arricchimento per entità (`enrich_entities.py`)**
+```
+internati
+  ↓ SELECT slice (nome, cognome, data_nascita, luogo_nascita, residenza,
+     luogo_cattura, luogo_internamento, arbeitskommando)
+  ↓ _build_query()  → query federata nome+luoghi+eventi
+  ↓ federated_search()  → TNA, Europeana, Antenati, DDB, Mémoire des Hommes,
+                          Grand Mémorial, IWM Lives, ecc.
+  ↓ register_source_metadata()  → upsert in fonti_indice
+     soggetti_collegati = "<nome> <cognome> <luoghi>"
+  ↓ state saved in enrich_entities_state.json
+```
+- Copertura: ~20.390 internati
+- Risultati: ~19.900 schede correlate (principale provider TNA Discovery)
+- Concorrenza: 5 worker, rate-limit 0.5s, resume automatico
+
+**2. Arricchimento per eventi (`enrich_events.py`)**
+```
+EVENTI CURATI (Cefalonia, Mauthausen/Gusen, Tobruk, ARMIR Russia,
+                Operazione Achse, lavoro forzato)
+  ↓ per ogni evento: fonti italiane + Asse/Berlinesi + Alleate
+  ↓ register_source_metadata()  → upsert in fonti_indice
+     soggetti_collegati = "<nome evento>"
+```
+- Risultati: ~28 schede multilaterali (ANPI/USSME, Bundesarchiv/Arolsen,
+  TNA/NARA/AWM/USHMM)
+
+Entrambe le pipeline rispettano i vincoli:
+- **no bulk scraping** su fonti con ToS restrittivi
+- **solo metadati + URL diretto**, nessun download massivo
+- **rate limiting** e retry controllati
+- **dominio whitelist** per eventuali fetch on-demand
+
 ### Domini autorizzati (whitelist backend)
 `dam-antenati.cultura.gov.it` · `iiif-antenati.cultura.gov.it` · `antenati.cultura.gov.it` ·
 `catalog.archives.gov` · `s3.amazonaws.com` (NARA media) · `www.cwgc.org` ·
@@ -530,6 +567,23 @@ POST /api/sources/fetch/{source_id}
     INSERT source_fetch_cache · UPDATE fonti_indice.fetch_status
   → response: {ok, path_file, sha256, size_bytes}
 
+### 6. Arricchimento fonti esterne (batch)
+```
+python enrich_entities.py --offset 0 --limit 20464 --workers 5 --delay 0.5
+  → SELECT internati
+  → _build_query() per ogni record
+  → federated_search()  → provider autorizzati
+  → register_source_metadata()  → fonti_indice
+  → resume da enrich_entities_state.json
+
+python enrich_events.py
+  → eventi curati (Cefalonia, Mauthausen/Gusen, Tobruk, ARMIR,
+                    Operazione Achse, lavoro forzato)
+  → fonti italiane / Asse / Alleate per evento
+  → register_source_metadata()  → fonti_indice
+```
+→ Metadati in `fonti_indice` consultabili poi da `/api/sources/search`.
+
 POST /api/sources/context  {query, allow_fetch}
   → build_minimal_context_for_ai(query)
     metadati sempre · excerpt solo se cache testuale · fetch max 2 fonti se allow_fetch
@@ -645,9 +699,13 @@ Two flanking memory modules:
 A dashed arrow from the bottom of the routing pipeline reads "fallback: Perplexity API
 (only if 0 local results)" pointing to a small cloud icon.
 
-LAYER 5 — "SOURCE LOCATOR" — a cyan-bordered rectangle labeled "fonti_indice ·
-source_fetch_cache" with a magnifying glass icon. Sub-label: "lightweight catalog ·
-fetch on-demand · whitelist domains · AI never downloads directly".
+LAYER 5 — "SOURCE LOCATOR / ENRICHMENT" — a cyan-bordered rectangle labeled
+"fonti_indice · source_fetch_cache" with a magnifying glass icon. Two batch pipelines
+feed into it from the left:
+  - "enrich_entities.py" arrow from LAYER 1 "internati" carrying "~20k soldiers"
+  - "enrich_events.py" arrow carrying "6 curated events · 28 multilateral sources"
+Sub-label: "lightweight catalog · fetch on-demand · whitelist domains ·
+AI never downloads directly · TNA · AWM · Arolsen · Bundesarchiv".
 
 LAYER 6 (bottom) — "OPERATIONAL" — three small green nodes: "progress", "ai_ricerche",
 "api_usage".
@@ -701,10 +759,14 @@ graph TD
         MR -.->|solo se 0 risultati locali| PX
     end
 
-    subgraph L5["LIVELLO 5 — SOURCE LOCATOR"]
+    subgraph L5["LIVELLO 5 — SOURCE LOCATOR / ENRICHMENT"]
         FI[fonti_indice\nschede collocazione]
         SC[source_fetch_cache\non-demand · whitelist]
+        EE[enrich_entities.py\n~20k internati]
+        EV[enrich_events.py\n6 eventi · 28 fonti]
         FI -->|1..N| SC
+        EE --> FI
+        EV --> FI
     end
 
     subgraph L6["LIVELLO 6 — OPERATIVO"]
@@ -718,4 +780,48 @@ graph TD
     EN --> MR
     CO --> MR
     FI --> MR
+    IN -.-> EE
+```
+
+---
+
+## Prompt per generazione immagine — Connessioni tra tabelle del DB
+
+Da usare in **DALL-E 3 / Midjourney / Stable Diffusion / Google ImageFX / Ideogram**:
+
+```
+A clean, modern ER-style diagram illustrating the relationships between the main tables
+of a historical-research SQLite database (IMI Extractor). Dark navy background with
+high-contrast glowing nodes and labeled connectors.
+
+NODES (database tables) arranged in a logical star/constellation layout, each represented
+as a rounded rectangle with a small table-icon:
+- CENTER: "internati" (20.4k records) — largest amber node, the core IMI table
+- Around it: "decorati", "caduti_cwgc", "caduti_albooro", "caduti_ministero",
+  "caduti_bologna", "caduti_sardi", "caduti_francia_ww1", "decorati_nastroazzurro",
+  "nara_t315", "nara_catalog", "fondi_archivistici", "fonti_narrative",
+  "lettere_personali" — blue source nodes
+- Semantic layer: "entita" (gold) and "collegamenti" (gold) connected by a thick
+  many-to-many arc labeled "4.8M links"
+- Archival layer: "archivio_fonti" (teal) with sub-labels "OCR · SHA256 · 1.1k docs"
+- Memory layer: "memory_trace" and "consolidated_memory" (magenta) flanking a
+  central "Memory Router" diamond
+- Source layer: "fonti_indice" (cyan) and "source_fetch_cache" (cyan), with two
+  inbound arrows labeled "enrich_entities.py" and "enrich_events.py"
+- Operational layer: "progress", "ai_ricerche", "api_usage" (green)
+
+CONNECTIONS shown as directed glowing lines with cardinality labels:
+- "internati" → "entita" labeled "extracted as"
+- "entita" → "collegamenti" labeled "1..N"
+- "collegamenti" → back to source tables labeled "record_id FK"
+- "fondi_archivistici" → "menzioni" labeled "1..N FK"
+- "fonti_indice" → "source_fetch_cache" labeled "1..N"
+- "internati" -.-> "fonti_indice" dashed arrow labeled "enriched by"
+- "Memory Router" → "fonti_indice", "archivio_fonti", "entita" labeled "queries"
+
+STYLE: vector infographic, tech-diagram aesthetic, isometric or flat 2.5D,
+subtle grid background, neon-teal/amber/magenta/cyan/green accent palette,
+crisp sans-serif labels, 16:9 landscape, no photorealism, white text.
+TITLE at top: "IMI Extractor — Database Table Relationships & Enrichment Flow"
+SUBTITLE: "SQLite · 25+ tables · 4.8M+ records · source enrichment"
 ```
