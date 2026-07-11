@@ -1,0 +1,390 @@
+WW2|American: skip (completato)
+WW2|Arab World: skip (completato)
+WW2|Australian: 40,697 record totali
+    Australian WW2 1942: paginazione size=100 (total=11,515)
+    Australian WW2 1942 p20/116 | DB=14,407
+    Australian WW2 1942 p40/116 | DB=14,488
+    Australian WW2 1942 p60/116 | DB=14,860
+    Australian WW2 1942 p80/116 | DB=15,043
+    Australian WW2 1942 p100/116 | DB=15,095
+    Australian WW2 1942 p116/116 | DB=16,026
+    Australian WW2 1943: paginazione size=100 (total=9,363)
+    Australian WW2 1943 p20/94 | DB=17,931
+    Australian WW2 1943 p40/94 | DB=19,410
+    Australian WW2 1943 p60/94 | DB=21,120
+    Australian WW2 1943 p80/94 | DB=22,746
+    Australian WW2 1943 p94/94 | DB=23,570
+    Australian WW2 1944: paginazione size=100 (total=6,346)
+    Australian WW2 1944 p20/64 | DB=25,261
+    Australian WW2 1944 p40/64 | DB=26,799
+    Australian WW2 1944 p60/64 | DB=28,220
+    Australian WW2 1944 p64/64 | DB=28,459
+    Australian WW2 1945: paginazione size=100 (total=6,849)
+    Australian WW2 1945 p20/69 | DB=30,458
+    Australian WW2 1945 p40/69 | DB=32,356
+    Australian WW2 1945 p60/69 | DB=33,505
+    Australian WW2 1945 p69/69 | DB=34,216
+    Australian WW2 1946: export CSV +987 (total=987)
+    Australian WW2 1947: export CSV +800 (total=800)
+  WW2|Australian COMPLETO | DB totale=36,003
+WW2|Austrian: 2 record totali
+  WW2|Austrian: export CSV +2
+WW2|Belgian: 311 record totali
+  WW2|Belgian: export CSV +311
+WW2|Brazilian: 0 record
+WW2|Bulgarian: 0 record
+WW2|Canadian: 45,388 record totali
+    Canadian WW2 1939: export CSV +56 (total=56)
+    Canadian WW2 1940: export CSV +885 (total=885)
+    Canadian WW2 1941: paginazione size=100 (total=2,576)
+    Canadian WW2 1941 p20/26 | DB=38,553
+    Canadian WW2 1941 p26/26 | DB=38,939
+    Canadian WW2 1942: paginazione size=100 (total=6,215)
+    Canadian WW2 1942 p20/63 | DB=40,644
+    Canadian WW2 1942 p40/63 | DB=42,429
+    Canadian WW2 1942 p60/63 | DB=43,789
+    Canadian WW2 1942 p63/63 | DB=43,866
+    Canadian WW2 1943: paginazione size=100 (total=7,960)
+    Canadian WW2 1943 p20/80 | DB=45,723
+    Canadian WW2 1943 p40/80 | DB=47,359
+    Canadian WW2 1943 p60/80 | DB=48,753
+    Canadian WW2 1943 p80/80 | DB=50,008
+    Canadian WW2 1944: paginazione size=100 (total=19,534)
+    Canadian WW2 1944 p20/196 | DB=52,006
+    Canadian WW2 1944 p40/196 | DB=54,005
+    Canadian WW2 1944 p60/196 | DB=55,928
+    Canadian WW2 1944 p80/196 | DB=57,539
+    Canadian WW2 1944 p100/196 | DB=59,536
+    Canadian WW2 1944 p120/196 | DB=61,217
+    Canadian WW2 1944 p140/196 | DB=63,044
+    Canadian WW2 1944 p160/196 | DB=64,384
+    Canadian WW2 1944 p180/196 | DB=65,900
+    Canadian WW2 1944 p196/196 | DB=66,880
+    Canadian WW2 1945: paginazione size=100 (total=6,863)
+    Canadian WW2 1945 p20/69 | DB=68,642
+    Canadian WW2 1945 p40/69 | DB=70,104
+    Canadian WW2 1945 p60/69 | DB=71,588
+    Canadian WW2 1945 p69/69 | DB=72,126
+    Canadian WW2 1946: export CSV +744 (total=744)
+    Canadian WW2 1947: export CSV +555 (total=555)
+  WW2|Canadian COMPLETO | DB totale=73,425
+WW2|Czechoslovakian: 200 record totali
+  WW2|Czechoslovakian: export CSV +200
+WW2|Dutch: 3,847 record totali
+    Dutch WW2 1939: export CSV +2 (total=2)
+    Dutch WW2 1940: export CSV +63 (total=63)
+    Dutch WW2 1941: export CSV +108 (total=108)
+    Dutch WW2 1942: export CSV +199 (total=199)
+    Dutch WW2 1943: paginazione size=100 (total=2,411)
+    Dutch WW2 1943 p20/25 | DB=75,995
+    Dutch WW2 1943 p25/25 | DB=76,405
+    Dutch WW2 1944: export CSV +589 (total=589)
+    Dutch WW2 1945: export CSV +421 (total=421)
+    Dutch WW2 1946: export CSV +51 (total=51)
+    Dutch WW2 1947: export CSV +3 (total=3)
+  WW2|Dutch COMPLETO | DB totale=77,469
+WW2|Finnish: 1 record totali
+  WW2|Finnish: export CSV +1
+WW2|German: 6,198 record totali
+    German WW2 1939: export CSV +24 (total=24)
+    German WW2 1940: export CSV +777 (total=777)
+    German WW2 1941: export CSV +522 (total=522)
+    German WW2 1942: export CSV +354 (total=354)
+    German WW2 1943: export CSV +299 (total=299)
+    German WW2 1944: paginazione size=100 (total=2,637)
+    German WW2 1944 p20/27 | DB=81,442
+    German WW2 1944 p27/27 | DB=82,078
+    German WW2 1945: export CSV +643 (total=643)
+    German WW2 1946: export CSV +471 (total=471)
+    German WW2 1947: export CSV +400 (total=400)
+  WW2|German COMPLETO | DB totale=83,592
+WW2|Greek: 328 record totali
+  WW2|Greek: export CSV +328
+WW2|Hungarian: 0 record
+WW2|Indian: 87,026 record totali
+    Indian WW2 1939: export CSV +399 (total=399)
+    Indian WW2 1940: paginazione size=100 (total=1,868)
+    Indian WW2 1940 p19/19 | DB=85,766
+    Indian WW2 1941: paginazione size=100 (total=4,979)
+    Indian WW2 1941 p20/50 | DB=87,401
+    Indian WW2 1941 p40/50 | DB=88,932
+    Indian WW2 1941 p50/50 | DB=89,413
+    Indian WW2 1942: paginazione size=100 (total=18,672)
+    Indian WW2 1942 p20/187 | DB=91,300
+    Indian WW2 1942 p40/187 | DB=92,718
+    Indian WW2 1942 p60/187 | DB=94,514
+    Indian WW2 1942 p80/187 | DB=96,092
+    Indian WW2 1942 p100/187 | DB=97,867
+    Indian WW2 1942 p120/187 | DB=99,244
+    Indian WW2 1942 p140/187 | DB=100,613
+    Indian WW2 1942 p160/187 | DB=102,017
+    Indian WW2 1942 p180/187 | DB=103,160
+    Indian WW2 1942 p187/187 | DB=103,700
+    Indian WW2 1943: paginazione size=100 (total=14,427)
+    Indian WW2 1943 p20/145 | DB=105,584
+    Indian WW2 1943 p40/145 | DB=107,583
+    Indian WW2 1943 p60/145 | DB=109,228
+    Indian WW2 1943 p80/145 | DB=111,061
+    Indian WW2 1943 p100/145 | DB=112,254
+    Indian WW2 1943 p120/145 | DB=113,650
+    Indian WW2 1943 p140/145 | DB=114,848
+    Indian WW2 1943 p145/145 | DB=115,156
+    Indian WW2 1944: paginazione size=100 (total=22,885)
+    Indian WW2 1944 p20/229 | DB=117,030
+    Indian WW2 1944 p40/229 | DB=118,493
+    Indian WW2 1944 p60/229 | DB=120,197
+    Indian WW2 1944 p80/229 | DB=122,005
+    Indian WW2 1944 p100/229 | DB=123,780
+    Indian WW2 1944 p120/229 | DB=125,537
+    Indian WW2 1944 p140/229 | DB=127,180
+    Indian WW2 1944 p160/229 | DB=128,484
+    Indian WW2 1944 p180/229 | DB=129,682
+    Indian WW2 1944 p200/229 | DB=131,180
+    Indian WW2 1944 p220/229 | DB=132,289
+    Indian WW2 1944 p229/229 | DB=132,860
+    Indian WW2 1945: paginazione size=100 (total=15,279)
+    Indian WW2 1945 p20/153 | DB=134,847
+    Indian WW2 1945 p40/153 | DB=136,788
+    Indian WW2 1945 p60/153 | DB=138,708
+    Indian WW2 1945 p80/153 | DB=140,702
+    Indian WW2 1945 p100/153 | DB=142,694
+    Indian WW2 1945 p120/153 | DB=144,693
+    Indian WW2 1945 p140/153 | DB=146,693
+    Indian WW2 1945 p153/153 | DB=147,972
+    Indian WW2 1946: paginazione size=100 (total=5,238)
+    Indian WW2 1946 p20/53 | DB=149,756
+    Indian WW2 1946 p40/53 | DB=151,406
+    Indian WW2 1946 p53/53 | DB=152,120
+    Indian WW2 1947: paginazione size=100 (total=3,279)
+    Indian WW2 1947 p20/33 | DB=154,117
+    Indian WW2 1947 p33/33 | DB=155,394
+  WW2|Indian COMPLETO | DB totale=155,394
+WW2|Italian: 621 record totali
+  WW2|Italian: export CSV +621
+WW2|New Zealand: 11,926 record totali
+    New Zealand WW2 1939: export CSV +11 (total=11)
+    New Zealand WW2 1940: export CSV +183 (total=183)
+    New Zealand WW2 1941: paginazione size=100 (total=2,733)
+    New Zealand WW2 1941 p20/28 | DB=157,948
+    New Zealand WW2 1941 p28/28 | DB=158,659
+    New Zealand WW2 1942: paginazione size=100 (total=2,964)
+    New Zealand WW2 1942 p20/30 | DB=160,589
+    New Zealand WW2 1942 p30/30 | DB=161,336
+    New Zealand WW2 1943: paginazione size=100 (total=2,278)
+    New Zealand WW2 1943 p20/23 | DB=162,958
+    New Zealand WW2 1943 p23/23 | DB=163,131
+    New Zealand WW2 1944: paginazione size=100 (total=2,515)
+    New Zealand WW2 1944 p20/26 | DB=164,724
+    New Zealand WW2 1944 p26/26 | DB=165,229
+    New Zealand WW2 1945: export CSV +974 (total=974)
+    New Zealand WW2 1946: export CSV +166 (total=166)
+    New Zealand WW2 1947: export CSV +102 (total=102)
+  WW2|New Zealand COMPLETO | DB totale=166,471
+WW2|Norwegian: 304 record totali
+  WW2|Norwegian: export CSV +304
+WW2|Polish: 4,402 record totali
+    Polish WW2 1939: export CSV +1 (total=1)
+    Polish WW2 1940: export CSV +114 (total=114)
+    Polish WW2 1941: export CSV +519 (total=519)
+    Polish WW2 1942: export CSV +850 (total=850)
+    Polish WW2 1943: export CSV +819 (total=819)
+    Polish WW2 1944: export CSV +892 (total=892)
+    Polish WW2 1945: export CSV +496 (total=496)
+    Polish WW2 1946: export CSV +420 (total=420)
+    Polish WW2 1947: export CSV +291 (total=291)
+  WW2|Polish COMPLETO | DB totale=171,177
+WW2|Portuguese: 0 record
+WW2|Romanian: 0 record
+WW2|Russian: 51 record totali
+  WW2|Russian: export CSV +51
+WW2|South African: 11,917 record totali
+    South African WW2 1939: export CSV +12 (total=12)
+    South African WW2 1940: export CSV +342 (total=342)
+    South African WW2 1941: paginazione size=100 (total=1,948)
+    South African WW2 1941 p20/20 | DB=173,075
+    South African WW2 1942: paginazione size=100 (total=2,725)
+    South African WW2 1942 p20/28 | DB=174,715
+    South African WW2 1942 p28/28 | DB=175,222
+    South African WW2 1943: paginazione size=100 (total=1,659)
+    South African WW2 1943 p17/17 | DB=176,544
+    South African WW2 1944: paginazione size=100 (total=2,709)
+    South African WW2 1944 p20/28 | DB=178,154
+    South African WW2 1944 p28/28 | DB=178,663
+    South African WW2 1945: paginazione size=100 (total=1,640)
+    South African WW2 1945 p17/17 | DB=179,954
+    South African WW2 1946: export CSV +515 (total=515)
+    South African WW2 1947: export CSV +367 (total=367)
+  WW2|South African COMPLETO | DB totale=180,836
+WW2|United Kingdom: 453,949 record totali
+    United Kingdom WW2 1939: paginazione size=100 (total=6,033)
+    United Kingdom WW2 1939 p20/61 | DB=182,696
+    United Kingdom WW2 1939 p40/61 | DB=184,111
+    United Kingdom WW2 1939 p60/61 | DB=185,834
+    United Kingdom WW2 1939 p61/61 | DB=185,864
+    United Kingdom WW2 1940: paginazione size=100 (total=64,900)
+    United Kingdom WW2 1940 p20/649 | DB=187,843
+    United Kingdom WW2 1940 p40/649 | DB=189,842
+    United Kingdom WW2 1940 p60/649 | DB=191,838
+    United Kingdom WW2 1940 p80/649 | DB=193,609
+    United Kingdom WW2 1940 p100/649 | DB=195,607
+    United Kingdom WW2 1940 p120/649 | DB=197,603
+    United Kingdom WW2 1940 p140/649 | DB=199,602
+    United Kingdom WW2 1940 p160/649 | DB=201,466
+    United Kingdom WW2 1940 p180/649 | DB=202,890
+    United Kingdom WW2 1940 p200/649 | DB=204,041
+    United Kingdom WW2 1940 p220/649 | DB=205,200
+    United Kingdom WW2 1940 p240/649 | DB=206,460
+    United Kingdom WW2 1940 p260/649 | DB=207,543
+    United Kingdom WW2 1940 p280/649 | DB=208,800
+    United Kingdom WW2 1940 p300/649 | DB=209,796
+    United Kingdom WW2 1940 p320/649 | DB=211,572
+    United Kingdom WW2 1940 p340/649 | DB=213,334
+    United Kingdom WW2 1940 p360/649 | DB=214,931
+    United Kingdom WW2 1940 p380/649 | DB=216,373
+    United Kingdom WW2 1940 p400/649 | DB=217,779
+    United Kingdom WW2 1940 p420/649 | DB=219,049
+    United Kingdom WW2 1940 p440/649 | DB=220,580
+    United Kingdom WW2 1940 p460/649 | DB=221,796
+    United Kingdom WW2 1940 p480/649 | DB=223,396
+    United Kingdom WW2 1940 p500/649 | DB=224,695
+    United Kingdom WW2 1940 p520/649 | DB=226,295
+    United Kingdom WW2 1940 p540/649 | DB=227,978
+    United Kingdom WW2 1940 p560/649 | DB=229,493
+    United Kingdom WW2 1940 p580/649 | DB=231,490
+    United Kingdom WW2 1940 p600/649 | DB=233,488
+    United Kingdom WW2 1940 p620/649 | DB=235,486
+    United Kingdom WW2 1940 p640/649 | DB=237,484
+    United Kingdom WW2 1940 p649/649 | DB=238,339
+    United Kingdom WW2 1941: paginazione size=100 (total=69,666)
+    United Kingdom WW2 1941 p20/697 | DB=240,219
+    United Kingdom WW2 1941 p40/697 | DB=242,117
+    United Kingdom WW2 1941 p60/697 | DB=243,808
+    United Kingdom WW2 1941 p80/697 | DB=245,078
+    United Kingdom WW2 1941 p100/697 | DB=246,454
+    United Kingdom WW2 1941 p120/697 | DB=248,445
+    United Kingdom WW2 1941 p140/697 | DB=250,225
+    United Kingdom WW2 1941 p160/697 | DB=252,196
+    United Kingdom WW2 1941 p180/697 | DB=253,798
+    United Kingdom WW2 1941 p200/697 | DB=255,572
+    United Kingdom WW2 1941 p220/697 | DB=256,956
+    United Kingdom WW2 1941 p240/697 | DB=258,388
+    United Kingdom WW2 1941 p260/697 | DB=260,315
+    United Kingdom WW2 1941 p280/697 | DB=261,659
+    United Kingdom WW2 1941 p300/697 | DB=263,071
+    United Kingdom WW2 1941 p320/697 | DB=264,151
+    United Kingdom WW2 1941 p340/697 | DB=265,598
+    United Kingdom WW2 1941 p360/697 | DB=266,803
+    United Kingdom WW2 1941 p380/697 | DB=268,078
+    United Kingdom WW2 1941 p400/697 | DB=269,544
+    United Kingdom WW2 1941 p420/697 | DB=271,281
+    United Kingdom WW2 1941 p440/697 | DB=273,013
+    United Kingdom WW2 1941 p460/697 | DB=274,475
+    United Kingdom WW2 1941 p480/697 | DB=275,656
+    United Kingdom WW2 1941 p500/697 | DB=277,395
+    United Kingdom WW2 1941 p520/697 | DB=279,394
+    United Kingdom WW2 1941 p540/697 | DB=281,392
+    United Kingdom WW2 1941 p560/697 | DB=283,392
+    United Kingdom WW2 1941 p580/697 | DB=285,389
+    United Kingdom WW2 1941 p600/697 | DB=287,092
+    United Kingdom WW2 1941 p620/697 | DB=289,092
+    United Kingdom WW2 1941 p640/697 | DB=291,090
+    United Kingdom WW2 1941 p660/697 | DB=293,042
+    United Kingdom WW2 1941 p680/697 | DB=295,039
+    United Kingdom WW2 1941 p697/697 | DB=296,687
+    United Kingdom WW2 1942: paginazione size=100 (total=70,095)
+    United Kingdom WW2 1942 p20/701 | DB=298,686
+    United Kingdom WW2 1942 p40/701 | DB=300,686
+    United Kingdom WW2 1942 p60/701 | DB=302,684
+    United Kingdom WW2 1942 p80/701 | DB=304,658
+    United Kingdom WW2 1942 p100/701 | DB=306,121
+    United Kingdom WW2 1942 p120/701 | DB=308,117
+    United Kingdom WW2 1942 p140/701 | DB=310,099
+    United Kingdom WW2 1942 p160/701 | DB=312,089
+    United Kingdom WW2 1942 p180/701 | DB=314,013
+    United Kingdom WW2 1942 p200/701 | DB=316,010
+    United Kingdom WW2 1942 p220/701 | DB=318,007
+    United Kingdom WW2 1942 p240/701 | DB=320,006
+    United Kingdom WW2 1942 p260/701 | DB=321,084
+    United Kingdom WW2 1942 p280/701 | DB=322,521
+    United Kingdom WW2 1942 p300/701 | DB=323,282
+    United Kingdom WW2 1942 p320/701 | DB=324,588
+    United Kingdom WW2 1942 p340/701 | DB=325,754
+    United Kingdom WW2 1942 p360/701 | DB=327,675
+    United Kingdom WW2 1942 p380/701 | DB=329,675
+    United Kingdom WW2 1942 p400/701 | DB=331,325
+    United Kingdom WW2 1942 p420/701 | DB=333,076
+    United Kingdom WW2 1942 p440/701 | DB=334,764
+    United Kingdom WW2 1942 p460/701 | DB=335,539
+    United Kingdom WW2 1942 p480/701 | DB=336,459
+    United Kingdom WW2 1942 p500/701 | DB=337,768
+    United Kingdom WW2 1942 p520/701 | DB=338,890
+    United Kingdom WW2 1942 p540/701 | DB=340,602
+    United Kingdom WW2 1942 p560/701 | DB=342,271
+    United Kingdom WW2 1942 p580/701 | DB=343,586
+    United Kingdom WW2 1942 p600/701 | DB=344,504
+    United Kingdom WW2 1942 p620/701 | DB=345,681
+    United Kingdom WW2 1942 p640/701 | DB=347,153
+    United Kingdom WW2 1942 p660/701 | DB=349,153
+    United Kingdom WW2 1942 p680/701 | DB=351,114
+    United Kingdom WW2 1942 p700/701 | DB=353,090
+    United Kingdom WW2 1942 p701/701 | DB=353,185
+    United Kingdom WW2 1943: paginazione size=100 (total=75,017)
+    United Kingdom WW2 1943 p20/751 | DB=355,057
+    United Kingdom WW2 1943 p40/751 | DB=356,893
+    United Kingdom WW2 1943 p60/751 | DB=358,870
+    United Kingdom WW2 1943 p80/751 | DB=360,867
+    United Kingdom WW2 1943 p100/751 | DB=362,412
+    United Kingdom WW2 1943 p120/751 | DB=363,957
+    United Kingdom WW2 1943 p140/751 | DB=365,537
+    United Kingdom WW2 1943 p160/751 | DB=367,343
+    United Kingdom WW2 1943 p180/751 | DB=368,845
+    United Kingdom WW2 1943 p200/751 | DB=369,929
+    United Kingdom WW2 1943 p220/751 | DB=371,433
+    United Kingdom WW2 1943 p240/751 | DB=373,433
+    United Kingdom WW2 1943 p260/751 | DB=375,432
+    United Kingdom WW2 1943 p280/751 | DB=377,343
+    United Kingdom WW2 1943 p300/751 | DB=378,876
+    United Kingdom WW2 1943 p320/751 | DB=380,873
+    United Kingdom WW2 1943 p340/751 | DB=382,873
+    United Kingdom WW2 1943 p360/751 | DB=384,801
+    United Kingdom WW2 1943 p380/751 | DB=386,583
+    United Kingdom WW2 1943 p400/751 | DB=387,982
+    United Kingdom WW2 1943 p420/751 | DB=389,175
+    United Kingdom WW2 1943 p440/751 | DB=390,912
+    United Kingdom WW2 1943 p460/751 | DB=392,168
+    United Kingdom WW2 1943 p480/751 | DB=393,552
+    United Kingdom WW2 1944: SUB-PARTIZIONE mensile (total=106,943)
+    United Kingdom WW2 1944-01: paginazione size=100 (total=6,384)
+    United Kingdom WW2 1944-01 p20/64 | DB=396,020
+    United Kingdom WW2 1944-01 p40/64 | DB=398,020
+    United Kingdom WW2 1944-01 p60/64 | DB=400,017
+    United Kingdom WW2 1944-01 p64/64 | DB=400,384
+    United Kingdom WW2 1944-02: paginazione size=100 (total=8,870)
+  Errore GET Page=9: ('Connection broken: IncompleteRead(2042 bytes read, 8198 more expected)', IncompleteRead(2042 bytes read, 8198 more expected))
+  WW2|United Kingdom COMPLETO | DB totale=401,183
+WW1|American: 0 record
+WW1|Arab World: 0 record
+WW1|Australian: 0 record
+WW1|Austrian: 0 record
+WW1|Belgian: 0 record
+WW1|Brazilian: 0 record
+WW1|Bulgarian: 0 record
+WW1|Canadian: 0 record
+WW1|Czechoslovakian: 0 record
+WW1|Dutch: 0 record
+WW1|Finnish: 0 record
+WW1|German: 0 record
+WW1|Greek: 0 record
+WW1|Hungarian: 0 record
+WW1|Indian: 0 record
+WW1|Italian: 0 record
+WW1|New Zealand: 0 record
+WW1|Norwegian: 0 record
+WW1|Polish: 0 record
+WW1|Portuguese: 0 record
+WW1|Romanian: 0 record
+WW1|Russian: 0 record
+WW1|South African: 0 record
+WW1|United Kingdom: 0 record
+
+=== CWGC completato. Totale record: 401,183 ===

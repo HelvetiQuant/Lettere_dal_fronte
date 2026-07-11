@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OCR Lettere dal Fronte</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; }
+.header { background: linear-gradient(135deg, #16213e, #0f3460); padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+.header h1 { color: #e94560; font-size: 1.6rem; }
+.header p { color: #8d99c4; font-size: 0.85rem; margin-top: 4px; }
+.container { max-width: 1400px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px; }
+.panel { background: #16213e; border-radius: 12px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.panel h2 { color: #e94560; font-size: 1.1rem; margin-bottom: 16px; border-bottom: 1px solid #0f3460; padding-bottom: 8px; }
+.drop-zone { border: 2px dashed #0f3460; border-radius: 8px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s; }
+.drop-zone:hover, .drop-zone.dragover { border-color: #e94560; background: rgba(233,69,96,0.05); }
+.drop-zone p { color: #8d99c4; margin-top: 8px; font-size: 0.85rem; }
+.btn { background: #e94560; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
+.btn:hover { background: #c73e54; }
+.btn:disabled { background: #555; cursor: not-allowed; }
+.btn-secondary { background: #0f3460; }
+.btn-secondary:hover { background: #1a4a7a; }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+.file-list { margin-top: 16px; max-height: 300px; overflow-y: auto; }
+.file-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #1a1a2e; border-radius: 6px; margin-bottom: 6px; font-size: 0.85rem; }
+.file-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+.file-item .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-item .status { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; }
+.status-pending { background: #3a3a5c; color: #aaa; }
+.status-processing { background: #0f3460; color: #6cb4ff; }
+.status-ok { background: #1a4a2a; color: #4caf50; }
+.status-error { background: #4a1a1a; color: #f44336; }
+.actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.table-container { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+th { background: #0f3460; color: #8d99c4; padding: 10px 8px; text-align: left; position: sticky; top: 0; }
+td { padding: 10px 8px; border-bottom: 1px solid #1a1a2e; vertical-align: top; }
+tr:hover { background: rgba(15,52,96,0.2); }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+.modal-overlay.active { display: flex; }
+.modal { background: #16213e; border-radius: 12px; padding: 24px; max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; }
+.modal h3 { color: #e94560; margin-bottom: 16px; }
+.modal .field { margin-bottom: 12px; }
+.modal .field label { display: block; color: #8d99c4; font-size: 0.8rem; margin-bottom: 4px; }
+.modal .field value { display: block; color: #e0e0e0; font-size: 0.9rem; }
+.modal .close { float: right; cursor: pointer; color: #8d99c4; font-size: 1.5rem; }
+.modal .close:hover { color: #e94560; }
+.progress-bar { width: 100%; height: 4px; background: #1a1a2e; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.progress-fill { height: 100%; background: #e94560; transition: width 0.3s; width: 0%; }
+.empty-state { text-align: center; padding: 40px; color: #8d99c4; }
+.empty-state p { margin-top: 8px; font-size: 0.9rem; }
+.toast { position: fixed; bottom: 20px; right: 20px; background: #16213e; border-left: 4px solid #e94560; padding: 12px 20px; border-radius: 6px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 2000; display: none; }
+.toast.show { display: block; }
+.toast.success { border-left-color: #4caf50; }
+.toast.error { border-left-color: #f44336; }
+.confidence { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
+.conf-high { background: #1a4a2a; color: #4caf50; }
+.conf-med { background: #4a3a1a; color: #ff9800; }
+.conf-low { background: #4a1a1a; color: #f44336; }
+@media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="header">
+<h1>OCR Lettere dal Fronte</h1>
+<p>Estrazione dati da fogli scritti a macchina con OpenAI GPT-4o Vision</p>
+</div>
+
+<div class="container">
+<div class="panel">
+<h2>Upload &amp; Elaborazione</h2>
+<div class="drop-zone" id="dropZone">
+<p><strong>Trascina qui le immagini</strong> o clicca per selezionare</p>
+<p>Formati: JPG, PNG, BMP, TIFF, WEBP</p>
+<input type="file" id="fileInput" multiple accept="image/*" style="display:none">
+</div>
+
+<div class="actions">
+<button class="btn" id="btnProcessAll" disabled>Elabora Tutte</button>
+<button class="btn btn-secondary" id="btnRefresh">Aggiorna Lista</button>
+<button class="btn btn-secondary" id="btnExport">Export Excel</button>
+</div>
+
+<div class="progress-bar" id="progressBar" style="display:none">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+
+<div class="file-list" id="fileList"></div>
+</div>
+
+<div class="panel">
+<h2>Lettere Estratte (<span id="letterCount">0</span>)</h2>
+<div class="table-container">
+<table id="lettersTable">
+<thead>
+<tr>
+<th>ID</th><th>File</th><th>Mittente</th><th>Destinatario</th><th>Data</th><th>Luogo</th><th>Conf.</th><th>Azioni</th>
+</tr>
+</thead>
+<tbody id="lettersBody">
+<tr><td colspan="8" class="empty-state"><p>Nessuna lettera elaborata. Carica immagini e avvia l'OCR.</p></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<span class="close" onclick="closeModal()">&times;</span>
+<h3 id="modalTitle">Dettaglio Lettera</h3>
+<div id="modalBody"></div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileList = document.getElementById('fileList');
+const btnProcessAll = document.getElementById('btnProcessAll');
+const btnRefresh = document.getElementById('btnRefresh');
+const btnExport = document.getElementById('btnExport');
+const lettersBody = document.getElementById('lettersBody');
+const letterCount = document.getElementById('letterCount');
+const progressBar = document.getElementById('progressBar');
+const progressFill = document.getElementById('progressFill');
+const modalOverlay = document.getElementById('modalOverlay');
+const toast = document.getElementById('toast');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+async function handleFiles(files) {
+if (!files.length) return;
+const formData = new FormData();
+for (const f of files) formData.append('files', f);
+showToast('Caricamento file...');
+try {
+const res = await fetch('/api/upload', { method: 'POST', body: formData });
+const data = await res.json();
+showToast(`${data.files.length} file caricati`, 'success');
+loadUploads();
+} catch (e) { showToast('Errore upload', 'error'); }
+}
+
+async function loadUploads() {
+const res = await fetch('/api/uploads');
+const data = await res.json();
+fileList.innerHTML = '';
+if (!data.files.length) {
+fileList.innerHTML = '<div class="empty-state" style="padding:20px"><p>Nessun file caricato</p></div>';
+btnProcessAll.disabled = true;
+return;
+}
+btnProcessAll.disabled = false;
+for (const f of data.files) {
+const div = document.createElement('div');
+div.className = 'file-item';
+div.innerHTML = `
+<img src="/api/uploads/${encodeURIComponent(f.filename)}" alt="">
+<span class="name">${f.filename}</span>
+<span class="size">${(f.size/1024).toFixed(0)} KB</span>
+<button class="btn btn-sm" onclick="processOne('${f.filename}')">OCR</button>
+`;
+fileList.appendChild(div);
+}
+}
+
+async function processOne(filename) {
+showToast(`OCR in corso: ${filename}...`);
+try {
+const res = await fetch(`/api/ocr/${encodeURIComponent(filename)}`, { method: 'POST' });
+const data = await res.json();
+if (res.ok) {
+showToast('OCR completato', 'success');
+loadLetters();
+} else {
+showToast(`Errore: ${data.detail}`, 'error');
+}
+} catch (e) { showToast('Errore OCR', 'error'); }
+}
+
+btnProcessAll.addEventListener('click', async () => {
+btnProcessAll.disabled = true;
+progressBar.style.display = 'block';
+progressFill.style.width = '0%';
+showToast('Elaborazione batch in corso...');
+try {
+const res = await fetch('/api/ocr-batch', { method: 'POST' });
+const data = await res.json();
+const ok = data.results.filter(r => r.status === 'ok').length;
+const err = data.results.filter(r => r.status === 'error').length;
+progressFill.style.width = '100%';
+showToast(`Completato: ${ok} ok, ${err} errori`, ok > 0 ? 'success' : 'error');
+loadLetters();
+setTimeout(() => { progressBar.style.display = 'none'; }, 2000);
+} catch (e) {
+showToast('Errore batch', 'error');
+progressBar.style.display = 'none';
+}
+btnProcessAll.disabled = false;
+});
+
+btnRefresh.addEventListener('click', () => { loadUploads(); loadLetters(); });
+btnExport.addEventListener('click', () => { window.location.href = '/api/export/excel'; });
+
+async function loadLetters() {
+const res = await fetch('/api/letters');
+const data = await res.json();
+letterCount.textContent = data.letters.length;
+lettersBody.innerHTML = '';
+if (!data.letters.length) {
+lettersBody.innerHTML = '<tr><td colspan="8" class="empty-state"><p>Nessuna lettera elaborata.</p></td></tr>';
+return;
+}
+for (const l of data.letters) {
+const conf = l.confidenza || 0;
+const confClass = conf >= 0.8 ? 'conf-high' : conf >= 0.5 ? 'conf-med' : 'conf-low';
+const tr = document.createElement('tr');
+tr.innerHTML = `
+<td>${l.id}</td>
+<td title="${l.filename}">${l.filename ? l.filename.substring(0,20) : ''}</td>
+<td>${l.mittente || '-'}</td>
+<td>${l.destinatario || '-'}</td>
+<td>${l.data_lettera || '-'}</td>
+<td>${l.luogo || '-'}</td>
+<td><span class="confidence ${confClass}">${(conf*100).toFixed(0)}%</span></td>
+<td>
+<button class="btn btn-sm" onclick="showDetail(${l.id})">Dettagli</button>
+<button class="btn btn-sm btn-secondary" onclick="deleteLetter(${l.id})">Elimina</button>
+</td>
+`;
+lettersBody.appendChild(tr);
+}
+}
+
+async function showDetail(id) {
+const res = await fetch(`/api/letters/${id}`);
+const l = await res.json();
+document.getElementById('modalTitle').textContent = `Lettera #${l.id} - ${l.filename || ''}`;
+const fields = [
+['Mittente', l.mittente], ['Destinatario', l.destinatario],
+['Data', l.data_lettera], ['Luogo', l.luogo],
+['Oggetto', l.oggetto], ['Lingua', l.lingua],
+['Confidenza', l.confidenza ? `${(l.confidenza*100).toFixed(0)}%` : null],
+['Elaborato il', l.elaborato_il],
+];
+let html = '';
+for (const [label, val] of fields) {
+html += `<div class="field"><label>${label}</label><value>${val || '<em style="color:#555">non disponibile</em>'}</value></div>`;
+}
+html += `<div class="field"><label>Corpo testo</label><value style="white-space:pre-wrap;max-height:300px;overflow-y:auto;display:block">${l.corpo_testo || ''}</value></div>`;
+if (l.note) html += `<div class="field"><label>Note</label><value>${l.note}</value></div>`;
+document.getElementById('modalBody').innerHTML = html;
+modalOverlay.classList.add('active');
+}
+
+function closeModal() { modalOverlay.classList.remove('active'); }
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+
+async function deleteLetter(id) {
+if (!confirm('Eliminare questa lettera?')) return;
+await fetch(`/api/letters/${id}`, { method: 'DELETE' });
+showToast('Lettera eliminata', 'success');
+loadLetters();
+}
+
+function showToast(msg, type = '') {
+toast.textContent = msg;
+toast.className = 'toast show ' + type;
+setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+loadUploads();
+loadLetters();
+</script>
+</body>
+</html>

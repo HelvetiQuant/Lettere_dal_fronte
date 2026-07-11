@@ -1,0 +1,49 @@
+# Environment secrets
+.env
+*.env
+
+# SQLite databases (large files)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# OCR lettere source database (kept separate)
+import_ocr_lettere/ocr_lettere.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
+.bash_history
+
+# Local outputs (large artifacts)
+archivio_storage/
+local_*/
+outputs/

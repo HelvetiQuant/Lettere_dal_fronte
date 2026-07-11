@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOCI DAL FRONTE - Ricerca Storica Multi-Archivio</title>
+<style>
+:root {
+  --bg: #f5f7fa;
+  --bg-card: #ffffff;
+  --bg-soft: #eef1f6;
+  --border: #e0e4ea;
+  --border-soft: #eef1f6;
+  --text: #1a2332;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --primary: #2563eb;
+  --primary-light: #dbeafe;
+  --primary-dark: #1d4ed8;
+  --accent: #7c3aed;
+  --accent-light: #ede9fe;
+  --success: #059669;
+  --success-light: #d1fae5;
+  --warning: #d97706;
+  --warning-light: #fef3c7;
+  --danger: #dc2626;
+  --danger-light: #fee2e2;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ─── Header ─── */
+.header { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #1e3a5f 100%); padding: 18px 32px; box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+.header h1 { color: #fff; font-size: 1.5rem; font-weight: 800; letter-spacing: 0.5px; }
+.header h1 .accent { color: #93c5fd; }
+.header p { color: rgba(255,255,255,0.8); font-size: 0.82rem; margin-top: 4px; }
+
+/* ─── Credits widget ─── */
+.credits-widget { background: rgba(255,255,255,0.1); border-radius: var(--radius); padding: 10px 16px; min-width: 220px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px); }
+.credits-widget .cw-title { font-size: 0.65rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.credits-widget .cw-remaining { font-size: 1.4rem; font-weight: bold; color: #93c5fd; }
+.credits-widget .cw-remaining.low { color: #fcd34d; }
+.credits-widget .cw-remaining.critical { color: #fca5a5; }
+.credits-widget .cw-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.15); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+.credits-widget .cw-bar-fill { height: 100%; background: #93c5fd; transition: width 0.3s; }
+.credits-widget .cw-bar-fill.low { background: #fcd34d; }
+.credits-widget .cw-bar-fill.critical { background: #fca5a5; }
+.credits-widget .cw-detail { font-size: 0.65rem; color: rgba(255,255,255,0.6); margin-top: 4px; display: flex; justify-content: space-between; }
+.credits-widget .cw-detail span { color: rgba(255,255,255,0.9); }
+
+/* ─── Layout ─── */
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+/* ─── Analytics Bar (TOP) ─── */
+.analytics-bar { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.analytics-cell { background: var(--bg-card); border-radius: var(--radius); padding: 18px 16px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow); transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden; border-top: 3px solid var(--primary); }
+.analytics-cell:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+.analytics-cell::after { content: '\2192'; position: absolute; top: 8px; right: 10px; font-size: 0.7rem; color: var(--text-light); opacity: 0; transition: opacity 0.2s; }
+.analytics-cell:hover::after { opacity: 1; }
+.analytics-cell .ac-value { font-size: 1.8rem; font-weight: 800; line-height: 1.1; }
+.analytics-cell .ac-label { font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.analytics-cell .ac-sub { font-size: 0.65rem; color: var(--text-light); margin-top: 4px; line-height: 1.3; }
+
+/* ─── Conversational Search (CENTER - HERO) ─── */
+.conv-search-panel { background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-soft) 100%); border-radius: 16px; padding: 40px 32px; margin-bottom: 24px; box-shadow: var(--shadow-md); border: 1px solid var(--border); text-align: center; position: relative; }
+.conv-search-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary)); border-radius: 16px 16px 0 0; }
+.conv-search-panel h2 { color: var(--text); font-size: 1.5rem; margin-bottom: 6px; font-weight: 800; }
+.conv-search-panel .conv-subtitle { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
+.conv-input-wrap { display: flex; gap: 10px; align-items: center; max-width: 700px; margin: 0 auto; }
+.conv-input { flex: 1; background: var(--bg-card); color: var(--text); border: 2px solid var(--border); border-radius: 12px; padding: 16px 22px; font-size: 1.1rem; transition: border-color 0.2s, box-shadow 0.2s; }
+.conv-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+.conv-input::placeholder { color: var(--text-light); }
+.conv-btn { background: var(--primary); color: #fff; border: none; padding: 16px 32px; border-radius: 12px; cursor: pointer; font-size: 1.05rem; transition: all 0.2s; white-space: nowrap; font-weight: 700; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+.conv-btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
+#bioBtn:hover { background: #6d28d9 !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(124,58,237,0.4); }
+#bioBtn:disabled { background: var(--text-light) !important; }
+.conv-btn:disabled { background: var(--text-light); cursor: not-allowed; box-shadow: none; }
+.conv-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 14px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+.conv-examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; justify-content: center; }
+.conv-example { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 6px 16px; font-size: 0.78rem; color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-weight: 500; }
+.conv-example:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); transform: translateY(-1px); }
+
+/* ─── Investigative Results (BOTTOM) ─── */
+.invest-results { display: none; }
+.invest-results.active { display: block; margin-bottom: 24px; }
+.invest-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.invest-section h3 { color: var(--text); font-size: 1rem; margin-bottom: 14px; border-bottom: 2px solid var(--border-soft); padding-bottom: 10px; font-weight: 700; }
+
+/* AI Response (discorsiva) */
+.ai-response { background: var(--bg-soft); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; border-left: 4px solid var(--primary); }
+.ai-response.claude { border-left-color: #d97757; }
+.ai-response.gpt { border-left-color: #10a37f; }
+.ai-response.mistral { border-left-color: #ff7000; }
+.ai-response.perplexity { border-left-color: #20808d; }
+.ai-response-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.ai-provider-badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.ai-provider-badge.claude { background: #fef3ee; color: #d97757; }
+.ai-provider-badge.gpt { background: #ecfdf5; color: #10a37f; }
+.ai-provider-badge.mistral { background: #fff7ed; color: #ff7000; }
+.ai-provider-badge.perplexity { background: #ecfeff; color: #20808d; }
+.ai-model-name { font-size: 0.75rem; color: var(--text-muted); }
+.ai-cost { font-size: 0.7rem; color: var(--text-light); margin-left: auto; }
+.ai-response-body { font-size: 0.9rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+.ai-response-body h1, .ai-response-body h2, .ai-response-body h3 { font-size: 0.95rem; margin: 14px 0 6px; color: var(--text); font-weight: 700; }
+.ai-response-body strong { color: var(--primary); }
+.ai-loading { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem; }
+.ai-loading-dots::after { content: '...'; animation: dots 1.5s steps(4) infinite; }
+@keyframes dots { 0% { content: '.'; } 25% { content: '..'; } 50% { content: '...'; } 75% { content: '....'; } }
+/* ─── Dossier verificato (biografia con solo fonti citate/verificate) ─── */
+.ai-response.dossier { border-left-color: var(--accent); background: linear-gradient(135deg, var(--accent-light) 0%, var(--bg-soft) 60%); }
+.ai-provider-badge.dossier { background: var(--accent-light); color: var(--accent); }
+.dossier-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 10px; }
+.dossier-unverified { margin-top: 10px; padding: 10px 12px; background: rgba(0,0,0,0.03); border-radius: 8px; font-size: 0.78rem; color: var(--text-muted); }
+.dossier-unverified summary { cursor: pointer; font-weight: 600; color: var(--text); }
+.dossier-unverified ul { margin: 8px 0 0 18px; }
+
+/* Link cards (collegamenti cross-DB) */
+.link-card { background: var(--bg-soft); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; border-left: 4px solid var(--accent); transition: border-color 0.15s; }
+.link-card:hover { border-left-color: var(--primary); }
+.link-card .lc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.link-card .lc-type { font-size: 0.7rem; padding: 2px 8px; border-radius: 8px; font-weight: 600; text-transform: uppercase; }
+.link-card .lc-type.persona { background: var(--primary-light); color: var(--primary); }
+.link-card .lc-type.luogo { background: var(--success-light); color: var(--success); }
+.link-card .lc-type.evento { background: var(--warning-light); color: var(--warning); }
+.link-card .lc-type.unita { background: var(--accent-light); color: var(--accent); }
+.link-card .lc-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.link-card .lc-datasets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.link-card .lc-dataset { font-size: 0.65rem; padding: 2px 8px; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); font-weight: 600; }
+.link-card .lc-detail { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.timeline-item { position: relative; margin-bottom: 12px; padding-left: 16px; }
+.timeline-item::before { content: ''; position: absolute; left: -14px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); border: 2px solid var(--bg-card); }
+.timeline-date { font-size: 0.75rem; color: var(--warning); font-weight: bold; }
+.timeline-event { font-size: 0.85rem; color: var(--text); }
+.timeline-place { font-size: 0.75rem; color: var(--text-muted); }
+.timeline-source { font-size: 0.65rem; padding: 1px 6px; border-radius: 8px; background: var(--primary-light); color: var(--primary); display: inline-block; margin-left: 4px; }
+
+/* Source cards */
+.source-card { background: var(--bg-soft); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px; display: flex; gap: 12px; align-items: flex-start; border-left: 3px solid var(--border); transition: border-color 0.15s; }
+.source-card:hover { border-left-color: var(--primary); }
+.source-card.local { border-left-color: var(--success); }
+.source-card.external { border-left-color: var(--primary); }
+.source-card .sc-main { flex: 1; }
+.source-card .sc-title { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.source-card .sc-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+.source-card .sc-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.source-card .sc-btn { background: var(--primary-light); color: var(--primary); border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; transition: background 0.15s; }
+.source-card .sc-btn:hover { background: var(--primary); color: #fff; }
+.source-card .sc-btn.analyze { background: var(--accent-light); color: var(--accent); }
+.source-card .sc-btn.analyze:hover { background: var(--accent); color: #fff; }
+.source-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.source-badge.locale { background: var(--success-light); color: var(--success); }
+.source-badge.online { background: var(--primary-light); color: var(--primary); }
+.source-badge.da-richiedere { background: var(--warning-light); color: var(--warning); }
+.source-badge.non-accessibile { background: var(--danger-light); color: var(--danger); }
+.source-badge.errore { background: var(--danger-light); color: var(--danger); }
+.source-score { font-size: 0.65rem; color: var(--warning); font-weight: 600; }
+
+/* Tabs for results */
+.invest-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+.invest-tab { padding: 8px 18px; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); background: var(--bg-soft); border: 1px solid var(--border); transition: all 0.15s; font-weight: 500; }
+.invest-tab.active { color: var(--primary); background: var(--bg-card); border-color: var(--primary); border-bottom-color: var(--bg-card); }
+.invest-tab:hover:not(.active) { color: var(--text); }
+
+/* Badges for research subjects */
+.badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+.badge-unverified { background: var(--warning-light); color: var(--warning); }
+.badge-partial { background: var(--primary-light); color: var(--primary); }
+.badge-verified { background: var(--success-light); color: var(--success); }
+
+/* ─── Panels ─── */
+.panel { background: var(--bg-card); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.panel h2 { color: var(--text); font-size: 1.1rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-soft); padding-bottom: 8px; font-weight: 600; }
+.stats { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.stat-card { background: var(--bg-soft); border-radius: var(--radius-sm); padding: 14px 20px; text-align: center; min-width: 140px; border: 1px solid var(--border-soft); }
+.stat-card .value { font-size: 1.6rem; font-weight: bold; color: var(--primary); }
+.stat-card .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+.actions { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.progress-section { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.progress-card { background: var(--bg-soft); border-radius: var(--radius-sm); padding: 12px 16px; flex: 1; min-width: 240px; border: 1px solid var(--border-soft); }
+.progress-card .progress-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.progress-bar { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.progress-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 0.3s ease; }
+.progress-bar-fill.low { background: var(--warning); }
+.progress-bar-fill.critical { background: var(--danger); }
+.progress-meta { font-size: 0.7rem; color: var(--text); margin-top: 6px; display: flex; justify-content: space-between; }
+.extraction-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.extraction-status { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+
+/* ─── Buttons ─── */
+.btn { background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem; transition: background 0.15s; font-weight: 500; }
+.btn:hover { background: var(--primary-dark); }
+.btn:disabled { background: var(--text-light); cursor: not-allowed; }
+.btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--border-soft); border-color: var(--primary); }
+.btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+.btn-save { background: var(--success); }
+.btn-save:hover { background: #047857; }
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #b91c1c; }
+
+/* ─── Engine selector ─── */
+.engine-selector { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+.engine-selector label { color: var(--text-muted); font-size: 0.8rem; }
+.engine-selector select { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.8rem; }
+.engine-info { font-size: 0.7rem; color: var(--text-muted); margin-left: 8px; }
+
+/* ─── Letter grid ─── */
+.letter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
+.letter-card { background: var(--bg-soft); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; cursor: pointer; transition: all 0.15s; border: 2px solid transparent; }
+.letter-card:hover { border-color: var(--primary); }
+.letter-card .letter { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+.letter-card .badge { font-size: 0.6rem; padding: 2px 6px; border-radius: 8px; margin-top: 4px; display: inline-block; font-weight: 600; }
+.badge-downloaded { background: var(--success-light); color: var(--success); }
+.badge-missing { background: var(--bg-soft); color: var(--text-light); }
+.badge-done { background: var(--success-light); color: var(--success); }
+.badge-processing { background: var(--primary-light); color: var(--primary); }
+.badge-pending { background: var(--bg-soft); color: var(--text-light); }
+.letter-card .progress-mini { width: 100%; height: 3px; background: var(--border); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.letter-card .progress-mini-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
+
+/* ─── Table ─── */
+.table-container { overflow-x: auto; max-height: 600px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+th { background: var(--bg-soft); color: var(--text-muted); padding: 10px 6px; text-align: left; position: sticky; top: 0; z-index: 1; font-weight: 600; border-bottom: 2px solid var(--border); }
+td { padding: 8px 6px; border-bottom: 1px solid var(--border-soft); vertical-align: top; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+td:hover { white-space: normal; overflow: visible; }
+tr:hover { background: var(--bg-soft); }
+td.editable { cursor: pointer; }
+td.editable:hover { background: var(--primary-light); }
+.sorte-badge { padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+.sorte-deceduto { background: var(--danger-light); color: var(--danger); }
+.sorte-disperso { background: var(--warning-light); color: var(--warning); }
+.sorte-rimpatriato { background: var(--success-light); color: var(--success); }
+.sorte-altro { background: var(--bg-soft); color: var(--text-muted); }
+.review-badge { padding: 2px 6px; border-radius: 8px; font-size: 0.6rem; background: var(--warning-light); color: var(--warning); margin-left: 4px; font-weight: 600; }
+tr.row-review { background: var(--warning-light); }
+tr.row-review:hover { background: #fef3c7; }
+.review-warning { color: var(--warning); font-size: 0.75rem; margin-top: 8px; padding: 8px; background: var(--warning-light); border-radius: var(--radius-sm); border-left: 3px solid var(--warning); }
+.empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+.toast { position: fixed; bottom: 20px; right: 20px; background: var(--bg-card); border-left: 4px solid var(--primary); padding: 12px 20px; border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); z-index: 2000; display: none; max-width: 400px; color: var(--text); }
+.toast.show { display: block; }
+.toast.success { border-left-color: var(--success); }
+.toast.error { border-left-color: var(--danger); }
+.pager { display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 16px; }
+.filter-bar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
+.filter-bar select, .filter-bar input { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.85rem; }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--bg-card); border-radius: var(--radius); padding: 24px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
+.modal h3 { color: var(--text); margin-bottom: 16px; font-size: 1.1rem; font-weight: 600; }
+.modal .close { float: right; cursor: pointer; color: var(--text-muted); font-size: 1.5rem; }
+.modal .close:hover { color: var(--primary); }
+.modal .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal .form-field { display: flex; flex-direction: column; }
+.modal .form-field.full { grid-column: 1 / -1; }
+.modal .form-field label { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 4px; }
+.modal .form-field input, .modal .form-field select, .modal .form-field textarea {
+    background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 0.85rem; font-family: inherit;
+}
+.modal .form-field textarea { resize: vertical; min-height: 60px; }
+.modal .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+.scrape-section { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.scrape-section input[type="text"] { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.85rem; flex: 1; min-width: 300px; }
+.scrape-log { background: var(--bg-soft); border-radius: var(--radius-sm); padding: 12px; margin-top: 12px; max-height: 200px; overflow-y: auto; font-size: 0.8rem; font-family: monospace; border: 1px solid var(--border); }
+.scrape-log-entry { padding: 2px 0; color: var(--text-muted); }
+.scrape-log-entry.pdf { color: var(--primary); }
+.scrape-log-entry.image { color: var(--warning); }
+.scrape-log-entry.done { color: var(--success); }
+.scrape-log-entry.error { color: var(--danger); }
+.upload-section { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+.upload-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 20px; text-align: center; cursor: pointer; transition: border-color 0.2s; flex: 1; min-width: 200px; }
+.upload-zone:hover { border-color: var(--primary); }
+.upload-zone input[type="file"] { display: none; }
+.upload-zone p { color: var(--text-muted); font-size: 0.85rem; margin-top: 8px; }
+.mapping-table { width: 100%; font-size: 0.8rem; margin-top: 12px; }
+.mapping-table th { background: var(--bg-soft); color: var(--text-muted); padding: 6px; text-align: left; }
+.mapping-table td { padding: 6px; border-bottom: 1px solid var(--border-soft); }
+.mapping-table select { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; }
+.tab-bar { display: flex; gap: 4px; margin-bottom: 16px; }
+.tab { padding: 8px 16px; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); background: var(--bg-soft); border: 1px solid var(--border); border-bottom: none; font-weight: 500; }
+.tab.active { color: var(--primary); background: var(--bg-card); border-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ─── Ops panels (collapsible) ─── */
+.ops-toggle { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 20px; margin-bottom: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); transition: all 0.2s; opacity: 0.7; }
+.ops-toggle:hover { border-color: var(--primary); opacity: 1; }
+.ops-toggle .ops-title { font-size: 0.82rem; font-weight: 500; color: var(--text-muted); }
+.ops-toggle .ops-arrow { color: var(--text-muted); font-size: 1.2rem; transition: transform 0.2s; }
+.ops-toggle.open .ops-arrow { transform: rotate(180deg); }
+#opsPanels { display: none; }
+#opsPanels.open { display: block; }
+
+/* ─── DB View Modal ───
+   Scoped under #dbViewContent: these used to be bare .invest-facts/.fact-card/.source-badge
+   rules that silently overrode the shared definitions above (lines ~91-126), so the
+   "Fatti verificati" tab lost its verified/unverified left-border accent and every
+   source-badge in the results list (locale/online/da_richiedere/...) rendered at the
+   wrong size. Scoping them keeps the modal's look without leaking into shared components. */
+#dbViewOverlay { display: none; }
+#dbViewOverlay.active { display: flex; }
+#dbViewContent .invest-facts { display: flex; gap: 12px; flex-wrap: wrap; }
+#dbViewContent .fact-card { background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 18px; min-width: 120px; }
+#dbViewContent .fact-card .fc-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+#dbViewContent .fact-card .fc-value { font-size: 1.4rem; font-weight: 700; color: var(--text); }
+#dbViewContent .fact-card.unverified { border-left: 3px solid var(--warning); }
+#dbViewContent .source-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; }
+#dbViewContent .source-badge.online { background: rgba(37,99,235,0.1); color: var(--primary); border: 1px solid rgba(37,99,235,0.2); }
+
+/* ─── Responsive (was entirely absent despite the viewport meta tag) ─── */
+@media (max-width: 860px) {
+  .header { flex-wrap: wrap; gap: 12px; padding: 16px 18px; }
+  .credits-widget { min-width: 0; width: 100%; }
+  .container { padding: 14px; }
+  .analytics-bar { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+  .conv-search-panel { padding: 24px 18px; }
+  .conv-search-panel h2 { font-size: 1.2rem; }
+  .conv-input-wrap { flex-direction: column; align-items: stretch; }
+  .conv-btn { width: 100%; }
+  .invest-tabs { flex-wrap: wrap; }
+  .modal { padding: 16px; width: 94%; }
+  .modal .form-grid { grid-template-columns: 1fr; }
+  .stats, .progress-section, .extraction-controls { flex-direction: column; }
+  .stat-card, .progress-card { min-width: 0; width: 100%; }
+  .scrape-section input[type="text"] { min-width: 0; width: 100%; }
+  td { max-width: 140px; }
+}
+@media (max-width: 480px) {
+  .header h1 { font-size: 1.15rem; }
+  .analytics-bar { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="header">
+<div>
+<h1>VOCI DAL FRONTE <span class="accent">- Ricerca Storica</span></h1>
+<p>Soldati, dispersi, caduti e reduci - Database federato multi-archivio</p>
+</div>
+<div class="credits-widget" id="creditsWidget" style="display:none">
+<div class="cw-title">Crediti AI Rimanenti</div>
+<div class="cw-remaining" id="cwRemaining">$0.00</div>
+<div class="cw-bar"><div class="cw-bar-fill" id="cwBarFill" style="width:100%"></div></div>
+<div class="cw-detail"><span>Oggi: <strong id="cwToday">$0.00</strong></span><span>Totale: <strong id="cwTotal">$0.00</strong></span></div>
+<div class="cw-detail" style="margin-top:4px"><span>OpenAI: <strong id="cwOpenAI">$0.00</strong></span><span>Mistral: <strong id="cwMistral">$0.00</strong></span></div>
+</div>
+</div>
+
+<div class="container">
+
+<!-- ─── Analytics Bar ─── -->
+<div class="analytics-bar" id="analyticsBar">
+  <div class="analytics-cell" onclick="openDbView('internati')" style="cursor:pointer;border-top-color:var(--primary)" title="Clicca per esplorare il DB soldati">
+    <div class="ac-value" id="anInternati" style="color:var(--primary)">-</div>
+    <div class="ac-label">Soldati IMI</div>
+    <div class="ac-sub" id="anInternatiSub"></div>
+  </div>
+  <div class="analytics-cell" onclick="openDbView('caduti')" style="cursor:pointer;border-top-color:var(--danger)" title="Clicca per esplorare i caduti">
+    <div class="ac-value" id="anCaduti" style="color:var(--danger)">-</div>
+    <div class="ac-label">Caduti</div>
+    <div class="ac-sub" id="anCadutiSub"></div>
+  </div>
+  <div class="analytics-cell" onclick="openDbView('decorati')" style="cursor:pointer;border-top-color:var(--warning)" title="Clicca per esplorare i decorati">
+    <div class="ac-value" id="anDecorati" style="color:var(--warning)">-</div>
+    <div class="ac-label">Decorati</div>
+    <div class="ac-sub" id="anDecoratiSub"></div>
+  </div>
+  <div class="analytics-cell" onclick="openDbView('entita')" style="cursor:pointer;border-top-color:var(--success)" title="Clicca per esplorare le entita">
+    <div class="ac-value" id="anEntita" style="color:var(--success)">-</div>
+    <div class="ac-label">Entita</div>
+    <div class="ac-sub" id="anEntitaSub"></div>
+  </div>
+  <div class="analytics-cell" onclick="openDbView('collegamenti')" style="cursor:pointer;border-top-color:var(--primary)" title="Clicca per esplorare i collegamenti">
+    <div class="ac-value" id="anArchi" style="color:var(--primary)">-</div>
+    <div class="ac-label">Archi grafo</div>
+    <div class="ac-sub" id="anArchiSub"></div>
+  </div>
+  <div class="analytics-cell" onclick="openDbView('documenti')" style="cursor:pointer;border-top-color:var(--accent)" title="Clicca per esplorare i documenti d'archivio">
+    <div class="ac-value" id="anDoc" style="color:var(--accent)">-</div>
+    <div class="ac-label">Doc archivio</div>
+    <div class="ac-sub" id="anDocSub"></div>
+  </div>
+  <div class="analytics-cell" onclick="openDbView('providers')" style="cursor:pointer;border-top-color:var(--warning)" title="Clicca per vedere i provider federati">
+    <div class="ac-value" id="anProviders" style="color:var(--warning)">-</div>
+    <div class="ac-label">Provider federati</div>
+    <div class="ac-sub" id="anProvidersSub"></div>
+  </div>
+  <div class="analytics-cell" onclick="openDbView('fonti')" style="cursor:pointer;border-top-color:var(--success)" title="Clicca per esplorare le fonti indicizzate">
+    <div class="ac-value" id="anSources" style="color:var(--success)">-</div>
+    <div class="ac-label">Fonti indicizzate</div>
+    <div class="ac-sub" id="anSourcesSub"></div>
+  </div>
+</div>
+
+<!-- ─── DB View Modal ─── -->
+<div class="modal-overlay" id="dbViewOverlay">
+  <div class="modal" style="max-width:1100px">
+    <span class="close" onclick="closeDbView()">&times;</span>
+    <h3 id="dbViewTitle">Esplora DB</h3>
+    <div id="dbViewContent" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- ─── Ricerca Conversazionale (SECTION 2) ─── -->
+<div class="conv-search-panel">
+  <h2>Ricerca Investigativa Cross-DB</h2>
+  <div class="conv-subtitle">Cerca in tutti i dataset locali + archivi esterni federati e AI cloud in parallelo</div>
+  <div class="conv-input-wrap">
+    <input type="text" class="conv-input" id="convInput" placeholder="Cerca un soldato: es. Rossi Mario, 64 reggimento fanteria, Bergamo 1920..." onkeydown="if(event.key==='Enter')convSearch()">
+    <button class="conv-btn" id="convBtn" onclick="convSearch()">Cerca</button>
+    <button class="conv-btn" id="bioBtn" style="background:var(--accent)" onclick="generateBiography()" title="Biografia narrativa con citazioni, scritta SOLO da dati e fonti gia' verificate (le fonti trovate ma non ancora recuperate vengono elencate a parte, mai usate nel testo)">📖 Dossier verificato</button>
+  </div>
+  <div class="conv-hint">Ricerca cross-DB su tutti i dataset locali + grafo entita, poi interroga in parallelo i provider AI (GPT, Mistral, Perplexity, Claude) e gli archivi federati (NARA, Antenati, CWGC, Arolsen, Bundesarchiv, Europeana).</div>
+  <div class="conv-examples">
+    <span class="conv-example" onclick="setConvExample('Luigi Gaiaschi')">Luigi Gaiaschi</span>
+    <span class="conv-example" onclick="setConvExample('Rossi Mario Bergamo')">Rossi Mario Bergamo</span>
+    <span class="conv-example" onclick="setConvExample('117 Jager Division Balcani')">117 Jager Division Balcani</span>
+    <span class="conv-example" onclick="setConvExample('caduti Cassino 1944')">caduti Cassino 1944</span>
+    <span class="conv-example" onclick="setConvExample('internati Arolsen')">internati Arolsen</span>
+  </div>
+  <div id="convStatus" style="margin-top:14px;font-size:0.8rem;color:var(--text-muted);display:none"></div>
+</div>
+
+<!-- ─── Risposte e Collegamenti (SECTION 3) ─── -->
+<div class="invest-results" id="investResults">
+  <div class="invest-tabs">
+    <div class="invest-tab active" onclick="switchInvestTab('tabAI')">Risposta AI</div>
+    <div class="invest-tab" onclick="switchInvestTab('tabLinks')">Collegamenti Cross-DB</div>
+    <div class="invest-tab" onclick="switchInvestTab('tabSources')">Fonti</div>
+  </div>
+
+  <!-- Tab: Risposta AI (discorsiva) -->
+  <div class="invest-section" id="tabAI">
+    <div id="aiResponseContainer">
+      <p style="color:var(--text-muted);text-align:center;padding:30px">Esegui una ricerca per ottenere un'analisi discorsiva da parte dei provider AI.</p>
+    </div>
+  </div>
+
+  <!-- Tab: Collegamenti Cross-DB -->
+  <div class="invest-section" id="tabLinks" style="display:none">
+    <h3>Collegamenti tra dataset</h3>
+    <div id="investLinks"></div>
+  </div>
+
+  <!-- Tab: Fonti -->
+  <div class="invest-section" id="tabSources" style="display:none">
+    <h3>Fonti locali ed esterne <span style="color:var(--primary)" id="sourcesCount"></span></h3>
+    <div id="investSources"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<span class="close" onclick="closeModal()">&times;</span>
+<h3 id="modalTitle">Modifica Internato</h3>
+<div class="form-grid" id="modalForm"></div>
+<div class="modal-actions">
+<button class="btn btn-danger btn-sm" id="modalDelete" onclick="modalDeleteRecord()">Elimina</button>
+<button class="btn btn-secondary btn-sm" onclick="closeModal()">Annulla</button>
+<button class="btn btn-save btn-sm" onclick="modalSave()">Salva Modifiche</button>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FIELDS = [
+    ['cognome', 'Cognome'], ['nome', 'Nome'],
+    ['data_nascita', 'Data di Nascita'], ['luogo_nascita', 'Luogo di Nascita'],
+    ['residenza', 'Residenza'], ['grado', 'Grado'],
+    ['luogo_cattura', 'Luogo di Cattura'], ['data_cattura', 'Data di Cattura'],
+    ['luogo_internamento', 'Luogo di Internamento'], ['matricola', 'Matricola'],
+    ['arbeitskommando', 'Arbeitskommando'], ['mansione', 'Mansione'],
+    ['sorte', 'Sorte'], ['data', 'Data Evento'],
+    ['documenti', 'Documenti'],
+];
+const SORTE_OPTIONS = ['', 'deceduto', 'disperso', 'rimpatriato', 'altro'];
+
+let currentPage = 0;
+const pageSize = 100;
+let currentFilter = '';
+let totalCount = 0;
+let pollTimer = null;
+let editingId = null;
+let currentInternati = [];
+
+function getEngine() { const el = document.getElementById('engineSelect'); return el ? el.value : 'mistral'; }
+function getParallel() { const el = document.getElementById('parallelSelect'); return el ? parseInt(el.value) : 2; }
+
+function updateEngineInfo() {
+    const e = getEngine();
+    const info = document.getElementById('engineInfo');
+    if (!info) return;
+    if (e === 'openai') info.textContent = 'Costo: basso | Velocita: media | Token: GPT-4o-mini (text)';
+    else if (e === 'mistral') info.textContent = 'Costo: medio | Velocita: media | Token: Mistral OCR + GPT-4o-mini';
+    else info.textContent = 'Costo: basso | Velocita: alta | Token: ottimizzato (entrambi)';
+}
+const engineSelectEl = document.getElementById('engineSelect');
+const parallelSelectEl = document.getElementById('parallelSelect');
+if (engineSelectEl) engineSelectEl.onchange = updateEngineInfo;
+if (parallelSelectEl) parallelSelectEl.onchange = updateEngineInfo;
+
+async function refresh() {
+const res = await fetch('/api/status');
+const data = await res.json();
+    updateExtractionBars(data.letters.filter(l => l.progress && l.progress.status === 'done').length, data.letters.length);
+document.getElementById('statTotal').textContent = data.total_internati;
+document.getElementById('statReview').textContent = data.needs_review || 0;
+const downloaded = data.letters.filter(l => l.downloaded).length;
+const done = data.letters.filter(l => l.progress && l.progress.status === 'done').length;
+document.getElementById('statDownloaded').textContent = `${downloaded}/20`;
+document.getElementById('statDone').textContent = `${done}/20`;
+document.getElementById('statRunning').textContent = data.running || '-';
+
+const grid = document.getElementById('letterGrid');
+grid.innerHTML = '';
+for (const l of data.letters) {
+    const prog = l.progress;
+    const pct = prog && prog.total_pages > 0 ? Math.round(prog.processed_pages / prog.total_pages * 100) : 0;
+    let badgeClass = 'badge-missing', badgeText = 'Non scaricato';
+    if (l.downloaded) { badgeClass = 'badge-downloaded'; badgeText = 'Scaricato'; }
+    if (prog) {
+        if (prog.status === 'done') { badgeClass = 'badge-done'; badgeText = 'Completato'; }
+        else if (prog.status === 'processing') { badgeClass = 'badge-processing'; badgeText = `${pct}%`; }
+        else { badgeClass = 'badge-pending'; badgeText = 'In attesa'; }
+    }
+    const card = document.createElement('div');
+    card.className = 'letter-card';
+    card.innerHTML = `<div class="letter">${l.letter}</div><span class="badge ${badgeClass}">${badgeText}</span>${prog && prog.total_pages > 0 ? `<div class="progress-mini"><div class="progress-mini-fill" style="width:${pct}%"></div></div>` : ''}`;
+    card.onclick = () => extractLetter(l.letter);
+    grid.appendChild(card);
+}
+
+if (data.running) { if (!pollTimer) pollTimer = setInterval(() => { refresh(); loadCredits(); }, 5000); }
+else { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; loadCredits(); } }
+
+updateExtractionStatus();
+
+loadInternati();
+}
+
+async function downloadAll() {
+showToast('Download di tutti i PDF in corso...');
+const res = await fetch('/api/download-all', { method: 'POST' });
+const data = await res.json();
+const ok = data.results.filter(r => r.status === 'ok' || r.status === 'already_downloaded').length;
+showToast(`Download completato: ${ok}/20 PDF`, 'success');
+refresh();
+}
+
+async function extractLetter(letter) {
+const engine = getEngine(), parallel = getParallel();
+showToast(`Avvio estrazione lettera ${letter} (${engine}, parallel=${parallel})...`);
+const res = await fetch(`/api/extract/${letter}?engine=${engine}&parallel=${parallel}`, { method: 'POST' });
+if (res.ok) { showToast((await res.json()).message, 'success'); refresh(); }
+else { showToast((await res.json()).detail, 'error'); }
+}
+
+async function extractAll() {
+const engine = getEngine(), parallel = getParallel();
+showToast(`Avvio estrazione batch (${engine}, parallel=${parallel})...`);
+const res = await fetch(`/api/extract-all?engine=${engine}&parallel=${parallel}`, { method: 'POST' });
+if (res.ok) { showToast('Estrazione batch avviata', 'success'); refresh(); }
+else { showToast((await res.json()).detail, 'error'); }
+}
+
+async function loadInternati() {
+const filter = currentFilter ? `&lettera=${currentFilter}` : '';
+const reviewFilter = document.getElementById('filterReview').checked ? '&needs_review=true' : '';
+const res = await fetch(`/api/internati?limit=${pageSize}&offset=${currentPage * pageSize}${filter}${reviewFilter}`);
+const data = await res.json();
+totalCount = data.total;
+currentInternati = data.internati;
+const body = document.getElementById('internatiBody');
+if (!data.internati.length) {
+    body.innerHTML = '<tr><td colspan="18" class="empty-state"><p>Nessun dato.</p></td></tr>';
+} else {
+    body.innerHTML = data.internati.map(i => {
+        const sc = i.sorte ? `sorte-${i.sorte.toLowerCase()}` : '';
+        const reviewBadge = i.needs_review ? '<span class="review-badge">!</span>' : '';
+        const rowClass = i.needs_review ? 'row-review' : '';
+        return `<tr onclick="openEdit(${i.id})" style="cursor:pointer" class="${rowClass}">
+            <td>${i.id}${reviewBadge}</td><td>${i.lettera}</td>
+            <td>${i.cognome||''}</td><td>${i.nome||''}</td>
+            <td>${i.data_nascita||''}</td>
+            <td>${(i.luogo_nascita||'').substring(0,20)}</td>
+            <td>${(i.residenza||'').substring(0,20)}</td>
+            <td>${i.grado||''}</td>
+            <td>${(i.luogo_cattura||'').substring(0,15)}</td>
+            <td>${i.data_cattura||''}</td>
+            <td>${(i.luogo_internamento||'').substring(0,15)}</td>
+            <td>${i.matricola||''}</td>
+            <td>${(i.arbeitskommando||'').substring(0,15)}</td>
+            <td>${(i.mansione||'').substring(0,15)}</td>
+            <td>${i.sorte ? `<span class="sorte-badge ${sc}">${i.sorte}</span>` : ''}</td>
+            <td>${i.data||''}</td>
+            <td>${(i.documenti||'').substring(0,25)}</td>
+            <td><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();openEdit(${i.id})">Edit</button></td>
+        </tr>`;
+    }).join('');
+}
+document.getElementById('pageInfo').textContent = `Pag ${currentPage + 1} di ${Math.max(1, Math.ceil(totalCount / pageSize))} (${totalCount} totali)`;
+document.getElementById('prevBtn').disabled = currentPage === 0;
+document.getElementById('nextBtn').disabled = (currentPage + 1) * pageSize >= totalCount;
+}
+
+function openEdit(id) {
+    const row = currentInternati.find(r => r.id === id);
+    if (!row) return;
+    editingId = id;
+    document.getElementById('modalTitle').textContent = `Modifica Internato #${id} - ${row.cognome||''} ${row.nome||''}`;
+    const form = document.getElementById('modalForm');
+    form.innerHTML = '';
+    if (row.needs_review && row.review_reason) {
+        const warn = document.createElement('div');
+        warn.className = 'form-field full';
+        warn.innerHTML = `<div class="review-warning"><strong>Da revisionare:</strong> ${row.review_reason}</div>`;
+        form.appendChild(warn);
+    }
+    for (const [key, label] of FIELDS) {
+        const isSorte = key === 'sorte';
+        const isDoc = key === 'documenti';
+        const div = document.createElement('div');
+        div.className = 'form-field' + (isDoc ? ' full' : '');
+        div.innerHTML = `<label>${label}</label>` + (isSorte ?
+            `<select id="fld_${key}">${SORTE_OPTIONS.map(o => `<option value="${o}" ${row[key]===o?'selected':''}>${o||'--'}</option>`).join('')}</select>` :
+            `<textarea id="fld_${key}">${row[key]||''}</textarea>`);
+        form.appendChild(div);
+    }
+    const reviewDiv = document.createElement('div');
+    reviewDiv.className = 'form-field full';
+    reviewDiv.innerHTML = `<label>Stato revisione</label><div style="display:flex;gap:10px;align-items:center"><label style="color:var(--text-muted);font-size:0.85rem;cursor:pointer"><input type="checkbox" id="fld_needs_review" ${row.needs_review?'checked':''} style="cursor:pointer"> Segna come da revisionare</label><button class="btn btn-sm btn-secondary" onclick="validateSingleLocation(${id})">Valida localita</button></div><textarea id="fld_review_reason" placeholder="Motivo revisione..." style="margin-top:8px">${row.review_reason||''}</textarea>`;
+    form.appendChild(reviewDiv);
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+    editingId = null;
+}
+document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') closeModal(); });
+
+async function modalSave() {
+    if (!editingId) return;
+    const data = {};
+    for (const [key] of FIELDS) {
+        const el = document.getElementById('fld_' + key);
+        data[key] = el.value.trim() || null;
+    }
+    const reviewEl = document.getElementById('fld_needs_review');
+    if (reviewEl) data.needs_review = reviewEl.checked;
+    const reasonEl = document.getElementById('fld_review_reason');
+    if (reasonEl) data.review_reason = reasonEl.value.trim() || null;
+    const res = await fetch(`/api/internati/${editingId}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    });
+    if (res.ok) {
+        showToast('Modifiche salvate', 'success');
+        closeModal();
+        loadInternati();
+        refresh();
+    } else {
+        showToast('Errore salvataggio', 'error');
+    }
+}
+
+async function modalDeleteRecord() {
+    if (!editingId) return;
+    if (!confirm('Eliminare definitivamente questo record?')) return;
+    const res = await fetch(`/api/internati/${editingId}`, { method: 'DELETE' });
+    if (res.ok) {
+        showToast('Record eliminato', 'success');
+        closeModal();
+        loadInternati();
+    } else {
+        showToast('Errore eliminazione', 'error');
+    }
+}
+
+function changeFilter() { currentFilter = document.getElementById('filterLetter').value; currentPage = 0; loadInternati(); }
+let searchTimer;
+function debounceSearch() { clearTimeout(searchTimer); searchTimer = setTimeout(() => { currentPage = 0; loadInternati(); }, 500); }
+function prevPage() { if (currentPage > 0) { currentPage--; loadInternati(); } }
+function nextPage() { if ((currentPage + 1) * pageSize < totalCount) { currentPage++; loadInternati(); } }
+function exportExcel() { window.location.href = '/api/export/excel'; }
+function exportCSV() { window.location.href = '/api/export/csv'; }
+async function stopExtraction() {
+    const res = await fetch('/api/extract/stop', { method: 'POST' });
+    if (res.ok) { showToast('Richiesta stop inviata', 'success'); }
+    else { const err = await res.json(); showToast(err.detail || 'Errore stop', 'error'); }
+    updateExtractionStatus();
+}
+
+async function resumeExtraction() {
+    const engine = getEngine(), parallel = getParallel();
+    const res = await fetch(`/api/extract/resume?engine=${engine}&parallel=${parallel}`, { method: 'POST' });
+    if (res.ok) { showToast('Ripresa estrazione avviata', 'success'); }
+    else { const err = await res.json(); showToast(err.detail || 'Errore ripresa', 'error'); }
+}
+
+async function cancelExtraction() {
+    const statusRes = await fetch('/api/extract/status');
+    const statusData = await statusRes.json();
+    const letter = statusData.last_completed;
+    if (!letter) { showToast('Nessuna estrazione recente da cancellare', 'error'); return; }
+    if (!confirm(`Eliminare i dati della lettera ${letter}?`)) return;
+    const res = await fetch('/api/extract/cancel', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ letter })
+    });
+    if (res.ok) {
+        showToast(`Estrazione ${letter} cancellata`, 'success');
+        refresh();
+    } else {
+        const err = await res.json();
+        showToast(err.detail || 'Errore cancellazione', 'error');
+    }
+}
+
+async function updateExtractionStatus() {
+    try {
+        const res = await fetch('/api/extract/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById('extractStatusText').textContent = `Stato: ${data.status}`;
+        const processed = data.processed || 0;
+        const total = data.total || 0;
+        const pagePct = total ? Math.min(100, Math.round(processed / total * 100)) : 0;
+        const pageFill = document.getElementById('pageProgressBarFill');
+        pageFill.style.width = `${pagePct}%`;
+        pageFill.className = 'progress-bar-fill' + (pagePct >= 90 ? ' critical' : pagePct >= 60 ? ' low' : '');
+        document.getElementById('pageProgressText').textContent = `${processed}/${total}`;
+        document.getElementById('pageProgressPct').textContent = `${pagePct}%`;
+        const totalLetters = 20;
+        const doneLetters = data.status === 'done' ? (data.last_completed ? 1 : 0) : 0;
+        updateExtractionBars(doneLetters, totalLetters);
+    } catch (e) {
+        console.log('extract status error', e);
+    }
+}
+
+function updateExtractionBars(doneLetters, totalLetters) {
+    const fill = document.getElementById('totalProgressBarFill');
+    const pct = totalLetters ? Math.min(100, Math.round(doneLetters / totalLetters * 100)) : 0;
+    fill.style.width = `${pct}%`;
+    fill.className = 'progress-bar-fill' + (pct >= 90 ? ' critical' : pct >= 60 ? ' low' : '');
+    document.getElementById('totalProgressText').textContent = `${doneLetters}/${totalLetters}`;
+    document.getElementById('totalProgressPct').textContent = `${pct}%`;
+}
+async function validateAllLocations() {
+    showToast('Validazione localita in corso (puo richiedere alcuni minuti)...');
+    const res = await fetch('/api/validate-all-locations?limit=500', { method: 'POST' });
+    if (res.ok) {
+        const data = await res.json();
+        showToast(`Validati ${data.validated} record, ${data.flagged} segnalati per revisione`, 'success');
+        refresh();
+    } else {
+        showToast('Errore validazione', 'error');
+    }
+}
+async function validateSingleLocation(id) {
+    showToast('Validazione localita...');
+    const res = await fetch(`/api/validate-locations/${id}`, { method: 'POST' });
+    if (res.ok) {
+        const data = await res.json();
+        if (data.needs_review) {
+            showToast(`Localita non verificata: ${data.review_reason}`, 'error');
+        } else {
+            showToast('Localita valide', 'success');
+        }
+        refresh();
+    } else {
+        showToast('Errore validazione', 'error');
+    }
+}
+function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast show ' + type;
+    setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ─── Web Scraping ───
+let scrapePollTimer = null;
+
+async function startScrape() {
+const url = document.getElementById('scrapeUrl').value.trim();
+if (!url) { showToast('Inserisci un URL', 'error'); return; }
+const depth = parseInt(document.getElementById('scrapeDepth').value);
+showToast(`Avvio scraping: ${url}...`);
+const res = await fetch('/api/scrape', {
+method: 'POST', headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({url, max_depth: depth})
+});
+if (res.ok) {
+showToast('Scraping avviato', 'success');
+if (!scrapePollTimer) scrapePollTimer = setInterval(checkScrapeStatus, 3000);
+} else {
+const err = await res.json();
+showToast(err.detail, 'error');
+}
+}
+
+async function checkScrapeStatus() {
+const res = await fetch('/api/scrape/status');
+const data = await res.json();
+const logDiv = document.getElementById('scrapeLog');
+if (data.logs && data.logs.length) {
+logDiv.innerHTML = data.logs.slice(-30).map(l => {
+let cls = 'scrape-log-entry';
+let text = '';
+if (l.type === 'pdf') { cls += ' pdf'; text = `PDF trovato: ${l.url}`; }
+else if (l.type === 'image') { cls += ' image'; text = `Immagine trovata: ${l.url}`; }
+else if (l.type === 'downloading') { text = `Download: ${l.file}`; }
+else if (l.type === 'pdf_done') { cls += ' done'; text = `PDF processato: ${l.file} -> ${l.extracted} internati (totale: ${l.total_extracted})`; }
+else if (l.type === 'image_done') { cls += ' done'; text = `Immagine processata: ${l.file} -> ${l.extracted} internati`; }
+else if (l.type === 'status') { text = l.message; }
+else if (l.type === 'error') { cls += ' error'; text = `Errore: ${l.message}`; }
+else { text = JSON.stringify(l); }
+return `<div class="${cls}">${text}</div>`;
+}).join('');
+logDiv.scrollTop = logDiv.scrollHeight;
+}
+if (!data.running && scrapePollTimer) {
+clearInterval(scrapePollTimer); scrapePollTimer = null;
+if (data.result) {
+showToast(`Scraping completato: ${data.result.total_extracted} internati estratti`, 'success');
+refresh();
+}
+}
+}
+
+// ─── File Upload ───
+let selectedFile = null;
+let previewData = null;
+
+function handleFileSelect(event) {
+const file = event.target.files[0];
+if (!file) return;
+selectedFile = file;
+const ftype = file.name.split('.').pop().toLowerCase();
+document.getElementById('uploadResult').innerHTML = `<p style="color:var(--text-muted)">File selezionato: <strong>${file.name}</strong> (${(file.size/1024).toFixed(1)} KB, tipo: ${ftype})</p>`;
+document.getElementById('mappingArea').innerHTML = '';
+
+if (ftype === 'csv' || ftype === 'xlsx' || ftype === 'xls') {
+previewFile(file);
+} else if (ftype === 'pdf') {
+document.getElementById('mappingArea').innerHTML = `
+<p style="color:var(--text-muted);margin-bottom:8px">Il PDF verra processato con OCR. Seleziona il motore:</p>
+<select id="uploadEngine" style="background:var(--bg-soft);color:#e0e0e0;border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:0.85rem">
+<option value="openai">pdfplumber + GPT-4o-mini</option>
+<option value="mistral">Mistral OCR + GPT-4o-mini</option>
+</select>
+<button class="btn" style="margin-left:10px" onclick="uploadDirect()">Importa PDF</button>`;
+} else if (['jpg','jpeg','png','tif','tiff','bmp','webp'].includes(ftype)) {
+document.getElementById('mappingArea').innerHTML = `<button class="btn" onclick="uploadDirect()">Importa Immagine (OCR)</button>`;
+} else {
+document.getElementById('mappingArea').innerHTML = `<p style="color:var(--danger)">Formato non supportato</p>`;
+}
+}
+
+async function previewFile(file) {
+const formData = new FormData();
+formData.append('file', file);
+showToast('Analisi file in corso...');
+const res = await fetch('/api/upload/preview', { method: 'POST', body: formData });
+if (!res.ok) { showToast('Errore preview', 'error'); return; }
+const data = await res.json();
+previewData = data;
+showToast(`Trovate ${data.headers.length} colonne`, 'success');
+
+let mappingHtml = '<p style="color:var(--text-muted);margin-bottom:8px">Mappa le colonne del file ai campi del database:</p>';
+mappingHtml += '<table class="mapping-table"><thead><tr><th>Colonna File</th><th>Anteprima</th><th>Campo DB</th></tr></thead><tbody>';
+for (let i = 0; i < data.headers.length; i++) {
+const h = data.headers[i];
+const suggested = data.suggested_mapping[h] || '';
+const sample = data.sample && data.sample[0] ? (data.sample[0][h] || '').substring(0, 30) : '';
+mappingHtml += `<tr><td>${h}</td><td style="color:var(--text-muted)">${sample}</td><td><select id="map_${i}">`;
+mappingHtml += '<option value="">-- ignora --</option>';
+for (const c of data.db_columns) {
+mappingHtml += `<option value="${c}" ${suggested===c?'selected':''}>${c}</option>`;
+}
+mappingHtml += '</select></td></tr>';
+}
+mappingHtml += '</tbody></table>';
+mappingHtml += '<div style="margin-top:12px;display:flex;gap:10px;align-items:center"><label style="color:var(--text-muted);font-size:0.85rem">Etichetta:</label><input type="text" id="importLabel" value="IMPORT" style="background:var(--bg-soft);color:#e0e0e0;border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:0.85rem;width:120px"><button class="btn" onclick="importWithMapping()">Importa con Mapping</button></div>';
+document.getElementById('mappingArea').innerHTML = mappingHtml;
+}
+
+async function importWithMapping() {
+if (!selectedFile || !previewData) return;
+const mapping = {};
+for (let i = 0; i < previewData.headers.length; i++) {
+const sel = document.getElementById('map_' + i);
+if (sel.value) mapping[previewData.headers[i]] = sel.value;
+}
+const label = document.getElementById('importLabel').value.trim() || 'IMPORT';
+const formData = new FormData();
+formData.append('file', selectedFile);
+formData.append('mapping', JSON.stringify(mapping));
+formData.append('lettera', label);
+showToast('Importazione in corso...');
+const res = await fetch('/api/upload/import', { method: 'POST', body: formData });
+if (res.ok) {
+const data = await res.json();
+showToast(`Importati ${data.result.imported} record (${data.result.skipped} saltati)`, 'success');
+refresh();
+} else {
+showToast('Errore importazione', 'error');
+}
+}
+
+async function uploadDirect() {
+if (!selectedFile) return;
+const formData = new FormData();
+formData.append('file', selectedFile);
+const engineEl = document.getElementById('uploadEngine');
+if (engineEl) formData.append('engine', engineEl.value);
+else formData.append('engine', 'mistral');
+showToast('Importazione in corso (OCR)...');
+const res = await fetch('/api/upload', { method: 'POST', body: formData });
+if (res.ok) {
+const data = await res.json();
+const r = data.result;
+showToast(`Importati ${r.imported} record da ${data.file_type}`, 'success');
+refresh();
+} else {
+const err = await res.json();
+showToast(err.detail, 'error');
+}
+}
+
+function switchTab(tabId) {
+document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+event.target.classList.add('active');
+document.getElementById(tabId).classList.add('active');
+}
+
+// ─── Fondi archivistici ───
+let fondiPollTimer = null;
+
+async function loadFondi() {
+    const res = await fetch('/api/fondi');
+    const data = await res.json();
+    document.getElementById('statFondi').textContent = data.count_fondi;
+    document.getElementById('statMenzioni').textContent = data.count_menzioni;
+    document.getElementById('statFondoRunning').textContent = data.running || '-';
+    const body = document.getElementById('fondiBody');
+    if (!data.fondi.length) {
+        body.innerHTML = '<tr><td colspan="4" class="empty-state"><p>Nessun fondo elaborato.</p></td></tr>';
+    } else {
+        body.innerHTML = data.fondi.map(f =>
+            `<tr><td>${f.codice_fondo||''}</td><td style="font-size:0.75rem">${f.file_pdf}</td><td>${f.schede}</td><td style="color:var(--primary)">${f.menzioni}</td></tr>`
+        ).join('');
+    }
+    if (data.running) { if (!fondiPollTimer) fondiPollTimer = setInterval(() => { loadFondi(); loadCredits(); }, 5000); }
+    else { if (fondiPollTimer) { clearInterval(fondiPollTimer); fondiPollTimer = null; loadCredits(); } }
+}
+
+async function fondiDownloadAll() {
+    showToast('Download 50 PDF fondi in corso...');
+    const res = await fetch('/api/fondi/download-all', { method: 'POST' });
+    if (res.ok) { const d = await res.json(); const ok = d.results.filter(r=>r.status==='ok').length; showToast(`Scaricati ${ok}/${d.results.length} PDF`, 'success'); }
+    else showToast('Errore download fondi', 'error');
+    loadFondi();
+}
+
+async function fondiExtractAll() {
+    const res = await fetch('/api/fondi/extract-all?parallel=2', { method: 'POST' });
+    if (res.ok) { showToast('Estrazione fondi avviata', 'success'); loadFondi(); }
+    else { const e = await res.json(); showToast(e.detail, 'error'); }
+}
+
+async function fondiStop() {
+    const res = await fetch('/api/fondi/stop', { method: 'POST' });
+    if (res.ok) showToast('Arresto fondi richiesto', 'success');
+    else { const e = await res.json(); showToast(e.detail, 'error'); }
+}
+
+// ─── Ricerca incrociata ───
+let crossTimer = null;
+function debounceCrossSearch() { clearTimeout(crossTimer); crossTimer = setTimeout(crossSearch, 500); }
+
+async function crossSearch() {
+    const q = document.getElementById('crossSearchInput').value.trim();
+    const box = document.getElementById('crossResults');
+    if (q.length < 2) { box.innerHTML = ''; return; }
+    const res = await fetch('/api/search?q=' + encodeURIComponent(q));
+    if (!res.ok) { box.innerHTML = '<p style="color:var(--danger)">Errore ricerca</p>'; return; }
+    const d = await res.json();
+    let html = `<p style="color:var(--text-muted);margin:8px 0">IMI: <strong>${d.internati.length}</strong> risultati &nbsp;|&nbsp; Fondi Grande Guerra: <strong style="color:var(--primary)">${d.menzioni.length}</strong> menzioni</p>`;
+    if (d.internati.length) {
+        html += '<h3 style="margin:10px 0 4px">Internati Militari (IMI - 2GM)</h3><div class="table-container" style="max-height:220px"><table><thead><tr><th>Cognome</th><th>Nome</th><th>Luogo Nasc.</th><th>Residenza</th><th>Internamento</th><th>Sorte</th></tr></thead><tbody>';
+        html += d.internati.map(r => `<tr><td>${r.cognome||''}</td><td>${r.nome||''}</td><td>${r.luogo_nascita||''}</td><td>${r.residenza||''}</td><td>${r.luogo_internamento||''}</td><td>${r.sorte||''}</td></tr>`).join('');
+        html += '</tbody></table></div>';
+    }
+    if (d.menzioni.length) {
+        html += '<h3 style="margin:10px 0 4px">Fondi Archivistici (Grande Guerra / SME)</h3><div class="table-container" style="max-height:220px"><table><thead><tr><th>Cognome</th><th>Nome</th><th>Grado</th><th>Reparto</th><th>Luogo</th><th>Data</th><th>Fondo</th></tr></thead><tbody>';
+        html += d.menzioni.map(m => `<tr><td>${m.cognome||''}</td><td>${m.nome||''}</td><td>${m.grado||''}</td><td>${m.reparto||''}</td><td>${m.luogo||''}</td><td>${m.data||''}</td><td style="font-size:0.75rem">${m.codice_fondo||''}</td></tr>`).join('');
+        html += '</tbody></table></div>';
+    }
+    const dec = d.decorati || [];
+    if (dec.length) {
+        html += '<h3 style="margin:10px 0 4px">Decorati al Valor Militare (ISTORECO)</h3><div class="table-container" style="max-height:260px"><table><thead><tr><th>Cognome</th><th>Nome</th><th>Decorazione</th><th>Guerra</th><th>Comune Nasc.</th><th>Luogo Morte</th><th>Motivazione</th><th>Scheda</th></tr></thead><tbody>';
+        html += dec.map(r => `<tr><td>${r.cognome||''}</td><td>${r.nome||''}</td><td style="color:var(--warning)">${r.decorazione||''}</td><td style="font-size:0.75rem">${r.guerra||''}</td><td>${r.comune_nascita||''}</td><td>${r.luogo_morte||''}</td><td style="font-size:0.75rem;max-width:240px">${(r.motivazione||'').substring(0,120)}</td><td>${r.url_scheda?`<a href="${r.url_scheda}" target="_blank" style="color:var(--primary)">apri</a>`:''}</td></tr>`).join('');
+        html += '</tbody></table></div>';
+    }
+    if (!d.internati.length && !d.menzioni.length && !dec.length) html += '<p class="empty-state">Nessun risultato.</p>';
+    box.innerHTML = html;
+}
+
+// ─── Decorati ISTORECO ───
+let decoratiPollTimer = null;
+async function loadDecorati() {
+    const res = await fetch('/api/decorati');
+    const data = await res.json();
+    document.getElementById('statDecorati').textContent = data.count;
+    const pr = data.progress || {};
+    const running = pr.status === 'processing';
+    document.getElementById('statDecoratiRunning').textContent = running ? `${pr.processed}/${pr.total}` : '-';
+    const albiTxt = (data.albi||[]).map(a => `${a.albo_nome||'?'}: ${a.n}`).join(' | ');
+    document.getElementById('decoratiInfo').textContent = albiTxt || 'Nessun decorato in DB. Avvia lo scaricamento.';
+    if (running) { if (!decoratiPollTimer) decoratiPollTimer = setInterval(loadDecorati, 4000); }
+    else { if (decoratiPollTimer) { clearInterval(decoratiPollTimer); decoratiPollTimer = null; } }
+}
+async function decoratiScrape() {
+    const res = await fetch('/api/decorati/scrape?details=true', { method: 'POST' });
+    if (res.ok) { showToast('Scaricamento decorati avviato', 'success'); loadDecorati(); }
+    else { const e = await res.json(); showToast(e.detail, 'error'); }
+}
+async function decoratiStop() {
+    const res = await fetch('/api/decorati/stop', { method: 'POST' });
+    if (res.ok) showToast('Arresto richiesto', 'success');
+    else { const e = await res.json(); showToast(e.detail, 'error'); }
+}
+
+updateEngineInfo();
+refresh();
+loadCredits();
+loadFondi();
+loadDecorati();
+loadEntita();
+loadAIHistory();
+loadAlboOro();
+memLoadTraces();
+bgRefresh();
+setInterval(bgRefresh, 30000);
+
+// ─── Caduti Albo d'Oro ───
+let albooroPollTimer = null;
+async function loadAlboOro() {
+    try {
+        const res = await fetch('/api/albooro');
+        const data = await res.json();
+        document.getElementById('statAlboOro').textContent = data.count;
+        document.getElementById('statAlboOroVol').textContent = (data.volumes||[]).length;
+        const pr = data.progress || {};
+        const running = pr.status === 'processing';
+        document.getElementById('statAlboOroRunning').textContent = running ? `${pr.processed}/${pr.total}` : (pr.status || '-');
+        const volInfo = (data.volumes||[]).slice(0,5).map(v => `${v.volume_name.substring(0,20)}: ${v.n}`).join(' | ');
+        document.getElementById('albooroInfo').textContent = volInfo || (data.count ? `${data.count} caduti in DB` : 'Nessun dato. Avvia lo scaricamento.');
+        if (running) { if (!albooroPollTimer) albooroPollTimer = setInterval(loadAlboOro, 4000); }
+        else { if (albooroPollTimer) { clearInterval(albooroPollTimer); albooroPollTimer = null; } }
+    } catch(e) { console.log('loadAlboOro error:', e); }
+}
+async function albooroScrape() {
+    const res = await fetch('/api/albooro/scrape', { method: 'POST' });
+    if (res.ok) { showToast('Scaricamento Albo d\'Oro avviato', 'success'); loadAlboOro(); }
+    else { const e = await res.json(); showToast(e.detail, 'error'); }
+}
+async function albooroStop() {
+    const res = await fetch('/api/albooro/stop', { method: 'POST' });
+    if (res.ok) showToast('Arresto richiesto', 'success');
+    else { const e = await res.json(); showToast(e.detail, 'error'); }
+}
+
+// ─── Entità e Collegamenti ───
+let linkerPollTimer = null;
+async function loadEntita() {
+    try {
+        const res = await fetch('/api/entita');
+        const data = await res.json();
+        document.getElementById('statEntita').textContent = data.count_entita || 0;
+        document.getElementById('statCollegamenti').textContent = data.count_collegamenti || 0;
+        const pr = data.progress || {};
+        const running = pr.status === 'processing';
+        document.getElementById('statLinkerStatus').textContent = running ? `${pr.processed}/${pr.total}` : (pr.status || '-');
+        if (pr.current) document.getElementById('linkerInfo').textContent = 'In elaborazione: ' + pr.current;
+        else if (pr.status === 'done') document.getElementById('linkerInfo').textContent = 'Estrazione completata.';
+        else document.getElementById('linkerInfo').textContent = '';
+        if (running) { if (!linkerPollTimer) linkerPollTimer = setInterval(loadEntita, 3000); }
+        else { if (linkerPollTimer) { clearInterval(linkerPollTimer); linkerPollTimer = null; } }
+    } catch(e) { console.log('loadEntita error:', e); }
+}
+async function linkerBuild() {
+    const res = await fetch('/api/entita/build', { method: 'POST' });
+    if (res.ok) { showToast('Estrazione entit\u00e0 avviata', 'success'); loadEntita(); }
+    else { const e = await res.json(); showToast(e.detail, 'error'); }
+}
+async function linkerStop() {
+    const res = await fetch('/api/entita/stop', { method: 'POST' });
+    if (res.ok) showToast('Arresto richiesto', 'success');
+    else { const e = await res.json(); showToast(e.detail, 'error'); }
+}
+let entitaSearchTimer = null;
+function debounceEntitaSearch() {
+    clearTimeout(entitaSearchTimer);
+    entitaSearchTimer = setTimeout(entitaSearch, 400);
+}
+async function entitaSearch() {
+    const q = document.getElementById('entitaSearchInput').value.trim();
+    const box = document.getElementById('entitaResults');
+    if (q.length < 2) { box.innerHTML = ''; return; }
+    const res = await fetch('/api/entita/search?q=' + encodeURIComponent(q));
+    if (!res.ok) { box.innerHTML = '<p style="color:var(--danger)">Errore</p>'; return; }
+    const d = await res.json();
+    let html = `<p style="color:var(--text-muted);margin:8px 0">${d.results.length} entit\u00e0 trovate</p>`;
+    if (d.results.length) {
+        html += '<div class="table-container" style="max-height:300px"><table><thead><tr><th>Tipo</th><th>Valore</th><th>Cognome</th><th>Nome</th><th>Luogo</th><th>Data</th><th>Collegamenti</th><th>Dataset</th></tr></thead><tbody>';
+        html += d.results.map(r => `<tr style="cursor:pointer" onclick="entitaDetail(${r.id})"><td style="color:var(--warning)">${r.tipo||''}</td><td>${r.valore||''}</td><td>${r.cognome||''}</td><td>${r.nome||''}</td><td>${r.luogo||''}</td><td>${r.data||''}</td><td style="text-align:center">${r.num_collegamenti||0}</td><td style="font-size:0.75rem">${r.tabelle||''}</td></tr>`).join('');
+        html += '</tbody></table></div>';
+    } else html += '<p class="empty-state">Nessuna entit\u00e0.</p>';
+    box.innerHTML = html;
+}
+async function entitaDetail(id) {
+    const res = await fetch('/api/entita/' + id);
+    if (!res.ok) { showToast('Errore caricamento entit\u00e0', 'error'); return; }
+    const d = await res.json();
+    let html = `<h3>Entit\u00e0: ${d.entita.valore}</h3>`;
+    html += `<p style="color:var(--text-muted);font-size:0.85rem">Tipo: ${d.entita.tipo} | Contesto: ${d.entita.contesto||''}</p>`;
+    html += `<p style="margin:8px 0">${d.collegamenti.length} collegamenti:</p>`;
+    for (const c of d.collegamenti) {
+        const r = c.record;
+        html += `<div style="background:var(--bg-soft);border-radius:6px;padding:10px;margin:6px 0;border-left:3px solid var(--primary)">`;
+        html += `<span style="color:var(--warning);font-size:0.8rem">[${c.tabella}]</span> `;
+        if (r.cognome) html += `<strong>${r.cognome} ${r.nome||''}</strong> `;
+        if (r.luogo_nascita) html += `| nato: ${r.luogo_nascita} `;
+        if (r.luogo_internamento) html += `| internamento: ${r.luogo_internamento} `;
+        if (r.decorazione) html += `| decorazione: ${r.decorazione} `;
+        if (r.luogo_morte) html += `| morte: ${r.luogo_morte} `;
+        if (r.luogo) html += `| luogo: ${r.luogo} `;
+        if (r.contesto) html += `| contesto: ${r.contesto} `;
+        html += `</div>`;
+    }
+    document.getElementById('entitaResults').innerHTML = html;
+}
+
+// ─── Memory Router ───
+async function memSearch() {
+    const q = document.getElementById('memQueryInput').value.trim();
+    if (!q) { showToast('Inserisci una query', 'error'); return; }
+    const useCloud = document.getElementById('memCloudFallback').value === 'true';
+    const loading = document.getElementById('memLoading');
+    const box = document.getElementById('memResults');
+    loading.style.display = 'block';
+    box.innerHTML = '';
+    try {
+        const res = await fetch('/api/memory/query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: q, use_cloud_fallback: useCloud })
+        });
+        loading.style.display = 'none';
+        if (!res.ok) { showToast((await res.json()).detail, 'error'); return; }
+        const d = await res.json();
+        const confColor = d.confidence >= 0.5 ? 'var(--success)' : d.confidence >= 0.2 ? 'var(--warning)' : 'var(--danger)';
+        let html = `<div style="background:var(--bg-soft);border-radius:8px;padding:14px;margin-bottom:12px;border-left:3px solid var(--accent)">`;
+        html += `<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">`;
+        html += `<span style="color:var(--text-muted);font-size:0.8rem">Route: <strong style="color:var(--accent)">${d.route.join(' → ')}</strong></span>`;
+        html += `<span style="color:var(--text-muted);font-size:0.8rem">Confidence: <strong style="color:${confColor}">${(d.confidence*100).toFixed(0)}%</strong></span>`;
+        html += `<span style="color:var(--text-muted);font-size:0.8rem">Tempo: <strong>${d.response_ms}ms</strong></span>`;
+        html += `<span style="color:var(--text-muted);font-size:0.8rem">Fonti verificate: <strong>${(d.verified_sources||[]).length}</strong></span>`;
+        if (d.need_cloud_ai) html += `<span style="color:var(--warning);font-size:0.8rem">&#9888; need_cloud</span>`;
+        html += `</div>`;
+        // Cues
+        const c = d.cues;
+        let cueStr = [];
+        if (c.persona) cueStr.push(`&#128100; ${c.persona}`);
+        if (c.reparto) cueStr.push(`&#128738; ${c.reparto}`);
+        if (c.luogo) cueStr.push(`&#128205; ${c.luogo}`);
+        if (c.data) cueStr.push(`&#128197; ${c.data}`);
+        if (c.guerra) cueStr.push(`&#9876; ${c.guerra.toUpperCase()}`);
+        if (c.archivio) cueStr.push(`&#128196; ${c.archivio}`);
+        if (cueStr.length) html += `<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px">${cueStr.join(' &nbsp;|&nbsp; ')}</div>`;
+        // Suggerimenti
+        if ((d.suggested_next_steps||[]).length) {
+            html += `<div style="font-size:0.8rem;color:var(--warning);margin-bottom:8px">&#128161; ${d.suggested_next_steps.join(' &nbsp;•&nbsp; ')}</div>`;
+        }
+        html += `</div>`;
+        // Risultati verificati locali
+        if ((d.verified_sources||[]).length) {
+            html += `<h3 style="color:var(--success);font-size:0.85rem;margin:8px 0">Fonti locali verificate (${d.verified_sources.length})</h3>`;
+            html += `<div class="table-container" style="max-height:260px"><table><thead><tr><th>Score</th><th>Sorgente</th><th>Tabella</th><th>Dato</th></tr></thead><tbody>`;
+            for (const s of d.verified_sources) {
+                const dd = s.data || {};
+                const label = dd.valore || dd.cognome || dd.titolo_documento || dd.nominativo || JSON.stringify(dd).substring(0,60);
+                html += `<tr><td style="color:var(--success)">${(s.score_final*100).toFixed(0)}%</td><td style="color:var(--warning)">${s.source}</td><td>${s.table}</td><td style="font-size:0.75rem">${String(label).substring(0,120)}</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+        }
+        // Cloud result
+        if (d.cloud_result && d.cloud_result.risposta) {
+            html += `<div style="background:var(--bg-soft);border-radius:8px;padding:14px;margin-top:12px;border-left:3px solid var(--warning)">`;
+            html += `<h3 style="color:var(--warning);font-size:0.85rem;margin-bottom:8px">&#127760; Perplexity (fonti esterne)</h3>`;
+            html += `<div style="white-space:pre-wrap;font-size:0.85rem;line-height:1.6">${d.cloud_result.risposta}</div>`;
+            if (d.cloud_result.cost_usd) html += `<div style="color:var(--text-muted);font-size:0.75rem;margin-top:6px">Costo: $${d.cloud_result.cost_usd.toFixed(6)}</div>`;
+            html += `</div>`;
+        } else if (d.cloud_result && d.cloud_result.error) {
+            html += `<div style="color:var(--danger);font-size:0.8rem;margin-top:8px">Perplexity error: ${d.cloud_result.error}</div>`;
+        }
+        if (!(d.verified_sources||[]).length && !d.cloud_result) {
+            html += `<div class="empty-state">Nessun risultato trovato.</div>`;
+        }
+        box.innerHTML = html;
+        memLoadTraces();
+    } catch(e) {
+        loading.style.display = 'none';
+        showToast('Errore: ' + e.message, 'error');
+    }
+}
+
+async function memLoadTraces() {
+    try {
+        const [tRes, sRes] = await Promise.all([
+            fetch('/api/memory/traces?limit=15'),
+            fetch('/api/memory/stats')
+        ]);
+        if (!tRes.ok || !sRes.ok) return;
+        const td = await tRes.json();
+        const sd = await sRes.json();
+        document.getElementById('memStats').textContent =
+            `Totale: ${sd.total_traces} query | Tempo medio: ${sd.avg_response_ms}ms | Token risparmiati: ~${sd.tokens_saved_estimate}`;
+        document.getElementById('bgMemTraces').textContent = sd.total_traces;
+        const box = document.getElementById('memTraces');
+        if (!td.traces.length) { box.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem">Nessuna query ancora.</p>'; return; }
+        box.innerHTML = td.traces.map(t => {
+            const confColor = t.confidence >= 0.5 ? 'var(--success)' : t.confidence >= 0.2 ? 'var(--warning)' : 'var(--text-muted)';
+            const cloud = t.used_cloud_ai ? '&#127760;' : '';
+            const ts = (t.created_at||'').substring(0,16);
+            return `<div style="background:var(--bg-soft);border-radius:4px;padding:7px 10px;margin:3px 0;font-size:0.78rem;cursor:pointer" onclick="document.getElementById('memQueryInput').value='${t.query_text.replace(/'/g,"\\'")}'">
+                <span style="color:var(--accent)">${ts}</span>
+                &nbsp;<strong>${t.query_text.substring(0,80)}</strong>
+                &nbsp;<span style="color:${confColor}">${(t.confidence*100).toFixed(0)}%</span>
+                &nbsp;<span style="color:var(--text-muted)">${t.response_ms}ms</span>
+                &nbsp;${cloud}
+            </div>`;
+        }).join('');
+    } catch(e) { console.log('memLoadTraces error', e); }
+}
+
+// ─── Status Background ───
+async function bgRefresh() {
+    try {
+        const res = await fetch('/api/entita');
+        const d = await res.json();
+        document.getElementById('bgEntita').textContent = Number(d.count_entita||0).toLocaleString('it');
+        document.getElementById('bgCollegamenti').textContent = Number(d.count_collegamenti||0).toLocaleString('it');
+    } catch(e) {}
+    try {
+        const res = await fetch('/api/cwgc');
+        const d = await res.json();
+        document.getElementById('bgCwgc').textContent = Number(d.count||0).toLocaleString('it');
+        const pr = d.progress||{};
+        document.getElementById('bgCwgcDetail').textContent = pr.current
+            ? `CWGC in corso: ${pr.current} | salvati: ${Number(pr.total_saved||0).toLocaleString('it')}`
+            : `CWGC: ${d.count ? Number(d.count).toLocaleString('it')+' record' : 'idle'}`;
+    } catch(e) {
+        document.getElementById('bgCwgcDetail').textContent = 'CWGC: api non raggiungibile';
+    }
+    try {
+        const res = await fetch('/api/nara_catalog');
+        const d = await res.json();
+        document.getElementById('bgNara').textContent = Number(d.count||0).toLocaleString('it');
+        const pr = d.progress||{};
+        document.getElementById('bgNaraDetail').textContent = pr.current
+            ? `NARA in corso: ${pr.current} | offset: ${pr.processed||0}`
+            : `NARA Catalog: ${d.count ? Number(d.count).toLocaleString('it')+' record' : 'idle'}`;
+    } catch(e) {
+        document.getElementById('bgNaraDetail').textContent = 'NARA: api non raggiungibile';
+    }
+    try {
+        const res = await fetch('/api/memory/stats');
+        const d = await res.json();
+        document.getElementById('bgMemTraces').textContent = d.total_traces||0;
+    } catch(e) {}
+}
+
+// ─── Ricerca AI ───
+async function aiResearch() {
+    const query = document.getElementById('aiQueryInput').value.trim();
+    const provider = document.getElementById('aiProviderSelect').value;
+    if (!query) { showToast('Inserisci una query', 'error'); return; }
+    const loading = document.getElementById('aiResearchLoading');
+    const results = document.getElementById('aiResearchResults');
+    loading.style.display = 'block';
+    results.innerHTML = '';
+    let dots = '';
+    const dotsTimer = setInterval(() => { dots += '.'; if (dots.length > 3) dots = ''; document.getElementById('aiLoadingDots').textContent = dots; }, 500);
+    try {
+        const res = await fetch('/api/ai-research', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, provider, limit: 30 })
+        });
+        clearInterval(dotsTimer);
+        loading.style.display = 'none';
+        if (!res.ok) { const e = await res.json(); showToast(e.detail, 'error'); return; }
+        const d = await res.json();
+        if (provider === 'all') {
+            let html = '';
+            for (const [p, r] of Object.entries(d)) {
+                html += `<div style="background:var(--bg-soft);border-radius:8px;padding:14px;margin:8px 0;border-left:3px solid var(--primary)">`;
+                html += `<h3 style="color:var(--primary);font-size:0.9rem">${p.toUpperCase()} ${r.model||''} ${r.cost_usd ? '$'+r.cost_usd.toFixed(6) : ''}</h3>`;
+                if (r.error) html += `<p style="color:var(--danger)">Errore: ${r.error}</p>`;
+                else html += `<div style="white-space:pre-wrap;font-size:0.85rem;line-height:1.6;margin-top:8px">${r.risposta||''}</div>`;
+                html += `</div>`;
+            }
+            results.innerHTML = html;
+        } else {
+            results.innerHTML = `<div style="background:var(--bg-soft);border-radius:8px;padding:14px;border-left:3px solid var(--primary)">
+            <h3 style="color:var(--primary);font-size:0.9rem">${d.provider.toUpperCase()} ${d.model||''} ${d.cost_usd ? '$'+d.cost_usd.toFixed(6) : ''}</h3>
+            <div style="white-space:pre-wrap;font-size:0.85rem;line-height:1.6;margin-top:8px">${d.risposta||''}</div>
+            </div>`;
+        }
+        loadAIHistory();
+        showToast('Ricerca AI completata', 'success');
+    } catch(e) {
+        clearInterval(dotsTimer);
+        loading.style.display = 'none';
+        showToast('Errore: ' + e.message, 'error');
+    }
+}
+async function loadAIHistory() {
+    try {
+        const res = await fetch('/api/ai-research/history?limit=10');
+        const d = await res.json();
+        const box = document.getElementById('aiHistory');
+        if (!d.ricerche || !d.ricerche.length) { box.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem">Nessuna ricerca precedente.</p>'; return; }
+        box.innerHTML = d.ricerche.map(r => `<div style="background:var(--bg-soft);border-radius:4px;padding:8px;margin:4px 0;font-size:0.8rem;cursor:pointer" onclick="showAIHistoryDetail(${r.id})"><span style="color:var(--warning)">[${r.provider}]</span> ${r.query.substring(0,80)} <span style="color:var(--text-muted)">${r.elaborato_il.substring(0,16)}</span></div>`).join('');
+    } catch(e) { console.log('AI history error:', e); }
+}
+function showAIHistoryDetail(id) {
+    fetch('/api/ai-research/history?limit=50').then(r=>r.json()).then(d=>{
+        const r = d.ricerche.find(x=>x.id===id);
+        if (!r) return;
+        document.getElementById('aiResearchResults').innerHTML = `<div style="background:var(--bg-soft);border-radius:8px;padding:14px;border-left:3px solid var(--warning)">
+        <h3 style="color:var(--warning);font-size:0.9rem">[${r.provider}] ${r.model} - ${r.query}</h3>
+        <div style="white-space:pre-wrap;font-size:0.85rem;line-height:1.6;margin-top:8px">${r.risposta||''}</div>
+        </div>`;
+    });
+}
+
+async function loadCredits() {
+try {
+    const res = await fetch('/api/credits');
+    const data = await res.json();
+    const widget = document.getElementById('creditsWidget');
+    widget.style.display = 'block';
+    const remaining = data.remaining_usd;
+    const pct = 100 - data.pct_used;
+    const remEl = document.getElementById('cwRemaining');
+    remEl.textContent = `$${remaining.toFixed(2)}`;
+    remEl.className = 'cw-remaining' + (remaining < 5 ? ' critical' : remaining < 15 ? ' low' : '');
+    const bar = document.getElementById('cwBarFill');
+    bar.style.width = Math.max(0, pct) + '%';
+    bar.className = 'cw-bar-fill' + (remaining < 5 ? ' critical' : remaining < 15 ? ' low' : '');
+    document.getElementById('cwToday').textContent = `$${data.today_cost_usd.toFixed(2)}`;
+    document.getElementById('cwTotal').textContent = `$${data.total_cost_usd.toFixed(2)}`;
+    let openaiCost = 0, mistralCost = 0;
+    for (const p of data.by_provider) {
+        if (p.provider === 'openai') openaiCost = p.cost;
+        if (p.provider === 'mistral') mistralCost = p.cost;
+    }
+    document.getElementById('cwOpenAI').textContent = `$${openaiCost.toFixed(2)}`;
+    document.getElementById('cwMistral').textContent = `$${mistralCost.toFixed(2)}`;
+} catch (e) {
+    console.log('Credits load error:', e);
+}
+}
+
+// ─── Analytics Bar ───
+let _analyticsData = {};
+async function loadAnalytics() {
+    try {
+        const [statusRes, entRes, fedRes] = await Promise.all([
+            fetch('/api/status').then(r => r.json()),
+            fetch('/api/entita').then(r => r.json()).catch(() => ({})),
+            fetch('/api/source/stats').then(r => r.json()).catch(() => ({})),
+        ]);
+        _analyticsData = { statusRes, entRes, fedRes };
+
+        // Internati (Soldati IMI)
+        const internatiN = statusRes.total_internati || 0;
+        const reviewN = statusRes.needs_review || 0;
+        document.getElementById('anInternati').textContent = internatiN.toLocaleString('it');
+        document.getElementById('anInternatiSub').textContent = reviewN.toLocaleString('it') + ' da revisionare';
+
+        // Caduti (somma tutte le tabelle)
+        const cadutiApis = [
+            ['/api/albooro', 'albooro'],
+            ['/api/cwgc', 'cwgc'],
+            ['/api/ministero', 'ministero'],
+            ['/api/sardi', 'sardi'],
+            ['/api/bologna', 'bologna']
+        ];
+        let cadutiTotal = 0;
+        const cadutiBreakdown = {};
+        for (const [api, label] of cadutiApis) {
+            try {
+                const c = await fetch(api).then(r => r.json()).catch(() => ({}));
+                const n = c.count || 0;
+                cadutiBreakdown[label] = n;
+                cadutiTotal += n;
+            } catch {}
+        }
+        // Aggiungi francia_ww1 se disponibile
+        try {
+            const fr = await fetch('/api/francia_ww1').then(r => r.json()).catch(() => ({}));
+            if (fr.count) { cadutiBreakdown['francia'] = fr.count; cadutiTotal += fr.count; }
+        } catch {}
+        _analyticsData.cadutiBreakdown = cadutiBreakdown;
+        document.getElementById('anCaduti').textContent = cadutiTotal.toLocaleString('it');
+        const cadutiParts = Object.entries(cadutiBreakdown).filter(([k,v]) => v > 0).map(([k,v]) => k + ':' + v.toLocaleString('it'));
+        document.getElementById('anCadutiSub').textContent = cadutiParts.slice(0,3).join(' + ') + (cadutiParts.length > 3 ? '...' : '');
+
+        // Decorati
+        let decoratiN = 0;
+        try {
+            const decRes = await fetch('/api/decorati').then(r => r.json()).catch(() => ({}));
+            decoratiN = decRes.count || 0;
+        } catch {}
+        let nastroN = 0;
+        try {
+            const naRes = await fetch('/api/nastroazzurro').then(r => r.json()).catch(() => ({}));
+            nastroN = naRes.count || 0;
+        } catch {}
+        _analyticsData.decorati = { albi: decoratiN, nastro: nastroN };
+        document.getElementById('anDecorati').textContent = (decoratiN + nastroN).toLocaleString('it');
+        document.getElementById('anDecoratiSub').textContent = 'albi:' + decoratiN.toLocaleString('it') + ' + nastro:' + nastroN.toLocaleString('it');
+
+        // Entita
+        const entCount = entRes.count_entita || 0;
+        document.getElementById('anEntita').textContent = entCount.toLocaleString('it');
+        document.getElementById('anEntitaSub').textContent = 'persone+luoghi+eventi';
+
+        // Archi grafo
+        const archi = entRes.count_collegamenti || 0;
+        document.getElementById('anArchi').textContent = archi.toLocaleString('it');
+        document.getElementById('anArchiSub').textContent = 'collegamenti cross-dataset';
+
+        // Doc archivio (fondi + menzioni + NARA)
+        let docCount = 0, menzCount = 0, naraCount = 0;
+        try {
+            const docRes = await fetch('/api/fondi').then(r => r.json()).catch(() => ({}));
+            docCount = docRes.count_fondi || 0;
+            menzCount = docRes.count_menzioni || 0;
+        } catch {}
+        try {
+            const naraRes = await fetch('/api/nara').then(r => r.json()).catch(() => ({}));
+            naraCount = (naraRes.count_t315 || 0) + (naraRes.count_catalog || 0);
+        } catch {}
+        _analyticsData.docs = { fondi: docCount, menzioni: menzCount, nara: naraCount };
+        document.getElementById('anDoc').textContent = (docCount + naraCount).toLocaleString('it');
+        document.getElementById('anDocSub').textContent = menzCount.toLocaleString('it') + ' menzioni, ' + naraCount + ' NARA';
+
+        // Provider federati
+        const provCount = fedRes.providers || 0;
+        const provNames = fedRes.provider_names || [];
+        _analyticsData.providers = { count: provCount, names: provNames };
+        document.getElementById('anProviders').textContent = provCount;
+        document.getElementById('anProvidersSub').textContent = provNames.slice(0,4).join(', ') + (provNames.length > 4 ? '...' : '');
+
+        // Fonti indicizzate
+        const srcCount = fedRes.total_sources || 0;
+        document.getElementById('anSources').textContent = srcCount.toLocaleString('it');
+        document.getElementById('anSourcesSub').textContent = (fedRes.cache_count || 0) + ' in cache';
+    } catch(e) {
+        console.log('Analytics load error:', e);
+    }
+}
+
+// ─── DB View Modal ───
+function openDbView(db) {
+    const overlay = document.getElementById('dbViewOverlay');
+    const title = document.getElementById('dbViewTitle');
+    const content = document.getElementById('dbViewContent');
+    const d = _analyticsData;
+
+    if (db === 'internati') {
+        title.textContent = 'Soldati IMI - Internati Militari Italiani';
+        const n = (d.statusRes?.total_internati || 0);
+        const r = (d.statusRes?.needs_review || 0);
+        content.innerHTML = `
+            <div class="invest-facts">
+                <div class="fact-card"><div class="fc-label">Totale soldati</div><div class="fc-value">${n.toLocaleString('it')}</div></div>
+                <div class="fact-card ${r > 0 ? 'unverified' : ''}"><div class="fc-label">Da revisionare</div><div class="fc-value">${r.toLocaleString('it')}</div></div>
+                <div class="fact-card"><div class="fc-label">Lettere A-Z</div><div class="fc-value">20</div></div>
+            </div>
+            <div style="margin-top:16px">
+                <input type="text" class="conv-input" id="dbViewSearch" placeholder="Cerca in questo DB..." onkeydown="if(event.key==='Enter')dbViewSearchExec('internati')">
+                <button class="conv-btn" style="margin-top:8px" onclick="dbViewSearchExec('internati')">Cerca</button>
+            </div>
+            <div id="dbViewResults" style="margin-top:16px"></div>
+        `;
+    } else if (db === 'caduti') {
+        title.textContent = 'Caduti di Guerra - Tutti i dataset';
+        const bd = d.cadutiBreakdown || {};
+        let html = '<div class="invest-facts">';
+        const labels = { albooro: 'Albo d\'Oro', cwgc: 'CWGC (Commonwealth)', ministero: 'Ministero Difesa', sardi: 'Caduti Sardi', bologna: 'Caduti Bolognesi', francia: 'Caduti Francia WW1' };
+        let total = 0;
+        for (const [k, v] of Object.entries(bd)) {
+            total += v;
+            html += `<div class="fact-card"><div class="fc-label">${labels[k] || k}</div><div class="fc-value">${v.toLocaleString('it')}</div></div>`;
+        }
+        html += `<div class="fact-card"><div class="fc-label">TOTALE</div><div class="fc-value" style="color:var(--danger);font-size:1.2rem">${total.toLocaleString('it')}</div></div>`;
+        html += '</div>';
+        html += `<div style="margin-top:16px"><input type="text" class="conv-input" id="dbViewSearch" placeholder="Cerca caduto..." onkeydown="if(event.key==='Enter')dbViewSearchExec('caduti')"><button class="conv-btn" style="margin-top:8px" onclick="dbViewSearchExec('caduti')">Cerca</button></div><div id="dbViewResults" style="margin-top:16px"></div>`;
+        content.innerHTML = html;
+    } else if (db === 'decorati') {
+        title.textContent = 'Decorati al Valor Militare';
+        const albi = d.decorati?.albi || 0;
+        const nastro = d.decorati?.nastro || 0;
+        content.innerHTML = `
+            <div class="invest-facts">
+                <div class="fact-card"><div class="fc-label">Albi ISTORECO</div><div class="fc-value">${albi.toLocaleString('it')}</div></div>
+                <div class="fact-card"><div class="fc-label">Nastro Azzurro</div><div class="fc-value">${nastro.toLocaleString('it')}</div></div>
+                <div class="fact-card"><div class="fc-label">TOTALE</div><div class="fc-value" style="color:var(--warning);font-size:1.2rem">${(albi+nastro).toLocaleString('it')}</div></div>
+            </div>
+            <div style="margin-top:16px"><input type="text" class="conv-input" id="dbViewSearch" placeholder="Cerca decorato..." onkeydown="if(event.key==='Enter')dbViewSearchExec('decorati')"><button class="conv-btn" style="margin-top:8px" onclick="dbViewSearchExec('decorati')">Cerca</button></div>
+            <div id="dbViewResults" style="margin-top:16px"></div>
+        `;
+    } else if (db === 'entita') {
+        title.textContent = 'Entita - Grafo della conoscenza';
+        content.innerHTML = `
+            <div class="invest-facts">
+                <div class="fact-card"><div class="fc-label">Totale entita</div><div class="fc-value">${(d.entRes?.count_entita||0).toLocaleString('it')}</div></div>
+            </div>
+            <p style="margin-top:12px;color:var(--text-muted);font-size:0.85rem">Persone, luoghi, eventi, decorazioni, unita militari estratte da tutti i dataset.</p>
+            <div style="margin-top:16px"><input type="text" class="conv-input" id="dbViewSearch" placeholder="Cerca entita..." onkeydown="if(event.key==='Enter')dbViewSearchExec('entita')"><button class="conv-btn" style="margin-top:8px" onclick="dbViewSearchExec('entita')">Cerca</button></div>
+            <div id="dbViewResults" style="margin-top:16px"></div>
+        `;
+    } else if (db === 'collegamenti') {
+        title.textContent = 'Archi del grafo - Collegamenti cross-dataset';
+        content.innerHTML = `
+            <div class="invest-facts">
+                <div class="fact-card"><div class="fc-label">Totale collegamenti</div><div class="fc-value">${(d.entRes?.count_collegamenti||0).toLocaleString('it')}</div></div>
+            </div>
+            <p style="margin-top:12px;color:var(--text-muted);font-size:0.85rem">Collegamenti tra entita che collegano lo stesso soldato/luogo/evento across dataset diversi.</p>
+        `;
+    } else if (db === 'documenti') {
+        title.textContent = 'Documenti d\'archivio';
+        const docs = d.docs || {};
+        content.innerHTML = `
+            <div class="invest-facts">
+                <div class="fact-card"><div class="fc-label">Fondi archivistici</div><div class="fc-value">${(docs.fondi||0).toLocaleString('it')}</div></div>
+                <div class="fact-card"><div class="fc-label">Menzioni</div><div class="fc-value">${(docs.menzioni||0).toLocaleString('it')}</div></div>
+                <div class="fact-card"><div class="fc-label">Documenti NARA</div><div class="fc-value">${(docs.nara||0).toLocaleString('it')}</div></div>
+            </div>
+        `;
+    } else if (db === 'providers') {
+        title.textContent = 'Provider federati - Archivi esterni';
+        const names = d.providers?.names || [];
+        content.innerHTML = `
+            <div class="invest-facts">
+                <div class="fact-card"><div class="fc-label">Provider attivi</div><div class="fc-value">${d.providers?.count || 0}</div></div>
+            </div>
+            <div style="margin-top:12px">
+                <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-muted)">Archivi connessi:</h4>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    ${names.map(n => `<span class="source-badge online">${n}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    } else if (db === 'fonti') {
+        title.textContent = 'Fonti indicizzate - Research-to-Index';
+        content.innerHTML = `
+            <div class="invest-facts">
+                <div class="fact-card"><div class="fc-label">Fonti totali</div><div class="fc-value">${(d.fedRes?.total_sources||0).toLocaleString('it')}</div></div>
+                <div class="fact-card"><div class="fc-label">In cache</div><div class="fc-value">${d.fedRes?.cache_count || 0}</div></div>
+                <div class="fact-card"><div class="fc-label">Soggetti ricerca</div><div class="fc-value">${(d.fedRes?.subjects_count||0).toLocaleString('it')}</div></div>
+            </div>
+        `;
+    }
+
+    overlay.classList.add('active');
+}
+
+function closeDbView() {
+    document.getElementById('dbViewOverlay').classList.remove('active');
+}
+
+async function dbViewSearchExec(db) {
+    const q = document.getElementById('dbViewSearch')?.value?.trim();
+    if (!q) return;
+    const results = document.getElementById('dbViewResults');
+    results.innerHTML = '<p style="color:var(--text-muted)">Ricerca in corso...</p>';
+    try {
+        let url;
+        if (db === 'internati') url = '/api/conv-search?q=' + encodeURIComponent(q);
+        else if (db === 'caduti') url = '/api/conv-search?q=' + encodeURIComponent(q) + '&scope=caduti';
+        else if (db === 'decorati') url = '/api/decorati?search=' + encodeURIComponent(q) + '&limit=20';
+        else if (db === 'entita') url = '/api/entita?search=' + encodeURIComponent(q) + '&limit=20';
+        else url = '/api/conv-search?q=' + encodeURIComponent(q);
+
+        const res = await fetch(url).then(r => r.json());
+        let html = '';
+        if (db === 'internati' || db === 'caduti') {
+            const soldiers = res.soldiers || res.results || [];
+            if (!soldiers.length) {
+                html = '<p style="color:var(--text-muted)">Nessun risultato.</p>';
+            } else {
+                html = '<div class="table-container" style="max-height:400px"><table><thead><tr><th>ID</th><th>Cognome</th><th>Nome</th><th>Luogo</th><th>Sorte</th></tr></thead><tbody>';
+                for (const s of soldiers.slice(0, 20)) {
+                    html += `<tr><td>${s.id || ''}</td><td>${s.cognome || ''}</td><td>${s.nome || ''}</td><td>${s.luogo_nascita || s.comune_nascita || ''}</td><td>${s.sorte || ''}</td></tr>`;
+                }
+                html += '</tbody></table></div>';
+            }
+        } else if (db === 'decorati') {
+            const items = res.items || res.results || [];
+            if (!items.length) { html = '<p style="color:var(--text-muted)">Nessun risultato.</p>'; }
+            else {
+                html = '<div class="table-container" style="max-height:400px"><table><thead><tr><th>Cognome</th><th>Nome</th><th>Decorazione</th><th>Guerra</th></tr></thead><tbody>';
+                for (const s of items.slice(0, 20)) {
+                    html += `<tr><td>${s.cognome || ''}</td><td>${s.nome || ''}</td><td>${s.decorazione || ''}</td><td>${s.guerra || ''}</td></tr>`;
+                }
+                html += '</tbody></table></div>';
+            }
+        } else if (db === 'entita') {
+            const items = res.items || res.results || [];
+            if (!items.length) { html = '<p style="color:var(--text-muted)">Nessun risultato.</p>'; }
+            else {
+                html = '<div class="table-container" style="max-height:400px"><table><thead><tr><th>Tipo</th><th>Valore</th><th>Fonte</th></tr></thead><tbody>';
+                for (const s of items.slice(0, 20)) {
+                    html += `<tr><td>${s.tipo || ''}</td><td>${s.valore || ''}</td><td>${s.fonte_tabella || ''}</td></tr>`;
+                }
+                html += '</tbody></table></div>';
+            }
+        }
+        results.innerHTML = html;
+    } catch(e) {
+        results.innerHTML = '<p style="color:var(--danger)">Errore: ' + e.message + '</p>';
+    }
+}
+
+// ─── Conversational Search ───
+function setConvExample(text) {
+    document.getElementById('convInput').value = text;
+    convSearch();
+}
+
+let currentSoldierId = null;
+let currentSelectedSources = new Set();
+
+function setConvStatus(msg, show) {
+    const el = document.getElementById('convStatus');
+    el.textContent = msg;
+    el.style.display = show ? 'block' : 'none';
+}
+
+async function convSearch() {
+    const q = document.getElementById('convInput').value.trim();
+    if (!q) { showToast('Inserisci una query', 'error'); return; }
+    const btn = document.getElementById('convBtn');
+    btn.disabled = true; btn.textContent = 'Ricerca...';
+    setConvStatus('Ricerca nei database locali...', true);
+
+    // Reset results
+    document.getElementById('aiResponseContainer').innerHTML =
+        '<div class="ai-loading">Interrogazione AI in corso<span class="ai-loading-dots"></span></div>';
+    document.getElementById('investLinks').innerHTML = '';
+    document.getElementById('investSources').innerHTML = '';
+    document.getElementById('sourcesCount').textContent = '';
+    document.getElementById('investResults').classList.add('active');
+
+    const t0 = performance.now();
+
+    try {
+        // Step 1: search local DB
+        const searchRes = await fetch(`/api/search?q=${encodeURIComponent(q)}&limit=10`).then(r => r.json());
+        const hasLocal = (searchRes.internati && searchRes.internati.length > 0) ||
+                         (searchRes.menzioni && searchRes.menzioni.length > 0) ||
+                         (searchRes.decorati && searchRes.decorati.length > 0);
+
+        // Traccia il soldato risolto (se c'e') cosi' il Dossier verificato sa
+        // se generare una biografia soldato o un dossier evento/query libera.
+        currentSoldierId = (searchRes.internati && searchRes.internati.length > 0)
+            ? searchRes.internati[0].id : null;
+
+        setConvStatus('Trovati ' +
+            (searchRes.internati?.length || 0) + ' internati, ' +
+            (searchRes.menzioni?.length || 0) + ' menzioni, ' +
+            (searchRes.decorati?.length || 0) + ' decorati. Avvio AI...', true);
+
+        // Step 2: render cross-DB links
+        renderCrossDBLinks(searchRes);
+
+        // Step 3: render sources
+        renderSourcesTab(searchRes);
+
+        // Step 4: launch AI research in parallel (all 4 providers)
+        renderAIResponses(q, t0);
+
+    } catch(e) {
+        showToast('Errore ricerca: ' + e.message, 'error');
+        document.getElementById('aiResponseContainer').innerHTML =
+            '<p style="color:var(--danger)">Errore: ' + e.message + '</p>';
+    } finally {
+        btn.disabled = false; btn.textContent = 'Cerca';
+        setTimeout(() => setConvStatus('', false), 3000);
+    }
+}
+
+// ─── Tab: Risposta AI (discorsiva, tutti i provider in parallelo) ───
+async function renderAIResponses(query, t0) {
+    const container = document.getElementById('aiResponseContainer');
+    container.innerHTML = '<div class="ai-loading">Interrogazione provider AI in parallelo<span class="ai-loading-dots"></span></div>';
+
+    const providers = [
+        { id: 'gpt', label: 'GPT', model: 'gpt-4o-mini' },
+        { id: 'claude', label: 'Claude', model: 'claude-sonnet-4-5' },
+        { id: 'mistral', label: 'Mistral', model: 'mistral-large' },
+        { id: 'perplexity', label: 'Perplexity', model: 'sonar' },
+    ];
+
+    // Start all requests in parallel
+    const promises = providers.map(p =>
+        fetch('/api/ai-research', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, provider: p.id, limit: 20 })
+        }).then(r => r.ok ? r.json() : { provider: p.id, error: 'HTTP ' + r.status })
+          .catch(e => ({ provider: p.id, error: e.message }))
+    );
+
+    // Render each response as it arrives
+    container.innerHTML = '';
+    let completed = 0;
+
+    for (let i = 0; i < promises.length; i++) {
+        const p = providers[i];
+        // Placeholder while waiting
+        const placeholderId = `ai-ph-${p.id}`;
+        container.insertAdjacentHTML('beforeend',
+            `<div id="${placeholderId}" class="ai-response ${p.id}">
+                <div class="ai-response-header">
+                    <span class="ai-provider-badge ${p.id}">${p.label}</span>
+                    <span class="ai-model-name">${p.model}</span>
+                </div>
+                <div class="ai-loading">In attesa di risposta<span class="ai-loading-dots"></span></div>
+            </div>`);
+
+        promises[i].then(data => {
+            const el = document.getElementById(placeholderId);
+            if (!el) return;
+            completed++;
+            const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+
+            if (data.error) {
+                el.innerHTML = `
+                    <div class="ai-response-header">
+                        <span class="ai-provider-badge ${p.id}">${p.label}</span>
+                        <span class="ai-model-name">${p.model}</span>
+                        <span class="ai-cost">${elapsed}s</span>
+                    </div>
+                    <div class="ai-response-body" style="color:var(--danger)">Errore: ${data.error}</div>`;
+            } else {
+                const cost = data.cost_usd ? `$${data.cost_usd.toFixed(6)}` : '';
+                const model = data.model || p.model;
+                el.innerHTML = `
+                    <div class="ai-response-header">
+                        <span class="ai-provider-badge ${p.id}">${p.label}</span>
+                        <span class="ai-model-name">${model}</span>
+                        <span class="ai-cost">${elapsed}s ${cost}</span>
+                    </div>
+                    <div class="ai-response-body">${formatAIText(data.risposta || '')}</div>`;
+            }
+            setConvStatus(`AI: ${completed}/${providers.length} completate`, true);
+            if (completed === providers.length) {
+                setConvStatus(`Ricerca completata in ${elapsed}s`, true);
+                setTimeout(() => setConvStatus('', false), 4000);
+            }
+        });
+    }
+}
+
+// ─── Dossier verificato: biografia/dossier con fallback multi-provider,
+// scritta SOLO da dati e fonti gia' verificate (mai dalle fonti solo
+// candidate/da recuperare, che vengono elencate a parte). ───
+async function generateBiography() {
+    const q = document.getElementById('convInput').value.trim();
+    if (!currentSoldierId && !q) { showToast('Cerca prima un soldato o inserisci una query per l\'evento', 'error'); return; }
+
+    const btn = document.getElementById('bioBtn');
+    btn.disabled = true; btn.textContent = 'Genero...';
+    document.getElementById('investResults').classList.add('active');
+
+    const container = document.getElementById('aiResponseContainer');
+    const phId = 'dossier-ph';
+    // Se non c'e' ancora nulla in pagina (dossier chiamato senza aver prima
+    // premuto "Cerca"), pulisci il placeholder iniziale.
+    if (container.querySelector('p')) container.innerHTML = '';
+    container.insertAdjacentHTML('afterbegin', `
+        <div id="${phId}" class="ai-response dossier">
+            <div class="ai-response-header">
+                <span class="ai-provider-badge dossier">Dossier verificato</span>
+                <span class="ai-model-name">solo fonti gia' verificate</span>
+            </div>
+            <div class="ai-loading">Ricostruzione dossier in corso<span class="ai-loading-dots"></span></div>
+        </div>`);
+
+    const body = currentSoldierId
+        ? { subject_type: 'soldier', soldier_id: currentSoldierId }
+        : { subject_type: 'event', query: q };
+
+    try {
+        const res = await fetch('/api/biography', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        const el = document.getElementById(phId);
+        if (!el) return;
+
+        if (!res.ok || data.error) {
+            el.innerHTML = `
+                <div class="ai-response-header">
+                    <span class="ai-provider-badge dossier">Dossier verificato</span>
+                </div>
+                <div class="ai-response-body" style="color:var(--danger)">Errore: ${data.detail || data.error || 'generazione fallita'}</div>`;
+            showToast('Errore generazione dossier', 'error');
+            return;
+        }
+
+        const providerLabel = { gpt: 'GPT', claude: 'Claude', mistral: 'Mistral', perplexity: 'Perplexity' }[data.provider] || data.provider || '?';
+        const fallbackNote = data.fallback_used ? ` (fallback: ${(data.attempted_before_success || []).map(a => a.provider).join(', ')} non disponibili)` : '';
+        const unverifiedN = data.unverified_sources_count || 0;
+
+        el.innerHTML = `
+            <div class="ai-response-header">
+                <span class="ai-provider-badge dossier">Dossier verificato</span>
+                <span class="ai-model-name">${providerLabel} · ${data.model || ''}${fallbackNote}</span>
+                <span class="ai-cost">${data.cost_usd ? '$' + data.cost_usd.toFixed(6) : ''}</span>
+            </div>
+            <div class="ai-response-body">${formatAIText(data.risposta || '')}</div>
+            <div class="dossier-meta">Scritto solo da dati e fonti gia' verificate/scaricate. ${unverifiedN} fonte/i trovate ma non ancora recuperate NON sono state usate nel testo (elencate nella sezione "FONTI DA VERIFICARE" sopra).</div>
+        `;
+        showToast('Dossier generato', 'success');
+    } catch (e) {
+        const el = document.getElementById(phId);
+        if (el) el.innerHTML = `<div class="ai-response-body" style="color:var(--danger)">Errore: ${e.message}</div>`;
+        showToast('Errore: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false; btn.textContent = '📖 Dossier verificato';
+    }
+}
+
+function formatAIText(text) {
+    // Basic markdown-ish formatting: bold **text**, headers ##, lists - 
+    let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    // Headers
+    html = html.replace(/^##\s+(.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^#\s+(.+)$/gm, '<h2>$1</h2>');
+    // Bold
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // Bullet lists
+    html = html.replace(/^-\s+(.+)$/gm, '&bull; $1<br>');
+    // Numbered lists
+    html = html.replace(/^\d+\.\s+(.+)$/gm, '$1<br>');
+    // Line breaks
+    html = html.replace(/\n/g, '<br>');
+    // Clean up extra breaks
+    html = html.replace(/<br><br><br>/g, '<br><br>');
+    return html;
+}
+
+// ─── Tab: Collegamenti Cross-DB ───
+function renderCrossDBLinks(searchRes) {
+    const box = document.getElementById('investLinks');
+    const links = [];
+
+    // Internati → links to menzioni (same surname)
+    const internati = searchRes.internati || [];
+    const menzioni = searchRes.menzioni || [];
+    const decorati = searchRes.decorati || [];
+
+    // Build link cards for each internato found
+    for (const s of internati.slice(0, 5)) {
+        const datasets = ['IMI Bolzano'];
+        const details = [];
+        details.push(`Soldato ID ${s.id} | Lettera ${s.lettera || '?'}`);
+        if (s.luogo_nascita) details.push(`Nato a ${s.luogo_nascita}`);
+        if (s.luogo_internamento) details.push(`Internato a ${s.luogo_internamento}`);
+        if (s.sorte) details.push(`Sorte: ${s.sorte}`);
+
+        // Check for matching menzioni
+        const matchingMenzioni = menzioni.filter(m =>
+            m.cognome && s.cognome &&
+            m.cognome.toLowerCase() === s.cognome.toLowerCase()
+        );
+        if (matchingMenzioni.length) {
+            datasets.push('Fondi SME');
+            details.push(`${matchingMenzioni.length} menzioni nei fondi archivistici`);
+        }
+
+        // Check for matching decorati
+        const matchingDecorati = decorati.filter(d =>
+            d.cognome && s.cognome &&
+            d.cognome.toLowerCase() === s.cognome.toLowerCase()
+        );
+        if (matchingDecorati.length) {
+            datasets.push('Decorati ISTORECO');
+            details.push(`${matchingDecorati.length} decorazione/i al valor militare`);
+        }
+
+        links.push({
+            type: 'persona',
+            title: `${s.cognome || ''} ${s.nome || ''}`.trim() || 'Sconosciuto',
+            datasets,
+            detail: details.join(' | ')
+        });
+    }
+
+    // Build link cards for menzioni not matched to internati
+    for (const m of menzioni.slice(0, 5)) {
+        if (internati.some(s => s.cognome && m.cognome && s.cognome.toLowerCase() === m.cognome.toLowerCase())) continue;
+        const datasets = ['Fondi SME'];
+        const details = [];
+        if (m.grado) details.push(`Grado: ${m.grado}`);
+        if (m.reparto) details.push(`Reparto: ${m.reparto}`);
+        if (m.luogo) details.push(`Luogo: ${m.luogo}`);
+        if (m.data) details.push(`Data: ${m.data}`);
+        if (m.codice_fondo) details.push(`Fondo: ${m.codice_fondo}`);
+
+        links.push({
+            type: 'persona',
+            title: `${m.cognome || ''} ${m.nome || ''}`.trim() || 'Sconosciuto',
+            datasets,
+            detail: details.join(' | ')
+        });
+    }
+
+    // Build link cards for decorati not matched
+    for (const d of decorati.slice(0, 5)) {
+        if (internati.some(s => s.cognome && d.cognome && s.cognome.toLowerCase() === d.cognome.toLowerCase())) continue;
+        const datasets = ['Decorati ISTORECO'];
+        const details = [];
+        if (d.decorazione) details.push(`Decorazione: ${d.decorazione}`);
+        if (d.guerra) details.push(`Guerra: ${d.guerra}`);
+        if (d.comune_nascita) details.push(`Nato a ${d.comune_nascita}`);
+        if (d.luogo_morte) details.push(`Morto a ${d.luogo_morte}`);
+
+        links.push({
+            type: 'persona',
+            title: `${d.cognome || ''} ${d.nome || ''}`.trim() || 'Sconosciuto',
+            datasets,
+            detail: details.join(' | ')
+        });
+    }
+
+    // Caduti aggregati per fonte
+    const caduti = searchRes.caduti || [];
+    const cadutiBySource = {};
+    for (const c of caduti.slice(0, 10)) {
+        const label = c._source_label || 'Caduti';
+        if (!cadutiBySource[label]) cadutiBySource[label] = [];
+        cadutiBySource[label].push(c);
+    }
+    for (const [label, items] of Object.entries(cadutiBySource)) {
+        const title = items[0].cognome || items[0].nome || items[0].nominativo || items[0].nom || 'Sconosciuto';
+        const secondo = items[0].nome || items[0].paternita || '';
+        links.push({
+            type: 'persona',
+            title: `${title} ${secondo}`.trim() || 'Sconosciuto',
+            datasets: [label, `+${items.length - 1} record`],
+            detail: `${items.length} record caduti in ${label}`
+        });
+    }
+
+    // Fonti narrative personali
+    const fontiNarrative = searchRes.fonti_narrative || [];
+    for (const f of fontiNarrative.slice(0, 10)) {
+        const title = f.titolo || f.nome_file || 'Fonte personale';
+        const details = [];
+        if (f.tipo_fonte) details.push(f.tipo_fonte);
+        if (f.archivio) details.push(f.archivio.replace('Desktop — ', ''));
+        if (f.data_documento) details.push(f.data_documento);
+        links.push({
+            type: 'fonte',
+            title: title,
+            datasets: ['Fonte personale'],
+            detail: details.join(' | ')
+        });
+    }
+
+    // Extract unique places
+    const places = new Set();
+    for (const s of internati) { if (s.luogo_nascita) places.add(s.luogo_nascita); if (s.luogo_internamento) places.add(s.luogo_internamento); }
+    for (const m of menzioni) { if (m.luogo) places.add(m.luogo); }
+    for (const d of decorati) { if (d.comune_nascita) places.add(d.comune_nascita); if (d.luogo_morte) places.add(d.luogo_morte); }
+    for (const c of caduti) { if (c.luogo_morte) places.add(c.luogo_morte); if (c.lieu_deces) places.add(c.lieu_deces); }
+
+    for (const place of [...places].slice(0, 5)) {
+        const datasets = [];
+        if (internati.some(s => s.luogo_nascita === place || s.luogo_internamento === place)) datasets.push('IMI Bolzano');
+        if (menzioni.some(m => m.luogo === place)) datasets.push('Fondi SME');
+        if (decorati.some(d => d.comune_nascita === place || d.luogo_morte === place)) datasets.push('Decorati ISTORECO');
+        if (caduti.some(c => c.luogo_morte === place || c.lieu_deces === place)) datasets.push('Caduti');
+        if (datasets.length > 1) {
+            links.push({
+                type: 'luogo',
+                title: place,
+                datasets,
+                detail: `Luogo citato in ${datasets.length} dataset: ${datasets.join(', ')}`
+            });
+        }
+    }
+
+    if (!links.length) {
+        box.innerHTML = '<p style="color:var(--text-muted);padding:20px;text-align:center">Nessun collegamento cross-DB trovato per questa ricerca.</p>';
+        return;
+    }
+
+    box.innerHTML = links.map(l => `
+        <div class="link-card">
+            <div class="lc-header">
+                <span class="lc-type ${l.type}">${l.type}</span>
+                <span class="lc-title">${l.title}</span>
+            </div>
+            <div class="lc-detail">${l.detail}</div>
+            <div class="lc-datasets">
+                ${l.datasets.map(d => `<span class="lc-dataset">${d}</span>`).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+// ─── Tab: Fonti ───
+function renderSourcesTab(searchRes) {
+    const box = document.getElementById('investSources');
+    const countEl = document.getElementById('sourcesCount');
+    const parts = [];
+
+    const internati = searchRes.internati || [];
+    const menzioni = searchRes.menzioni || [];
+    const decorati = searchRes.decorati || [];
+    const caduti = searchRes.caduti || [];
+    const documenti = searchRes.documenti || [];
+    const fontiNarrative = searchRes.fonti_narrative || [];
+    const total = internati.length + menzioni.length + decorati.length + caduti.length + documenti.length + fontiNarrative.length;
+    countEl.textContent = `(${total})`;
+
+    if (internati.length) {
+        parts.push('<h4 style="color:var(--primary);font-size:0.85rem;margin-bottom:8px">Internati Militari (IMI Bolzano)</h4>');
+        parts.push('<div class="table-container" style="max-height:200px;margin-bottom:16px"><table><thead><tr><th>Cognome</th><th>Nome</th><th>Luogo Nasc.</th><th>Internamento</th><th>Sorte</th></tr></thead><tbody>');
+        parts.push(internati.map(r => `<tr><td>${r.cognome||''}</td><td>${r.nome||''}</td><td>${r.luogo_nascita||''}</td><td>${r.luogo_internamento||''}</td><td>${r.sorte||''}</td></tr>`).join(''));
+        parts.push('</tbody></table></div>');
+    }
+
+    if (menzioni.length) {
+        parts.push('<h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:8px">Menzioni (Fondi Archivistici SME)</h4>');
+        parts.push('<div class="table-container" style="max-height:200px;margin-bottom:16px"><table><thead><tr><th>Cognome</th><th>Nome</th><th>Grado</th><th>Reparto</th><th>Luogo</th><th>Fondo</th></tr></thead><tbody>');
+        parts.push(menzioni.map(m => `<tr><td>${m.cognome||''}</td><td>${m.nome||''}</td><td>${m.grado||''}</td><td>${m.reparto||''}</td><td>${m.luogo||''}</td><td style="font-size:0.75rem">${m.codice_fondo||''}</td></tr>`).join(''));
+        parts.push('</tbody></table></div>');
+    }
+
+    if (decorati.length) {
+        parts.push('<h4 style="color:var(--warning);font-size:0.85rem;margin-bottom:8px">Decorati al Valor Militare</h4>');
+        parts.push('<div class="table-container" style="max-height:200px;margin-bottom:16px"><table><thead><tr><th>Cognome</th><th>Nome</th><th>Decorazione</th><th>Fonte</th><th>Luogo Morte</th></tr></thead><tbody>');
+        parts.push(decorati.map(r => `<tr><td>${r.cognome||''}</td><td>${r.nome||''}</td><td style="color:var(--warning)">${r.decorazione||r.tipo_decorazione||''}</td><td style="font-size:0.75rem">${r.source||'ISTORECO'}</td><td>${r.luogo_morte||''}</td></tr>`).join(''));
+        parts.push('</tbody></table></div>');
+    }
+
+    if (caduti.length) {
+        // Group by source label
+        const byLabel = {};
+        for (const c of caduti) {
+            const label = c._source_label || 'Caduti';
+            if (!byLabel[label]) byLabel[label] = [];
+            byLabel[label].push(c);
+        }
+        for (const [label, items] of Object.entries(byLabel)) {
+            parts.push(`<h4 style="color:var(--danger);font-size:0.85rem;margin-bottom:8px">Caduti - ${label} (${items.length})</h4>`);
+            parts.push('<div class="table-container" style="max-height:200px;margin-bottom:16px"><table><thead><tr><th>Nome</th><th>Grado</th><th>Luogo Morte</th><th>Data Morte</th></tr></thead><tbody>');
+            parts.push(items.map(c => {
+                const nome = c.cognome || c.nome || c.nominativo || c.nom || '';
+                const secondo = (c.cognome ? c.nome : c.paternita) || '';
+                const grado = c.grado || c.rank || c.grade || '';
+                const lm = c.luogo_morte || c.lieu_deces || '';
+                const dm = c.data_morte || c.date_deces || '';
+                return `<tr><td>${nome} ${secondo}</td><td>${grado}</td><td>${lm}</td><td>${dm}</td></tr>`;
+            }).join(''));
+            parts.push('</tbody></table></div>');
+        }
+    }
+
+    if (documenti.length) {
+        parts.push('<h4 style="color:var(--primary);font-size:0.85rem;margin-bottom:8px">Documenti NARA</h4>');
+        parts.push('<div class="table-container" style="max-height:200px;margin-bottom:16px"><table><thead><tr><th>Fonte</th><th>Titolo</th><th>Data</th></tr></thead><tbody>');
+        parts.push(documenti.map(d => `<tr><td style="font-size:0.75rem">${d.source||''}</td><td>${d.title||''}</td><td>${d.date||''}</td></tr>`).join(''));
+        parts.push('</tbody></table></div>');
+    }
+
+    if (fontiNarrative.length) {
+        parts.push('<h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:8px">Fonti Narrative Personali (Desktop)</h4>');
+        parts.push('<div class="table-container" style="max-height:200px;margin-bottom:16px"><table><thead><tr><th>Tipo</th><th>Titolo/File</th><th>Archivio</th><th>Persone</th></tr></thead><tbody>');
+        parts.push(fontiNarrative.map(f => {
+            const persone = (f.soggetti_json ? JSON.parse(f.soggetti_json).map(p => `${p.cognome||''} ${p.nome||''}`.trim()).filter(Boolean).join(', ') : '');
+            return `<tr><td style="font-size:0.75rem">${f.tipo_fonte||''}</td><td>${f.titolo||f.nome_file||''}</td><td style="font-size:0.75rem">${(f.archivio||'').replace('Desktop — ', '')}</td><td style="font-size:0.75rem">${persone}</td></tr>`;
+        }).join(''));
+        parts.push('</tbody></table></div>');
+    }
+
+    if (!parts.length) {
+        box.innerHTML = '<p style="color:var(--text-muted);padding:20px;text-align:center">Nessuna fonte locale trovata. La ricerca AI ha comunque interrogato i provider cloud.</p>';
+    } else {
+        box.innerHTML = parts.join('');
+    }
+}
+
+// ─── Tab switching ───
+function switchInvestTab(tabId) {
+    document.querySelectorAll('.invest-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.invest-section').forEach(s => s.style.display = 'none');
+    if (event.target) event.target.classList.add('active');
+    const el = document.getElementById(tabId);
+    if (el) el.style.display = 'block';
+}
+
+// ─── Source utilities (kept for fonti tab) ───
+async function fetchSource(sourceId, providerName) {
+    if (!sourceId) { showToast('ID fonte non disponibile', 'error'); return; }
+    showToast('Download in corso...', 'info');
+    try {
+        const res = await fetch('/api/source/fetch', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({source_id: parseInt(sourceId)})
+        }).then(r => r.json());
+        if (res.ok) {
+            showToast(`Scaricato: ${res.size_bytes || 0} byte`, 'success');
+        } else {
+            showToast(`Errore: ${res.error}`, 'error');
+        }
+    } catch(e) {
+        showToast('Errore fetch: ' + e.message, 'error');
+    }
+}
+
+// ─── Init ───
+loadAnalytics();
+loadCredits();
+setInterval(loadCredits, 60000);
+</script>
+</body>
+</html>

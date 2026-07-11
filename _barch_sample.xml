@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ead audience="external" xmlns="urn:isbn:1-931666-22-9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:isbn:1-931666-22-9 ead.xsd http://www.w3.org/1999/xlink xlink.xsd">
+  <eadheader countryencoding="iso3166-1" dateencoding="iso8601" langencoding="iso639-2b" repositoryencoding="iso15511" scriptencoding="iso15924">
+    <eadid mainagencycode="DE-1958" url="http://www.bundesarchiv.de">DE-1958_2e99eb33-46f4-434c-80e7-d99ee4b73eb3</eadid>
+    <filedesc>
+      <titlestmt>
+        <titleproper>Reichskammergericht.- Vota Miscellanea</titleproper>
+      </titlestmt>
+    </filedesc>
+    <profiledesc>
+      <creation>
+        <date normal="2018-09-07">07.09.2018</date>
+      </creation>
+    </profiledesc>
+  </eadheader>
+  <archdesc level="collection" type="Findbuch">
+    <did>
+      <unitid>BArch AR 1-VII</unitid>
+      <repository label="Berlin">
+        <corpname role="Staatliche Archive" id="ISIS-400">Bundesarchiv</corpname>
+        <address>
+          <addressline>Finckensteinallee 63</addressline>
+          <addressline>12205 Berlin</addressline>
+          <addressline>berlin@bundesarchiv.de</addressline>
+        </address>
+        <extref xlink:role="url_archive" xlink:href="http://www.bundesarchiv.de">Bundesarchiv</extref>
+      </repository>
+    </did>
+    <otherfindaid>
+      <extref xlink:role="url_findbuch" xlink:href="https://invenio.bundesarchiv.de/basys2-invenio/direktlink/2e99eb33-46f4-434c-80e7-d99ee4b73eb3/">Findbuch im Angebot des Archivs</extref>
+    </otherfindaid>
+    <dsc>
+      <c level="collection" id="DE-1958_2e99eb33-46f4-434c-80e7-d99ee4b73eb3">
+        <did>
+          <unitid>BArch AR 1-VII</unitid>
+          <unittitle>Reichskammergericht.- Vota Miscellanea</unittitle>
+          <unitdate>1560-1784</unitdate>
+          <physdesc>
+            <genreform normal="Akten">Schriftgut</genreform>
+            <extent>6 Aufbewahrungseinheiten</extent>
+          </physdesc>
+          <langmaterial>
+            <language langcode="ger" scriptcode="Latn">deutsch</language>
+          </langmaterial>
+          <origination>Reichskammergericht (RKG), 1495-1806</origination>
+        </did>
+        <scopecontent>
+          <head>Geschichte des Bestandsbildners</head>
+          <p>Das 1495 auf dem Reichstag zu Worms errichtete Reichskammergericht mit zunächst wechselndem Sitz in Worms, Nürnberg, Regensburg, Augsburg, Speyer und Esslingen war zuständig für Verfahren wegen Bruchs des Reichslandfriedens, Verhängung der Reichsacht, in allen fiskalischen Klagen, Besitzstreitigkeiten zwischen Reichsunmittelbaren und alle Zivilklagen gegen sie; für alle Gerichte der Territorien, die kein privilegium de non appellando et non evocando besaßen. Außerdem war es oberstes Berufungsgericht in Konkurrenz mit dem Reichshofrat. Kaiser Karl V. legte Speyer als ständigen Sitz fest. Nach der Einnahme der Stadt durch französische Truppen im pfälzischen Erbfolgekrieg 1688 wurde auf Antrag der Reichsstadt Wetzlar das Reichskammergericht durch ein Dekret Kaiser Leopolds I. in Wetzlar wiedererrichtet (1693).</p>
+          <p>Aufgelöst wurde es am 6. August 1806 durch ein Handbillet Kaiser Franz II. in dem er dem Kammerrichter den Auftrag gab, den Gerichtspersonen die Auflösung des Reichsverbandes und die Entlassung aus ihren Pflichten mitzuteilen.</p>
+        </scopecontent>
+        <scopecontent>
+          <head>Bestandsbeschreibung</head>
+          <p>Bestandsgeschichte:</p>
+          <p>Seit der Einnahme der Stadt Speyer bestand das Schriftgut des Reichskammergerichts aus drei Teilen: Die vorsorglich geflüchteten Akten lagerten in Frankfurt a.M., die von Frankreich im Rijswijker Frieden von 1697 ausgefolgten Unterlagen wurden in Aschaffenburg, der Sommerresidenz des Reichskanzlers verwahrt, die laufende Registratur befand sich in Wetzlar. Dorthin gab die Stadt Frankfurt das von ihr verwaltete Schriftgut 1751 ab. Erst 1808 wurden die Akten aus Aschaffenburg nach Wetzlar abgegeben. Das Archiv des Reichskammergerichts wurde nach dessen Auflösung 1806 zunächst durch die vom Fürstprimas Karl Theodor v. Dalberg eingerichtete Reichskammergerichtskanzleiverwaltung verwahrt, welche die Jurisdiktion des Reichskammergerichts auf die obersten Gerichte der Nachfolgestaaten des alten Reiches überleitete. Ab 1815 wurde es von Preußen, seit 1821 von einer eigenen Archivkommission der Deutschen Bundesversammlung verwaltet. Gemäß Beschluss der Bundesversammlung von 1845 wurde in den Jahren 1847-1852 die Hauptmasse der Prozessakten, insgesamt 67923, unter sämtliche Gliedstaaten des Deutschen Bundes sowie Belgien und die Niederlande aufgeteilt; 1881 wurden noch die elsässischen Prozessakten nach Straßburg abgegeben. Der Anteil Preußens mit insgesamt 23 674 Prozessakten verfiel nach der Auflösung des Staatsarchivs Wetzlar (1924) einer abermaligen Aufteilung, diesmal unter die preußischen Staatsarchive und die Stadtarchive Aachen, Köln und Wetzlar. So sind die Prozessakten des Reichskammergerichts heute über 50 deutsche und außerdeutsche Archive verstreut.</p>
+          <p>Übrig blieb der &quot;Untrennbare Bestand&quot; des Reichskammergerichtsarchivs, zu dem u.a. die Akten der streitigen Gerichtsbarkeit aus Prozessen zwischen Vorgängern der Staaten des Deutschen Bundes und aus Prozessen zwischen Parteien in Gebieten außerhalb des Deutschen Bundes (Schweiz, Frankreich, Belgien, Niederlande, Italien, baltische Länder) gehören. Er gelangte 1925 in die damals errichtete Reichsarchivabteilung Frankfurt. Von 1953 - 2000 bildete er einen der Hauptbestände der Außenstelle Frankfurt des Bundesarchivs. Nach der Auflösung der Außenstelle Frankfurt kamen die Archivalien zunächst in die Hauptdienststelle des Bundesarchivs in Koblenz, 2010 wurden sie in das Bundesarchiv in Berlin-Lichterfelde umgelagert.</p>
+        </scopecontent>
+        <scopecontent>
+          <head>Inhaltliche Charakterisierung</head>
+          <p>u.a. Assessorenvoten 1560-1784</p>
+        </scopecontent>
+        <scopecontent>
+          <head>Erschließungszustand</head>
+          <p>s. BASYS-S</p>
+        </scopecontent>
+        <scopecontent>
+          <head>Zitierweise</head>
+          <p>BArch AR 1-VII/...</p>
+        </scopecontent>
+        <relatedmaterial>
+          <head>Literatur</head>
+          <p>Auswahl</p>
+          <p>Quellen und Forschungen zur höchsten Gerichtsbarkeit im Alten Reich. Köln, Weimar, Wien 1973ff;</p>
+          <p>Filippo Ranieri, Recht und Gesellschaft im Zeitalter der Rezeption. Eine rechts- und sozialgeschichtliche Analyse der Tätigkeit des Reichskammergerichts im 16. Jahrhundert, (Quellen und Forschungen zur höchsten Gerichtsbarkeit im Alten Reich, 17), Köln, Weimar, Wien 1985;</p>
+          <p>Friedrich Battenberg, Reichskammergericht und Archivwesen. Zum Stand der Erschließung der Reichskammergerichts-Akten, in: Das Reichskammergericht in der deutschen Geschichte (Quellen und Forschungen zur höchsten Gerichtsbarkeit im Alten Reich. 21), Köln-Wien 1990, S. 173-194;</p>
+          <p>Anette Baumann, Die Gesellschaft der Frühen Neuzeit im Spiegel der Reichskammergerichtsprozesse, (Quellen und Forschungen zur höchsten Gerichtsbarkeit im Alten Reich, 36), Köln, Weimar, Wien 2001</p>
+        </relatedmaterial>
+        <c level="class" id="DE-1958_97035e90-66bc-49fb-8d2d-c4621d9873dc">
+          <did>
+            <unittitle>AR 1 VII Reichskammergericht.- Vota miscellanea</unittitle>
+          </did>
+          <c level="series" id="DE-1958_5eb81dcd-8e7a-46ed-aad1-e135f4a518d0">
+            <did>
+              <unittitle>Vota Miscellanea</unittitle>
+            </did>
+            <c level="file" xmlns:xlink="http://www.w3.org/1999/xlink" id="DE-1958_845caaeb-c97d-4da3-8815-50eefd92eeb7">
+              <did>
+                <unitid>BArch AR 1-VII/1</unitid>
+                <unittitle>Bd. 1</unittitle>
+                <unitdate>[1722-1749]</unitdate>
+                <origination>Reichskammergericht (RKG), 1495-1806</origination>
+                <physdesc>
+                  <genreform normal="Akten">Schriftgut</genreform>
+                </physdesc>
+                <langmaterial>
+                  <language langcode="ger" scriptcode="Latn">deutsch</language>
+                </langmaterial>
+              </did>
+              <otherfindaid>
+                <extref xlink:role="url_archivalunit" xlink:href="https://invenio.bundesarchiv.de/basys2-invenio/direktlink/845caaeb-c97d-4da3-8815-50eefd92eeb7/">Titelaufnahme im Angebot des Archivs</extref>
+              </otherfindaid>
+            </c>
+            <c level="file" xmlns:xlink="http://www.w3.org/1999/xlink" id="DE-1958_639b1cb8-f914-4a38-af75-0b1d5556ca62">
+              <did>
+                <unitid>BArch AR 1-VII/2</unitid>
+                <unittitle>Bd. 2</unittitle>
+                <unitdate>[1722-1751]</unitdate>
+                <origination>Reichskammergericht (RKG), 1495-1806</origination>
+                <physdesc>
+                  <genreform normal="Akten">Schriftgut</genreform>
+                </physdesc>
+                <langmaterial>
+                  <language langcode="ger" scriptcode="Latn">deutsch</language>
+                </langmaterial>
+              </did>
+              <otherfindaid>
+                <extref xlink:role="url_archivalunit" xlink:href="https://invenio.bundesarchiv.de/basys2-invenio/direktlink/639b1cb8-f914-4a38-af75-0b1d5556ca62/">Titelaufnahme im Angebot des Archivs</extref>
+              </otherfindaid>
+            </c>
+          </c>
+          <c level="file" xmlns:xlink="http://www.w3.org/1999/xlink" id="DE-1958_11177622-7885-4579-8cea-cfc38b4d0c14">
+            <did>
+              <unitid>BArch AR 1-VII/3</unitid>
+              <unittitle>Votum in causa Stadt Cöln ./. Churköln</unittitle>
+              <unitdate>o. Dat.</unitdate>
+              <origination>Reichskammergericht (RKG), 1495-1806</origination>
+              <physdesc>
+                <genreform normal="Akten">Schriftgut</genreform>
+              </physdesc>
+              <langmaterial>
+                <language langcode="ger" scriptcode="Latn">deutsch</language>
+              </langmaterial>
+            </did>
+            <otherfindaid>
+              <extref xlink:role="url_archivalunit" xlink:href="https://invenio.bundesarchiv.de/basys2-invenio/direktlink/11177622-7885-4579-8cea-cfc38b4d0c14/">Titelaufnahme im Angebot des Archivs</extref>
+            </otherfindaid>
+          </c>
+          <c level="file" xmlns:xlink="http://www.w3.org/1999/xlink" id="DE-1958_85c992ad-f72a-439d-97cc-1b75f368b61b">
+            <did>
+              <unitid>BArch AR 1-VII/4</unitid>
+              <unittitle>Verschiedenes</unittitle>
+              <unitdate>[1752-1764]</unitdate>
+              <origination>Reichskammergericht (RKG), 1495-1806</origination>
+              <physdesc>
+                <genreform normal="Akten">Schriftgut</genreform>
+              </physdesc>
+              <langmaterial>
+                <language langcode="ger" scriptcode="Latn">deutsch</language>
+              </langmaterial>
+            </did>
+            <otherfindaid>
+              <extref xlink:role="url_archivalunit" xlink:href="https://invenio.bundesarchiv.de/basys2-invenio/direktlink/85c992ad-f72a-439d-97cc-1b75f368b61b/">Titelaufnahme im Angebot des Archivs</extref>
+            </otherfindaid>
+          </c>
+          <c level="file" xmlns:xlink="http://www.w3.org/1999/xlink" id="DE-1958_5b6c7ba5-a28b-450b-b259-785e0c4ebaf8">
+            <did>
+              <unitid>BArch AR 1-VII/5</unitid>
+              <unittitle>Dgl.</unittitle>
+              <unitdate>[1612-1758]</unitdate>
+              <origination>Reichskammergericht (RKG), 1495-1806</origination>
+              <physdesc>
+                <genreform normal="Akten">Schriftgut</genreform>
+              </physdesc>
+              <langmaterial>
+                <language langcode="ger" scriptcode="Latn">deutsch</language>
+              </langmaterial>
+            </did>
+            <otherfindaid>
+              <extref xlink:role="url_archivalunit" xlink:href="https://invenio.bundesarchiv.de/basys2-invenio/direktlink/5b6c7ba5-a28b-450b-b259-785e0c4ebaf8/">Titelaufnahme im Angebot des Archivs</extref>
+            </otherfindaid>
+          </c>
+          <c level="file" xmlns:xlink="http://www.w3.org/1999/xlink" id="DE-1958_f6904301-720e-43ca-ad52-fd1436142372">
+            <did>
+              <unitid>BArch AR 1-VII/6</unitid>
+              <unittitle>Vota supplicationum</unittitle>
+              <unitdate>o. Dat.</unitdate>
+              <origination>Reichskammergericht (RKG), 1495-1806</origination>
+              <physdesc>
+                <genreform normal="Akten">Schriftgut</genreform>
+              </physdesc>
+              <langmaterial>
+                <language langcode="ger" scriptcode="Latn">deutsch</language>
+              </langmaterial>
+            </did>
+            <otherfindaid>
+              <extref xlink:role="url_archivalunit" xlink:href="https://invenio.bundesarchiv.de/basys2-invenio/direktlink/f6904301-720e-43ca-ad52-fd1436142372/">Titelaufnahme im Angebot des Archivs</extref>
+            </otherfindaid>
+          </c>
+        </c>
+      </c>
+    </dsc>
+  </archdesc>
+</ead>
