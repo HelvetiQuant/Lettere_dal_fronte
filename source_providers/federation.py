@@ -14,6 +14,10 @@ from .nara import ProviderNARA
 from .antenati import ProviderAntenati
 from .cwgc import ProviderCWGC
 from .wikitree import ProviderWikiTree
+from .memoire_des_hommes import ProviderMemoireDesHommes
+from .deutsche_digitale_bibliothek import ProviderDDB
+from .iwm_lives import ProviderIWMLives
+from .grand_memorial import ProviderGrandMemorial
 from .providers import (
     ProviderArolsen, ProviderBundesarchiv, ProviderSHD,
     ProviderNationalArchivesUK, ProviderEuropeana, ProviderGallica,
@@ -54,6 +58,10 @@ def get_registry() -> Dict[str, SourceProvider]:
         _register(ProviderHathiTrust())
         _register(ProviderUSSME())
         _register(ProviderArchivioDiStato())
+        _register(ProviderMemoireDesHommes())
+        _register(ProviderDDB())
+        _register(ProviderIWMLives())
+        _register(ProviderGrandMemorial())
     return _REGISTRY
 
 

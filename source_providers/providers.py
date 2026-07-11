@@ -315,6 +315,9 @@ class ProviderNationalArchivesUK(SourceProvider):
     def get_metadata(self, record_id: str) -> dict:
         return {"provider": self.name, "catalog_url": f"{self.base_url}/details/r/{record_id}"}
 
+    def build_direct_link(self, record_id: str, page: int = None) -> str:
+        return f"{self.base_url}/details/r/{record_id}"
+
 
 class ProviderEuropeana(SourceProvider):
     """Europeana — aggregator europeo."""
@@ -362,6 +365,9 @@ class ProviderEuropeana(SourceProvider):
 
     def get_metadata(self, record_id: str) -> dict:
         return {"provider": self.name, "catalog_url": f"https://www.europeana.eu/item/{record_id}"}
+
+    def build_direct_link(self, record_id: str, page: int = None) -> str:
+        return f"https://www.europeana.eu/en/item/{record_id}"
 
 
 class ProviderGallica(SourceProvider):

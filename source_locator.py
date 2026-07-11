@@ -40,20 +40,62 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ricerca-storica-IMI/1.0"
 # Solo il backend scarica, e solo da questi domini (correzione richiesta:
 # l'AI propone, il backend controlla e recupera).
 AUTHORIZED_DOMAINS = {
+    # Italian / Ministero della Cultura
     "dam-antenati.cultura.gov.it",
     "iiif-antenati.cultura.gov.it",
     "antenati.cultura.gov.it",
+    "dati.acs.beniculturali.it",
+    # NARA / USA
     "catalog.archives.gov",
     "s3.amazonaws.com",              # media NARA catalog
     "nara-media-001.s3.amazonaws.com",
+    # CWGC / Commonwealth
     "www.cwgc.org",
     "cwgc.org",
+    "archive.cwgc.org",
+    # Albo d'Oro
     "www.cadutigrandeguerra.it",
     "cadutigrandeguerra.it",
+    # Decorati
     "decoratialvalormilitare.istitutonastroazzurro.org",
     "www.istitutonastroazzurro.org",
+    # Generici
     "archive.org",
     "ia800000.us.archive.org",
+    # Catalogo fonti esterne (25 fonti)
+    "www.memoiredeshommes.sga.defense.gouv.fr",
+    "memoiredeshommes.sga.defense.gouv.fr",
+    "grandeguerre.icrc.org",
+    "www.deutsche-digitale-bibliothek.de",
+    "deutsche-digitale-bibliothek.de",
+    "www.oesta.gv.at",
+    "oesta.gv.at",
+    "archivinformationssystem.at",
+    "www.familysearch.org",
+    "familysearch.org",
+    "www.europeana.eu",
+    "europeana.eu",
+    "collections.arolsen-archives.org",
+    "archiviodiari.org",
+    "catalogo.archiviodiari.it",
+    "900trentino.museostorico.it",
+    "www.briefsammlung.de",
+    "briefsammlung.de",
+    "francearchives.gouv.fr",
+    "www.francearchives.gouv.fr",
+    "digitalcommons.chapman.edu",
+    "www.cheminsdememoire.gouv.fr",
+    "cheminsdememoire.gouv.fr",
+    "donnees.culture.gouv.fr",
+    "livesofthefirstworldwar.iwm.org.uk",
+    "discovery.nationalarchives.gov.uk",
+    "trove.nla.gov.au",
+    "www.awm.gov.au",
+    "awm.gov.au",
+    "www.quirinale.it",
+    "quirinale.it",
+    "www.archivioluce.com",
+    "archivioluce.com",
 }
 
 ACCESS_TYPES = ("online", "login", "richiesta", "locale")

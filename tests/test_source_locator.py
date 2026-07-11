@@ -89,6 +89,95 @@ class TestFindCandidateSources(TempDBTestCase):
         self.assertIsInstance(risultato["candidates"], list)
 
 
+class TestImportFontiCatalogo(TempDBTestCase):
+    schema_modules = ("source_locator",)
+
+    def test_importa_25_fonti_da_excel(self):
+        from import_fonti_catalogo import import_catalogo
+        excel = Path(__file__).resolve().parent.parent / "fonti_scrapabili_metadata.xlsx"
+        stats = import_catalogo(excel)
+        self.assertEqual(stats["total"], 25)
+        self.assertEqual(stats["created"], 25)
+        self.assertEqual(stats["updated"], 0)
+
+    def test_import_e_idempotente(self):
+        from import_fonti_catalogo import import_catalogo
+        excel = Path(__file__).resolve().parent.parent / "fonti_scrapabili_metadata.xlsx"
+        primo = import_catalogo(excel)
+        self.assertEqual(primo["created"], 25)
+        secondo = import_catalogo(excel)
+        self.assertEqual(secondo["created"], 0)
+        self.assertEqual(secondo["updated"], 25)
+
+
+class TestProviderDirectLinks(TempDBTestCase):
+    schema_modules = ("source_locator",)
+
+    def test_tna_build_direct_link(self):
+        from source_providers.providers import ProviderNationalArchivesUK
+        p = ProviderNationalArchivesUK()
+        url = p.build_direct_link("C14567")
+        self.assertEqual(url, "https://discovery.nationalarchives.gov.uk/details/r/C14567")
+
+    def test_europeana_build_direct_link(self):
+        from source_providers.providers import ProviderEuropeana
+        p = ProviderEuropeana()
+        url = p.build_direct_link("09312/1038913")
+        self.assertEqual(url, "https://www.europeana.eu/en/item/09312/1038913")
+
+    def test_antenati_build_direct_link(self):
+        from source_providers.antenati import ProviderAntenati
+        p = ProviderAntenati()
+        url = p.build_direct_link("an_ua19944535/w9DWR8x")
+        self.assertEqual(
+            url,
+            "https://antenati.cultura.gov.it/ark:/12657/an_ua19944535/w9DWR8x",
+        )
+
+    def test_memoire_des_hommes_build_direct_link(self):
+        from source_providers.memoire_des_hommes import ProviderMemoireDesHommes
+        p = ProviderMemoireDesHommes()
+        url = p.build_direct_link("m005239dfea7f0db/5242bcfce998")
+        self.assertIn("/fr/ark:/40699/m005239dfea7f0db/5242bcfce998", url)
+
+    def test_ddb_build_direct_link(self):
+        from source_providers.deutsche_digitale_bibliothek import ProviderDDB
+        p = ProviderDDB()
+        url = p.build_direct_link("6NBOK4XF3X5G3H4MYVI6FWV72VUJAAQE")
+        self.assertEqual(
+            url,
+            "https://www.deutsche-digitale-bibliothek.de/item/6NBOK4XF3X5G3H4MYVI6FWV72VUJAAQE",
+        )
+
+    def test_iwm_lives_build_direct_link(self):
+        from source_providers.iwm_lives import ProviderIWMLives
+        p = ProviderIWMLives()
+        url = p.build_direct_link("697514")
+        self.assertEqual(url, "https://livesofthefirstworldwar.iwm.org.uk/lifestory/697514")
+
+    def test_grand_memorial_build_direct_link(self):
+        from source_providers.grand_memorial import ProviderGrandMemorial
+        p = ProviderGrandMemorial()
+        url = p.build_direct_link("qualunque")
+        self.assertIn("donnees.culture.gouv.fr", url)
+
+
+class TestCatalogDomainsWhitelist(TempDBTestCase):
+    schema_modules = ("source_locator",)
+
+    def test_domini_catalogo_in_whitelist(self):
+        catalog_domains = {
+            "memoiredeshommes.sga.defense.gouv.fr",
+            "www.deutsche-digitale-bibliothek.de",
+            "livesofthefirstworldwar.iwm.org.uk",
+            "donnees.culture.gouv.fr",
+            "grandeguerre.icrc.org",
+        }
+        for d in catalog_domains:
+            with self.subTest(dominio=d):
+                self.assertTrue(sl._domain_authorized(f"https://{d}/record/123"))
+
+
 if __name__ == "__main__":
     import unittest
     unittest.main()
