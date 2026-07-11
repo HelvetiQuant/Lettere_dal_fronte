@@ -12,6 +12,7 @@ Principio "nessun dato inventato": nel prompt di sintesi entrano SOLO
   2) fonti gia' verificate/leggibili (archivio_fonti readable, testo_ocr di
      menzioni/fondi/NARA, fonti_indice con fetch_status='scaricato' + cache
      testuale, lettere OCR importate in import_ocr_lettere/ocr_lettere.db)
+  3) contesto storico web con citazioni verificabili (Perplexity, URL espliciti)
 Le fonti esterne trovate ma non ancora recuperate (federated_search,
 image_only_sources, fetch_status != 'scaricato') vengono SOLO elencate come
 "da verificare" in una sezione separata del prompt — l'AI ha istruzioni
@@ -58,19 +59,33 @@ manca, dillo esplicitamente invece di supporlo.
 
 Regole:
 1. Ogni affermazione di fatto deve riportare tra parentesi quadre la fonte da
-   cui proviene, es. [INTERNATI], [ARCHIVIO_FONTI #123], [LETTERE #4].
-2. Segui un ordine cronologico quando possibile (nascita, arruolamento,
-   cattura/eventi bellici, internamento/decorazione, esito finale).
-3. Chiudi con una sezione "LACUNE" che elenca cosa NON e' stato trovato nei
-   dati forniti e andrebbe cercato altrove.
-4. Chiudi con una sezione "FONTI DA VERIFICARE" che elenca (senza averle
-   usate nel testo) le fonti esterne trovate ma non ancora recuperate.
+   cui proviene, es. [INTERNATI], [ARCHIVIO_FONTI #123], [LETTERE #4],
+   [WEB #1] per le fonti online verificate elencate sotto.
+2. Struttura OBBLIGATORIA del report, con questi titoli di sezione:
+   ## SINTESI — 3-5 righe con i fatti essenziali accertati.
+   ## RICOSTRUZIONE CRONOLOGICA — prosa in ordine cronologico (nascita,
+      arruolamento, cattura/eventi bellici, internamento/decorazione, esito),
+      ogni fatto con la sua citazione tra parentesi quadre.
+   ## CONTESTO STORICO — solo se supportato dalle fonti online verificate
+      sotto (citare [WEB #n]); altrimenti ometti la sezione.
+   ## FONTI CITATE — elenco numerato di TUTTE le fonti effettivamente usate
+      nel testo, una per riga, con identificativo e (se disponibile) URL.
+   ## LACUNE — cosa NON e' stato trovato nei dati forniti e andrebbe cercato
+      altrove (indica archivio/fonte suggerita).
+   ## FONTI DA VERIFICARE — le fonti esterne trovate ma non ancora
+      recuperate (solo elencate, MAI usate nel testo).
+3. Non usare MAI le fonti "da verificare" per affermazioni di fatto.
+4. Se una data o un luogo e' incerto o discordante tra le fonti, segnalalo
+   esplicitamente indicando entrambe le versioni con le rispettive fonti.
 
 === SOGGETTO ===
 {subject_label}
 
 === DATI E FONTI VERIFICATE (uniche utilizzabili nel testo) ===
 {verified_context}
+
+=== FONTI ONLINE VERIFICATE (contesto storico con citazioni web, utilizzabili con [WEB #n]) ===
+{online_context}
 
 === FONTI TROVATE MA NON ANCORA VERIFICATE (solo da elencare, non usare) ===
 {unverified_context}
@@ -327,6 +342,76 @@ def _event_unverified_context(routed: dict, ext_candidates: list[dict]) -> str:
     return "\n".join(lines) if lines else "Nessuna."
 
 
+# ─── Fonti online verificate (Perplexity con citazioni web) ────────────────
+
+def _online_verified_context(subject_label: str) -> tuple[str, list[dict]]:
+    """Interroga Perplexity (ricerca web con citazioni) per contesto storico
+    VERIFICABILE: ogni fatto restituito e' ancorato a un URL citato.
+    Ritorna (testo_contesto, [{title, url}, ...]).
+    Fallisce in silenzio (contesto vuoto) se la chiave manca o la rete non va:
+    il dossier resta generabile dalle sole fonti locali."""
+    try:
+        api_key = air._load_perplexity_key()
+        resp = requests.post(
+            "https://api.perplexity.ai/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "model": air.PROVIDERS["perplexity"]["model"],
+                "messages": [
+                    {"role": "system", "content": "Sei un ricercatore storico. Riporta SOLO fatti documentati da fonti attendibili (archivi, enti pubblici, pubblicazioni storiche). Niente speculazioni."},
+                    {"role": "user", "content": (
+                        f"Contesto storico documentato su: {subject_label}. "
+                        "Riassumi in max 400 parole i fatti verificabili (date, luoghi, "
+                        "reparti, eventi) utili a un dossier storico. Ogni fatto deve "
+                        "derivare dalle fonti che citi."
+                    )},
+                ],
+                "max_tokens": 1024, "temperature": 0.2,
+            },
+            timeout=45,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        testo = data["choices"][0]["message"]["content"].strip()
+        sources = []
+        for sr in data.get("search_results", []) or []:
+            if sr.get("url"):
+                sources.append({"title": sr.get("title") or sr["url"], "url": sr["url"]})
+        if not sources:
+            sources = [{"title": u, "url": u} for u in (data.get("citations", []) or [])]
+        if not sources:
+            return "Nessuna fonte online verificata disponibile.", []
+        numbered = "\n".join(f"[WEB #{i+1}] {s['title']} — {s['url']}" for i, s in enumerate(sources))
+        return f"{testo}\n\nELENCO FONTI WEB (usa questi numeri per citare):\n{numbered}", sources
+    except Exception:
+        return "Nessuna fonte online verificata disponibile (ricerca web non riuscita).", []
+
+
+def _verified_labels_soldier(dash: dict) -> list[str]:
+    """Elenco leggibile delle fonti locali verificate usate per il dossier
+    soldato (restituito al frontend, cosi' l'utente vede QUALI sono)."""
+    labels = ["[INTERNATI] scheda IMI Archivio di Stato di Bolzano"]
+    for r in dash.get("local_sources", []):
+        labels.append(f"[{(r.get('table') or '').upper()} #{r.get('id')}] {r.get('titolo', '') or '(documento locale)'}")
+    letters = _find_letters_mentioning(dash.get("soldier", {}).get("cognome", ""))
+    for l in letters:
+        labels.append(f"[LETTERE #{l['id']}] {l.get('data_lettera') or '?'} — da {l.get('mittente') or '?'} a {l.get('destinatario') or '?'}")
+    fetched = _verified_fetched_external(dash.get("cues", {}))
+    for r in fetched:
+        labels.append(f"[{(r.get('archivio') or '?').upper()}] {r.get('titolo', '')} (scaricata e verificata)")
+    return labels
+
+
+def _verified_labels_event(routed: dict) -> list[str]:
+    labels = []
+    for r in routed.get("verified_sources", []):
+        d = r.get("data", {})
+        label = d.get("valore") or d.get("titolo_documento") or \
+            f"{d.get('cognome', '')} {d.get('nome', '')}".strip() or r.get("table", "")
+        labels.append(f"[{(r.get('source') or '').upper()}:{r.get('table', '')}] {label}")
+    return labels
+
+
 # ─── Entry point pubblici ──────────────────────────────────────────────────
 
 def generate_soldier_biography(soldier_id: int, provider: Optional[str] = None) -> dict:
@@ -338,7 +423,9 @@ def generate_soldier_biography(soldier_id: int, provider: Optional[str] = None) 
     label = f"Soldato: {s.get('nome', '')} {s.get('cognome', '')} (internati id={soldier_id})".strip()
     verified = _soldier_verified_context(dash)
     unverified = _soldier_unverified_context(dash)
-    prompt = BIOGRAPHY_PROMPT.format(subject_label=label, verified_context=verified, unverified_context=unverified)
+    online_ctx, online_sources = _online_verified_context(label)
+    prompt = BIOGRAPHY_PROMPT.format(subject_label=label, verified_context=verified,
+                                     online_context=online_ctx, unverified_context=unverified)
 
     result = _call_with_fallback(
         system="Sei un ricercatore storico specializzato in Internati Militari Italiani (IMI), caduti e decorati dei conflitti italiani del '900.",
@@ -351,6 +438,10 @@ def generate_soldier_biography(soldier_id: int, provider: Optional[str] = None) 
     result["unverified_sources_count"] = len([
         r for r in dash.get("external_sources", []) if r.get("availability") != "locale"
     ])
+    # Elenco fonti restituito al frontend: l'utente vede QUALI fonti sono
+    # state usate (locali e web, con link), non solo un conteggio.
+    result["verified_sources"] = _verified_labels_soldier(dash)
+    result["online_sources"] = online_sources
     return result
 
 
@@ -370,7 +461,9 @@ def generate_event_biography(query: str, provider: Optional[str] = None) -> dict
 
     verified = _event_verified_context(query, routed)
     unverified = _event_unverified_context(routed, ext_candidates)
-    prompt = BIOGRAPHY_PROMPT.format(subject_label=f"Evento: {query}", verified_context=verified, unverified_context=unverified)
+    online_ctx, online_sources = _online_verified_context(f"Evento: {query}")
+    prompt = BIOGRAPHY_PROMPT.format(subject_label=f"Evento: {query}", verified_context=verified,
+                                     online_context=online_ctx, unverified_context=unverified)
 
     result = _call_with_fallback(
         system="Sei un ricercatore storico specializzato in eventi bellici italiani del '900 (reparti, battaglie, campi di internamento).",
@@ -382,6 +475,9 @@ def generate_event_biography(query: str, provider: Optional[str] = None) -> dict
     result["confidence_locale"] = routed.get("confidence")
     result["unverified_sources_count"] = len(routed.get("image_only_sources", [])) + \
         len([r for r in ext_candidates if not r.get("error")])
+    # Elenco fonti restituito al frontend (visibili, con link per quelle web)
+    result["verified_sources"] = _verified_labels_event(routed)
+    result["online_sources"] = online_sources
     return result
 
 

@@ -169,6 +169,26 @@ def _prepare_context(term: str, limit: int = 20) -> str:
         parts.append("\n=== DOCUMENTI NARA ===")
         for r in data["documenti"][:limit]:
             parts.append(f"  {r.get('source', '?')} | {r.get('title', '?')} | {r.get('date', '')}")
+    # FIX: fonti narrative personali e lettere OCR erano recuperate dal DB
+    # (get_all_records_for_ai) ma NON entravano nel contesto passato all'AI.
+    if data.get("fonti_narrative"):
+        parts.append("\n=== FONTI NARRATIVE PERSONALI (diari, foto, documenti di famiglia) ===")
+        for r in data["fonti_narrative"][:limit]:
+            testo = (r.get("testo_ocr") or r.get("descrizione") or "")[:300]
+            parts.append(
+                f"  ID:{r['id']} | {r.get('tipo_fonte', '?')} | {r.get('titolo') or r.get('nome_file', '?')} | "
+                f"archivio: {r.get('archivio', '?')} | data: {r.get('data_documento') or '?'} | "
+                f"persone: {r.get('persone_possibili') or '?'}{(' | testo: ' + testo) if testo else ''}"
+            )
+    if data.get("lettere_personali"):
+        parts.append("\n=== LETTERE PERSONALI OCR (corrispondenza dal fronte) ===")
+        for r in data["lettere_personali"][:limit]:
+            corpo = (r.get("corpo_testo") or r.get("excerpt") or "")[:300]
+            parts.append(
+                f"  ID:{r['id']} | {r.get('filename', '?')} | da: {r.get('mittente') or '?'} | "
+                f"a: {r.get('destinatario') or '?'} | data: {r.get('data_lettera') or '?'} | "
+                f"luogo: {r.get('luogo') or '?'}{(' | testo: ' + corpo) if corpo else ''}"
+            )
     if not parts:
         return "Nessun dato trovato nel database per questo termine."
     return "\n".join(parts)
@@ -259,6 +279,15 @@ def research_with_perplexity(query: str, limit: int = 20) -> dict:
     resp.raise_for_status()
     data = resp.json()
     risposta = data["choices"][0]["message"]["content"].strip()
+    # FIX: cattura le citazioni web di Perplexity (prima erano scartate -> in UI
+    # compariva solo un numero di fonti senza elenco ne' link).
+    citations = []
+    for sr in data.get("search_results", []) or []:
+        if sr.get("url"):
+            citations.append({"title": sr.get("title") or sr["url"], "url": sr["url"]})
+    if not citations:
+        for url in data.get("citations", []) or []:
+            citations.append({"title": url, "url": url})
     # Perplexity Sonar: ~1€/M input, ~1€/M output
     usage = data.get("usage", {})
     in_tok = usage.get("prompt_tokens", 0)
@@ -267,7 +296,7 @@ def research_with_perplexity(query: str, limit: int = 20) -> dict:
     # Log come openai per tracking costi
     log_openai_usage(model, in_tok, out_tok, lettera="AI_RESEARCH")
     rid = save_ai_ricerca(query, "perplexity", model, risposta, context[:5000], cost)
-    return {"id": rid, "provider": "perplexity", "model": model, "risposta": risposta, "cost_usd": cost}
+    return {"id": rid, "provider": "perplexity", "model": model, "risposta": risposta, "cost_usd": cost, "citations": citations}
 
 
 # ─── Provider: Anthropic Claude ───
