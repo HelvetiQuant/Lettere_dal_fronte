@@ -1,5 +1,88 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-12 (sera) — Test live Arolsen, refinement TNA/IA, popolamento DB
+
+### Arolsen test live validato
+- Flusso ASP.NET confermato: `BuildQueryGlobalForAngular` → session cookie → `GetCount` (7 persone) → `GetPersonList` (7 record GAIASCHI Arturo, nato 13/02/1902) → `GetArchiveList` (1 unità archivistica).
+- 40 nuovi record inseriti in `fonti_indice` (query: Gaiaschi, Rossi, Bianchi, Ferrari, Italian internee).
+
+### TNA refinement
+- Scoperto: l'API REST Discovery (`/API/search/v1/records`) ignora il parametro `q` (restituisce sempre 42M record non filtrati). Il portale web è dietro AWS WAF (202 challenge).
+- Implementato: filtro client-side per periodo WW2 (`numStartDate`/`numEndDate` 1939-1946 + fallback `coveringDates`), filtro pertinenza militare (keyword matching), fetch per reference WO specifiche (WO 392, WO 304, WO 208, WO 309, FO 916).
+- 4 record fallback registrati in `fonti_indice`.
+
+### Internet Archive refinement
+- Aggiunti filtri temporali Solr: `date:[1940 TO 1946]`, `mediatype:(texts)`, `sort:downloads desc`.
+- Strategy 2: broad search con termini italiani (`internati militari italiani`, `prigionieri di guerra italiani`, `campo prigionieri italia`) se query principale < 5 risultati.
+- 19 nuovi record inseriti (Nazi Concentration Camps, Tactical And Technical Trends, newsreels, newspapers 1940-41).
+
+### Popolamento DB
+- **63 nuovi record** totali in `fonti_indice` da provider live.
+- `fonti_indice` totale: 21.062 record (Arolsen 158, TNA 20.025, Internet Archive 66).
+
+---
+
+## 2026-07-12 (pomeriggio) — Consolidamento import, provider reali, README, cleanup
+
+### Consolidamento script import (`import_fonti_personali.py`)
+- Unificati `import_lettere_personali.py` + `import_personal_sources.py` in `import_fonti_personali.py`.
+- Funzione `import_all(dry_run)` esegue entrambe le migrazioni (lettere OCR + fonti narrative Desktop).
+- Entity linking condiviso (`_upsert_persona` con parametro `fonte_tabella` dinamico).
+- Modulo verificato: import corretto, nessun errore.
+
+### Provider federation — 6 provider da stub a reali (`source_providers/providers.py`)
+- **Arolsen Archives (ITS)**: implementato endpoint reverse-engineered `ITS-WS.asmx` (`collections-server.arolsen-archives.org`). Flusso: `BuildQueryGlobalForAngular` → `GetCount` → `GetPersonList`/`GetArchiveList` con gestione sessioni ASP.NET (cookie-keyed). Estrae LastName, FirstName, PrisonerNumber, PlaceBirth, Dob, Signature.
+- **Bundesarchiv**: implementato Invenio REST API (`/api/records` con `q`, `size`, `sort=bestmatch`). Parsing hits con metadata, files.entries per digital objects. Fallback a link catalogo + open data.
+- **SHD/Mémoire des Hommes**: parsing HTML strutturato del portale (`/fr/search.php`). Estrazione link `/fr/article.php` con titoli da anchor text. Fallback a basi dati specifiche (WW1/WW2 morts).
+- **Archivportal-D (DDB)**: implementato DDB REST API ufficiale (OpenAPI 3.0). Endpoint `/search` con OAuth API key (`DDB_API_KEY` da env). Parametri: query, rows, offset, sort, time_fct. `get_metadata()` via `/items/{id}`.
+- **LAC (Library and Archives Canada)**: implementato Canadiana API (`search.canadiana.ca/search?fmt=json`) come endpoint primario + LAC Collection Search come fallback. Parsing docs con id, title, pubmin.
+- **Internet Culturale (OPAC SBN)**: migliorato con endpoint OPAC SBN JSON (`/opacmobilegw/search.json`), parsing briefRecords con BID, titolo, autore, pubblicazione, anno. Fallback con regex BID dal HTML. `get_metadata()` via `/opacmobilegw/bid/{id}.json`.
+
+### Documentazione (`README.md`)
+- README completamente riscritto: architettura con diagramma ASCII, flusso Research-to-Index, tabella moduli, schema DB completo, tabella provider federation (16 provider con API e autenticazione), API principali, configurazione env.
+
+### Cleanup script scratch
+- Rimossi **59 file** con prefisso `_` (`_test_`, `_check_`, `_run_`, `_status_`, `_fix_`, `_bench_`, `_db_`, `_inspect_`, `_search_`, `_start_`, `_verify_`).
+- File .py totali: da 107 a 48 (−55%).
+- Verificato: nessun modulo di produzione importava gli script rimossi. Tutti i moduli si importano correttamente dopo il cleanup.
+
+---
+
+## 2026-07-12 — Verifica DB live, fix ricerca multi-parola, Tab Gaps, test biography
+
+### Verifica DB live (`imi_internati.db`, 1.4 GB)
+- `PRAGMA quick_check` e `PRAGMA integrity_check`: **ok** — DB integro, il "malformed" segnalato era artefatto di mount.
+- `lettere_personali`: 1 record (migrazione da `ocr_lettere.db` confermata).
+- `fonti_narrative`: 40 record, 69 collegamenti (migrazione Desktop confermata).
+- Linker completato: **688.738 entità** (560.133 persone, 102.319 luoghi, 14.952 eventi, 10.348 unità), **4.832.063 collegamenti**.
+- `fonti_indice`: 20.999 fonti (TNA 20.021, Internet Culturale 145, Arolsen 118, Bundesarchiv 118, Archivportal-D 116, LAC 116, SHD 116, Internet Archive 47).
+- `caduti_cwgc`: 506.446 record (WW2: 452.395, WW1: 35.400, non classificati: 18.651).
+- `research_subjects`: 118, `research_subject_sources`: 1.431, `research_gaps`: 472.
+
+### Fix ricerca multi-parola (`database.py`)
+- `_where_like_clause()`: cambiato da **OR puro tra token** a **AND tra token, OR tra colonne**.
+- Prima: "Gaiaschi Giuseppe" → 14 internati, **0 contenevano "gaiaschi"** (tutti falsi positivi da "Giuseppe").
+- Dopo: "Gaiaschi Giuseppe" → **0 falsi positivi** negli internati, 2 caduti pertinenti, 12 fonti_narrative pertinenti.
+- "Luigi Gaiaschi" → 0 falsi positivi (prima 14), 6 fonti_narrative pertinenti.
+- Test: 130 passed, 1 failed (non correlato: `test_source_locator` unable to open DB temporaneo).
+
+### Tab Gaps in UI (`templates/index.html`)
+- Aggiunto tab "Gaps" nella barra investigativa (5° tab dopo Eventi).
+- Funzione `renderGapsTab()`: chiama `GET /api/research/gaps`, renderizza card con:
+  - Nome soggetto e tipo (soldier/event/unit/place)
+  - Campo mancante con label localizzata italiana
+  - Badge priorità colorato (high=danger, medium=warning, low=muted)
+  - Provider suggerito per colmare il gap
+- Integrato in `convSearch()` come step 3b (dopo renderSourcesTab, prima di renderAIResponses).
+- Endpoint `/api/research/gaps` verificato: 472 gap aperti, 5 restituiti correttamente.
+
+### Test biography end-to-end (`POST /api/biography`)
+- **Soldato** (id=2451, ABALIATI): GPT-4o-mini, 0 falsi positivi, biografia narrativa con 3 fatti verificati, 19 fonti non verificate elencate, fallback non necessario, costo $0.0005.
+- **Evento** ("Operazione Achse 8 settembre 1943"): GPT-4o-mini, biografia 2.365 caratteri, contesto storico corretto.
+- Chiavi API confermate disponibili: OPENAI, ANTHROPIC, MISTRAL, PERPLEXITY, EUROPEANA, GEMINI.
+
+---
+
 ## 2026-07-11 (sera) — Fix pipeline arricchimento fonti + copertura test
 
 ### Catalogazione fonti (`c741bea`)

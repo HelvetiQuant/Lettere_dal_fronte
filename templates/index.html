@@ -449,6 +449,7 @@ tr.row-review:hover { background: #fef3c7; }
     <div class="invest-tab" onclick="switchInvestTab('tabLinks')">Collegamenti Cross-DB</div>
     <div class="invest-tab" onclick="switchInvestTab('tabSources')">Fonti</div>
     <div class="invest-tab" onclick="switchInvestTab('tabEvents')">Eventi</div>
+    <div class="invest-tab" onclick="switchInvestTab('tabGaps')">Gaps</div>
   </div>
 
   <!-- Tab: Risposta AI (discorsiva) -->
@@ -474,6 +475,12 @@ tr.row-review:hover { background: #fef3c7; }
   <div class="invest-section" id="tabEvents" style="display:none">
     <h3>Eventi storici curati e fonti multilaterali</h3>
     <div id="investEvents"></div>
+  </div>
+
+  <!-- Tab: Gaps (Research-to-Index) -->
+  <div class="invest-section" id="tabGaps" style="display:none">
+    <h3>Campi mancanti (Research Gaps) <span style="color:var(--primary)" id="gapsCount"></span></h3>
+    <div id="investGaps"></div>
   </div>
 </div>
 
@@ -1808,6 +1815,9 @@ async function convSearch() {
         // Step 3: render sources
         renderSourcesTab(searchRes);
 
+        // Step 3b: render gaps (Research-to-Index)
+        renderGapsTab(q);
+
         // Step 4: launch AI research in parallel (all 4 providers)
         renderAIResponses(q, t0);
 
@@ -2315,6 +2325,53 @@ function renderSourcesTab(searchRes) {
         box.innerHTML = '<p style="color:var(--text-muted);padding:20px;text-align:center">Nessuna fonte locale trovata. La ricerca AI ha comunque interrogato i provider cloud.</p>';
     } else {
         box.innerHTML = parts.join('');
+    }
+}
+
+// ─── Tab: Gaps (Research-to-Index) ───
+async function renderGapsTab(query) {
+    const box = document.getElementById('investGaps');
+    const countEl = document.getElementById('gapsCount');
+    if (!box) return;
+    box.innerHTML = '<p style="color:var(--text-muted);padding:20px;text-align:center">Caricamento gaps...</p>';
+    try {
+        const res = await fetch(`/api/research/gaps?status=open&limit=50`).then(r => r.json());
+        const gaps = res.gaps || [];
+        if (countEl) countEl.textContent = `(${gaps.length})`;
+        if (!gaps.length) {
+            box.innerHTML = '<p style="color:var(--text-muted);padding:20px;text-align:center">Nessun gap aperto. Tutti i soggetti di ricerca hanno dati completi o non ci sono soggetti indicizzati.</p>';
+            return;
+        }
+        const priorityColors = { high: 'var(--danger)', medium: 'var(--warning)', low: 'var(--text-muted)' };
+        const fieldLabels = {
+            date_start: 'Data inizio', date_end: 'Data fine',
+            place: 'Luogo', unit: 'Unita\' militare',
+            name: 'Nome completo', rank: 'Grado',
+            service_number: 'Matricola', birth_date: 'Data nascita',
+            death_date: 'Data decesso', birth_place: 'Luogo nascita'
+        };
+        const rows = gaps.map(g => {
+            const color = priorityColors[g.priority] || priorityColors.medium;
+            const fieldLabel = fieldLabels[g.missing_field] || g.missing_field;
+            const subjectName = g.subject_name || `#${g.subject_id}`;
+            const subjectType = g.subject_type || '';
+            return `<div style="background:var(--bg-soft);border-radius:8px;padding:12px 16px;margin-bottom:8px;border-left:3px solid ${color}">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <span style="font-weight:600">${subjectName}</span>
+                        <span style="font-size:0.75rem;color:var(--text-muted);margin-left:8px">${subjectType}</span>
+                    </div>
+                    <span style="font-size:0.7rem;padding:2px 8px;border-radius:8px;background:${color};color:#fff;font-weight:600">${g.priority || 'medium'}</span>
+                </div>
+                <div style="margin-top:6px;font-size:0.85rem">
+                    <strong>Campo mancante:</strong> ${fieldLabel}
+                    ${g.suggested_provider ? `&mdash; <span style="color:var(--primary)">Suggerito: ${g.suggested_provider}</span>` : ''}
+                </div>
+            </div>`;
+        });
+        box.innerHTML = rows.join('');
+    } catch(e) {
+        box.innerHTML = '<p style="color:var(--danger);padding:20px">Errore caricamento gaps: ' + e.message + '</p>';
     }
 }
 

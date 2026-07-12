@@ -392,15 +392,18 @@ def _tokenize(term: str) -> list[str]:
 
 
 def _where_like_clause(columns: list[str], tokens: list[str]) -> tuple[str, list[str]]:
-    """Costruisce WHERE (col LIKE ? OR ...) per ogni termine."""
-    conditions = []
+    """Costruisce WHERE con AND tra token e OR tra colonne.
+    Ogni token deve matchare in almeno una colonna (AND tra token, OR tra colonne)."""
+    if not tokens:
+        return "1=1", []
+    token_groups = []
     params = []
     for token in tokens:
         like = f"%{token}%"
-        for col in columns:
-            conditions.append(f"{col} LIKE ?")
-            params.append(like)
-    return " OR ".join(conditions) if conditions else "1=1", params
+        col_conditions = [f"{col} LIKE ?" for col in columns]
+        params.extend([like] * len(columns))
+        token_groups.append(f"({' OR '.join(col_conditions)})")
+    return " AND ".join(token_groups), params
 
 
 def search_all(term: str, limit: int = 100) -> dict:
