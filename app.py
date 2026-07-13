@@ -6,8 +6,9 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Body, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, Body, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from config import IMI_PDFS, COLUMNS
 from database import (
@@ -56,6 +57,12 @@ from credits import get_usage_summary, init_usage_table
 
 app = FastAPI(title="IMI Extractor - Internati Militari Italiani", version="1.0.0")
 
+_TEMPLATES = Path(__file__).parent / "templates"
+app.mount("/static", StaticFiles(directory=str(_TEMPLATES)), name="static")
+_DS_DIR = _TEMPLATES / "Voci dal Fronte - Redesign" / "_ds"
+if _DS_DIR.exists():
+    app.mount("/_ds", StaticFiles(directory=str(_DS_DIR)), name="ds")
+
 _extraction_lock = threading.Lock()
 _running_letter = None
 _fondi_lock = threading.Lock()
@@ -77,10 +84,19 @@ def startup():
     rti._init_tables()
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=FileResponse)
 def index():
-    html_path = Path(__file__).parent / "templates" / "index.html"
-    return HTMLResponse(html_path.read_text(encoding="utf-8"))
+    return FileResponse(str(_TEMPLATES / "index.html"), media_type="text/html")
+
+
+@app.get("/support.js")
+def static_support():
+    return FileResponse(str(_TEMPLATES / "support.js"), media_type="application/javascript")
+
+
+@app.get("/voci-data.js")
+def static_voci_data():
+    return FileResponse(str(_TEMPLATES / "voci-data.js"), media_type="application/javascript")
 
 
 @app.get("/api/status")
@@ -205,6 +221,21 @@ def api_search(q: str, limit: int = 100):
     if not q or len(q.strip()) < 2:
         raise HTTPException(status_code=400, detail="Termine di ricerca troppo corto")
     return search_all(q.strip(), limit=limit)
+
+
+@app.get("/api/conv-search")
+def api_conv_search(q: str, limit: int = 20, scope: str = None):
+    """Alias di /api/search usato dal frontend (dbViewSearchExec).
+    scope='caduti' filtra solo i risultati caduti; default: tutti.
+    Restituisce {soldiers, results} compatibile con dbViewSearchExec."""
+    if not q or len(q.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Termine troppo corto")
+    data = search_all(q.strip(), limit=limit)
+    if scope == "caduti":
+        caduti = data.get("caduti", [])
+        return {"soldiers": caduti, "results": caduti}
+    soldiers = data.get("internati", [])
+    return {"soldiers": soldiers, "results": soldiers, **data}
 
 
 # ─── Decorati (Albi della Memoria - ISTORECO) ───
@@ -1142,6 +1173,133 @@ def api_soldier_dashboard(soldier_id: int):
     return result
 
 
+@app.get("/api/internati/{rid}/fonti")
+def api_internato_fonti(rid: int, limit: int = 50):
+    """Fonti archivistiche da fonti_indice matchate per cognome del soldato."""
+    result = soldier_dashboard.get_soldier_fonti_indice(rid, limit=limit)
+    if not result.get("ok"):
+        raise HTTPException(status_code=404, detail=result.get("error", "soldato non trovato"))
+    return result
+
+
+@app.get("/api/internati/{rid}/links")
+def api_internato_links(rid: int, background_tasks: BackgroundTasks = None):
+    """Ricerca federata reale su tutti i provider per un soldato.
+
+    Cerca cognome+nome su ogni archivio esterno (Arolsen, CWGC, Europeana,
+    Onorcaduti, TNA, NARA, ecc.) e restituisce solo i record effettivamente
+    trovati con URL diretto verificato. Non genera URL fittizi.
+    """
+    from database import get_conn
+    conn = get_conn()
+    conn.row_factory = lambda cur, row: {col[0]: row[i] for i, col in enumerate(cur.description)}
+    soldier = conn.execute("SELECT * FROM internati WHERE id=?", (rid,)).fetchone()
+    conn.close()
+    if not soldier:
+        raise HTTPException(status_code=404, detail=f"soldato id={rid} non trovato")
+
+    cognome = (soldier.get("cognome") or "").strip()
+    nome    = (soldier.get("nome")    or "").strip()
+    if not cognome:
+        return {"ok": True, "soldier_id": rid, "links": [], "note": "cognome mancante"}
+
+    query = f"{cognome} {nome}".strip()
+
+    # Ricerca federata reale — restituisce solo record trovati sui provider
+    raw = federated_search(
+        query,
+        cues={"persona": query, "cognome": cognome, "nome": nome},
+        filters={"page_size": 20},
+    )
+
+    links = []
+    for r in raw:
+        if r.get("error"):
+            continue
+        url = r.get("direct_url") or r.get("catalog_url") or ""
+        if not url:
+            continue
+        links.append({
+            "provider":    r.get("provider", ""),
+            "archivio":    r.get("archivio", ""),
+            "titolo":      (r.get("titolo") or r.get("title") or "").strip()[:120],
+            "description": (r.get("description") or "")[:200],
+            "url":         url,
+            "access_type": r.get("access_type", "online"),
+            "score":       round(r.get("score", 0.0), 3),
+            "source_type": r.get("source_type", ""),
+        })
+
+    # Salva nuovi record verificati in fonti_indice (background, non blocca risposta)
+    def _save():
+        from source_providers.base import SourceProvider
+        from source_providers.federation import get_registry
+        reg = get_registry()
+        for lk in links:
+            pname = lk.get("provider")
+            provider = reg.get(pname)
+            if provider:
+                try:
+                    provider.register_in_db({
+                        "archivio": lk["archivio"],
+                        "titolo": lk["titolo"],
+                        "catalog_url": lk["url"],
+                        "access_type": lk["access_type"],
+                        "persone": [query],
+                        "confidence": lk["score"],
+                        "source_type": lk["source_type"],
+                    })
+                except Exception:
+                    pass
+    import threading
+    threading.Thread(target=_save, daemon=True).start()
+
+    return {
+        "ok": True,
+        "soldier_id": rid,
+        "cognome": cognome,
+        "nome": nome,
+        "query": query,
+        "links": links,
+        "total": len(links),
+    }
+
+
+@app.get("/api/internati/{rid}/opengraph")
+def api_internato_opengraph(rid: int):
+    """Metadati OpenGraph-style per condivisione: card riassuntiva + link fonti."""
+    result = soldier_dashboard.get_soldier_opengraph(rid)
+    if not result.get("ok"):
+        raise HTTPException(status_code=404, detail=result.get("error", "soldato non trovato"))
+    return result
+
+
+@app.get("/api/acs/registri")
+def api_acs_registri():
+    """Lista tutti i 79 registri IMI ONORCADUTI (Teca Digitale ACS)."""
+    from source_providers.providers import ProviderTecaDigitaleACS
+    prov = ProviderTecaDigitaleACS()
+    return {"ok": True, "count": len(prov.get_all_registri()), "registri": prov.get_all_registri()}
+
+
+@app.post("/api/acs/ingest")
+def api_acs_ingest():
+    """Inserisce tutti i 79 registri IMI ONORCADUTI in fonti_indice (upsert)."""
+    from source_providers.providers import ProviderTecaDigitaleACS
+    from research_to_index import upsert_source_locator
+    prov = ProviderTecaDigitaleACS()
+    registri = prov.get_all_registri()
+    ok = 0
+    errors = []
+    for r in registri:
+        try:
+            upsert_source_locator(r)
+            ok += 1
+        except Exception as e:
+            errors.append(str(e))
+    return {"ok": True, "inserted": ok, "errors": errors[:5]}
+
+
 @app.get("/api/soldiers/{soldier_id}/sources")
 def api_soldier_sources(soldier_id: int):
     """Solo fonti (locali + esterne) per un soldato."""
@@ -1481,3 +1639,159 @@ def api_source_file(table: str, id: int):
         ".pdf": "application/pdf",
     }.get(ext, "application/octet-stream")
     return FileResponse(path, filename=filename, media_type=media_type)
+
+
+# ─── Report Engine ─────────────────────────────────────────────────────────────
+
+@app.get("/api/report")
+def api_report(q: str, tipo: str = "auto"):
+    """Genera report narrativo storico per una query (evento, unità, luogo, persona).
+
+    Esempio: /api/report?q=Battaglia+di+Cassino&tipo=evento
+             /api/report?q=GAIASCHI+LUIGI&tipo=persona
+             /api/report?q=17+Divisione+Pavia&tipo=unita
+    """
+    if not q or len(q.strip()) < 3:
+        raise HTTPException(status_code=400, detail="query troppo corta")
+    from report_engine import generate_report
+    result = generate_report(q.strip(), tipo=tipo)
+    return result
+
+
+# ─── Mass Index Pipeline ───────────────────────────────────────────────────────
+
+_mass_index_status = {"running": False, "mode": None, "started_at": None,
+                      "done": 0, "saved": 0, "error": None}
+
+
+@app.post("/api/mass-index/start")
+def api_mass_index_start(body: dict = Body(...)):
+    """Avvia la pipeline di indicizzazione massiva in background.
+
+    Body: { "mode": "soldati"|"reparti"|"eventi"|"luoghi"|"all",
+            "limit": 500,   // max soldati (default: tutti)
+            "offset": 0 }
+    """
+    global _mass_index_status
+    if _mass_index_status["running"]:
+        return {"ok": False, "error": "Pipeline già in esecuzione",
+                "status": _mass_index_status}
+
+    mode   = body.get("mode", "all")
+    limit  = body.get("limit")
+    offset = body.get("offset", 0)
+    valid  = {"soldati","reparti","eventi","luoghi","all"}
+    if mode not in valid:
+        raise HTTPException(status_code=400, detail=f"mode deve essere uno di: {valid}")
+
+    _mass_index_status = {
+        "running": True, "mode": mode,
+        "started_at": datetime.now().isoformat(timespec="seconds"),
+        "done": 0, "saved": 0, "error": None,
+    }
+
+    def _run():
+        global _mass_index_status
+        try:
+            import mass_index as mi
+            total = 0
+            if mode in ("soldati", "all"):
+                total += mi.pipeline_soldati(limit=limit, offset=offset)
+                _mass_index_status["saved"] = total
+            if mode in ("reparti", "all"):
+                total += mi.pipeline_reparti()
+                _mass_index_status["saved"] = total
+            if mode in ("eventi", "all"):
+                total += mi.pipeline_eventi()
+                _mass_index_status["saved"] = total
+            if mode in ("luoghi", "all"):
+                total += mi.pipeline_luoghi()
+                _mass_index_status["saved"] = total
+            _mass_index_status["saved"] = total
+        except Exception as e:
+            _mass_index_status["error"] = str(e)
+        finally:
+            _mass_index_status["running"] = False
+
+    import threading
+    threading.Thread(target=_run, daemon=True).start()
+
+    return {"ok": True, "message": f"Pipeline '{mode}' avviata in background",
+            "status": _mass_index_status}
+
+
+@app.post("/api/mass-index/start-parallel")
+def api_mass_index_parallel(body: dict = Body(...)):
+    """Avvia pipeline PARALLELA multi-AI.
+
+    7 AI in parallelo:
+      OpenAI    → soldati A-F
+      Anthropic → soldati G-L
+      Gemini    → soldati M-R
+      Mistral   → soldati S-Z
+      Perplexity→ eventi/battaglie (web access)
+      LM Studio → reparti/unità
+      Scraper   → luoghi/lager
+
+    Body: { "limit": 500 }  // max soldati PER AI (default: tutti)
+    """
+    global _mass_index_status
+    if _mass_index_status["running"]:
+        return {"ok": False, "error": "Pipeline già in esecuzione",
+                "status": _mass_index_status}
+
+    limit = body.get("limit")
+    _mass_index_status = {
+        "running": True, "mode": "parallel_multi_ai",
+        "started_at": datetime.now().isoformat(timespec="seconds"),
+        "done": 0, "saved": 0, "error": None,
+    }
+
+    def _run():
+        global _mass_index_status
+        try:
+            from mass_index_parallel import run_all_parallel
+            run_all_parallel(limit_per_ai=limit)
+        except Exception as e:
+            _mass_index_status["error"] = str(e)
+        finally:
+            _mass_index_status["running"] = False
+
+    import threading
+    threading.Thread(target=_run, daemon=True).start()
+    return {"ok": True, "message": "Pipeline multi-AI avviata (7 AI in parallelo)",
+            "ai_split": {
+                "OpenAI":     "soldati A-F",
+                "Anthropic":  "soldati G-L",
+                "Gemini":     "soldati M-R",
+                "Mistral":    "soldati S-Z",
+                "Perplexity": "eventi/battaglie (web)",
+                "LMStudio":   "reparti/unità",
+                "Scraper":    "luoghi/lager",
+            },
+            "status": _mass_index_status}
+
+
+@app.get("/api/mass-index/status")
+def api_mass_index_status():
+    """Stato corrente della pipeline di indicizzazione massiva."""
+    conn = get_conn()
+    conn.row_factory = lambda c, r: dict(zip([col[0] for col in c.description], r))
+    tot = conn.execute("SELECT COUNT(*) as n FROM fonti_indice").fetchone()["n"]
+    url_ok = conn.execute(
+        "SELECT COUNT(*) as n FROM fonti_indice "
+        "WHERE url_catalogo IS NOT NULL AND url_catalogo != ''"
+    ).fetchone()["n"]
+    top = conn.execute(
+        "SELECT archivio, COUNT(*) as n FROM fonti_indice "
+        "GROUP BY archivio ORDER BY n DESC LIMIT 10"
+    ).fetchall()
+    conn.close()
+    return {
+        "pipeline": _mass_index_status,
+        "fonti_indice": {
+            "total": tot,
+            "con_url": url_ok,
+            "top_archivi": top,
+        },
+    }

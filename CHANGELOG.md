@@ -1,5 +1,56 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-13 — Pipeline multi-AI parallela, Report Engine, Banner, Watchdog
+
+### Fix server (`app.py`)
+- `BackgroundTasks` aggiunto all'import FastAPI → server non avviava (`NameError`).
+- Endpoint `/api/internati/{rid}/links` ora funzionante.
+
+### Banner frontend (`templates/index.html`, `templates/header_banner.png`)
+- Banner sostituisce SVG logo+titolo: immagine full-width sopra navbar sticky.
+- CSS: `width:100%; aspect-ratio:5/1; object-fit:cover; max-height:240px` — responsive da mobile a 4K.
+- Nuovo banner italiano generato (ratio 5:1, 2480×480px target): soldato in trincea, aereo, carro armato, lettera "cara mamma", titolo "Voci dal Fronte" + sottotitolo archivio.
+- Banner cliccabile → torna alla home.
+
+### Pipeline indicizzazione massiva (`mass_index.py`)
+- 4 pipeline indipendenti: `soldati`, `reparti`, `eventi`, `luoghi`.
+- `soldati`: query cognome+nome su 13 provider (Arolsen, Bundesarchiv, NARA, CWGC, Europeana, IA, HathiTrust, Gallica, TNA, AWM, Antenati, WikiTree, IWM).
+- `reparti`: 10.348 unità militari da DB entita — query + varianti DE/EN su NARA/Bundesarchiv/TNA/USSME/IA.
+- `eventi`: 16 eventi fissi ad alto valore + fino a 500 dal DB — query IT+EN, include giornali d'epoca (Europeana Press, IA Newspapers, Gallica/BnF, HathiTrust, Google Books).
+- `luoghi`: 14 lager fissi (Stalag XVII-B, Mauthausen, Gusen, ecc.) + fino a 300 dal DB.
+- ThreadPoolExecutor 4 worker, upsert idempotente su `fonti_indice`, `collegamenti` con colonne reali (`tabella_origine`, `record_id`).
+- Endpoint `POST /api/mass-index/start` + `GET /api/mass-index/status`.
+
+### Pipeline multi-AI parallela (`mass_index_parallel.py`)
+- 7 agenti in parallelo su task distinti:
+  - **OpenAI GPT-4o-mini** → soldati A–F: arricchisce query con varianti nome (grafia tedesca, errori trascrizione).
+  - **Anthropic Claude Haiku** → soldati G–L: estrazione varianti + entity linking.
+  - **Gemini 1.5 Flash** → soldati M–R: varianti nome per archivi internazionali.
+  - **Mistral Small** → soldati S–Z: varianti EN per archivi angloamericani.
+  - **Perplexity (web access)** → eventi/battaglie: trova URL diretti a fonti primarie via ricerca web live.
+  - **LM Studio Qwen2.5-3B** → reparti: varianti nome unità — completamente opzionale, fallback silenzioso se offline.
+  - **Scraper puro** → luoghi/lager: federated_search senza AI.
+- Detection automatica LM Studio: `_lmstudio_available` flag, timeout 8s, skip immediato se offline.
+- Endpoint `POST /api/mass-index/start-parallel`.
+
+### Report Engine (`report_engine.py`)
+- Query libera (evento/unità/luogo/persona) → report narrativo strutturato.
+- Flusso: entità DB → soldati collegati → fonti archivistiche → contesto AI → narrative.
+- Fallback chain AI: OpenAI → Anthropic → Mistral.
+- Auto-detection tipo da keyword (battaglia/operazione → evento, divisione/reggimento → unità, lager/stalag → luogo).
+- Arricchimento per soldati: fonti dirette per ciascuno dalla `fonti_indice`.
+- Endpoint `GET /api/report?q=...&tipo=auto`.
+
+### Watchdog pipeline (`pipeline_watchdog.py`)
+- Monitor ogni 5 minuti: verifica server HTTP, pipeline status, log errori.
+- Auto-fix: riavvio uvicorn se server down, riavvio pipeline se bloccata/in errore.
+- Log su `pipeline_watchdog.log`.
+
+### Fix DB schema
+- Corretti nomi colonne `collegamenti`: `soggetto_tabella` → `tabella_origine`, `soggetto_id` → `record_id`, `tipo` → `tipo_collegamento`.
+
+---
+
 ## 2026-07-12 (sera) — Test live Arolsen, refinement TNA/IA, popolamento DB
 
 ### Arolsen test live validato

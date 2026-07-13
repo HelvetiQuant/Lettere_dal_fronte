@@ -369,6 +369,162 @@ def get_soldier_sources(soldier_id: int) -> dict:
     }
 
 
+def get_soldier_fonti_indice(soldier_id: int, limit: int = 50) -> dict:
+    """Endpoint: GET /api/internati/{id}/fonti
+
+    Restituisce tutte le fonti archivistiche da fonti_indice
+    matchate per cognome del soldato, raggruppate per archivio.
+    Include metadati OpenGraph per ogni fonte.
+    """
+    conn = get_conn()
+    conn.row_factory = _dict_factory
+    soldier = conn.execute("SELECT * FROM internati WHERE id=?", (soldier_id,)).fetchone()
+    if not soldier:
+        conn.close()
+        return {"ok": False, "error": f"soldato id={soldier_id} non trovato"}
+
+    soldier = dict(soldier)
+    cognome = (soldier.get("cognome") or "").strip()
+    nome = (soldier.get("nome") or "").strip()
+
+    luogo_nascita = (soldier.get("luogo_nascita") or "").strip()
+
+    rows = []
+    if cognome:
+        rows = conn.execute(
+            """SELECT id, archivio, fondo, serie, titolo, segnatura,
+                      url_catalogo, access_type, confidence, tipo_fonte,
+                      data_inizio, soggetti_collegati, persone_possibili
+               FROM fonti_indice
+               WHERE LOWER(titolo) LIKE ?
+                  OR LOWER(segnatura) LIKE ?
+                  OR LOWER(persone_possibili) LIKE ?
+               ORDER BY confidence DESC, archivio
+               LIMIT ?""",
+            (f"%{cognome.lower()}%", f"%{cognome.lower()}%",
+             f"%{cognome.lower()}%", limit),
+        ).fetchall()
+
+    # Aggiungi sempre il registro ONORCADUTI della provincia di nascita (se esiste)
+    acs_row = None
+    if luogo_nascita:
+        acs_row = conn.execute(
+            """SELECT id, archivio, fondo, serie, titolo, segnatura,
+                      url_catalogo, access_type, confidence, tipo_fonte,
+                      data_inizio, soggetti_collegati, persone_possibili
+               FROM fonti_indice
+               WHERE archivio LIKE '%ONORCADUTI%'
+                 AND LOWER(titolo) LIKE ?
+               LIMIT 1""",
+            (f"%{luogo_nascita.lower()[:10]}%",),
+        ).fetchone()
+
+    conn.close()
+
+    # Aggiungi il registro ACS della provincia se non già incluso
+    if acs_row and not any(r["id"] == acs_row["id"] for r in rows):
+        rows = list(rows) + [acs_row]
+
+    by_archive: Dict[str, list] = {}
+    for r in rows:
+        arch = r.get("archivio") or "Altro"
+        by_archive.setdefault(arch, []).append({
+            "id": r["id"],
+            "titolo": r.get("titolo", ""),
+            "segnatura": r.get("segnatura", ""),
+            "fondo": r.get("fondo", ""),
+            "serie": r.get("serie", ""),
+            "url": r.get("url_catalogo") or "",
+            "access_type": r.get("access_type", "online"),
+            "confidence": r.get("confidence", 0.5),
+            "source_type": r.get("tipo_fonte", ""),
+            "date_start": r.get("data_inizio", ""),
+        })
+
+    return {
+        "ok": True,
+        "soldier_id": soldier_id,
+        "cognome": cognome,
+        "nome": nome,
+        "total": len(rows),
+        "by_archive": by_archive,
+        "archives": sorted(by_archive.keys()),
+    }
+
+
+def get_soldier_opengraph(soldier_id: int) -> dict:
+    """Endpoint: GET /api/internati/{id}/opengraph
+
+    Genera metadati OpenGraph-style per condivisione social/link.
+    Include descrizione sintetica, fatti verificati e link alle fonti.
+    """
+    conn = get_conn()
+    conn.row_factory = _dict_factory
+    soldier = conn.execute("SELECT * FROM internati WHERE id=?", (soldier_id,)).fetchone()
+    if not soldier:
+        conn.close()
+        return {"ok": False, "error": f"soldato id={soldier_id} non trovato"}
+
+    soldier = dict(soldier)
+    conn.close()
+
+    cognome = soldier.get("cognome") or ""
+    nome = soldier.get("nome") or ""
+    full_name = f"{nome} {cognome}".strip()
+
+    parts = [f"IMI – {full_name}"]
+    if soldier.get("grado"):
+        parts.append(soldier["grado"])
+    if soldier.get("data_nascita"):
+        parts.append(f"n. {soldier['data_nascita']}")
+    if soldier.get("luogo_nascita"):
+        parts.append(soldier["luogo_nascita"])
+    if soldier.get("luogo_cattura") and soldier.get("data_cattura"):
+        parts.append(f"catturato {soldier['data_cattura']} a {soldier['luogo_cattura']}")
+    elif soldier.get("luogo_cattura"):
+        parts.append(f"catturato a {soldier['luogo_cattura']}")
+    if soldier.get("luogo_internamento"):
+        parts.append(f"internato a {soldier['luogo_internamento']}")
+    if soldier.get("sorte"):
+        parts.append(f"sorte: {soldier['sorte']}")
+
+    description = " | ".join(parts)
+
+    fonti_res = get_soldier_fonti_indice(soldier_id, limit=5)
+    source_preview = []
+    for arch, items in (fonti_res.get("by_archive") or {}).items():
+        if items:
+            source_preview.append({
+                "archivio": arch,
+                "titolo": items[0].get("titolo", ""),
+                "url": items[0].get("url", ""),
+            })
+
+    return {
+        "ok": True,
+        "soldier_id": soldier_id,
+        "og": {
+            "title": f"{full_name} — Internato Militare Italiano (WW2)",
+            "description": description,
+            "type": "article",
+            "site_name": "VOCI DAL FRONTE — Ricerca Storica IMI",
+            "article:tag": ["IMI", "internati militari", "seconda guerra mondiale", cognome],
+        },
+        "card": {
+            "name": full_name,
+            "matricola": soldier.get("matricola", ""),
+            "grado": soldier.get("grado", ""),
+            "nascita": f"{soldier.get('data_nascita','')} {soldier.get('luogo_nascita','')}".strip(),
+            "cattura": f"{soldier.get('data_cattura','')} {soldier.get('luogo_cattura','')}".strip(),
+            "internamento": soldier.get("luogo_internamento", ""),
+            "arbeitskommando": soldier.get("arbeitskommando", ""),
+            "sorte": soldier.get("sorte", ""),
+            "fonti_count": fonti_res.get("total", 0),
+            "fonti_preview": source_preview,
+        },
+    }
+
+
 def analyze_sources(source_ids: List[int], query: str = "") -> dict:
     """Endpoint: POST /api/sources/analyze
 

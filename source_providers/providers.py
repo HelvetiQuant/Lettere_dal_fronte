@@ -562,10 +562,16 @@ class _WafSession:
                 self._sleep_backoff(attempt, base=1.0)
                 continue
 
-            if resp.status_code == 429 or 500 <= resp.status_code < 600:
-                logger.warning("HTTP %d su %s: backoff.", resp.status_code, url)
+            if resp.status_code == 429:
+                logger.warning("HTTP 429 su %s: backoff.", url)
                 self._sleep_backoff(attempt)
                 continue
+
+            if 500 <= resp.status_code < 600:
+                # HTTP 5xx su TNA è deterministico (query non supportata),
+                # NON retriable — solleva subito senza backoff
+                logger.warning("HTTP %d su %s: errore deterministic, no retry.", resp.status_code, url)
+                resp.raise_for_status()
 
             resp.raise_for_status()
             return resp
@@ -623,9 +629,8 @@ class ProviderNationalArchivesUK(SourceProvider):
             "sps.searchQuery": query or "*",
             "sps.resultsPageSize": int(filters.get("page_size", 50)),
         }
-        # Filtri temporali: default WW2 se non specificati (evita HTTP 500 su query ampie)
-        params["sps.dateFrom"] = str(filters.get("date_from", "1939"))
-        params["sps.dateTo"] = str(filters.get("date_to", "1945"))
+        # NOTA: sps.dateFrom/sps.dateTo causano HTTP 500 — non usarli mai
+        # (confermato con test diretto sull'API TNA, luglio 2026)
         if filters.get("record_series"):
             params["sps.recordSeries[0]"] = str(filters["record_series"])
         if filters.get("sort_by"):
@@ -1505,3 +1510,201 @@ class ProviderArchivioDiStato(SourceProvider):
         if not r:
             return {}
         return {"provider": self.name, "access_type": "locale"}
+
+
+# --------------------------------------------------------------------------- #
+# Teca Digitale ACS — Archivio Centrale dello Stato
+# Fondo: MINISTERO DELLA DIFESA / ONORCADUTI / Internati militari italiani (IMI)
+# 85 registri per provincia, Croce Rossa Italiana, 1945
+# --------------------------------------------------------------------------- #
+
+# UUID dei 79 registri IMI (provincia → uuid), scrappati dalla Teca Digitale ACS
+# Fonte: https://tecadigitaleacs.cultura.gov.it/media/ricercadl
+#         ?rictree=MINISTERO DELLA DIFESA/ONORCADUTI/Internati militari italiani (IMI)
+_ACS_IMI_REGISTRI: Dict[str, str] = {
+    "Agrigento":       "c7c33820-2ce6-4ab1-9209-79411636aa4e",
+    "Alessandria":     "8394df69-486f-4ae1-ba84-d3cd8f09622b",
+    "Ancona":          "50b82a1b-6d41-4129-b191-8f0ddc589446",
+    "Ascoli Piceno":   "b7a5ba25-c5ee-44b2-94d3-6f6046b8a42b",
+    "Asti":            "4deba0d9-8275-431e-a469-bea7283128b6",
+    "Avellino":        "c5f426f7-e772-4038-bc9c-5c2b14c02743",
+    "Bari":            "d32d31fd-a847-40e1-9470-6452b21dd280",
+    "Benevento":       "21fe8d45-1795-4dee-88cc-6ff5db061d99",
+    "Bergamo":         "9edd9847-ce16-4bdc-a2fd-f332f2c70c9c",
+    "Bologna":         "204c0590-6eba-4480-9de8-13b089cd9a90",
+    "Bolzano":         "47cc0ee8-08e6-4814-8853-17a8c7f7a3f3",
+    "Brescia":         "7005461b-4541-4e9f-b9da-7f6c11de4eb3",
+    "Brindisi":        "09c83507-da06-4bfd-ab87-a8e348f31073",
+    "Cagliari":        "3fcef7c3-9264-4437-bd0e-a988d7c213f7",
+    "Caltanissetta":   "246b7d3d-a42e-48c9-8b2d-a959349642e8",
+    "Campobasso":      "25b1b3d3-7bf2-455d-a316-faee94aca6d3",
+    "Catania":         "88d0e80a-40af-4def-b508-9bc4f8d7243e",
+    "Catanzaro":       "70253903-aaac-4fdc-a7a9-bb026fb25bfe",
+    "Chieti":          "6fc9007a-635d-46d4-9de7-b41ddec96bbb",
+    "Como":            "d08cd289-a16a-46e2-ae2e-d301d5ccb135",
+    "Cosenza":         "27773853-2c45-46c7-aec9-33fec56a2006",
+    "Cremona":         "c925bd3d-3e3c-40f0-ab84-92d90cc8b341",
+    "Cuneo":           "0728d004-39e2-40c1-a22d-343f0526f2be",
+    "Enna":            "a5d0fbd4-5f4e-4f6f-a72b-4f3d489d55f4",
+    "Ferrara":         "12ae137e-4b81-4716-9839-e3c8a903861f",
+    "Firenze":         "7aebd8c3-b8d5-4083-85f8-866194fc7599",
+    "Fiume":           "387550f5-bd5c-45f7-baa5-09255150bbf3",
+    "Forlì":           "17c9e390-79d9-4210-a27f-6704a1072f86",
+    "Frosinone":       "bc552103-8df9-47ca-af90-21e71bdd70e2",
+    "Genova":          "89e540e4-8bc9-4bae-ad25-2245f05d1093",
+    "Gorizia":         "749ee254-bf91-45ed-9adf-90d679247b62",
+    "Grosseto":        "e75f3e87-b534-499b-a34b-462e73ec39bf",
+    "Imperia":         "db0112f0-12f0-495c-aea0-2fa7e992f07a",
+    "L'Aquila":        "01967a84-193d-4c19-b6e3-8999c80b3c8e",
+    "La Spezia":       "a134c757-b277-4ef7-b293-9556538e1451",
+    "Lecce":           "37105557-7ba0-4353-8ce4-3f795efe6858",
+    "Littoria":        "397e94b1-a640-4398-a0c6-e38ffbc60262",
+    "Livorno":         "3bcdc2ab-38cf-4b68-9567-c7063562758c",
+    "Lucca":           "1e0c57db-4eb4-4799-ab18-75cd7b7b7500",
+    "Macerata":        "6f50f91c-884f-486c-ae13-b6317db82a73",
+    "Mantova":         "8d5142a6-af6a-43b4-9ddd-85b4c8d23908",
+    "Matera":          "589f91fa-a759-43e2-94ef-f1665bed81fd",
+    "Messina":         "6b69b21d-91d0-403e-b993-91712ea40af8",
+    "Milano":          "026e2bc2-8a23-4bd8-8e43-8d64af8bde93",
+    "Napoli":          "19ae5902-fdad-4a71-962d-2f02ebee4860",
+    "Novara":          "61d62ff8-365e-4e47-b0f8-44f603be8f14",
+    "Nuoro":           "b9c0e5a6-1cdf-4fe1-b2df-44051a54c641",
+    "Padova":          "9602ed4f-7fc5-4764-a4d7-5c94bc3b656f",
+    "Palermo":         "c7c4efbe-998f-4f00-b563-0bbcf9db97af",
+    "Parma":           "f8c38ece-ced5-424b-bf2f-8a8f643cbb77",
+    "Pavia":           "8465ea62-df2c-485b-ba8d-09c929decc68",
+    "Perugia":         "898a4a20-ee0f-4aeb-8b09-17991380ed5c",
+    "Pesaro":          "b4e6a077-2c8d-41df-8aba-a465a505a370",
+    "Pescara":         "ad0a650c-c72f-41ca-99a5-66acfa7ee5b6",
+    "Piacenza":        "88d8c6c3-f60e-4423-95ec-2aac9f49109f",
+    "Pisa":            "d60076e8-6d8a-4bca-8e5b-17b16292f053",
+    "Pistoia":         "dcbacee7-3f8c-4f8f-a35e-67372727cdbb",
+    "Pola":            "0a833bff-d0f5-4566-af81-08b82c991bc0",
+    "Potenza":         "85a289e9-5081-4348-aac4-3de3a1177658",
+    "Ragusa":          "4cb8e4aa-ff33-4a42-8176-1551a97aeae9",
+    "Ravenna":         "6915baa3-f444-4d10-9d49-1fc28cae7401",
+    "Reggio Calabria": "4b265c10-7597-41ce-b56f-6bfc712c0513",
+    "Reggio Emilia":   "985d6817-577b-459a-abcd-2553c8e62bc6",
+    "Rieti":           "cbc5807d-04bc-4ce4-ba4b-b24de2af5ec8",
+    "Roma":            "33c2b460-3df6-4b8f-8a83-5c937443629e",
+    "Rovigo":          "5015ba96-4785-410e-a15c-4ec59576382c",
+    "Teramo":          "d7e849bb-f7f2-4d2e-8dcb-a9073aba8941",
+    "Torino":          "20be0c92-31c3-4dcc-9340-60bca78b6e1e",
+    "Trapani":         "908950b0-243e-4314-a50c-98e227e7dcd2",
+    "Trento":          "7bece73f-bf26-417d-9ac9-2e83fc0aa229",
+    "Treviso":         "0c109246-0fbf-4cbe-b2ec-23f208f098b1",
+    "Udine":           "1e121768-7bff-4db2-8b95-479d5099795b",
+    "Varese":          "80a3a161-5603-4def-869e-e87f499f6232",
+    "Venezia":         "69ef79ef-65d4-460a-8777-c815e777f9cd",
+    "Vercelli":        "d703ea78-aff7-4f2d-b2ca-dff7a3f6587e",
+    "Verona":          "69381620-b222-4fe3-8c90-17cbbfff6962",
+    "Vicenza":         "1982cc98-6c1b-4bd6-a8cd-092fb8184665",
+    "Viterbo":         "44c348f7-8619-40e3-acde-d946f1179022",
+    "Zara":            "23207800-9fbd-4a64-8d91-a5af6d9052b0",
+}
+
+_ACS_BASE = "https://tecadigitaleacs.cultura.gov.it"
+_ACS_SEARCH_URL = (
+    f"{_ACS_BASE}/media/ricercadl"
+    "?rictree=MINISTERO%20DELLA%20DIFESA%2FCOMMISSARIATO%20GENERALE%20PER%20LE%20ONORANZE%20AI%20CADUTI%20(ONORCADUTI)%2FInternati%20militari%20italiani%20(IMI)"
+    "&rictip=registro"
+)
+
+
+class ProviderTecaDigitaleACS(SourceProvider):
+    """Teca Digitale ACS — registri IMI ONORCADUTI per provincia.
+
+    Fonte primaria: Archivio Centrale dello Stato, fondo MINISTERO DELLA
+    DIFESA / COMMISSARIATO GENERALE PER LE ONORANZE AI CADUTI (ONORCADUTI) /
+    Internati militari italiani (IMI). 85 registri digitalizzati (CRI, 1945).
+
+    Strategia search():
+    - Cerca per provincia corrispondente al luogo di nascita/residenza del soldato
+    - Ritorna sempre il registro della provincia corrispondente se trovato
+    - Aggiunge link diretto all'item ACS (visualizzatore digitale)
+    - Per cognomi senza match di provincia: ritorna link alla lista completa IMI
+    """
+    name = "teca_acs"
+    display_name = "Teca Digitale ACS — Registri IMI ONORCADUTI"
+    country = "Italia"
+    archive_name = "Archivio Centrale dello Stato"
+    base_url = _ACS_BASE
+    authorized_domains = {"tecadigitaleacs.cultura.gov.it"}
+    cache_ttl_days = 365
+
+    def search(self, query: str, filters: dict = None) -> List[dict]:
+        """
+        Cerca il registro IMI per provincia.
+        query: cognome (eventualmente con nome) del soldato
+        filters: può contenere 'provincia' o 'luogo_nascita' per match diretto
+        """
+        filters = filters or {}
+        provincia = (
+            filters.get("provincia") or
+            filters.get("luogo_nascita") or
+            filters.get("luogo_residenza") or
+            ""
+        ).strip().title()
+
+        results = []
+
+        # Match diretto per provincia
+        for prov, uuid in _ACS_IMI_REGISTRI.items():
+            if provincia and prov.lower() in provincia.lower():
+                results.append(self._make_result(prov, uuid, query))
+                break
+
+        # Se nessun match di provincia, ritorna il link alla lista completa
+        if not results:
+            results.append({
+                "provider": self.name,
+                "archivio": "Archivio Centrale dello Stato — ONORCADUTI",
+                "titolo": f"Registri IMI ONORCADUTI — cerca per: {query}",
+                "description": (
+                    "85 registri digitalizzati degli Internati Militari Italiani "
+                    "(CRI, 1945), organizzati per provincia. Ministero della Difesa / "
+                    "COMMISSARIATO GENERALE PER LE ONORANZE AI CADUTI."
+                ),
+                "source_type": "registro",
+                "catalog_url": _ACS_SEARCH_URL,
+                "direct_url": _ACS_SEARCH_URL,
+                "access_type": "online",
+                "downloadable": False,
+                "confidence": 0.6,
+                "date_start": "1945",
+            })
+
+        return results
+
+    def get_all_registri(self) -> List[dict]:
+        """Ritorna tutti gli 85 registri IMI come lista di fonti."""
+        return [self._make_result(prov, uuid, "") for prov, uuid in _ACS_IMI_REGISTRI.items()]
+
+    def _make_result(self, provincia: str, uuid: str, query: str) -> dict:
+        item_url = f"{_ACS_BASE}/item/{uuid}"
+        return {
+            "provider": self.name,
+            "provider_record_id": uuid,
+            "archivio": "Archivio Centrale dello Stato — ONORCADUTI",
+            "fondo": "MINISTERO DELLA DIFESA / ONORCADUTI / IMI",
+            "titolo": f"Registro IMI — {provincia} (CRI, 1945)",
+            "description": (
+                f"Elenco dei reduci IMI dalla Germania, anno 1945. "
+                f"Provincia di {provincia}. "
+                "Croce Rossa Italiana, Ufficio centrale prigionieri di guerra, "
+                "Sezione distaccata Alta Italia, Milano."
+            ),
+            "source_type": "registro",
+            "catalog_url": item_url,
+            "direct_url": item_url,
+            "access_type": "online",
+            "downloadable": False,
+            "confidence": 0.9,
+            "date_start": "1945",
+        }
+
+    def get_metadata(self, record_id: str) -> dict:
+        for prov, uuid in _ACS_IMI_REGISTRI.items():
+            if uuid == record_id:
+                return self._make_result(prov, uuid, "")
+        return {"provider": self.name, "catalog_url": f"{_ACS_BASE}/item/{record_id}"}

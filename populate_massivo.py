@@ -1,39 +1,46 @@
-"""Popolamento massivo fonti_indice da Arolsen, TNA, Internet Archive.
+"""Popolamento massivo fonti_indice — versione concorrente, solo Arolsen.
 
-Strategia:
-- Legge un campione di internati dal DB (batch configurabile)
-- Per ogni internato, cerca su Arolsen (per cognome), TNA (per cognome + Italian), IA (per cognome + Italian prisoner)
-- Registra i risultati in fonti_indice tramite upsert_source_locator
-- Rate limiting: 1s tra internati, 0.5s tra provider
-- Resume: salta internati già processati (tabella progress)
+Provider attivi:
+  - Arolsen Archives: 1 query per internato (cognome) — stabile, ~3s/query
+  (TNA disabilitato: WAF blocca il batch)
+  (IA disabilitato: timeout variabili bloccano i worker)
+Usa ThreadPoolExecutor (WORKERS thread) con chunk da 200.
+Resume: salta internati già presenti in populate_progress.
 """
 import sys
 import time
 import logging
 import warnings
 import sqlite3
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
 warnings.filterwarnings('ignore')
-logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("populate")
 
 from database import get_conn
-from source_providers.providers import (
-    ProviderArolsen,
-    ProviderNationalArchivesUK,
-    ProviderInternetArchive,
-)
+from source_providers.providers import ProviderArolsen
 from research_to_index import upsert_source_locator
 
-BATCH_SIZE = int(sys.argv[1]) if len(sys.argv) > 1 else 100
-OFFSET = int(sys.argv[2]) if len(sys.argv) > 2 else 0
+BATCH_SIZE  = int(sys.argv[1]) if len(sys.argv) > 1 else 20464
+OFFSET      = int(sys.argv[2]) if len(sys.argv) > 2 else 0
+WORKERS     = int(sys.argv[3]) if len(sys.argv) > 3 else 2
+QUERY_FAST_THRESHOLD = 8.0   # se query < 8s, aggiungi 1s delay
+QUERY_SLOW_DELAY     = 0.0   # se query >= 8s (già throttlata), delay 0
+
+_lock = threading.Lock()
+_total_new = 0
+_total_queries = 0
+_errors = 0
 
 
 def get_internati_batch(limit, offset):
     conn = get_conn()
     rows = conn.execute(
-        "SELECT id, cognome, nome FROM internati WHERE cognome IS NOT NULL AND cognome != '' ORDER BY id LIMIT ? OFFSET ?",
+        "SELECT id, cognome, nome FROM internati "
+        "WHERE cognome IS NOT NULL AND cognome != '' ORDER BY id LIMIT ? OFFSET ?",
         (limit, offset),
     ).fetchall()
     conn.close()
@@ -41,7 +48,6 @@ def get_internati_batch(limit, offset):
 
 
 def get_processed_ids():
-    """Restituisce set di ID già processati da progress table."""
     conn = get_conn()
     try:
         rows = conn.execute(
@@ -65,117 +71,105 @@ def mark_processed(internato_id, found_count):
         )
     """)
     conn.execute(
-        "INSERT OR REPLACE INTO populate_progress (internato_id, status, found_count, processed_at) VALUES (?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO populate_progress "
+        "(internato_id, status, found_count, processed_at) VALUES (?, ?, ?, ?)",
         (internato_id, "done", found_count, datetime.now().isoformat()),
     )
     conn.commit()
     conn.close()
 
 
-def main():
-    print(f"{'='*60}")
-    print(f"  POPOLAMENTO MASSIVO FONTI_INDICE")
-    print(f"  Batch: {BATCH_SIZE} internati (offset {OFFSET})")
-    print(f"{'='*60}")
 
-    # Init providers
-    print("  Inizializzazione provider...")
-    arolsen = ProviderArolsen()
-    tna = ProviderNationalArchivesUK()
-    ia = ProviderInternetArchive()
-    print("  OK")
+def process_one(inter, arolsen):
+    global _total_new, _total_queries, _errors
+    iid = inter["id"]
+    cognome = inter["cognome"] or ""
+    found = 0
 
-    # Get batch
-    internati = get_internati_batch(BATCH_SIZE, OFFSET)
-    print(f"  Internati da processare: {len(internati)}")
-
-    # Resume: skip already processed
-    processed = get_processed_ids()
-    if processed:
-        print(f"  Già processati (skip): {len(processed)}")
-
-    total_new = 0
-    total_queries = 0
-    errors = 0
-
-    for idx, inter in enumerate(internati):
-        iid = inter["id"]
-        cognome = inter["cognome"] or ""
-        nome = inter["nome"] or ""
-
-        if iid in processed:
-            continue
-
-        query_arolsen = cognome
-        query_tna = "Italian prisoner of war"  # cognomi singoli causano HTTP 500
-        query_ia = f"{cognome} Italian prisoner of war"
-
-        found = 0
-
-        # 1. Arolsen
-        try:
-            results = arolsen.search(query_arolsen)
-            for r in results:
+    t_query = time.time()
+    try:
+        for r in arolsen.search(cognome):
+            try:
                 upsert_source_locator(r)
                 found += 1
-        except Exception as e:
-            errors += 1
-            if errors <= 5:
-                logger.warning("Arolsen error for %s: %s", cognome, e)
+            except Exception:
+                pass
+    except Exception:
+        with _lock:
+            _errors += 1
+    # delay adattivo: solo se Arolsen ha risposto subito (non throttlato)
+    elapsed = time.time() - t_query
+    if elapsed < QUERY_FAST_THRESHOLD:
+        time.sleep(1.0)
 
-        time.sleep(0.3)
+    mark_processed(iid, found)
+    with _lock:
+        _total_new += found
+        _total_queries += 1
+    return iid, cognome, found
 
-        # 2. TNA (ogni 10 internati — TNA è lento per WAF)
-        if idx % 10 == 0:
-            try:
-                results = tna.search(query_tna)
-                for r in results:
-                    upsert_source_locator(r)
-                    found += 1
-            except Exception as e:
-                errors += 1
-                if errors <= 10:
-                    logger.warning("TNA error for %s: %s", cognome, e)
 
-            time.sleep(0.5)
+def main():
+    global _total_new, _total_queries, _errors
 
-        # 3. Internet Archive (ogni 5 internati)
-        if idx % 5 == 0:
-            try:
-                results = ia.search(query_ia)
-                for r in results:
-                    upsert_source_locator(r)
-                    found += 1
-            except Exception as e:
-                errors += 1
-                if errors <= 10:
-                    logger.warning("IA error for %s: %s", cognome, e)
+    print(f"{'='*60}")
+    print(f"  POPOLAMENTO MASSIVO FONTI_INDICE (concorrente)")
+    print(f"  Batch: {BATCH_SIZE} | Offset: {OFFSET} | Workers: {WORKERS}")
+    print(f"{'='*60}")
 
-            time.sleep(0.3)
+    print("  Inizializzazione provider...")
+    arolsen_pool = [ProviderArolsen() for _ in range(WORKERS)]
+    print(f"  OK — Arolsen×{WORKERS} (delay adattivo, TNA e IA disabilitati)")
 
-        total_new += found
-        total_queries += 1
-        mark_processed(iid, found)
+    internati = get_internati_batch(BATCH_SIZE, OFFSET)
+    processed_ids = get_processed_ids()
+    todo = [i for i in internati if i["id"] not in processed_ids]
+    print(f"  Da processare: {len(todo)} / {len(internati)} (già fatti: {len(processed_ids)})")
 
-        if (idx + 1) % 10 == 0:
-            print(f"  [{idx+1}/{len(internati)}] {cognome} {nome} → +{found} fonti (total: {total_new})")
+    if not todo:
+        print("  Niente da fare.")
+        return
 
-    # Final stats
+    t0 = time.time()
+    done_count = 0
+    CHUNK = 200
+    with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+        for chunk_start in range(0, len(todo), CHUNK):
+            chunk = todo[chunk_start:chunk_start + CHUNK]
+            futures = {
+                ex.submit(process_one, inter, arolsen_pool[(chunk_start + i) % WORKERS]): inter
+                for i, inter in enumerate(chunk)
+            }
+            for fut in as_completed(futures):
+                try:
+                    iid, cognome, found = fut.result()
+                except Exception:
+                    pass
+                done_count += 1
+                if done_count % 50 == 0:
+                    elapsed = time.time() - t0
+                    rate = done_count / elapsed if elapsed else 0
+                    eta = (len(todo) - done_count) / rate if rate else 0
+                    print(f"  [{done_count}/{len(todo)}] "
+                          f"{rate:.2f} int/s | "
+                          f"ETA {eta/60:.0f}m | "
+                          f"fonti: {_total_new}")
+
+    elapsed = time.time() - t0
     print(f"\n{'='*60}")
     print(f"  RIASSUNTO")
     print(f"{'='*60}")
-    print(f"  Internati processati: {total_queries}")
-    print(f"  Nuove fonti inserite: {total_new}")
-    print(f"  Errori: {errors}")
+    print(f"  Processati: {_total_queries} in {elapsed:.0f}s ({_total_queries/elapsed:.1f}/s)")
+    print(f"  Nuove fonti: {_total_new}")
+    print(f"  Errori: {_errors}")
 
     conn = get_conn()
-    for arch in ["Arolsen", "TNA", "Internet Archive"]:
+    for arch in ["Arolsen Archives"]:
         count = conn.execute(
             "SELECT COUNT(*) FROM fonti_indice WHERE archivio LIKE ?", (f"%{arch}%",)
         ).fetchone()[0]
-        print(f"  {arch}: {count} record totali")
-    total = conn.execute("SELECT COUNT(*) FROM fonti_indice").fetchone()[0]
-    print(f"  TOTALE fonti_indice: {total}")
+        print(f"  {arch}: {count}")
+    print(f"  TOTALE fonti_indice: {conn.execute('SELECT COUNT(*) FROM fonti_indice').fetchone()[0]}")
     conn.close()
 
 

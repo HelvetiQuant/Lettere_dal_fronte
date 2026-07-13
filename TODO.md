@@ -1,6 +1,6 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 12 luglio 2026 — verifiche su DB live completate, fix ricerca multi-parola, Tab Gaps UI, test biography end-to-end.
+Aggiornato: 13 luglio 2026 — Pipeline multi-AI parallela, report engine, banner frontend, fix BackgroundTasks, watchdog pipeline.
 
 ---
 
@@ -80,14 +80,30 @@ Le verifiche del 12/7 sono state eseguite direttamente sulla macchina locale con
 - [x] README riscritto: architettura, diagramma flusso, 16 provider, schema DB, API
 - [x] Cleanup 59 script scratch (107 → 48 file .py, −55%)
 
+## Task completati il 13/7
+
+- [x] Fix `BackgroundTasks` non importato → server non partiva
+- [x] Banner full-width responsive (2480×480px ratio 5:1) sopra navbar sticky
+- [x] Nuovo banner italiano "Voci dal Fronte" con soldato+lettera+aereo (sostituisce precedente)
+- [x] `mass_index.py`: pipeline batch 4 dimensioni (soldati/reparti/eventi/luoghi) con ThreadPoolExecutor
+- [x] `report_engine.py`: report narrativo AI (OpenAI→Anthropic→Mistral fallback chain) con grafo entità
+- [x] Endpoint `GET /api/report?q=...&tipo=...` — report storico on-demand
+- [x] Endpoint `POST /api/mass-index/start` — pipeline singola in background
+- [x] Endpoint `POST /api/mass-index/start-parallel` — 7 AI in parallelo
+- [x] Endpoint `GET /api/mass-index/status` — stato pipeline + stats fonti_indice
+- [x] `mass_index_parallel.py`: OpenAI(A-F) + Anthropic(G-L) + Gemini(M-R) + Mistral(S-Z) + Perplexity(eventi) + LMStudio(reparti) + Scraper(luoghi)
+- [x] LM Studio opzionale: detection automatica disponibilità, fallback silenzioso
+- [x] Fix colonne DB: `soggetto_tabella`→`tabella_origine`, `soggetto_id`→`record_id`
+- [x] `pipeline_watchdog.py`: monitor ogni 5 min, fix e riavvio automatico
+- [x] Push GitHub: helvetiquant/lettere_dal_fronte aggiornato
+
 ## Task residui
 
-- [ ] Bando MiC (scad. 15/7) — puramente amministrativo
-- [x] TNA query refinement: WAF superato con Playwright + sps.searchQuery (non q)
-- [x] Internet Archive query refinement: filtri Solr date:[1940 TO 1946] + termini italiani
-- [x] Popolato DB con Arolsen (40), TNA (4), IA (19) = 63 nuovi record (primo batch)
+- [ ] **Bando MiC (scad. 15/7 ore 12:00)** — URGENTE — solo amministrativo
 - [ ] DDB API key: registrarsi su deutsche-digitale-bibliothek.de per ottenere key
-- [x] Arolsen: test live validato (7 persone Gaiaschi, flusso sessione OK)
-- [x] TNA: WAF risolto (Playwright aws-waf-token), sps.searchQuery funziona, WO 392 = 10 record reali
-- [ ] Popolamento massivo: batch 500 in corso (Arolsen 651+, IA 305+, TNA 500 su query per cognome)
 - [ ] TNA: query per cognome causa HTTP 500 — usare query generiche o reference series
+- [ ] Popolamento massivo completo: 20.464 soldati × tutti i provider (stimato 8-12h con 4 AI)
+- [ ] Frontend: aggiungere tab Report nella UI (query libera → report narrativo)
+- [ ] Frontend: mappa geospaziale movimentazioni (Leaflet + dati luogo_internamento)
+- [ ] Conformità Europeana Data Model (EDM) — scadenza Creative Europe set 2026
+- [ ] Gemini: verificare che google-generativeai sia installato (`pip install google-generativeai`)
