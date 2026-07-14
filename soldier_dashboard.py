@@ -18,6 +18,11 @@ from database import get_conn
 from search_service import search_entities, get_entity_network
 from source_providers.federation import federated_search, get_registry
 from source_providers.base import score_source, _dict_factory
+from mass_index import (
+    MIN_SCORE as MI_MIN_SCORE,
+    _is_search_page_url,
+    _matches_entity,
+)
 
 
 def _row_to_dict(row) -> dict:
@@ -223,8 +228,28 @@ def _get_external_sources(soldier: dict, cues: dict) -> list:
         "internetarchive", "tna",
     ]
 
-    results = federated_search(query, cues=cues, providers=priority_providers,
-                               filters=filters)
+    raw_results = federated_search(query, cues=cues, providers=priority_providers,
+                                   filters=filters)
+
+    results = []
+    for r in raw_results:
+        if r.get("error"):
+            continue
+        score = r.get("score", 0.0)
+        if score < MI_MIN_SCORE:
+            continue
+        url = r.get("direct_url") or r.get("catalog_url") or ""
+        if not url or _is_search_page_url(url):
+            continue
+        if not _matches_entity({
+            "titolo": r.get("titolo") or r.get("title") or "",
+            "note": r.get("description") or "",
+            "segnatura": r.get("provider_record_id") or "",
+            "url_catalogo": url,
+            "url_file": r.get("direct_url") or "",
+        }, {"persona": query, "cognome": soldier.get("cognome", ""), "nome": soldier.get("nome", "")}):
+            continue
+        results.append(r)
 
     # arricchisci con stato fonte
     for r in results:
@@ -396,9 +421,11 @@ def get_soldier_fonti_indice(soldier_id: int, limit: int = 50) -> dict:
                       url_catalogo, access_type, confidence, tipo_fonte,
                       data_inizio, soggetti_collegati, persone_possibili
                FROM fonti_indice
-               WHERE LOWER(titolo) LIKE ?
-                  OR LOWER(segnatura) LIKE ?
-                  OR LOWER(persone_possibili) LIKE ?
+               WHERE COALESCE(fetch_status, '') != 'url_ricerca'
+                 AND COALESCE(confidence, 0) > 0
+                 AND (LOWER(titolo) LIKE ?
+                      OR LOWER(segnatura) LIKE ?
+                      OR LOWER(persone_possibili) LIKE ?)
                ORDER BY confidence DESC, archivio
                LIMIT ?""",
             (f"%{cognome.lower()}%", f"%{cognome.lower()}%",
@@ -413,7 +440,9 @@ def get_soldier_fonti_indice(soldier_id: int, limit: int = 50) -> dict:
                       url_catalogo, access_type, confidence, tipo_fonte,
                       data_inizio, soggetti_collegati, persone_possibili
                FROM fonti_indice
-               WHERE archivio LIKE '%ONORCADUTI%'
+               WHERE COALESCE(fetch_status, '') != 'url_ricerca'
+                 AND COALESCE(confidence, 0) > 0
+                 AND archivio LIKE '%ONORCADUTI%'
                  AND LOWER(titolo) LIKE ?
                LIMIT 1""",
             (f"%{luogo_nascita.lower()[:10]}%",),

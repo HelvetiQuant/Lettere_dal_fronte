@@ -232,6 +232,16 @@ def _guess_ext(content_type: str, url: str) -> str:
     return suffix if suffix and len(suffix) <= 5 else ".bin"
 
 
+# Pattern per classificare URL (usati anche nello scoring).
+_DIRECT_URL_RE = re.compile(
+    r"/document/|/record/|/item/|/details/|/archive/|/person/|/unit/|/reference/|/permalink/|/ark:/|/download/|/view/|\.pdf\b",
+    re.IGNORECASE,
+)
+_SEARCH_URL_RE = re.compile(
+    r"/search[/?]|search\.aspx|search\.php|/results\?|search\?query=",
+    re.IGNORECASE,
+)
+
 # ─── Scoring ──────────────────────────────────────────────────────────────────
 
 def score_source(meta: dict, query_cues: dict = None) -> float:
@@ -243,13 +253,31 @@ def score_source(meta: dict, query_cues: dict = None) -> float:
     score = 0.0
     cues = query_cues or {}
 
+    url = " ".join(filter(None, [meta.get("url_catalogo"), meta.get("url_file")]))
+
     # pertinenza (match persona/luogo/reparto)
-    if cues.get("persona") and cues["persona"].lower() in (meta.get("persone_possibili") or "").lower():
-        score += 0.25
+    if cues.get("persona"):
+        persona_low = cues["persona"].lower()
+        if persona_low in (meta.get("persone_possibili") or "").lower():
+            score += 0.25
+        # match nome/cognome anche in titolo/descrizione/url
+        haystack = " ".join(filter(None, [
+            meta.get("titolo"), meta.get("description"), meta.get("note"), url,
+        ])).lower()
+        for token in persona_low.split():
+            if len(token) > 2 and token in haystack:
+                score += 0.08
     if cues.get("reparto") and cues["reparto"].lower() in (meta.get("reparto") or "").lower():
         score += 0.20
     if cues.get("luogo") and cues["luogo"].lower() in (meta.get("luogo") or "").lower():
         score += 0.15
+
+    # qualità URL: premi record diretti, penalizza pagine di ricerca
+    if url:
+        if _DIRECT_URL_RE.search(url):
+            score += 0.15
+        elif _SEARCH_URL_RE.search(url):
+            score -= 0.3
 
     # vicinanza temporale
     if cues.get("data") and meta.get("data_inizio"):

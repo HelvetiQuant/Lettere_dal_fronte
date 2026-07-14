@@ -37,6 +37,7 @@ from database import get_conn
 from source_providers.federation import federated_search
 from mass_index import (
     _upsert_fonte, _add_collegamento,
+    _is_search_page_url, _is_direct_record_url, _matches_entity,
     pipeline_reparti, pipeline_luoghi,
     MIN_SCORE, MAX_PER_QUERY, BATCH_SLEEP,
 )
@@ -289,7 +290,7 @@ def _process_soldier(row: dict, enrich_fn) -> int:
             if r.get("error") or r.get("score", 0) < MIN_SCORE:
                 continue
             url = r.get("direct_url") or r.get("catalog_url") or ""
-            if not url:
+            if not url or _is_search_page_url(url):
                 continue
             meta = {
                 "archivio":    r.get("archivio") or r.get("provider", ""),
@@ -302,6 +303,8 @@ def _process_soldier(row: dict, enrich_fn) -> int:
                 "confidence":  round(r.get("score", 0.5), 3),
                 "note":        (r.get("description") or "")[:400],
             }
+            if not _matches_entity(meta, cues):
+                continue
             try:
                 fid = _upsert_fonte(meta)
                 _add_collegamento("internati", row["id"], fid)

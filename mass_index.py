@@ -41,8 +41,113 @@ log = logging.getLogger("mass_index")
 
 MAX_WORKERS    = 4     # thread paralleli verso provider esterni
 BATCH_SLEEP    = 0.3   # secondi tra batch per rispettare rate limit
-MIN_SCORE      = 0.1   # scarta risultati con score troppo basso
-MAX_PER_QUERY  = 30    # risultati massimi da salvare per query
+MIN_SCORE      = 0.45  # scarta risultati con score troppo basso
+MAX_PER_QUERY  = 15    # risultati massimi da salvare per query
+
+
+# ─── Helper validazione URL ────────────────────────────────────────────────────
+
+import re
+
+# Pattern URL che sono form/pagine di ricerca, non record specifici.
+_SEARCH_URL_PATTERNS = [
+    # Arolsen
+    "collections.arolsen-archives.org/en/search/",
+    "collections.arolsen-archives.org/de/search/",
+    # TNA discovery results
+    "discovery.nationalarchives.gov.uk/results",
+    # LAC
+    "bac-lac.gc.ca/eng/search/",
+    # SHD
+    "memoiredeshommes.sga.defense.gouv.fr/fr/search",
+    # Archivportal-D
+    "archivportal-d.de/search/",
+    # DDB
+    "deutsche-digitale-bibliothek.de/search/",
+    # Europeana search
+    "europeana.eu/it/search",
+    "europeana.eu/en/search",
+    "europeana.eu/api/v2/search.json",
+    # Internet Archive search
+    "archive.org/search",
+    # Gallica search portals
+    "gallica.bnf.fr/services/engine/solr/suggest",
+    "gallica.bnf.fr/html/und/fr/s/inventaire",
+    # HathiTrust search
+    "catalog.hathitrust.org/Search/Home",
+    "catalog.hathitrust.org/api/volumes",
+    # Antenati
+    "antenati.cultura.gov.it/search/",
+    # CWGC search
+    "cwgc.org/find-records/search/",
+    # AWM
+    "awm.gov.au/search",
+    # ABMC
+    "abmc.gov/search",
+    # IWM Lives
+    "livesofthefirstworldwar.iwm.org.uk/search",
+    # Grand Memorial
+    "memorial-genweb.org/intern/_search",
+]
+
+# Pattern generici di URL di ricerca (regex).
+_GENERIC_SEARCH_RE = re.compile(
+    r"(/search[/?]|/search\.aspx|/search\.php|/results\?|/search\?|search\?query=|q=[^&]+&search=|s=[^&]+&search=)",
+    re.IGNORECASE,
+)
+
+# Pattern che indicano un record/documento diretto.
+_DIRECT_RECORD_RE = re.compile(
+    r"(/document/|/record/|/item/|/details/|/archive/|/person/|/unit/|/reference/|/permalink/|/ark:/|/download/|/view/|\.pdf\b|\.jpg\b|\.png\b)",
+    re.IGNORECASE,
+)
+
+
+def _is_search_page_url(url: str) -> bool:
+    """True se l'URL punta a una pagina/form di ricerca, non a un record specifico."""
+    if not url:
+        return False
+    u = url.lower()
+    for pat in _SEARCH_URL_PATTERNS:
+        if pat in u:
+            return True
+    if _GENERIC_SEARCH_RE.search(u):
+        return True
+    return False
+
+
+def _is_direct_record_url(url: str) -> bool:
+    """True se l'URL sembra puntare a un record/documento specifico."""
+    if not url:
+        return False
+    return bool(_DIRECT_RECORD_RE.search(url.lower()))
+
+
+def _matches_entity(meta: dict, cues: dict) -> bool:
+    """Verifica che la fonte faccia riferimento all'entità cercata.
+
+    Per persone richiede che il cognome (o nome) compaia nel titolo,
+    descrizione o URL, a meno che l'URL non sia un record diretto.
+    """
+    cues = cues or {}
+    persona = cues.get("persona") or ""
+    if not persona:
+        return True
+    url = (meta.get("url_catalogo") or "") + " " + (meta.get("url_file") or "")
+    if _is_direct_record_url(url):
+        return True
+    tokens = persona.upper().split()
+    haystack = " ".join([
+        (meta.get("titolo") or ""),
+        (meta.get("note") or ""),
+        (meta.get("segnatura") or ""),
+        url,
+    ]).upper()
+    # Richiedi almeno il match di cognome o nome se persona è "COGNOME NOME"
+    for token in tokens:
+        if len(token) >= 2 and token in haystack:
+            return True
+    return False
 
 
 # ─── Helper DB ─────────────────────────────────────────────────────────────────
@@ -133,7 +238,7 @@ def index_query(query: str, cues: dict, sogg_tab: str, sogg_id: int,
         if score < MIN_SCORE:
             continue
         url  = r.get("direct_url") or r.get("catalog_url") or ""
-        if not url:
+        if not url or _is_search_page_url(url):
             continue
 
         meta = {
@@ -147,6 +252,8 @@ def index_query(query: str, cues: dict, sogg_tab: str, sogg_id: int,
             "confidence":  round(score, 3),
             "note":        (r.get("description") or "")[:400],
         }
+        if not _matches_entity(meta, cues):
+            continue
         try:
             fid = _upsert_fonte(meta)
             if sogg_id:

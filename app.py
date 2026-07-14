@@ -44,6 +44,11 @@ from source_providers.federation import (
     list_providers, get_provider, federated_search,
     fetch_source as fed_fetch_source, get_federation_stats,
 )
+from mass_index import (
+    MIN_SCORE as MI_MIN_SCORE,
+    _is_search_page_url,
+    _matches_entity,
+)
 from downloader import is_downloaded, download_letter, get_downloaded_letters
 from extractor import (extract_letter, request_stop, clear_stop_request,
                       is_stop_requested, get_last_completed_letter, clear_last_completed_letter)
@@ -1216,17 +1221,30 @@ def api_internato_links(rid: int, background_tasks: BackgroundTasks = None):
     for r in raw:
         if r.get("error"):
             continue
+        score = r.get("score", 0.0)
+        if score < MI_MIN_SCORE:
+            continue
         url = r.get("direct_url") or r.get("catalog_url") or ""
-        if not url:
+        if not url or _is_search_page_url(url):
+            continue
+        titolo = (r.get("titolo") or r.get("title") or "").strip()[:120]
+        description = (r.get("description") or "")[:200]
+        if not _matches_entity({
+            "titolo": titolo,
+            "note": description,
+            "segnatura": r.get("provider_record_id") or "",
+            "url_catalogo": url,
+            "url_file": r.get("direct_url") or "",
+        }, {"persona": query, "cognome": cognome, "nome": nome}):
             continue
         links.append({
             "provider":    r.get("provider", ""),
             "archivio":    r.get("archivio", ""),
-            "titolo":      (r.get("titolo") or r.get("title") or "").strip()[:120],
-            "description": (r.get("description") or "")[:200],
+            "titolo":      titolo,
+            "description": description,
             "url":         url,
             "access_type": r.get("access_type", "online"),
-            "score":       round(r.get("score", 0.0), 3),
+            "score":       round(score, 3),
             "source_type": r.get("source_type", ""),
         })
 
