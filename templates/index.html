@@ -522,9 +522,9 @@ class Component extends DCLogic {
     const featuredEvents = eventList.slice(0, 3).map(ev => ({ id: ev.id, name: ev.name, subtitle: ev.subtitle, tags: ev.tags, onClick: () => this.openDossier('event', ev.id) }));
 
     const examples = [
-      { label: 'Luigi Gaiaschi', q: 'Gaiaschi' }, { label: 'Rossi Mario', q: 'Rossi' },
-      { label: 'Cefalonia 1943', q: 'Cefalonia' }, { label: 'Mauthausen italiani', q: 'Mauthausen' },
-      { label: 'Tobruk prigionieri italiani', q: 'Tobruk' }, { label: 'Operazione Achse', q: 'Achse' },
+      { label: 'Francesco Baracca', q: 'Baracca' }, { label: 'Enrico Toti', q: 'Toti' },
+      { label: 'Battaglia di Caporetto', q: 'Caporetto' }, { label: 'Vittorio Veneto 1918', q: 'Vittorio Veneto' },
+      { label: 'Undicesima Isonzo', q: 'Isonzo 1917' }, { label: 'Albo d\'Oro Caduti', q: 'Albo d\'Oro' },
     ].map(x => ({ label: x.label, onClick: () => this.goSearch(x.q) }));
 
     const qn = (st.query || '').trim().toLowerCase();

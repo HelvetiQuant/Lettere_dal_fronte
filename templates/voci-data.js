@@ -553,9 +553,118 @@ export const SUBJECTS = {
     sources:[ { id:"b1", title:"Ricerca decorati al Valor Militare", archive:"Nastro Azzurro / Ministero Difesa", access:"online", kind:"metadato" } ],
     gaps:[ { field:"unità di appartenenza", provider:"USSME", priority:"low" } ],
   },
+  baracca:{
+    id:"baracca", type:"persona", name:"Francesco Baracca", _cognome:"Baracca", _nome:"Francesco",
+    subtitle:"Asso dell'aviazione italiana — 1ª Guerra Mondiale",
+    tags:["1GM","Aviazione","Medaglia d'Oro"], status:"verified", confidence:0.92,
+    timeline:[
+      { date:"1888-05-09", label:"Nascita a Lugo di Romagna (Ravenna)", pov:"it", sourceId:"ba1" },
+      { date:"1915-05-31", label:"Prima vittoria aerea sulle Alpi", pov:"it", sourceId:"ba2" },
+      { date:"1917-11-01", label:"Comando della 91ª Squadriglia aeroportata", pov:"it", sourceId:"ba2" },
+      { date:"1918-06-19", label:"Abbattimento del 34º e ultimo aereo nemico", pov:"it", sourceId:"ba2" },
+      { date:"1918-06-19", label:"Caduta a Montello (Treviso)", pov:"it", sourceId:"ba3" },
+    ],
+    perspectives:[
+      { pov:"it", summary:"Medaglia d'Oro al Valor Militare, 34 vittorie aeree confermate; simbolo dell'aviazione italiana della Grande Guerra.", sourceIds:["ba1","ba2","ba3"] },
+      { pov:"allied", summary:"Decorazioni francesi e britanniche confermano il ruolo di Baracca tra gli assi alleati.", sourceIds:["ba4"] },
+    ],
+    sources:[
+      { id:"ba1", title:"Scheda biografica Francesco Baracca", archive:"Ministero della Difesa — Medaglia d'Oro al Valor Militare", access:"online", kind:"metadato" },
+      { id:"ba2", title:"Francesco Baracca — l'asso dell'aviazione italiana", archive:"Istituto Storico della Grande Guerra di Gorizia", access:"online", kind:"metadato" },
+      { id:"ba3", title:"Memoriale e museo Francesco Baracca", archive:"Comune di Lugo di Romagna", access:"online", kind:"metadato" },
+      { id:"ba4", title:"Foreign decorations — Captain Baracca", archive:"The National Archives (TNA)", access:"richiesta", kind:"metadato" },
+    ],
+    gaps:[
+      { field:"verbali di volo originali", provider:"Archivio dell'Aeronautica Militare", priority:"medium" },
+    ],
+  },
+  toti:{
+    id:"toti", type:"persona", name:"Enrico Toti", _cognome:"Toti", _nome:"Enrico",
+    subtitle:"Patriota, ciclista ed eroe della 1ª Guerra Mondiale",
+    tags:["1GM","Medaglia d'Oro","Roma"], status:"verified", confidence:0.90,
+    timeline:[
+      { date:"1882-08-20", label:"Nascita a Roma", pov:"it", sourceId:"t1" },
+      { date:"1911", label:"Incidente in bicicletta: amputazione di entrambe le gambe", pov:"it", sourceId:"t1" },
+      { date:"1915-05-23", label:"Volontariato in trincea nonostante le menomazioni", pov:"it", sourceId:"t2" },
+      { date:"1916-08-06", label:"Caduta a Monfalcone (Gorizia) durante l'offensiva del Carso", pov:"it", sourceId:"t2" },
+      { date:"1916", label:"Medaglia d'Oro al Valor Militare alla memoria", pov:"it", sourceId:"t3" },
+    ],
+    perspectives:[
+      { pov:"it", summary:"Medaglia d'Oro alla memoria per aver lanciato bombe a mano contro il nemico nonostante le gravi menomazioni.", sourceIds:["t1","t2","t3"] },
+    ],
+    sources:[
+      { id:"t1", title:"Enrico Toti — scheda eroe", archive:"ANPI", access:"online", kind:"metadato" },
+      { id:"t2", title:"Enrico Toti", archive:"Istituto per la Storia del Risorgimento italiano", access:"online", kind:"metadato" },
+      { id:"t3", title:"Medaglia d'Oro al Valor Militare Enrico Toti", archive:"Ministero della Difesa", access:"online", kind:"metadato" },
+    ],
+    gaps:[
+      { field:"lettere dal fronte", provider:"Archivio di Stato di Roma", priority:"low" },
+    ],
+  },
 };
 
 export const EVENTS = {
+  caporetto:{
+    id:"caporetto", type:"evento", name:"Battaglia di Caporetto", subtitle:"24 ottobre – 12 novembre 1917, Isonzo",
+    tags:["1GM","Isonzo","Disastro"], status:"verified", confidence:0.95,
+    timeline:[
+      { date:"1917-10-24", label:"Offensiva austro-tedesca con gas e infiltrazioni", pov:"de", sourceId:"cap1" },
+      { date:"1917-10-27", label:"Cedimento del fronte italiano; ritirata verso il Piave", pov:"it", sourceId:"cap2" },
+      { date:"1917-11-12", label:"Fine dell'offensiva lungo il Piave", pov:"de", sourceId:"cap3" },
+    ],
+    perspectives:[
+      { pov:"it", summary:"La disfatta di Caporetto provocò circa 600.000 perdite e il trasferimento del Comando supremo a Diaz.", sourceIds:["cap2","cap4"] },
+      { pov:"de", summary:"L'offensiva di Caporetto (12ª battaglia dell'Isonzo) fu progettata con tattiche di infiltrazione e gas.", sourceIds:["cap1","cap3"] },
+      { pov:"allied", summary:"Britannici e francesi inviarono rinforzi per sostenere la linea del Piave.", sourceIds:["cap5"] },
+    ],
+    sources:[
+      { id:"cap1", title:"Der Weltkrieg 1914–1918 — Band 13", archive:"Bundesarchiv", access:"richiesta", kind:"metadato" },
+      { id:"cap2", title:"Caporetto 1917", archive:"Istituto Storico della Grande Guerra di Gorizia", access:"online", kind:"metadato" },
+      { id:"cap3", title:"L'ultima offensiva austro-tedesca sul Piave", archive:"Österreichisches Staatsarchiv", access:"richiesta", kind:"metadato" },
+      { id:"cap4", title:"Ordine del giorno Cadorna n. 11100", archive:"Ufficio Storico SME", access:"locale", kind:"immagine" },
+      { id:"cap5", title:"Allied support to Italian front 1917", archive:"The National Archives (TNA)", access:"richiesta", kind:"metadato" },
+    ], gaps:[],
+  },
+  vittorio_veneto:{
+    id:"vittorio_veneto", type:"evento", name:"Battaglia di Vittorio Veneto", subtitle:"24 ottobre – 4 novembre 1918, Veneto",
+    tags:["1GM","Vittoria","Armistizio"], status:"verified", confidence:0.95,
+    timeline:[
+      { date:"1918-10-24", label:"Offensiva finale dell'esercito italiano sul Piave e nel Grappa", pov:"it", sourceId:"vv1" },
+      { date:"1918-10-30", label:"Rottura del fronte austriaco a Vittorio Veneto", pov:"it", sourceId:"vv2" },
+      { date:"1918-11-03", label:"Armistizio di Villa Giusti", pov:"it", sourceId:"vv3" },
+    ],
+    perspectives:[
+      { pov:"it", summary:"L'offensiva di Vittorio Veneto determinò il crollo dell'Impero austro-ungarico e l'armistizio del 3 novembre.", sourceIds:["vv1","vv2","vv3"] },
+      { pov:"de", summary:"I registri austro-ungarici documentano l'evolversi delle trattative d'armistizio.", sourceIds:["vv4"] },
+      { pov:"allied", summary:"Gli Alleati riconobbero la vittoria italiana come decisiva per la fine del conflitto sul fronte sud.", sourceIds:["vv5"] },
+    ],
+    sources:[
+      { id:"vv1", title:"L'offensiva di Vittorio Veneto", archive:"Ufficio Storico SME", access:"locale", kind:"immagine" },
+      { id:"vv2", title:"Battaglia di Vittorio Veneto — 24 ottobre-4 novembre 1918", archive:"Istituto Storico della Grande Guerra di Gorizia", access:"online", kind:"metadato" },
+      { id:"vv3", title:"Armistizio di Villa Giusti", archive:"Ministero della Difesa", access:"online", kind:"metadato" },
+      { id:"vv4", title:"Armistice negotiations, 1918", archive:"Österreichisches Staatsarchiv", access:"richiesta", kind:"metadato" },
+      { id:"vv5", title:"Italian offensive October 1918", archive:"The National Archives (TNA)", access:"richiesta", kind:"metadato" },
+    ], gaps:[],
+  },
+  undicesima_isonzo:{
+    id:"undicesima_isonzo", type:"evento", name:"Undicesima battaglia dell'Isonzo", subtitle:"18 agosto – 15 settembre 1917, Bainsizza",
+    tags:["1GM","Isonzo","Offensiva"], status:"verified", confidence:0.90,
+    timeline:[
+      { date:"1917-08-18", label:"Offensiva italiana sul Bainsizza e monte San Gabriele", pov:"it", sourceId:"i1" },
+      { date:"1917-09-04", label:"Conquista della Bainsizza", pov:"it", sourceId:"i2" },
+      { date:"1917-09-15", label:"Sospensione dell'offensiva per esaurimento munizioni e truppe", pov:"it", sourceId:"i3" },
+    ],
+    perspectives:[
+      { pov:"it", summary:"L'undicesima battaglia ottenne il successo tattico della Bainsizza, ma non conseguì una vittoria strategica.", sourceIds:["i1","i2","i3"] },
+      { pov:"de", summary:"Fonti austro-ungariche registrano la ritirata ordinata su linee più arretrate.", sourceIds:["i4"] },
+    ],
+    sources:[
+      { id:"i1", title:"Bainsizza e San Gabriele, 1917", archive:"Ufficio Storico SME", access:"locale", kind:"immagine" },
+      { id:"i2", title:"La battaglia della Bainsizza", archive:"Istituto Storico della Grande Guerra di Gorizia", access:"online", kind:"metadato" },
+      { id:"i3", title:"Undicesima battaglia dell'Isonzo", archive:"ANPI", access:"online", kind:"metadato" },
+      { id:"i4", title:"Frontberichte Isonzo 1917", archive:"Österreichisches Kriegsarchiv", access:"richiesta", kind:"metadato" },
+    ], gaps:[],
+  },
   cefalonia:{
     id:"cefalonia", type:"evento", name:"Cefalonia — Divisione Acqui", subtitle:"Settembre 1943, isola di Cefalonia (Grecia)",
     tags:["1943","Grecia","Eccidio"], status:"verified", confidence:0.88,
