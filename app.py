@@ -1775,18 +1775,23 @@ def api_mass_index_parallel(body: dict = Body(...)):
 @app.get("/api/mass-index/status")
 def api_mass_index_status():
     """Stato corrente della pipeline di indicizzazione massiva."""
+    import sqlite3
+    from database import get_conn
     conn = get_conn()
-    conn.row_factory = lambda c, r: dict(zip([col[0] for col in c.description], r))
-    tot = conn.execute("SELECT COUNT(*) as n FROM fonti_indice").fetchone()["n"]
-    url_ok = conn.execute(
-        "SELECT COUNT(*) as n FROM fonti_indice "
-        "WHERE url_catalogo IS NOT NULL AND url_catalogo != ''"
-    ).fetchone()["n"]
-    top = conn.execute(
-        "SELECT archivio, COUNT(*) as n FROM fonti_indice "
-        "GROUP BY archivio ORDER BY n DESC LIMIT 10"
-    ).fetchall()
-    conn.close()
+    conn.row_factory = sqlite3.Row
+    try:
+        tot    = conn.execute("SELECT COUNT(*) as n FROM fonti_indice").fetchone()["n"]
+        url_ok = conn.execute(
+            "SELECT COUNT(*) as n FROM fonti_indice "
+            "WHERE url_catalogo IS NOT NULL AND url_catalogo != ''"
+        ).fetchone()["n"]
+        rows = conn.execute(
+            "SELECT archivio, COUNT(*) as n FROM fonti_indice "
+            "GROUP BY archivio ORDER BY n DESC LIMIT 10"
+        ).fetchall()
+        top = [{"archivio": r["archivio"], "n": r["n"]} for r in rows]
+    finally:
+        conn.close()
     return {
         "pipeline": _mass_index_status,
         "fonti_indice": {

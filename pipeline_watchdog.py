@@ -26,11 +26,12 @@ from pathlib import Path
 import requests
 
 LOG_FILE   = Path(__file__).parent / "pipeline_watchdog.log"
-SERVER_URL = "http://127.0.0.1:8000"
+SERVER_URL = "http://127.0.0.1:8001"
+FALLBACK_PORT = 8000
 CHECK_INTERVAL = 300   # secondi tra i check (5 minuti)
 MAX_STUCK_SEC  = 600   # pipeline considerata bloccata se running ma saved non cresce dopo 10min
 UVICORN_CMD    = [sys.executable, "-m", "uvicorn", "app:app",
-                  "--host", "127.0.0.1", "--port", "8000", "--reload"]
+                  "--host", "127.0.0.1", "--port", "8001", "--reload"]
 
 logging.basicConfig(
     level=logging.INFO,
@@ -52,11 +53,14 @@ _last_saved_at = 0.0        # timestamp ultima variazione
 # ─── Utility ──────────────────────────────────────────────────────────────────
 
 def _server_alive() -> bool:
-    try:
-        r = requests.get(f"{SERVER_URL}/api/status", timeout=5)
-        return r.status_code == 200
-    except Exception:
-        return False
+    for path in ["/", "/api/internati?limit=1"]:
+        try:
+            r = requests.get(f"{SERVER_URL}{path}", timeout=8)
+            if r.status_code < 500:
+                return True
+        except Exception:
+            continue
+    return False
 
 
 def _pipeline_status() -> dict:
@@ -77,7 +81,7 @@ def _start_server():
         UVICORN_CMD, cwd=cwd,
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
     )
-    time.sleep(6)
+    time.sleep(10)
     if _server_alive():
         log.info("Server avviato OK (pid=%d)", _uvicorn_proc.pid)
         return True
@@ -141,22 +145,24 @@ def run_watchdog(pipeline_mode: str, pipeline_limit: int = None,
     _last_saved_at  = time.time()
 
     log.info("=== WATCHDOG AVVIATO (check ogni %ds) ===", CHECK_INTERVAL)
-    log.info("Pipeline mode: %s | limit: %s", pipeline_mode, pipeline_limit)
+    log.info("Pipeline mode: %s | limit: %s | start_now: %s",
+             pipeline_mode, pipeline_limit, start_pipeline_now)
 
-    # Avvio iniziale server se non attivo
-    if not _server_alive():
-        log.warning("Server non attivo — avvio uvicorn")
-        if not _start_server():
-            log.error("Impossibile avviare il server — uscita")
-            sys.exit(1)
-
-    # Avvio pipeline iniziale
     if start_pipeline_now:
+        # Avvio iniziale server se non attivo
+        if not _server_alive():
+            log.warning("Server non attivo — avvio uvicorn")
+            if not _start_server():
+                log.error("Impossibile avviare il server — uscita")
+                sys.exit(1)
+        # Avvio pipeline iniziale
         st = _pipeline_status()
         if st.get("pipeline", {}).get("running"):
             log.info("Pipeline già in esecuzione — non riavvio")
         else:
             _start_pipeline()
+    else:
+        log.info("--no-start: monitor only, nessun avvio automatico iniziale")
 
     check_n = 0
     while True:
