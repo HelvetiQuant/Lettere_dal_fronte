@@ -97,6 +97,15 @@ Le verifiche del 12/7 sono state eseguite direttamente sulla macchina locale con
 - [x] `pipeline_watchdog.py`: monitor ogni 5 min, fix e riavvio automatico
 - [x] Push GitHub: helvetiquant/lettere_dal_fronte aggiornato
 
+## Stato attuale (14/7 h 15:50)
+
+- ✅ **Server attivo su porta 8001** (evitati processi uvicorn zombie sulla 8000).
+- ✅ **Pipeline multi-AI parallela in esecuzione** (`mode=parallel_multi_ai`, limit 1.000 soldati/AI, tot 4.000 + reparti + eventi + luoghi).
+- ✅ **Watchdog attivo** controlla ogni 5 min server + pipeline, scrive `watchdog_snapshot.json`.
+- ✅ **Fix `/api/mass-index/status`** — aggiunto import locale `get_conn`, niente più 500.
+- ✅ **`fonti_indice` a 113.670+ record** (Arolsen 38.570, TNA 34.219, Bundesarchiv 27.788, Archivportal-D 10.778, WikiTree 1.312, CWGC 180, altri).
+- ✅ **Repo GitHub aggiornato** a `046fb7c` → `820aa46`.
+
 ## Task residui
 
 - [ ] **Bando MiC (scad. 15/7 ore 12:00)** — URGENTE — solo amministrativo
@@ -106,4 +115,4 @@ Le verifiche del 12/7 sono state eseguite direttamente sulla macchina locale con
 - [ ] Frontend: aggiungere tab Report nella UI (query libera → report narrativo)
 - [ ] Frontend: mappa geospaziale movimentazioni (Leaflet + dati luogo_internamento)
 - [ ] Conformità Europeana Data Model (EDM) — scadenza Creative Europe set 2026
-- [ ] Gemini: verificare che google-generativeai sia installato (`pip install google-generativeai`)
+- [x] Gemini: verificare che google-generativeai sia installato (`pip install google-generativeai`)
