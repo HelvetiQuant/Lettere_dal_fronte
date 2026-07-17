@@ -38,3 +38,38 @@ COLUMNS = [
     "data",
     "documenti",
 ]
+
+# ─── Scraping configuration ──────────────────────────────────────────────────
+# These settings govern the external-source scraper (scraper_service.py).
+# fonti_risorse is a METADATA-ONLY catalog: it stores URLs and descriptive
+# metadata, never copyrighted content (no full text, no PDFs, no full-res images).
+
+SCRAPER_USER_AGENT = "imi_extractor/1.0 (historical-research; +https://github.com/imi-extractor)"
+
+# Max HTTP requests per minute per domain (rate limiting)
+SCRAPER_MAX_REQUESTS_PER_MINUTE = 10
+
+# HTTP timeout in seconds for fetch operations
+SCRAPER_TIMEOUT_SECONDS = 20
+
+# TTL for scraping: re-scrape a source if last_checked_at is older than this (days)
+SCRAPER_TTL_DAYS = 7
+
+# Max bytes to read from an HTML page (safety limit, prevents memory exhaustion)
+SCRAPER_MAX_HTML_BYTES = 2 * 1024 * 1024  # 2 MB
+
+# Domains explicitly allowed for scraping (others require manual approval)
+SCRAPER_ALLOWED_DOMAINS = [
+    "cadutigrandeguerra.it",
+    "www.difesa.it",
+    "www.cwgc.org",
+    "memoiredeshommes.sga.defense.gouv.fr",
+    "www.archiviodistatobolzano.cultura.gov.it",
+    "www.istoreco.it",
+    "www.nastroazzurro.org",
+    "www.anpi.it",
+    "www.ussme.gov.it",
+    "www.bundesarchiv.de",
+    "discovery.nationalarchives.gov.uk",
+    "catalog.archives.gov",
+]

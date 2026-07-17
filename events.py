@@ -10,10 +10,13 @@ Fornisce:
 import json
 import re
 import sqlite3
+from pathlib import Path
 from typing import List, Dict, Optional
 
 from database import get_conn, DB_PATH
 import source_locator
+
+_EDB = Path(__file__).parent / "eventi_1gm.db"
 
 
 # Eventi curati con keyword di matching sui campi degli internati.
@@ -192,3 +195,142 @@ def search_eventi_in_fonti_indice(query: str, limit: int = 20) -> List[str]:
         if query in e["nome"].lower() or any(query in kw for kw in e["keywords"]):
             eventi.append(e["nome"])
     return eventi[:limit]
+
+
+# ─── Eventi 1GM dal DB event-centric ─────────────────────────────────────────
+
+def get_eventi_1gm() -> List[Dict]:
+    """Restituisce tutti gli eventi canonici 1GM+WW2 da eventi_1gm.db con stats."""
+    if not _EDB.exists():
+        return []
+    conn = sqlite3.connect(str(_EDB), timeout=30)
+    conn.row_factory = sqlite3.Row
+    try:
+        eventi = []
+        for r in conn.execute(
+            "SELECT e.id, e.nome, e.data_inizio, e.data_fine, e.luogo, "
+            "e.aliases, e.keywords, e.descrizione, "
+            "COUNT(el.id) as total_links, "
+            "SUM(CASE WHEN el.link_type='soldato_caduto' THEN 1 ELSE 0 END) as caduti, "
+            "SUM(CASE WHEN el.link_type='soldato_decorato' THEN 1 ELSE 0 END) as decorati, "
+            "SUM(CASE WHEN el.link_type='documento' THEN 1 ELSE 0 END) as documenti, "
+            "SUM(CASE WHEN el.link_type='fonte_archivistica' THEN 1 ELSE 0 END) as fonti, "
+            "SUM(CASE WHEN el.link_type='internato_ww2' THEN 1 ELSE 0 END) as internati, "
+            "SUM(CASE WHEN el.link_type='soldato_caduto_cwgc' THEN 1 ELSE 0 END) as cwgc "
+            "FROM eventi_1gm e LEFT JOIN event_links el ON e.id=el.evento_id "
+            "GROUP BY e.id ORDER BY total_links DESC"
+        ).fetchall():
+            d = dict(r)
+            d["aliases"] = json.loads(d["aliases"]) if d["aliases"] else []
+            d["keywords"] = json.loads(d["keywords"]) if d["keywords"] else []
+            eventi.append(d)
+        return eventi
+    finally:
+        conn.close()
+
+
+def get_evento_1gm_dossier(query: str) -> Dict:
+    """Query completa per un evento 1GM usando event_query_engine."""
+    try:
+        from event_query_engine import query_event
+        return query_event(query, verbose=False)
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+def get_eventi_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0) -> Dict:
+    """Caduti paginati per un evento 1GM."""
+    if not _EDB.exists():
+        return {"event": event_name, "caduti": [], "total": 0}
+    conn_ev = sqlite3.connect(str(_EDB), timeout=30)
+    conn_ev.row_factory = sqlite3.Row
+    conn_ro = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn_ro.row_factory = sqlite3.Row
+    try:
+        # Find event by name/alias
+        ev = conn_ev.execute(
+            "SELECT id FROM eventi_1gm WHERE nome = ? OR ? IN (SELECT value FROM json_each(aliases))",
+            (event_name, event_name)
+        ).fetchone()
+        if not ev:
+            return {"event": event_name, "caduti": [], "total": 0}
+
+        # Get caduti IDs
+        ids = [r["target_id"] for r in conn_ev.execute(
+            "SELECT target_id FROM event_links WHERE evento_id=? AND link_type='soldato_caduto'",
+            (ev["id"],)
+        ).fetchall()]
+        if not ids:
+            return {"event": event_name, "caduti": [], "total": 0}
+
+        # Use temp table for large ID sets
+        conn_ro.execute("CREATE TEMP TABLE _tmp_ids(ids INTEGER)")
+        conn_ro.executemany("INSERT INTO _tmp_ids VALUES(?)", [(i,) for i in ids])
+        total = conn_ro.execute(
+            "SELECT COUNT(*) FROM caduti_albooro c JOIN _tmp_ids t ON c.id = t.ids"
+        ).fetchone()[0]
+        rows = conn_ro.execute(
+            "SELECT c.id, c.nominativo, c.grado, c.reparto, c.luogo_morte, c.anno_morte, "
+            "c.causa_morte, c.detail_url "
+            "FROM caduti_albooro c JOIN _tmp_ids t ON c.id = t.ids "
+            "LIMIT ? OFFSET ?",
+            (limit, offset)
+        ).fetchall()
+        conn_ro.execute("DROP TABLE _tmp_ids")
+        return {
+            "event": event_name,
+            "caduti": [dict(r) for r in rows],
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+        }
+    finally:
+        conn_ev.close()
+        conn_ro.close()
+
+
+def get_eventi_1gm_decorati(event_name: str, limit: int = 50, offset: int = 0) -> Dict:
+    """Decorati paginati per un evento 1GM."""
+    if not _EDB.exists():
+        return {"event": event_name, "decorati": [], "total": 0}
+    conn_ev = sqlite3.connect(str(_EDB), timeout=30)
+    conn_ev.row_factory = sqlite3.Row
+    conn_ro = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn_ro.row_factory = sqlite3.Row
+    try:
+        ev = conn_ev.execute(
+            "SELECT id FROM eventi_1gm WHERE nome = ? OR ? IN (SELECT value FROM json_each(aliases))",
+            (event_name, event_name)
+        ).fetchone()
+        if not ev:
+            return {"event": event_name, "decorati": [], "total": 0}
+
+        ids = [r["target_id"] for r in conn_ev.execute(
+            "SELECT target_id FROM event_links WHERE evento_id=? AND link_type='soldato_decorato'",
+            (ev["id"],)
+        ).fetchall()]
+        if not ids:
+            return {"event": event_name, "decorati": [], "total": 0}
+
+        conn_ro.execute("CREATE TEMP TABLE _tmp_ids(ids INTEGER)")
+        conn_ro.executemany("INSERT INTO _tmp_ids VALUES(?)", [(i,) for i in ids])
+        total = conn_ro.execute(
+            "SELECT COUNT(*) FROM decorati_nastroazzurro d JOIN _tmp_ids t ON d.id = t.ids"
+        ).fetchone()[0]
+        rows = conn_ro.execute(
+            "SELECT d.id, d.cognome, d.nome, d.arma, d.anno_decorazione, d.tipo_decorazione "
+            "FROM decorati_nastroazzurro d JOIN _tmp_ids t ON d.id = t.ids "
+            "LIMIT ? OFFSET ?",
+            (limit, offset)
+        ).fetchall()
+        conn_ro.execute("DROP TABLE _tmp_ids")
+        return {
+            "event": event_name,
+            "decorati": [dict(r) for r in rows],
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+        }
+    finally:
+        conn_ev.close()
+        conn_ro.close()

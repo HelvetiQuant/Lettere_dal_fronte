@@ -271,6 +271,21 @@ def score_source(meta: dict, query_cues: dict = None) -> float:
         score += 0.20
     if cues.get("luogo") and cues["luogo"].lower() in (meta.get("luogo") or "").lower():
         score += 0.15
+    if cues.get("evento"):
+        evento_low = cues["evento"].lower()
+        haystack = " ".join(filter(None, [
+            meta.get("titolo"), meta.get("description"), meta.get("note"), url,
+        ])).lower()
+        for token in evento_low.split():
+            if len(token) > 3 and token in haystack:
+                score += 0.10
+    if cues.get("periodo"):
+        haystack = " ".join(filter(None, [
+            meta.get("titolo"), meta.get("description"), meta.get("note"), url,
+        ])).lower()
+        for year_token in re.findall(r"\d{4}", cues["periodo"]):
+            if year_token in haystack:
+                score += 0.08
 
     # qualità URL: premi record diretti, penalizza pagine di ricerca
     if url:

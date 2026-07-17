@@ -181,6 +181,34 @@ def init_db():
     conn.execute("CREATE INDEX IF NOT EXISTS idx_entita_tipo ON entita(tipo)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_collegamenti_entita ON collegamenti(entita_id)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_collegamenti_record ON collegamenti(tabella_origine, record_id)")
+
+    # ─── Tabella fonti_risorse: catalogo metadati e URL di risorse esterne ───
+    # NOTA: questa tabella è solo un catalogo di metadati e link.
+    # NON memorizza contenuti protetti da copyright (no testo integrale, no PDF, no immagini full-res).
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS fonti_risorse (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            fonte_id          INTEGER,
+            url_pagina        TEXT NOT NULL UNIQUE,
+            url_documento     TEXT,
+            tipo_risorsa      TEXT,
+            titolo            TEXT,
+            descrizione       TEXT,
+            autore            TEXT,
+            ente_titolare     TEXT,
+            data_pubblicazione TEXT,
+            lingua            TEXT,
+            licenza           TEXT,
+            note_copyright    TEXT,
+            hash_contenuto    TEXT,
+            first_seen_at     TEXT,
+            last_checked_at   TEXT,
+            stato             TEXT DEFAULT 'non_verificato'
+        )
+    """)
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_fonti_risorse_fonte_id ON fonti_risorse(fonte_id)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_fonti_risorse_url ON fonti_risorse(url_pagina)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_fonti_risorse_stato ON fonti_risorse(stato)")
     conn.commit()
     conn.close()
 
@@ -533,6 +561,205 @@ def search_all(term: str, limit: int = 100) -> dict:
 
     conn.close()
     return results
+
+
+def search_ww1(term: str, limit: int = 100) -> dict:
+    """Ricerca solo su dataset della Prima Guerra Mondiale.
+    Esclude internati (IMI – 2GM) e filtra decorati per guerra 1GM.
+    """
+    conn = get_conn()
+    tokens = _tokenize(term)
+    if not tokens:
+        conn.close()
+        return {"caduti": [], "decorati": [], "menzioni": [], "documenti": [], "fonti_narrative": [], "lettere_personali": [], "term": term, "tokens": []}
+
+    per_table = max(10, limit // 5)
+    results = {"caduti": [], "decorati": [], "menzioni": [], "documenti": [], "fonti_narrative": [], "lettere_personali": [], "term": term, "tokens": tokens}
+
+    # ─── Caduti (tabelle 1GM; CWGC filtrato per World War 1) ───
+    caduti_tables = [
+        ("caduti_albooro", ["nominativo", "paternita", "comune_attuale", "grado", "reparto", "luogo_morte", "causa_morte"], "Albi d'Oro", None),
+        ("caduti_bologna", ["nome", "paternita", "grado", "reparto", "luogo_nascita", "luogo_dimora", "luogo_morte", "decorazioni"], "Bologna", None),
+        ("caduti_cwgc", ["nome", "cognome", "rank", "service_number", "service", "regiment", "cimitero", "paese_cimitero", "memorial", "unit_detail"], "CWGC", "guerra = 'World War 1'"),
+        ("caduti_ministero", ["cognome", "nome", "nominativo_paternita", "paternita", "maternita", "comune_nascita", "luogo_sepoltura"], "Ministero Difesa", None),
+        ("caduti_sardi", ["cognome", "nome", "paternita", "luogo_nascita", "comune_residenza", "grado", "reparto", "luogo_morte", "decorazioni"], "Sardi", None),
+        ("caduti_francia_ww1", ["nom", "grade", "unite", "lieu_naissance", "bureau_recrutement", "lieu_deces", "pays_deces"], "Francia WW1", None),
+    ]
+    for t, cols, source, extra_where in caduti_tables:
+        try:
+            where, params = _where_like_clause([f"{t}.{c}" for c in cols], tokens)
+            sql = f"SELECT * FROM {t} WHERE {where}"
+            if extra_where:
+                sql += f" AND ({extra_where})"
+            sql += " ORDER BY id LIMIT ?"
+            rows = conn.execute(sql, params + [per_table]).fetchall()
+            for r in rows:
+                d = dict(r)
+                d["_source_table"] = t
+                d["_source_label"] = source
+                d["table"] = "caduti"
+                results["caduti"].append(d)
+        except Exception:
+            pass
+
+    # ─── Decorati ISTORECO — solo guerra 1GM ───
+    cols_d = ["cognome", "nome", "comune_nascita", "comune_residenza", "data_nascita", "data_morte", "grado", "corpo_militare", "reparto", "decorazione", "motivazione", "causa_morte", "luogo_morte", "note"]
+    where, params = _where_like_clause(cols_d, tokens)
+    rows = conn.execute(
+        f"""SELECT id, cognome, nome, comune_nascita, comune_residenza, data_nascita, data_morte, guerra, grado, corpo_militare, reparto, decorazione, motivazione, causa_morte, luogo_morte, albo_nome, url_scheda
+            FROM decorati WHERE ({where}) AND (guerra LIKE '%1%' OR guerra LIKE '%Grande%' OR guerra LIKE '%1915%' OR guerra LIKE '%1918%') ORDER BY cognome, nome LIMIT ?""",
+        params + [per_table],
+    ).fetchall()
+    results["decorati"] = [{"table": "decorati", "source": "ISTORECO", **dict(r)} for r in rows]
+
+    # ─── Decorati Nastro Azzurro ───
+    try:
+        where, params = _where_like_clause(["cognome", "nome", "arma", "tipo_decorazione"], tokens)
+        rows = conn.execute(
+            f"""SELECT id, cognome, nome, anno_decorazione, tipo_decorazione, arma, source_id
+                FROM decorati_nastroazzurro WHERE {where} ORDER BY cognome, nome LIMIT ?""",
+            params + [per_table],
+        ).fetchall()
+        for r in rows:
+            d = dict(r)
+            d["table"] = "decorati"
+            d["source"] = "Nastro Azzurro"
+            results["decorati"].append(d)
+    except Exception:
+        pass
+
+    # ─── Menzioni (fondi SME) ───
+    cols_m = ["m.cognome", "m.nome", "m.grado", "m.reparto", "m.luogo", "m.data", "m.contesto", "m.testo_originale"]
+    where, params = _where_like_clause(cols_m, tokens)
+    rows = conn.execute(
+        f"""SELECT m.id, m.cognome, m.nome, m.grado, m.reparto, m.luogo, m.data, m.contesto, m.tipo, m.file_pdf, m.pagina, f.codice_fondo, f.titolo
+            FROM menzioni m LEFT JOIN fondi_archivistici f ON m.fondo_id = f.id
+            WHERE {where} ORDER BY m.cognome, m.nome LIMIT ?""",
+        params + [per_table],
+    ).fetchall()
+    results["menzioni"] = [{"table": "menzioni", "source": "fondi SME", **dict(r)} for r in rows]
+
+    # ─── Documenti NARA — esclusi: contengono solo dati 2GM (1940-1945) ───
+    # NARA T315 e NARA Catalog riguardano esclusivamente la Seconda Guerra Mondiale
+
+    # ─── Fonti narrative personali ───
+    try:
+        where, params = _where_like_clause(["persone_possibili", "titolo", "descrizione", "testo_ocr", "autore", "archivio"], tokens)
+        rows = conn.execute(
+            f"""SELECT id, nome_file, formato, tipo_fonte, archivio, autore, soggetti_json, persone_possibili,
+                       titolo, descrizione, testo_ocr, data_documento, path_locale
+                FROM fonti_narrative WHERE {where} ORDER BY data_documento DESC LIMIT ?""",
+            params + [per_table],
+        ).fetchall()
+        results["fonti_narrative"] = [{"table": "fonti_narrative", "source": "Fonte personale", **dict(r)} for r in rows]
+    except Exception:
+        pass
+
+    # ─── Lettere personali OCR ───
+    try:
+        where, params = _where_like_clause(["mittente", "destinatario", "luogo", "oggetto", "corpo_testo", "note", "filename"], tokens)
+        rows = conn.execute(
+            f"""SELECT id, filename, file_path, mittente, destinatario, data_lettera, luogo, oggetto,
+                       SUBSTR(corpo_testo, 1, 500) as excerpt, lingua, confidenza, elaborato_il
+                FROM lettere_personali WHERE {where} ORDER BY data_lettera DESC, id DESC LIMIT ?""",
+            params + [per_table],
+        ).fetchall()
+        results["lettere_personali"] = [{"table": "lettere_personali", "source": "Lettera personale", **dict(r)} for r in rows]
+    except Exception:
+        pass
+
+    conn.close()
+    return results
+
+
+def stats_ww1() -> dict:
+    """Statistiche solo Prima Guerra Mondiale."""
+    conn = get_conn()
+    stats = {}
+
+    # Caduti: somma di tutte le tabelle (CWGC filtrato per World War 1)
+    caduti_tables = ["caduti_albooro", "caduti_bologna", "caduti_ministero", "caduti_sardi", "caduti_francia_ww1"]
+    total_caduti = 0
+    caduti_breakdown = {}
+    for t in caduti_tables:
+        try:
+            c = conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
+            caduti_breakdown[t] = c
+            total_caduti += c
+        except Exception:
+            pass
+    # CWGC: solo record World War 1
+    try:
+        c = conn.execute("SELECT COUNT(*) FROM caduti_cwgc WHERE guerra = 'World War 1'").fetchone()[0]
+        caduti_breakdown["caduti_cwgc_ww1"] = c
+        total_caduti += c
+    except Exception:
+        pass
+    stats["caduti"] = total_caduti
+    stats["caduti_breakdown"] = caduti_breakdown
+
+    # Decorati ISTORECO – solo 1GM
+    try:
+        stats["decorati_istoreco"] = conn.execute(
+            "SELECT COUNT(*) FROM decorati WHERE guerra LIKE '%1%' OR guerra LIKE '%Grande%' OR guerra LIKE '%1915%' OR guerra LIKE '%1918%'"
+        ).fetchone()[0]
+    except Exception:
+        stats["decorati_istoreco"] = 0
+
+    # Decorati Nastro Azzurro
+    try:
+        stats["decorati_nastroazzurro"] = conn.execute("SELECT COUNT(*) FROM decorati_nastroazzurro").fetchone()[0]
+    except Exception:
+        stats["decorati_nastroazzurro"] = 0
+
+    stats["decorati"] = stats["decorati_istoreco"] + stats["decorati_nastroazzurro"]
+
+    # Menzioni
+    try:
+        stats["menzioni"] = conn.execute("SELECT COUNT(*) FROM menzioni").fetchone()[0]
+    except Exception:
+        stats["menzioni"] = 0
+
+    # Documenti NARA — esclusi dalle statistiche 1GM (contengono solo dati 2GM 1940-1945)
+
+    # Fondi archivistici
+    try:
+        stats["fondi"] = conn.execute("SELECT COUNT(*) FROM fondi_archivistici").fetchone()[0]
+    except Exception:
+        stats["fondi"] = 0
+
+    # Fonti narrative
+    try:
+        stats["fonti_narrative"] = conn.execute("SELECT COUNT(*) FROM fonti_narrative").fetchone()[0]
+    except Exception:
+        stats["fonti_narrative"] = 0
+
+    # Lettere personali
+    try:
+        stats["lettere_personali"] = conn.execute("SELECT COUNT(*) FROM lettere_personali").fetchone()[0]
+    except Exception:
+        stats["lettere_personali"] = 0
+
+    # Fonti indicizzate
+    try:
+        stats["fonti_indice"] = conn.execute("SELECT COUNT(*) FROM fonti_indice").fetchone()[0]
+    except Exception:
+        stats["fonti_indice"] = 0
+
+    # Entità
+    try:
+        stats["entita"] = conn.execute("SELECT COUNT(*) FROM entita").fetchone()[0]
+    except Exception:
+        stats["entita"] = 0
+
+    # Collegamenti
+    try:
+        stats["collegamenti"] = conn.execute("SELECT COUNT(*) FROM collegamenti").fetchone()[0]
+    except Exception:
+        stats["collegamenti"] = 0
+
+    conn.close()
+    return stats
 
 
 def get_fondi_summary() -> list[dict]:
@@ -1031,6 +1258,147 @@ def export_excel(output_path: str = None) -> str:
     ws.freeze_panes = "A2"
     wb.save(output_path)
     return output_path
+
+
+# ─── Funzioni CRUD per fonti_risorse ──────────────────────────────────────────
+# fonti_risorse è un catalogo di soli metadati e URL.
+# NON memorizza contenuti protetti da copyright.
+
+def get_fonti_risorsa_by_url(url_pagina: str) -> Optional[dict]:
+    """Recupera una risorsa esterna dal suo URL pagina. None se non esiste."""
+    conn = get_conn()
+    try:
+        row = conn.execute(
+            "SELECT * FROM fonti_risorse WHERE url_pagina = ?", (url_pagina,)
+        ).fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def get_fonti_risorse_by_fonte_id(fonte_id: int) -> list:
+    """Recupera tutte le risorse esterne collegate a un fonte_id."""
+    conn = get_conn()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM fonti_risorse WHERE fonte_id = ? ORDER BY last_checked_at DESC",
+            (fonte_id,)
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+def insert_fonti_risorsa(record: dict) -> int:
+    """Inserisce una nuova risorsa esterna nel catalogo fonti_risorse.
+    Restituisce l'ID del nuovo record."""
+    conn = get_conn()
+    try:
+        now = datetime.now().isoformat()
+        conn.execute(
+            """INSERT INTO fonti_risorse
+               (fonte_id, url_pagina, url_documento, tipo_risorsa, titolo, descrizione,
+                autore, ente_titolare, data_pubblicazione, lingua, licenza, note_copyright,
+                hash_contenuto, first_seen_at, last_checked_at, stato)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                record.get("fonte_id"),
+                record["url_pagina"],
+                record.get("url_documento"),
+                record.get("tipo_risorsa", "pagina"),
+                record.get("titolo"),
+                record.get("descrizione"),
+                record.get("autore"),
+                record.get("ente_titolare"),
+                record.get("data_pubblicazione"),
+                record.get("lingua"),
+                record.get("licenza", "tutti i diritti riservati"),
+                record.get("note_copyright"),
+                record.get("hash_contenuto"),
+                now,  # first_seen_at
+                now,  # last_checked_at
+                record.get("stato", "non_verificato"),
+            )
+        )
+        conn.commit()
+        row = conn.execute(
+            "SELECT id FROM fonti_risorse WHERE url_pagina = ?", (record["url_pagina"],)
+        ).fetchone()
+        return row[0] if row else 0
+    finally:
+        conn.close()
+
+
+def update_fonti_risorsa(risorsa_id: int, record_parziale: dict) -> bool:
+    """Aggiorna campi parziali di una risorsa esistente.
+    Aggiorna sempre last_checked_at. Non sovrascrive campi non nulli se il nuovo valore è None."""
+    conn = get_conn()
+    try:
+        existing = conn.execute(
+            "SELECT * FROM fonti_risorse WHERE id = ?", (risorsa_id,)
+        ).fetchone()
+        if not existing:
+            return False
+
+        merged = dict(existing)
+        for k, v in record_parziale.items():
+            if v is not None and v != "":
+                merged[k] = v
+        merged["last_checked_at"] = datetime.now().isoformat()
+
+        conn.execute(
+            """UPDATE fonti_risorse SET
+               url_documento = ?, tipo_risorsa = ?, titolo = ?, descrizione = ?,
+               autore = ?, ente_titolare = ?, data_pubblicazione = ?, lingua = ?,
+               licenza = ?, note_copyright = ?, hash_contenuto = ?, stato = ?,
+               last_checked_at = ?
+               WHERE id = ?""",
+            (
+                merged.get("url_documento"),
+                merged.get("tipo_risorsa"),
+                merged.get("titolo"),
+                merged.get("descrizione"),
+                merged.get("autore"),
+                merged.get("ente_titolare"),
+                merged.get("data_pubblicazione"),
+                merged.get("lingua"),
+                merged.get("licenza"),
+                merged.get("note_copyright"),
+                merged.get("hash_contenuto"),
+                merged.get("stato", "valido"),
+                merged["last_checked_at"],
+                risorsa_id,
+            )
+        )
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
+
+def count_fonti_risorse() -> int:
+    """Conta il numero totale di risorse esterne catalogate."""
+    conn = get_conn()
+    try:
+        return conn.execute("SELECT COUNT(*) FROM fonti_risorse").fetchone()[0]
+    finally:
+        conn.close()
+
+
+def get_fonti_risorse_stale(ttl_days: int = 7) -> list:
+    """Recupera risorse esterne con last_checked_at più vecchio di ttl_days.
+    Utile per decidere quali fonti re-scrapare."""
+    conn = get_conn()
+    try:
+        from datetime import timedelta
+        cutoff = (datetime.now() - timedelta(days=ttl_days)).isoformat()
+        rows = conn.execute(
+            "SELECT * FROM fonti_risorse WHERE last_checked_at < ? OR last_checked_at IS NULL",
+            (cutoff,)
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
 
 
 def export_csv(output_path: str = None) -> str:

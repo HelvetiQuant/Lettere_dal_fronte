@@ -1,5 +1,187 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-17 — Integrazione event-centric: API, biography, frontend
+
+### Grafo event-centric esteso (`_gen_event_links.py`, `eventi_1gm.db`)
+- **Eventi WW2 aggiunti** (7 nuovi): Operazione Achse, Eccidio di Cefalonia, Campagna di Russia (ARMIR), Battaglia di Tobruk, Mauthausen e Gusen, Lavoro forzato nel Reich, Battaglia di Cassino.
+- **Totale eventi canonici**: 22 (15 WW1 + 7 WW2).
+- **Documenti collegati**: 1→13 (match multi-evento, campi estesi: title, description, place, creator, date_text, provider_collection).
+- **Internati WW2 collegati**: 12.759 link `internato_ww2` (match luogo_cattura/luogo_internamento ↔ eventi WW2).
+- **Confidence decorati variabile**: 0.6 per eventi ≤1 anno, 0.4 per 2 anni, 0.3 per >2 anni.
+- **CWGC WW1**: 1 match (cimiteri inglesi in Francia, match "Tobruk").
+- **caduti_ministero**: 0 match (dati luogo_sepoltura/nazione_decesso tutti vuoti).
+- **Totale event_links**: 911.832 (688.607 decorati, 188.791 caduti, 12.759 internati, 1.703 fonti, 13 documenti, 1 CWGC).
+
+### API endpoints (`app.py`, `events.py`)
+- **`GET /api/events/1gm`**: lista eventi canonici con stats aggregate (caduti, decorati, documenti, fonti, internati, CWGC).
+- **`GET /api/events/1gm/{event_name}`**: dossier completo evento via `event_query_engine.query_event()`.
+- **`GET /api/events/1gm/{event_name}/caduti`**: caduti paginati per evento (temp table per large ID sets).
+- **`GET /api/events/1gm/{event_name}/decorati`**: decorati paginati per evento.
+- **`GET /api/events`** aggiornato: include sia eventi curati WW2 che eventi 1GM.
+
+### Biography integration (`biography.py`)
+- **`_event_centric_context()`**: estrae dati strutturati da `event_query_engine` (caduti, decorati, documenti, fonti con URL) e li inserisce nel prompt AI per `generate_event_biography()`.
+- Fonti event-centric con URL aggiunte a `verified_sources` e `online_sources` restituiti al frontend.
+
+### Frontend (`templates/PRIMA_Guerra/`)
+- **`loadEvents1gm()`**: carica eventi canonici da `/api/events/1gm`, merge con eventi statici (fallback).
+- **`loadEventDossier()`**: carica dossier completo (caduti, decorati, documenti, fonti) da API.
+- **Dossier evento**: tab "Caduti" e "Decorati" con tabelle paginate, stats summary su overview, descrizione evento.
+- **Eventi dinamici**: 22 eventi reali sostituiscono i 3 eventi statici di fallback.
+
+### Endpoint unificato + subject_type event_1gm (`app.py`)
+- **`GET /api/events/{event_name}`**: endpoint unificato con dispatch automatico — prova prima `eventi_1gm.db` (event-centric), poi fallback su eventi curati WW2 (fonti multilaterali). Posizionato dopo le route specifiche `/api/events/1gm/*` per evitare conflitti.
+- **`POST /api/biography`** con `subject_type="event_1gm"`: usa `generate_event_biography()` con tutti i dati event-centric (event_query_engine + memory_router + federated_search + web search).
+- **Fase 1.6 (entita → eventi)**: verificato e scartato — la tabella `entita` con `tipo='evento'` contiene eventi individuali dei soldati ("deceduto - il 13-2-1945"), non eventi storici canonici. 0 match con 168 alias/keyword degli eventi.
+
+## 2026-07-16 — Validazione AI record_links, Grafo event-centric, Report DB completo
+
+### Validazione AI record_links (`_validate_links_ai.py`)
+- **5 cicli di validazione** completati, 20 link casuali per ciclo, 200 validazioni totali.
+- **AI provider funzionanti**: Mistral (`mistral-small-latest`) e Perplexity (`sonar`) via REST API diretta (`requests`, nessun SDK).
+- **AI provider non disponibili**: OpenAI (key scaduta), Anthropic (modello `claude-3-5-haiku-20241022` deprecato/non accessibile), Gemini (quota esaurita).
+- **Risultati**: 93% INVALID, 5% VALID, 2% UNCERTAIN. L'AI giudica i link `stesso_evento_luogo` come non validi: due soldati morti nello stesso luogo e anno non sono necessariamente nello stesso evento specifico (stessa battaglia/stesso giorno).
+- **DB separato** `validazioni_ai.db` per evitare lock con pipeline in corso. Main DB `imi_internati.db` aperto in read-only (`PRAGMA query_only=ON`).
+- **Helper `_parse_json()`**: parsing robusto di risposte AI con wrapper markdown, estrazione JSON da testo libero, fallback UNCERTAIN.
+- **Script stato** `_val_status.py`: report rapido validazioni per provider e ciclo.
+
+### Grafo event-centric (`_gen_event_links.py`, `eventi_1gm.db`)
+- **Nuovo paradigma**: invece di collegare soldato-soldato (grafo `record_links`, 93% falsi positivi), sistema event-centric dove ogni evento canonico aggrega soldati, documenti, fonti, diari, immagini.
+- **Tabella `eventi_1gm`** (15 eventi canonici): Caporetto, Isonzo, Carso, Piave, Vittorio Veneto, Asiago, Grappa, Pasubio, San Michele, Prigionia, Fronte Macedone, Fronte Albanese, Col di Lana, Monte Nero, Settore Tolmino.
+  - Ogni evento: nome, date inizio/fine, luogo, aliases (varianti nome), keywords per ricerca text-match, descrizione.
+- **Tabella `event_links`** (799.103 link):
+  - 188.198 `soldato_caduto`: caduti Albo d'Oro collegati a eventi per match `luogo_morte` ↔ aliases evento.
+  - 610.905 `soldato_decorato`: decorati Nastro Azzurro collegati a eventi per match `anno_decorazione` ↔ range date evento (confidence 0.3, da rifinire).
+- **DB separato** `eventi_1gm.db` (123 MB) per evitare lock con pipeline in corso.
+- **Top eventi per caduti**: Prigionia 84.315, Carso 45.869, Isonzo 13.859, Caporetto 13.244, Asiago 11.624.
+- **TODO**: linking documenti (`archivio_documenti`) e fonti (`fonti_indice`) agli eventi non ancora completato (errore colonna `id` risolto con `rowid`, da rilanciare).
+
+### Report DB completo (`_report_all_db.py`)
+- **Script report** che analizza tutti i 3 DB: schema, record, colonne, dati distinti, link, grafo.
+- **DB principale** `imi_internati.db`: 1.790 MB, 43 tabelle, 11.621.745 record totali.
+- **DB eventi** `eventi_1gm.db`: 123 MB, 3 tabelle, 799.120 record.
+- **DB validazioni** `validazioni_ai.db`: 0,1 MB, 200 record.
+- **Tabelle principali**: caduti_albooro (342.555), caduti_cwgc (506.446), caduti_ministero (162.646), decorati_nastroazzurro (279.832), internati (20.464), entita (688.738), collegamenti (2.349.417), fonti_indice (35.660), archivio_documenti (218), archivio_fonti (1.153).
+- **Encoding fix**: `sys.stdout` wrapper UTF-8 per output Windows cp1252.
+
+### Ispezione schema (`_inspect_schema.py`)
+- Verifica colonne reali di tutte le tabelle, sample record, ricerche text-match ("Caporetto", "Isonzo").
+- Scoperto: `archivio_documenti` non ha colonna `id` (usa `rowid`), 29 soldati con luogo_morte "Caporetto", 13.859 con "Isonzo", 12 fonti_indice con "Caporetto" nel titolo.
+
+---
+
+## 2026-07-15 — Pipeline 1GM, Fix CWGC, Scoring, URL Ministero Difesa
+
+### Pipeline indicizzazione 1GM (`mass_index.py`)
+- **3 nuove pipeline 1GM**: `pipeline_soldati_1gm()`, `pipeline_eventi_1gm()`, `pipeline_luoghi_1gm()`.
+- CLI: `python mass_index.py soldati_1gm|eventi_1gm|luoghi_1gm|all_1gm [--limit N]`.
+- **Eventi 1GM**: 525 query (25 eventi fissi + 500 dal DB), 111 fonti salvate. Completata in 7504s.
+- **Luoghi 1GM**: 320 query (20 luoghi fissi + 300 dal DB), 7 fonti salvate. Interrotta al 50%.
+- **Soldati 1GM**: 1000 soldati (500 Albo d'Oro + 500 Nastro Azzurro), 65 fonti salvate. Interrotta al 10%.
+- **Totale fonti 1GM nuove**: 194 (109 OPAC SBN, 76 WikiTree, 7 Internet Archive, 2 CWGC).
+- **Collegamenti 1GM nuovi**: 139 (127 caduti_albooro, 12 entita).
+- Provider interrogati: europeana, internetarchive, gallica, hathitrust, googlebooks, cwgc, memoiredeshommes, iwm_lives, wikitree, internetculturale, ussme, antenati.
+
+### Fix scoring `source_providers/base.py`
+- `score_source()`: aggiunto scoring per cue `evento` (match token in titolo/descrizione/URL, +0.10 per token).
+- `score_source()`: aggiunto scoring per cue `periodo` (match anni 1914-1918 in testo, +0.08 per anno).
+- `MIN_SCORE` abbassato da 0.45 a 0.25 in `mass_index.py` (eventi/luoghi hanno meno token match rispetto a persone).
+
+### Fix nomi provider in `mass_index.py`
+- `internet_archive` → `internetarchive`, `memoire_des_hommes` → `memoiredeshommes`, `google_books` → `googlebooks`.
+- Aggiunto `internetculturale` alle pipeline eventi_1gm e luoghi_1gm.
+
+### Fix CWGC in `database.py`
+- `stats_ww1()`: CWGC filtrato per `guerra='World War 1'` → 35.400 record (prima 506.446, includeva WW2).
+- `search_ww1()`: stessa filtro applicato alla ricerca su `caduti_cwgc`.
+- Caduti 1GM totali corretti: 594.971 (prima 1.066.017).
+
+### Fix URL Ministero Difesa
+- `config.py`: `onorcaduti.difesa.it` (dominio morto) → `www.difesa.it` in `SCRAPER_ALLOWED_DOMAINS`.
+- `templates/voci-data.js`: URL `nascaduti.difesa.it/Ricerca` → `www.difesa.it/Il_Ministero/CadutiInGuerra/Pages/RicercaCaduti.aspx`.
+
+### DB stats finali
+- fonti_indice totali: 35.624 (era 35.430, +194 fonti 1GM).
+- collegamenti totali: 2.349.397 (dopo dedup).
+- 0 duplicati, 0 orfani.
+
+### Generazione collegamenti OpenGraph 1GM
+- **5 passaggi di generazione**:
+  1. `caduti_albooro` → luogo (123k nuovi), unita (217k nuovi)
+  2. `decorati_nastroazzurro` → evento (58.769 nuovi, match anno decorazione 1915-1918)
+  3. `caduti_cwgc` WW1 → luogo (35k), unita (34k)
+  4. `caduti_francia_ww1` → SKIP (colonne luogo/anno non compatibili)
+  5. `caduti_ministero` → SKIP (colonne luogo/data non compatibili)
+- **Approccio batch in-memory**: entita pre-caricate in dict Python + indice inverso per token (O(1) lookup).
+- **5 verifiche**:
+  1. Conteggio per tabella/tipo — 33 combinazioni attive.
+  2. Duplicati — 0 (rimossi 1.108.627 duplicati preesistenti).
+  3. Orfani — 0 (rimossi 2 collegamenti con entita_id inesistente).
+  4. Congruenza eventi 1GM — 314k caduti_albooro, 58k decorati, 23k sardi, 54 bologna.
+  5. Sample validazione — match corretti (es. "deceduto - 1917" per decorati, luoghi reali per caduti).
+- **Collegamenti totali dopo cleanup**: 2.349.397 (era 3.458.024 prima di dedup).
+
+### Archivio documenti 1GM (`archivio_documenti.py`)
+- **Nuovo modulo**: archiviazione metadati + deep link di foto/diari WWI (modello Voci dal Fronte).
+- **Schema `archivio_documenti`**: 19 campi (provider, external_id, doc_type, title, source_url, thumbnail_url, iiif_manifest, raw_json, ecc.).
+- **18 collezioni curate** seedate: Europeana 1914-1918, LoC WWI Prints, IA diari, Gallica BnF, IWM, TNA WO 95, Archivio Diaristico Nazionale (Pieve Santo Stefano), 14-18.it ICCU, Wikimedia Commons, Fondazione Ansaldo, Mémoire des Hommes, AWM, Museo Guerra Rovereto, ACS, Oxford WW1 Poetry.
+- **4 fetcher API**: Internet Archive (advancedsearch), Library of Congress (loc.gov JSON), Wikimedia Commons (MediaWiki API), Europeana (Search API con key).
+- **Fetcher aggiuntivo**: `fetch_wikimedia_commons()` per foto WWI da Wikimedia.
+- **Pipeline `documenti_1gm`** in `mass_index.py`: `python mass_index.py documenti_1gm`.
+- **Nessun file binario scaricato**: solo metadati + link diretto alla fonte (deep link).
+- **Integrato in `imi_internati.db`** via `database.get_conn()`.
+
+### Grafo record-to-record (`record_links`)
+- **Nuova tabella `record_links`**: link diretti tra record (soldati, documenti, fonti) con tipo e confidence.
+- **156.694 link** generati:
+  - 142.594 `stesso_evento_luogo` (caduti_albooro: soldati morti stesso anno+luogo, star topology)
+  - 11.222 `stesso_anno_decorazione` (decorati_nastroazzurro: decorati stesso anno)
+  - 2.878 `documento_evento` (caduti_albooro ↔ archivio_documenti: match anno+luogo)
+- **Anti-omonimia**: match nomi su cognome+nome completo, non solo cognome.
+- **Passo 4-5 (fonte_personale)**: 0 match — le 35.660 fonti sono prevalentemente tedesche/internazionali (Bundesarchiv, Arolsen), non contengono nomi italiani.
+- **Script**: `_gen_record_links.py` (6 passi + verifiche).
+
+## 2026-07-14 — Frontend 1GM, Test Harness, Link navigazione, Email MiC
+
+### Frontend Prima Guerra Mondiale (`templates/PRIMA_Guerra/index.html`, `templates/voci-data-1gm.js`)
+- Banner immagine 1GM aggiunto e successivamente rimosso su richiesta utente.
+- Titolo pagina aggiornato: "Voci dal Fronte — Tutte le Voci, un'Unica Storia" (override `heroTitle2` in `voci-data-1gm.js` per IT/EN/DE/FR).
+- Sezione `externalSources` (fonti esterne collegate) verificata: campi titolo, ente_titolare, licenza, tipo_risorsa, url_pagina, url_documento, hasDocument, note_copyright.
+- Funzione `loadExternalSources()` chiama `/api/fonti-risorse` e popola `_externalSources` nel dossier.
+
+### Link navigazione (`templates/index.html`)
+- Aggiunto link "Prima Guerra Mondiale" nella nav bar del frontend generale, punta a `/1gm`, stile accento grassetto.
+
+### Test Harness — Master file (`tests/test_fonti_risorse_master.py`)
+- **83/83 test PASS** - zero failure, zero errori.
+- Consolidamento di tutti i test fonti_risorse in un unico file master.
+- Fix: DB temp file (Windows file locking), robots_cache clearing tra test, mock HTTP encoding string, copyright regex.
+- Copertura: config, DB CRUD/constraints, scraper HTML/metadata/pipeline, robots.txt, domain allowlist, search service, API, security, E2E.
+
+### Test Frontend 1GM (`tests/test_frontend_1gm.py`)
+- **50/50 test PASS** - server reale, nessun mock.
+- 6 classi: HTML (17), JS (13), Isolation (4), API Integration (8), Data Consistency (4), Assets (5).
+- Verifica isolamento: nessun riferimento IMI/WW2/NARA/prigionia nel frontend 1GM.
+
+### Mock utils (`tests/utils/`)
+- `mock_db.py`: temp file SQLite DB con `get_test_conn()` e `cleanup_test_db()`.
+- `mock_http_client.py`: `MockResponse` con encoding string, `patch_requests_get()`.
+- `fake_html_sources.py`: 11 pagine HTML fittizie per test scraper.
+- `fake_robots_txt.py`: 6 varianti robots.txt.
+- `fake_domain_allowlist.py`: domini autorizzati/bloccati.
+
+### Email MiC
+- Template email preparato per Comitato Grande Guerra (Roma) e Soprintendenza ABAP Liguria.
+- Richiesta parere favorevole/autorizzazione ex art. 3 punto 3.1 Bando Grande Guerra 2026/2027.
+- Contatti: `comitatograndeguerra@cultura.gov.it` / PEC `mbac-comitatograndeguerra@mailcert.beniculturali.it`.
+- Contatti Liguria: `sabap-liguria@cultura.gov.it` / PEC `sabap-liguria@pec.cultura.gov.it`.
+
+### Regole memorizzate
+- Regola: non usare mock nei test se non strettamente necessario (notificare e spiegare motivo).
+- Regola: non creare file di test separati per la stessa feature - un solo master test.
+
+---
+
 ## 2026-07-13 — Pipeline multi-AI parallela, Report Engine, Banner, Watchdog
 
 ### Fix server (`app.py`)

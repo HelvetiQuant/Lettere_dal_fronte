@@ -412,6 +412,66 @@ def _verified_labels_event(routed: dict) -> list[str]:
     return labels
 
 
+def _event_centric_context(query: str) -> tuple[str, list[dict]]:
+    """Interroga event_query_engine per dati strutturati sull'evento.
+    Ritorna (testo_contesto, lista_fonti_con_url).
+    Fallisce in silenzio se event_query_engine non trova l'evento."""
+    try:
+        from event_query_engine import query_event
+        result = query_event(query, verbose=False)
+        if not result.get("ok"):
+            return "", []
+
+        lines = []
+        sources = []
+
+        ev = result.get("event", {})
+        lines.append(f"[EVENT_DB] Evento: {ev.get('nome', query)}")
+        lines.append(f"[EVENT_DB] Date: {ev.get('data_inizio', '?')} - {ev.get('data_fine', '?')}")
+        lines.append(f"[EVENT_DB] Luogo: {ev.get('luogo', '?')}")
+        lines.append(f"[EVENT_DB] Descrizione: {ev.get('descrizione', '')}")
+
+        caduti = result.get("caduti", {})
+        if caduti.get("count", 0) > 0:
+            lines.append(f"[EVENT_DB] Caduti collegati: {caduti['count']}")
+            for luogo, n in (caduti.get("top_luoghi") or [])[:5]:
+                lines.append(f"[EVENT_DB]   Caduti a {luogo}: {n}")
+            for anno, n in (caduti.get("top_anni") or [])[:5]:
+                lines.append(f"[EVENT_DB]   Caduti anno {anno}: {n}")
+            for reparto, n in (caduti.get("top_reparti") or [])[:5]:
+                lines.append(f"[EVENT_DB]   Reparto {reparto}: {n}")
+
+        decorati = result.get("decorati", {})
+        if decorati.get("count", 0) > 0:
+            lines.append(f"[EVENT_DB] Decorati collegati: {decorati['count']}")
+            for dec, n in (decorati.get("top_decorazioni") or [])[:5]:
+                lines.append(f"[EVENT_DB]   Decorazione {dec}: {n}")
+
+        doc_links = result.get("documenti", {}).get("items", [])
+        if doc_links:
+            lines.append(f"[EVENT_DB] Documenti collegati: {len(doc_links)}")
+            for d in doc_links[:10]:
+                title = d.get("title") or d.get("description") or "(senza titolo)"
+                url = d.get("source_url") or ""
+                lines.append(f"[EVENT_DB]   Doc: {title[:80]}  URL: {url}")
+                if url:
+                    sources.append({"title": title, "url": url})
+
+        fonti_links = result.get("fonti", {}).get("items", [])
+        if fonti_links:
+            lines.append(f"[EVENT_DB] Fonti archivistiche: {len(fonti_links)}")
+            for f in fonti_links[:10]:
+                title = f.get("titolo") or "(senza titolo)"
+                url = f.get("url_catalogo") or f.get("url_file") or ""
+                lines.append(f"[EVENT_DB]   Fonte: {title[:80]}  Archivio: {f.get('archivio', '?')}  URL: {url}")
+                if url:
+                    sources.append({"title": title, "url": url})
+
+        return "\n".join(lines), sources
+    except Exception:
+        return "", []
+
+
 # ─── Entry point pubblici ──────────────────────────────────────────────────
 
 def generate_soldier_biography(soldier_id: int, provider: Optional[str] = None) -> dict:
@@ -462,6 +522,14 @@ def generate_event_biography(query: str, provider: Optional[str] = None) -> dict
     verified = _event_verified_context(query, routed)
     unverified = _event_unverified_context(routed, ext_candidates)
     online_ctx, online_sources = _online_verified_context(f"Evento: {query}")
+
+    # Event-centric data from event_query_engine
+    event_ctx, event_sources = _event_centric_context(query)
+    if event_ctx:
+        verified = event_ctx + "\n\n" + verified
+    if event_sources:
+        online_sources = online_sources + event_sources
+
     prompt = BIOGRAPHY_PROMPT.format(subject_label=f"Evento: {query}", verified_context=verified,
                                      online_context=online_ctx, unverified_context=unverified)
 
@@ -475,8 +543,11 @@ def generate_event_biography(query: str, provider: Optional[str] = None) -> dict
     result["confidence_locale"] = routed.get("confidence")
     result["unverified_sources_count"] = len(routed.get("image_only_sources", [])) + \
         len([r for r in ext_candidates if not r.get("error")])
-    # Elenco fonti restituito al frontend (visibili, con link per quelle web)
     result["verified_sources"] = _verified_labels_event(routed)
+    if event_sources:
+        result["verified_sources"] = result["verified_sources"] + [
+            f"[EVENT_DB] {s['title']} — {s['url']}" for s in event_sources
+        ]
     result["online_sources"] = online_sources
     return result
 

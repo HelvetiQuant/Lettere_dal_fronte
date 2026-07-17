@@ -239,7 +239,7 @@ export function buildArchiveUrl(archivio, cognome, nome) {
 
   // Onorcaduti (Ministero Difesa IT) — caduti e dispersi italiani
   if (arch.includes('onorcaduti') || (arch.includes('difesa') && !arch.includes('ufficio storico')))
-    return `https://nascaduti.difesa.it/Ricerca?cognome=${c}&nome=${n}`;
+    return `https://www.difesa.it/Il_Ministero/CadutiInGuerra/Pages/RicercaCaduti.aspx?cognome=${c}&nome=${n}`;
 
   // Albo d'Oro / cadutigrandeguerra — caduti italiani 1GM/2GM
   if (arch.includes("albo d'oro") || arch.includes('cadutigrandeguerra'))

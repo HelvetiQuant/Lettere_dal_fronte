@@ -19,6 +19,9 @@ from database import (
     count_decorati, get_decorati_albi,
     count_entita, count_collegamenti, search_entita, get_collegamenti_entita,
     get_ai_ricerche,
+    search_ww1, stats_ww1,
+    get_fonti_risorsa_by_url, get_fonti_risorse_by_fonte_id,
+    insert_fonti_risorsa, update_fonti_risorsa, count_fonti_risorse,
 )
 import fondi
 import decorati
@@ -39,6 +42,7 @@ import source_locator
 import events
 import soldier_dashboard
 import biography
+import scraper_service
 from fastapi.responses import FileResponse
 from source_providers.federation import (
     list_providers, get_provider, federated_search,
@@ -103,6 +107,121 @@ def static_support():
 def static_voci_data():
     return FileResponse(str(_TEMPLATES / "voci-data.js"), media_type="application/javascript")
 
+
+@app.get("/1gm", response_class=FileResponse)
+def index_1gm():
+    return FileResponse(str(_TEMPLATES / "PRIMA_Guerra" / "index.html"), media_type="text/html")
+
+
+@app.get("/voci-data-1gm.js")
+def static_voci_data_1gm():
+    return FileResponse(str(_TEMPLATES / "PRIMA_Guerra" / "voci-data-1gm.js"), media_type="application/javascript")
+
+
+@app.get("/api/search/ww1")
+def api_search_ww1(q: str, limit: int = 100):
+    if not q or len(q.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Termine di ricerca troppo corto")
+    return search_ww1(q.strip(), limit=limit)
+
+
+@app.get("/api/stats/ww1")
+def api_stats_ww1():
+    return stats_ww1()
+
+
+# ─── Endpoint API per fonti_risorse ───────────────────────────────────────────
+
+@app.get("/api/fonti-risorse")
+def api_list_fonti_risorse(fonte_id: int = None, limit: int = 100):
+    """Lista risorse esterne catalogate. Filtra per fonte_id se specificato."""
+    if fonte_id is not None:
+        risorse = get_fonti_risorse_by_fonte_id(fonte_id)
+    else:
+        from database import get_conn
+        conn = get_conn()
+        try:
+            rows = conn.execute(
+                "SELECT * FROM fonti_risorse ORDER BY last_checked_at DESC LIMIT ?", (limit,)
+            ).fetchall()
+            risorse = [dict(r) for r in rows]
+        finally:
+            conn.close()
+    return {"risorse": risorse, "count": len(risorse)}
+
+
+@app.get("/api/fonti-risorse/stats")
+def api_fonti_risorse_stats():
+    """Statistiche sulle risorse esterne catalogate."""
+    from database import get_conn
+    conn = get_conn()
+    try:
+        total = conn.execute("SELECT COUNT(*) FROM fonti_risorse").fetchone()[0]
+        by_stato = conn.execute(
+            "SELECT stato, COUNT(*) as c FROM fonti_risorse GROUP BY stato"
+        ).fetchall()
+        by_tipo = conn.execute(
+            "SELECT tipo_risorsa, COUNT(*) as c FROM fonti_risorse GROUP BY tipo_risorsa"
+        ).fetchall()
+        by_ente = conn.execute(
+            "SELECT ente_titolare, COUNT(*) as c FROM fonti_risorse GROUP BY ente_titolare ORDER BY c DESC LIMIT 10"
+        ).fetchall()
+        return {
+            "total": total,
+            "by_stato": {r["stato"]: r["c"] for r in by_stato},
+            "by_tipo": {r["tipo_risorsa"]: r["c"] for r in by_tipo},
+            "by_ente": {r["ente_titolare"]: r["c"] for r in by_ente},
+        }
+    finally:
+        conn.close()
+
+
+@app.get("/api/fonti-risorse/{risorsa_id}")
+def api_get_fonti_risorsa(risorsa_id: int):
+    """Dettaglio di una singola risorsa esterna."""
+    from database import get_conn
+    conn = get_conn()
+    try:
+        row = conn.execute("SELECT * FROM fonti_risorse WHERE id = ?", (risorsa_id,)).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Risorsa non trovata")
+        return dict(row)
+    finally:
+        conn.close()
+
+
+@app.post("/api/fonti-risorse/scrape")
+def api_trigger_scrape(background_tasks: BackgroundTasks, fonte_id: int = None, url: str = None):
+    """Triggera scraping di una fonte esterna.
+    Passa fonte_id per usare un record esistente da fonti_indice/fondi_archivistici,
+    oppure url per scraping diretto di un URL."""
+    if not fonte_id and not url:
+        raise HTTPException(status_code=400, detail="Specificare fonte_id o url")
+
+    if url:
+        fonte_record = {"id": fonte_id, "url_base": url}
+    else:
+        # Cerca il record in fonti_indice o fondi_archivistici
+        from database import get_conn
+        conn = get_conn()
+        try:
+            # Prova fonti_indice prima
+            row = conn.execute("SELECT * FROM fonti_indice WHERE id = ?", (fonte_id,)).fetchone()
+            if row:
+                fonte_record = dict(row)
+            else:
+                # Prova fondi_archivistici
+                row = conn.execute("SELECT * FROM fondi_archivistici WHERE id = ?", (fonte_id,)).fetchone()
+                if row:
+                    fonte_record = dict(row)
+                else:
+                    raise HTTPException(status_code=404, detail="Fonte non trovata")
+        finally:
+            conn.close()
+
+    # Esegui scraping in background
+    background_tasks.add_task(scraper_service.scrape_fonte, fonte_record)
+    return {"status": "scraping_started", "fonte_id": fonte_id, "url": fonte_record.get("url_base")}
 
 @app.get("/api/status")
 def status():
@@ -1351,8 +1470,13 @@ def api_generate_biography(data: dict = Body(...)):
         if not query:
             raise HTTPException(status_code=400, detail="query richiesta per subject_type=event")
         result = biography.generate_event_biography(query, provider=provider)
+    elif subject_type == "event_1gm":
+        query = (data.get("query") or "").strip()
+        if not query:
+            raise HTTPException(status_code=400, detail="query richiesta per subject_type=event_1gm")
+        result = biography.generate_event_biography(query, provider=provider)
     else:
-        raise HTTPException(status_code=400, detail="subject_type deve essere 'soldier' o 'event'")
+        raise HTTPException(status_code=400, detail="subject_type deve essere 'soldier', 'event' o 'event_1gm'")
 
     if result.get("error") and "risposta" not in result:
         raise HTTPException(status_code=404 if "non trovato" in result["error"] else 502, detail=result["error"])
@@ -1373,8 +1497,10 @@ def api_sources_analyze(body: dict = Body(...)):
 
 @app.get("/api/events")
 def api_events_list():
-    """Lista eventi curati con conteggio fonti."""
-    return {"eventi": events.get_eventi_curati()}
+    """Lista eventi curati (WW2) + eventi canonici 1GM con stats."""
+    curati = events.get_eventi_curati()
+    eventi_1gm = events.get_eventi_1gm()
+    return {"eventi": curati, "eventi_1gm": eventi_1gm}
 
 
 @app.get("/api/events/{event_name}/sources")
@@ -1401,6 +1527,61 @@ def api_internato_events(rid: int):
     if not result.get("ok"):
         raise HTTPException(status_code=404, detail=result.get("error"))
     return result
+
+
+# ─── Eventi 1GM/WW2 dal DB event-centric (eventi_1gm.db) ──────────────────────
+
+@app.get("/api/events/1gm")
+def api_events_1gm_list():
+    """Lista eventi canonici 1GM+WW2 con stats (caduti, decorati, doc, fonti, internati)."""
+    return {"eventi": events.get_eventi_1gm()}
+
+
+@app.get("/api/events/1gm/{event_name}")
+def api_event_1gm_dossier(event_name: str):
+    """Dossier completo per un evento: caduti, decorati, documenti, fonti con link."""
+    nome_decoded = event_name.replace("+", " ")
+    result = events.get_evento_1gm_dossier(nome_decoded)
+    if not result.get("ok", True) and result.get("error"):
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
+
+
+@app.get("/api/events/1gm/{event_name}/caduti")
+def api_event_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0):
+    """Caduti paginati per un evento 1GM."""
+    nome_decoded = event_name.replace("+", " ")
+    return events.get_eventi_1gm_caduti(nome_decoded, limit=limit, offset=offset)
+
+
+@app.get("/api/events/1gm/{event_name}/decorati")
+def api_event_1gm_decorati(event_name: str, limit: int = 50, offset: int = 0):
+    """Decorati paginati per un evento 1GM."""
+    nome_decoded = event_name.replace("+", " ")
+    return events.get_eventi_1gm_decorati(nome_decoded, limit=limit, offset=offset)
+
+
+@app.get("/api/events/{event_name}")
+def api_event_dossier_unified(event_name: str):
+    """Dossier unificato per evento: prova prima eventi_1gm.db (event-centric),
+    poi fallback su eventi curati WW2 (fonti multilaterali)."""
+    nome_decoded = event_name.replace("+", " ")
+    # 1. Try event-centric DB (1GM + WW2 canonical events)
+    result = events.get_evento_1gm_dossier(nome_decoded)
+    if result.get("evento"):
+        result["ok"] = True
+        return {**result, "source": "eventi_1gm"}
+    # 2. Fallback: curated WW2 events (fonti multilaterali)
+    fonti = events.get_evento_fonti(nome_decoded, limit=100)
+    if fonti.get("ok"):
+        return {
+            "ok": True,
+            "source": "curati_ww2",
+            "event": {"nome": nome_decoded},
+            "fonti": fonti.get("fonti", {}),
+            "total_fonti": fonti.get("total", 0),
+        }
+    raise HTTPException(status_code=404, detail=f"Evento '{nome_decoded}' non trovato")
 
 
 # ─── Research-to-Index ───

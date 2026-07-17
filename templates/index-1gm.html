@@ -21,7 +21,7 @@
 
 <!-- ═══ BANNER FULL-WIDTH ═══ -->
 <div style="width:100%;cursor:pointer;overflow:hidden;line-height:0" onClick="{{ goHome }}">
-  <img src="/static/header_banner.png" alt="Voci dal Fronte"
+  <img src="/static/header_banner.png" alt="Voci dal Fronte — Prima Guerra Mondiale"
     style="display:block;width:100%;aspect-ratio:5/1;object-fit:cover;object-position:center top;max-height:240px">
 </div>
 
@@ -34,7 +34,6 @@
       <a onClick="{{ goHome }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer">{{ S.navHome }}</a>
       <a onClick="{{ goExploreDefault }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer">{{ S.navExplore }}</a>
       <a onClick="{{ goEvents }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer">{{ S.navEvents }}</a>
-      <a href="/1gm" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer;font-weight:600;color:var(--color-accent)">Prima Guerra Mondiale →</a>
     </nav>
     <div style="display:flex;gap:3px">
       <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="4">
@@ -250,29 +249,9 @@
           </div>
         </sc-for>
       </div>
-
-      <sc-if value="{{ dossier.hasExternalSources }}" hint-placeholder-val="{{ false }}">
-        <h3 style="font-size:16px;margin:20px 0 16px">Fonti esterne collegate</h3>
-        <div style="display:grid;gap:8px;max-width:760px;margin-bottom:20px">
-          <sc-for list="{{ dossier.externalSources }}" as="es" hint-placeholder-count="3">
-            <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--color-surface);border-radius:var(--radius-md);flex-wrap:wrap">
-              <span style="width:8px;height:8px;border-radius:50%;background:var(--color-accent-600);flex:none"></span>
-              <div style="flex:1;min-width:180px">
-                <div style="font-size:14px;font-weight:600">{{ es.titolo }}</div>
-                <div style="font-size:12px;opacity:0.6;margin-top:2px">{{ es.ente_titolare }} · {{ es.licenza }} · {{ es.tipo_risorsa }}</div>
-                <sc-if value="{{ es.note_copyright }}" hint-placeholder-val="{{ false }}">
-                  <div style="font-size:11px;opacity:0.5;margin-top:2px">{{ es.note_copyright }}</div>
-                </sc-if>
-              </div>
-              <a href="{{ es.url_pagina }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Pagina ↗</a>
-              <sc-if value="{{ es.hasDocument }}" hint-placeholder-val="{{ false }}">
-                <a href="{{ es.url_documento }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Documento ↗</a>
-              </sc-if>
-            </div>
-          </sc-for>
-        </div>
-      </sc-if>
     </sc-if>
+
+    <sc-if value="{{ dossier.tabGapsActive }}" hint-placeholder-val="{{ false }}">
       <h3 style="font-size:16px;margin-bottom:16px">{{ S.dossierGapsTitle }}</h3>
       <div style="display:grid;gap:8px;max-width:640px">
         <sc-for list="{{ dossier.gaps }}" as="g" hint-placeholder-count="2">
@@ -423,12 +402,12 @@ class Component extends DCLogic {
     loaded: false, strings: null, data: null,
     lang: 'it', view: 'home', query: '',
     activeKind: null, activeId: null, dossierTab: 'overview',
-    exploreId: 'internati', lightbox: null,
+    exploreId: 'caduti', lightbox: null,
     searching: false, adminLive: null,
   };
 
   componentDidMount() {
-    import('./voci-data.js').then(async m => {
+    import('./voci-data-1gm.js').then(async m => {
       // 1. Carica UI subito con dati statici di default
       this.setState({
         strings: m.STRINGS,
@@ -466,7 +445,7 @@ class Component extends DCLogic {
       m.loadLiveCredits().then(credits => this.setState(st => ({ adminLive: { ...st.adminLive, credits } }))).catch(() => {});
     }
   }
-  goExplore(id) { this.setState({ view: 'explore', exploreId: id || 'internati', lightbox: null }); }
+  goExplore(id) { this.setState({ view: 'explore', exploreId: id || 'caduti', lightbox: null }); }
   goSearch(q) {
     const query = q !== undefined ? q : this.state.query;
     this.setState({ view: 'search', query, lightbox: null, searching: true });
@@ -483,40 +462,12 @@ class Component extends DCLogic {
     }
   }
   openDossier(kind, id) {
-    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null, _externalSources: [] });
-    // Se è un soldato IMI live, carica fonti e timeline dal backend
+    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null });
+    // Carica dossier dal backend se disponibile
     const m = this.state._mod;
-    if (kind === 'subject' && id && id.startsWith('imi_') && m && m.loadSoldierDossier) {
-      const soldierId = parseInt(id.replace('imi_', ''), 10);
-      m.loadSoldierDossier(soldierId).then(({ timeline, sources, perspectives, _cognome, _nome }) => {
-        this.setState(st => {
-          const subj = st.data.SUBJECTS[id];
-          if (!subj) return {};
-          const updated = { ...subj, timeline, sources, perspectives, _cognome, _nome };
-          return { data: { ...st.data, SUBJECTS: { ...st.data.SUBJECTS, [id]: updated } } };
-        });
-      }).catch(() => {});
+    if (kind === 'subject' && id && id.startsWith('cad_') && m && m.loadSoldierDossier) {
+      // non applicabile per caduti 1GM (nessun endpoint dedicato)
     }
-    // Carica fonti_risorse esterne collegate all'entità
-    this.loadExternalSources(kind, id);
-  }
-  async loadExternalSources(kind, id) {
-    try {
-      const res = await fetch('/api/fonti-risorse?limit=20').then(r => r.json());
-      if (res.risorse && res.risorse.length) {
-        const mapped = res.risorse.map(r => ({
-          titolo: r.titolo || r.url_pagina,
-          ente_titolare: r.ente_titolare || '',
-          licenza: r.licenza || 'tutti i diritti riservati',
-          tipo_risorsa: r.tipo_risorsa || 'pagina',
-          url_pagina: r.url_pagina,
-          url_documento: r.url_documento,
-          hasDocument: !!r.url_documento,
-          note_copyright: r.note_copyright || null,
-        }));
-        this.setState({ _externalSources: mapped });
-      }
-    } catch(e) { console.warn('loadExternalSources error', e); }
   }
   setDossierTab(tab) { this.setState({ dossierTab: tab }); }
   setLang(l) { this.setState({ lang: l }); }
@@ -565,7 +516,7 @@ class Component extends DCLogic {
     const examples = [
       { label: 'Francesco Baracca', q: 'Baracca' }, { label: 'Enrico Toti', q: 'Toti' },
       { label: 'Battaglia di Caporetto', q: 'Caporetto' }, { label: 'Vittorio Veneto 1918', q: 'Vittorio Veneto' },
-      { label: 'Undicesima Isonzo', q: 'Isonzo 1917' }, { label: 'Albo d\'Oro Caduti', q: 'Albo d\'Oro' },
+      { label: 'Caduti Albo d\'Oro', q: 'Albo d\'Oro' }, { label: 'Decorati 1GM', q: 'Medaglia d\'Oro' },
     ].map(x => ({ label: x.label, onClick: () => this.goSearch(x.q) }));
 
     const qn = (st.query || '').trim().toLowerCase();
@@ -622,7 +573,6 @@ class Component extends DCLogic {
           tabGapsClass: st.dossierTab === 'gaps' ? 'btn btn-secondary' : 'btn btn-ghost',
           onTabOverview: () => this.setDossierTab('overview'), onTabPerspectives: () => this.setDossierTab('perspectives'),
           onTabSources: () => this.setDossierTab('sources'), onTabGaps: () => this.setDossierTab('gaps'),
-          externalSources: (st._externalSources || []), hasExternalSources: (st._externalSources || []).length > 0,
         };
       }
     }
@@ -632,7 +582,7 @@ class Component extends DCLogic {
       if (st.exploreId === 'providers') {
         explore = { isProviders: true, isTable: false, title: t('dbProviders'), providers: data.PROVIDERS };
       } else {
-        const tbl = data.EXPLORE_TABLES[st.exploreId] || data.EXPLORE_TABLES.internati;
+        const tbl = data.EXPLORE_TABLES[st.exploreId] || data.EXPLORE_TABLES.caduti;
         explore = { isProviders: false, isTable: true, title: t(tbl.labelKey), cols: tbl.cols, rows: tbl.rows, rowCount: tbl.rows.length };
       }
     }
@@ -648,7 +598,7 @@ class Component extends DCLogic {
     const adminCreditsRemaining = credits.remaining_usd != null ? `$${credits.remaining_usd.toFixed(2)}` : '—';
     const adminCreditsTotal    = credits.total_cost_usd  != null ? `$${credits.total_cost_usd.toFixed(2)}`  : '—';
     const adminCreditsToday    = credits.today_cost_usd  != null ? `$${credits.today_cost_usd.toFixed(2)}`  : '—';
-    const adminInternati = al.status ? (al.status.total_internati||0).toLocaleString('it-IT') : '—';
+    const adminCaduti    = al.status ? '—' : '—';
     const adminFonti     = al.srcStats ? (al.srcStats.total_sources||0).toLocaleString('it-IT') : '—';
     const adminRunning   = al.status ? (al.status.running || 'nessuna') : '—';
     const adminDecorati  = al.decorati ? (al.decorati.count||0).toLocaleString('it-IT') : '—';
@@ -665,12 +615,12 @@ class Component extends DCLogic {
       isHome: st.view === 'home', isSearch: st.view === 'search', isDossier: st.view === 'dossier',
       isExplore: st.view === 'explore', isEvents: st.view === 'events', isAdmin: st.view === 'admin',
       adminCreditsRemaining, adminCreditsTotal, adminCreditsToday,
-      adminInternati, adminFonti, adminRunning, adminDecorati,
+      adminCaduti, adminFonti, adminRunning, adminDecorati,
       onQueryInput: (e) => this.setState({ query: e.target.value }),
       onQueryKeyDown: (e) => { if (e.key === 'Enter') this.goSearch(); },
       onSearchSubmit: () => this.goSearch(),
       goHome: () => this.goHome(), goEvents: () => this.goEvents(), goAdmin: () => this.goAdmin(),
-      goExploreDefault: () => this.goExplore('internati'),
+      goExploreDefault: () => this.goExplore('caduti'),
       closeLightbox: () => this.closeLightbox(),
       stopProp: (e) => e.stopPropagation(),
     };

@@ -9,7 +9,8 @@ Usa solo sqlite3 nativo. Nessun DB esterno.
 """
 import sqlite3
 from typing import List, Dict, Optional, Any
-from database import get_conn, DB_PATH
+from database import get_conn, DB_PATH, get_fonti_risorse_by_fonte_id
+from scraper_service import scrape_if_stale
 
 
 # ─── Helper ───────────────────────────────────────────────────────────
@@ -374,14 +375,154 @@ def get_entity_full_context(entity_id: int) -> Dict:
 
         collegamenti = [_row_to_dict(r) for r in coll_rows]
 
+        # ─── Recupera fonti_risorse collegate all'entità ───────────────────
+        fonti_risorse = get_fonti_risorse_for_entity(entity_id, entity, collegamenti, conn)
+
         return {
             "entity": entity,
             "source_record": source_record,
             "source_table": source_table,
             "collegamenti": collegamenti,
+            "fonti_risorse": fonti_risorse,
         }
     finally:
         conn.close()
+
+
+# ─── 4. Fonti Risorse Esterne ─────────────────────────────────────────────────
+
+# Mapping tabelle sorgente -> tabella fonti con URL
+_TABLE_TO_FONTI_TABLE = {
+    "fondi_archivistici": "fondi_archivistici",
+    "fonti_narrative": "fonti_narrative",
+    "fonti_indice": "fonti_indice",
+    "caduti_albooro": "caduti_albooro",
+    "caduti_ministero": "caduti_ministero",
+    "caduti_sardi": "caduti_sardi",
+    "caduti_bologna": "caduti_bologna",
+    "caduti_cwgc": "caduti_cwgc",
+    "caduti_francia_ww1": "caduti_francia_ww1",
+    "decorati": "decorati",
+    "decorati_nastroazzurro": "decorati_nastroazzurro",
+    "menzioni": "menzioni",
+}
+
+
+def _get_fonte_record_with_url(conn, tabella_origine: str, record_id: int) -> Optional[dict]:
+    """Recupera un record sorgente che contiene un URL utilizzabile per scraping."""
+    if tabella_origine not in _TABLE_TO_FONTI_TABLE:
+        return None
+
+    # Campi URL comuni in varie tabelle
+    url_fields = [
+        "url", "url_catalogo", "url_file", "scheda_url", "detail_url",
+        "url_scheda", "link_scheda", "file_pdf",
+    ]
+
+    # Prova a leggere le colonne della tabella
+    try:
+        cols = [d[1] for d in conn.execute(f"PRAGMA table_info({tabella_origine})").fetchall()]
+        url_col = None
+        for f in url_fields:
+            if f in cols:
+                url_col = f
+                break
+        if not url_col:
+            return None
+
+        row = conn.execute(
+            f"SELECT id, {url_col} as url_base FROM {tabella_origine} WHERE id = ?",
+            (record_id,)
+        ).fetchone()
+        if row and row["url_base"]:
+            return {"id": row["id"], "url_base": row["url_base"], "tabella": tabella_origine}
+    except sqlite3.OperationalError:
+        pass
+    return None
+
+
+def get_fonti_risorse_for_entity(
+    entity_id: int,
+    entity: dict,
+    collegamenti: list,
+    conn: sqlite3.Connection
+) -> list:
+    """Recupera le risorse esterne (fonti_risorse) collegate a un'entità.
+
+    Logica:
+    1. Per ogni collegamento dell'entità, identifica la tabella sorgente e il record.
+    2. Se la tabella sorgente ha un URL, verifica se esistono già fonti_risorse.
+    3. Se non esistono o sono stale, triggera scraping in background.
+    4. Filtra le risorse per rilevanza (titolo/descrizione contenente il valore dell'entità).
+
+    Args:
+        entity_id: ID dell'entità
+        entity: dict dell'entità
+        collegamenti: lista dei collegamenti dell'entità
+        conn: connessione DB attiva
+
+    Returns:
+        Lista di dict con: id_risorsa, fonte_id, url_pagina, url_documento,
+        tipo_risorsa, titolo, ente_titolare, licenza, lingua, note_copyright
+    """
+    risorse_trovate = []
+    seen_ids = set()
+    entity_valore = (entity.get("valore") or "").lower()
+    entity_tipo = entity.get("tipo", "")
+
+    for coll in collegamenti:
+        tabella = coll.get("tabella_origine")
+        record_id = coll.get("record_id")
+        if not tabella or not record_id:
+            continue
+
+        # Recupera il record sorgente per ottenere l'URL
+        fonte_record = _get_fonte_record_with_url(conn, tabella, record_id)
+        if not fonte_record:
+            continue
+
+        fonte_id = fonte_record["id"]
+
+        # Cerca risorse esistenti per questo fonte_id
+        existing_risorse = get_fonti_risorse_by_fonte_id(fonte_id)
+
+        if not existing_risorse:
+            # Trigger scraping in background (non bloccante)
+            # Usa il record sorgente come fonte_record
+            try:
+                scrape_if_stale(fonte_record)
+                existing_risorse = get_fonti_risorse_by_fonte_id(fonte_id)
+            except Exception as e:
+                print(f"Scraper trigger error for fonte {fonte_id}: {e}")
+                continue
+
+        # Filtra per rilevanza: se l'entità è un luogo o evento,
+        # filtra per titolo/descrizione contenente il valore
+        for r in existing_risorse:
+            if r["id"] in seen_ids:
+                continue
+
+            if entity_tipo in ("luogo", "evento"):
+                titolo = (r.get("titolo") or "").lower()
+                descrizione = (r.get("descrizione") or "").lower()
+                if entity_valore and entity_valore not in titolo and entity_valore not in descrizione:
+                    continue
+
+            seen_ids.add(r["id"])
+            risorse_trovate.append({
+                "id_risorsa": r["id"],
+                "fonte_id": r.get("fonte_id"),
+                "url_pagina": r["url_pagina"],
+                "url_documento": r.get("url_documento"),
+                "tipo_risorsa": r.get("tipo_risorsa"),
+                "titolo": r.get("titolo"),
+                "ente_titolare": r.get("ente_titolare"),
+                "licenza": r.get("licenza"),
+                "lingua": r.get("lingua"),
+                "note_copyright": r.get("note_copyright"),
+            })
+
+    return risorse_trovate
 
 
 # ─── Utility: statistiche indice ──────────────────────────────────────

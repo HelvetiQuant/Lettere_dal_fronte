@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
+<script src="../support.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="_ds/broadsheet-a162d535-9669-4b7d-a5af-433de343f7f8/styles.css">
-<script src="_ds/broadsheet-a162d535-9669-4b7d-a5af-433de343f7f8/_ds_bundle.js"></script>
+<link rel="stylesheet" href="../_ds/broadsheet-a162d535-9669-4b7d-a5af-433de343f7f8/styles.css">
+<script src="../_ds/broadsheet-a162d535-9669-4b7d-a5af-433de343f7f8/_ds_bundle.js"></script>
 </helmet>
 
 <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}">
@@ -18,12 +18,6 @@
 
 <sc-if value="{{ appReady }}" hint-placeholder-val="{{ false }}">
 <div style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);display:flex;flex-direction:column">
-
-<!-- ═══ BANNER FULL-WIDTH ═══ -->
-<div style="width:100%;cursor:pointer;overflow:hidden;line-height:0" onClick="{{ goHome }}">
-  <img src="/static/header_banner.png" alt="Voci dal Fronte"
-    style="display:block;width:100%;aspect-ratio:5/1;object-fit:cover;object-position:center top;max-height:240px">
-</div>
 
 <!-- ═══ HEADER ═══ -->
 <div style="position:sticky;top:0;z-index:50;background:var(--color-bg);border-bottom:1px solid var(--color-divider)">
@@ -34,7 +28,6 @@
       <a onClick="{{ goHome }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer">{{ S.navHome }}</a>
       <a onClick="{{ goExploreDefault }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer">{{ S.navExplore }}</a>
       <a onClick="{{ goEvents }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer">{{ S.navEvents }}</a>
-      <a href="/1gm" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer;font-weight:600;color:var(--color-accent)">Prima Guerra Mondiale →</a>
     </nav>
     <div style="display:flex;gap:3px">
       <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="4">
@@ -177,6 +170,10 @@
       <button class="{{ dossier.tabOverviewClass }}" onClick="{{ dossier.onTabOverview }}">{{ S.tabOverview }}</button>
       <button class="{{ dossier.tabPerspectivesClass }}" onClick="{{ dossier.onTabPerspectives }}">{{ S.tabPerspectives }}</button>
       <button class="{{ dossier.tabSourcesClass }}" onClick="{{ dossier.onTabSources }}">{{ S.tabSources }}</button>
+      <sc-if value="{{ dossier.isEvent }}" hint-placeholder-val="{{ false }}">
+        <button class="{{ dossier.tabCadutiClass }}" onClick="{{ dossier.onTabCaduti }}">Caduti</button>
+        <button class="{{ dossier.tabDecoratiClass }}" onClick="{{ dossier.onTabDecorati }}">Decorati</button>
+      </sc-if>
       <sc-if value="{{ dossier.hasGaps }}" hint-placeholder-val="{{ false }}">
         <button class="{{ dossier.tabGapsClass }}" onClick="{{ dossier.onTabGaps }}">{{ S.tabGaps }}</button>
       </sc-if>
@@ -273,6 +270,8 @@
         </div>
       </sc-if>
     </sc-if>
+
+    <sc-if value="{{ dossier.tabGapsActive }}" hint-placeholder-val="{{ false }}">
       <h3 style="font-size:16px;margin-bottom:16px">{{ S.dossierGapsTitle }}</h3>
       <div style="display:grid;gap:8px;max-width:640px">
         <sc-for list="{{ dossier.gaps }}" as="g" hint-placeholder-count="2">
@@ -286,6 +285,87 @@
         </sc-for>
       </div>
     </sc-if>
+
+    <!-- ── Event-centric: stats summary on overview ── -->
+    <sc-if value="{{ dossier.isEvent }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ dossier.tabOverviewActive }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ dossier.eventStats }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px;max-width:760px">
+            <div style="padding:14px 16px;background:var(--color-surface);border-radius:var(--radius-md);text-align:center">
+              <div style="font-size:24px;font-weight:700;color:var(--color-accent-700)">{{ dossier.eventStats.caduti }}</div>
+              <div style="font-size:11px;opacity:0.6;margin-top:2px">Caduti collegati</div>
+            </div>
+            <div style="padding:14px 16px;background:var(--color-surface);border-radius:var(--radius-md);text-align:center">
+              <div style="font-size:24px;font-weight:700;color:var(--color-accent-700)">{{ dossier.eventStats.decorati }}</div>
+              <div style="font-size:11px;opacity:0.6;margin-top:2px">Decorati collegati</div>
+            </div>
+            <div style="padding:14px 16px;background:var(--color-surface);border-radius:var(--radius-md);text-align:center">
+              <div style="font-size:24px;font-weight:700;color:var(--color-accent-700)">{{ dossier.eventStats.fonti }}</div>
+              <div style="font-size:11px;opacity:0.6;margin-top:2px">Fonti archivistiche</div>
+            </div>
+            <div style="padding:14px 16px;background:var(--color-surface);border-radius:var(--radius-md);text-align:center">
+              <div style="font-size:24px;font-weight:700;color:var(--color-accent-700)">{{ dossier.eventStats.documenti }}</div>
+              <div style="font-size:11px;opacity:0.6;margin-top:2px">Documenti</div>
+            </div>
+            <sc-if value="{{ dossier.eventStats.internati }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:14px 16px;background:var(--color-surface);border-radius:var(--radius-md);text-align:center">
+                <div style="font-size:24px;font-weight:700;color:var(--color-accent-700)">{{ dossier.eventStats.internati }}</div>
+                <div style="font-size:11px;opacity:0.6;margin-top:2px">Internati WW2</div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ dossier.eventDescrizione }}" hint-placeholder-val="{{ false }}">
+          <p style="font-size:14px;line-height:1.6;max-width:640px;margin-top:18px;opacity:0.85">{{ dossier.eventDescrizione }}</p>
+        </sc-if>
+      </sc-if>
+    </sc-if>
+
+    <!-- ── Event-centric: Caduti table ── -->
+    <sc-if value="{{ dossier.tabCadutiActive }}" hint-placeholder-val="{{ false }}">
+      <h3 style="font-size:16px;margin-bottom:4px">Caduti collegati all'evento</h3>
+      <p style="font-size:12px;opacity:0.6;margin:0 0 16px">{{ dossier.eventCadutiTotal }} record totali — primi 50 mostrati</p>
+      <div style="overflow-x:auto;max-width:100%">
+        <table class="table">
+          <thead><tr><th>Nominativo</th><th>Grado</th><th>Reparto</th><th>Luogo morte</th><th>Anno</th><th>Fonte</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ dossier.eventCaduti }}" as="c" hint-placeholder-count="5">
+              <tr>
+                <td>{{ c.nominativo }}</td>
+                <td>{{ c.grado }}</td>
+                <td>{{ c.reparto }}</td>
+                <td>{{ c.luogo_morte }}</td>
+                <td>{{ c.anno_morte }}</td>
+                <td><a href="{{ c.detail_url }}" target="_blank" rel="noopener" style="font-size:12px;color:var(--color-accent)">Albo d'Oro ↗</a></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
+    <!-- ── Event-centric: Decorati table ── -->
+    <sc-if value="{{ dossier.tabDecoratiActive }}" hint-placeholder-val="{{ false }}">
+      <h3 style="font-size:16px;margin-bottom:4px">Decorati collegati all'evento</h3>
+      <p style="font-size:12px;opacity:0.6;margin:0 0 16px">{{ dossier.eventDecoratiTotal }} record totali — primi 50 mostrati</p>
+      <div style="overflow-x:auto;max-width:100%">
+        <table class="table">
+          <thead><tr><th>Cognome</th><th>Nome</th><th>Arma</th><th>Anno</th><th>Decorazione</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ dossier.eventDecorati }}" as="d" hint-placeholder-count="5">
+              <tr>
+                <td>{{ d.cognome }}</td>
+                <td>{{ d.nome }}</td>
+                <td>{{ d.arma }}</td>
+                <td>{{ d.anno_decorazione }}</td>
+                <td>{{ d.tipo_decorazione }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+
   </section>
 </sc-if>
 </sc-if>
@@ -423,12 +503,12 @@ class Component extends DCLogic {
     loaded: false, strings: null, data: null,
     lang: 'it', view: 'home', query: '',
     activeKind: null, activeId: null, dossierTab: 'overview',
-    exploreId: 'internati', lightbox: null,
+    exploreId: 'caduti', lightbox: null,
     searching: false, adminLive: null,
   };
 
   componentDidMount() {
-    import('./voci-data.js').then(async m => {
+    import('./voci-data-1gm.js').then(async m => {
       // 1. Carica UI subito con dati statici di default
       this.setState({
         strings: m.STRINGS,
@@ -443,6 +523,20 @@ class Component extends DCLogic {
           data: { ...st.data, DB_STATS: liveStats },
         }));
       } catch(e) { console.warn('live stats error', e); }
+      // 2b. Carica eventi canonici 1GM+WW2 dal backend
+      try {
+        const eventi = await m.loadEvents1gm();
+        this.setState(st => ({
+          data: { ...st.data, EVENTS: eventi },
+        }));
+      } catch(e) { console.warn('load events 1gm error', e); }
+      // 3. Carica tabelle esplorabili dal backend
+      try {
+        const exploreTables = await m.loadExploreTables();
+        this.setState(st => ({
+          data: { ...st.data, EXPLORE_TABLES: exploreTables },
+        }));
+      } catch(e) { console.warn('explore tables error', e); }
     });
   }
 
@@ -466,7 +560,7 @@ class Component extends DCLogic {
       m.loadLiveCredits().then(credits => this.setState(st => ({ adminLive: { ...st.adminLive, credits } }))).catch(() => {});
     }
   }
-  goExplore(id) { this.setState({ view: 'explore', exploreId: id || 'internati', lightbox: null }); }
+  goExplore(id) { this.setState({ view: 'explore', exploreId: id || 'caduti', lightbox: null }); }
   goSearch(q) {
     const query = q !== undefined ? q : this.state.query;
     this.setState({ view: 'search', query, lightbox: null, searching: true });
@@ -483,21 +577,16 @@ class Component extends DCLogic {
     }
   }
   openDossier(kind, id) {
-    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null, _externalSources: [] });
-    // Se è un soldato IMI live, carica fonti e timeline dal backend
+    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null, _externalSources: [], _eventDossier: null });
     const m = this.state._mod;
-    if (kind === 'subject' && id && id.startsWith('imi_') && m && m.loadSoldierDossier) {
-      const soldierId = parseInt(id.replace('imi_', ''), 10);
-      m.loadSoldierDossier(soldierId).then(({ timeline, sources, perspectives, _cognome, _nome }) => {
-        this.setState(st => {
-          const subj = st.data.SUBJECTS[id];
-          if (!subj) return {};
-          const updated = { ...subj, timeline, sources, perspectives, _cognome, _nome };
-          return { data: { ...st.data, SUBJECTS: { ...st.data.SUBJECTS, [id]: updated } } };
-        });
+    if (kind === 'event' && m && m.loadEventDossier) {
+      const evData = (this.state.data.EVENTS || {})[id];
+      const eventName = evData ? evData.name : id;
+      m.loadEventDossier(eventName).then(dossier => {
+        this.setState({ _eventDossier: dossier });
       }).catch(() => {});
     }
-    // Carica fonti_risorse esterne collegate all'entità
+    // Carica fonti_risorse esterne collegate
     this.loadExternalSources(kind, id);
   }
   async loadExternalSources(kind, id) {
@@ -565,7 +654,7 @@ class Component extends DCLogic {
     const examples = [
       { label: 'Francesco Baracca', q: 'Baracca' }, { label: 'Enrico Toti', q: 'Toti' },
       { label: 'Battaglia di Caporetto', q: 'Caporetto' }, { label: 'Vittorio Veneto 1918', q: 'Vittorio Veneto' },
-      { label: 'Undicesima Isonzo', q: 'Isonzo 1917' }, { label: 'Albo d\'Oro Caduti', q: 'Albo d\'Oro' },
+      { label: 'Caduti Albo d\'Oro', q: 'Albo d\'Oro' }, { label: 'Decorati 1GM', q: 'Medaglia d\'Oro' },
     ].map(x => ({ label: x.label, onClick: () => this.goSearch(x.q) }));
 
     const qn = (st.query || '').trim().toLowerCase();
@@ -623,6 +712,23 @@ class Component extends DCLogic {
           onTabOverview: () => this.setDossierTab('overview'), onTabPerspectives: () => this.setDossierTab('perspectives'),
           onTabSources: () => this.setDossierTab('sources'), onTabGaps: () => this.setDossierTab('gaps'),
           externalSources: (st._externalSources || []), hasExternalSources: (st._externalSources || []).length > 0,
+          // Event-centric data
+          isEvent: st.activeKind === 'event',
+          eventStats: src._stats || null,
+          eventDescrizione: src._descrizione || '',
+          tabCadutiActive: st.dossierTab === 'caduti',
+          tabDecoratiActive: st.dossierTab === 'decorati',
+          tabCadutiClass: st.dossierTab === 'caduti' ? 'btn btn-secondary' : 'btn btn-ghost',
+          tabDecoratiClass: st.dossierTab === 'decorati' ? 'btn btn-secondary' : 'btn btn-ghost',
+          onTabCaduti: () => this.setDossierTab('caduti'),
+          onTabDecorati: () => this.setDossierTab('decorati'),
+          eventCaduti: (st._eventDossier && st._eventDossier.caduti) || [],
+          eventCadutiTotal: (st._eventDossier && st._eventDossier.caduti_total) || 0,
+          eventDecorati: (st._eventDossier && st._eventDossier.decorati) || [],
+          eventDecoratiTotal: (st._eventDossier && st._eventDossier.decorati_total) || 0,
+          eventDocumenti: (st._eventDossier && st._eventDossier.documenti) || [],
+          eventFonti: (st._eventDossier && st._eventDossier.fonti) || [],
+          eventInternati: (st._eventDossier && st._eventDossier.internati) || [],
         };
       }
     }
@@ -632,7 +738,7 @@ class Component extends DCLogic {
       if (st.exploreId === 'providers') {
         explore = { isProviders: true, isTable: false, title: t('dbProviders'), providers: data.PROVIDERS };
       } else {
-        const tbl = data.EXPLORE_TABLES[st.exploreId] || data.EXPLORE_TABLES.internati;
+        const tbl = data.EXPLORE_TABLES[st.exploreId] || data.EXPLORE_TABLES.caduti;
         explore = { isProviders: false, isTable: true, title: t(tbl.labelKey), cols: tbl.cols, rows: tbl.rows, rowCount: tbl.rows.length };
       }
     }
@@ -648,7 +754,7 @@ class Component extends DCLogic {
     const adminCreditsRemaining = credits.remaining_usd != null ? `$${credits.remaining_usd.toFixed(2)}` : '—';
     const adminCreditsTotal    = credits.total_cost_usd  != null ? `$${credits.total_cost_usd.toFixed(2)}`  : '—';
     const adminCreditsToday    = credits.today_cost_usd  != null ? `$${credits.today_cost_usd.toFixed(2)}`  : '—';
-    const adminInternati = al.status ? (al.status.total_internati||0).toLocaleString('it-IT') : '—';
+    const adminCaduti    = al.status ? '—' : '—';
     const adminFonti     = al.srcStats ? (al.srcStats.total_sources||0).toLocaleString('it-IT') : '—';
     const adminRunning   = al.status ? (al.status.running || 'nessuna') : '—';
     const adminDecorati  = al.decorati ? (al.decorati.count||0).toLocaleString('it-IT') : '—';
@@ -665,12 +771,12 @@ class Component extends DCLogic {
       isHome: st.view === 'home', isSearch: st.view === 'search', isDossier: st.view === 'dossier',
       isExplore: st.view === 'explore', isEvents: st.view === 'events', isAdmin: st.view === 'admin',
       adminCreditsRemaining, adminCreditsTotal, adminCreditsToday,
-      adminInternati, adminFonti, adminRunning, adminDecorati,
+      adminCaduti, adminFonti, adminRunning, adminDecorati,
       onQueryInput: (e) => this.setState({ query: e.target.value }),
       onQueryKeyDown: (e) => { if (e.key === 'Enter') this.goSearch(); },
       onSearchSubmit: () => this.goSearch(),
       goHome: () => this.goHome(), goEvents: () => this.goEvents(), goAdmin: () => this.goAdmin(),
-      goExploreDefault: () => this.goExplore('internati'),
+      goExploreDefault: () => this.goExplore('caduti'),
       closeLightbox: () => this.closeLightbox(),
       stopProp: (e) => e.stopPropagation(),
     };

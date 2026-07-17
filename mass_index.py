@@ -41,7 +41,7 @@ log = logging.getLogger("mass_index")
 
 MAX_WORKERS    = 4     # thread paralleli verso provider esterni
 BATCH_SLEEP    = 0.3   # secondi tra batch per rispettare rate limit
-MIN_SCORE      = 0.45  # scarta risultati con score troppo basso
+MIN_SCORE      = 0.25  # scarta risultati con score troppo basso
 MAX_PER_QUERY  = 15    # risultati massimi da salvare per query
 
 
@@ -542,6 +542,360 @@ def pipeline_luoghi():
     return total_saved
 
 
+# ─── Pipeline 1GM — SOLDATI ALBO D'ORO ──────────────────────────────────────────
+
+def pipeline_soldati_1gm(limit: int = None, offset: int = 0):
+    """Cerca fonti per caduti e decorati della Prima Guerra Mondiale.
+
+    Sorgenti: caduti_albooro, caduti_ministero, caduti_sardi, caduti_bologna,
+              decorati_nastroazzurro, decorati (ISTORECO 1GM).
+    Provider: cwgc, europeana, internet_archive, gallica, hathitrust,
+              ussme, memoire_des_hommes, antenati, wikitree, iwm_lives.
+    """
+    log.info("=== PIPELINE SOLDATI 1GM (offset=%d, limit=%s) ===", offset, limit)
+    conn = get_conn()
+    conn.row_factory = lambda c, r: dict(zip([col[0] for col in c.description], r))
+
+    # Caduti Albo d'Oro (cognome + nome)
+    q_ao = "SELECT id, nominativo, grado, reparto, luogo_morte FROM caduti_albooro WHERE nominativo IS NOT NULL AND nominativo != '' ORDER BY id"
+    if limit:
+        q_ao += f" LIMIT {limit} OFFSET {offset}"
+    rows_ao = conn.execute(q_ao).fetchall()
+
+    # Decorati Nastro Azzurro
+    q_na = "SELECT id, cognome, nome FROM decorati_nastroazzurro WHERE cognome IS NOT NULL AND cognome != '' ORDER BY id"
+    if limit:
+        q_na += f" LIMIT {limit} OFFSET {offset}"
+    rows_na = conn.execute(q_na).fetchall()
+
+    conn.close()
+    log.info("Soldati 1GM: Albo d'Oro=%d, Nastro Azzurro=%d", len(rows_ao), len(rows_na))
+
+    SOLDATI_1GM_PROVIDERS = [
+        "cwgc", "europeana", "internetarchive", "gallica",
+        "hathitrust", "ussme", "memoiredeshommes",
+        "antenati", "wikitree", "iwm_lives",
+    ]
+
+    total_saved = 0
+    done = 0
+
+    def process_albooro(row):
+        nom = (row["nominativo"] or "").strip()
+        # nominativo è "COGNOME NOME" o solo "COGNOME"
+        parts = nom.split(None, 1)
+        cognome = parts[0] if parts else nom
+        nome = parts[1] if len(parts) > 1 else ""
+        query = f"{cognome} {nome}".strip()
+        if len(query) < 3:
+            return 0
+        cues = {"persona": query, "cognome": cognome, "nome": nome,
+                "nazione": "Italia", "periodo": "1915-1918"}
+        return index_query(query, cues, "caduti_albooro", row["id"], SOLDATI_1GM_PROVIDERS)
+
+    def process_nastroazzurro(row):
+        cognome = (row["cognome"] or "").strip().upper()
+        nome = (row["nome"] or "").strip()
+        query = f"{cognome} {nome}".strip()
+        if len(query) < 3:
+            return 0
+        cues = {"persona": query, "cognome": cognome, "nome": nome,
+                "nazione": "Italia", "periodo": "1915-1918"}
+        return index_query(query, cues, "decorati_nastroazzurro", row["id"], SOLDATI_1GM_PROVIDERS)
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        futures = {}
+        for row in rows_ao:
+            futures[ex.submit(process_albooro, row)] = ("albooro", row)
+        for row in rows_na:
+            futures[ex.submit(process_nastroazzurro, row)] = ("nastroazzurro", row)
+        for fut in as_completed(futures):
+            done += 1
+            try:
+                total_saved += fut.result()
+            except Exception as e:
+                log.warning("Errore soldato 1GM: %s", e)
+            if done % 100 == 0:
+                log.info("Soldati 1GM: %d/%d — fonti: %d", done, len(rows_ao)+len(rows_na), total_saved)
+                time.sleep(BATCH_SLEEP)
+
+    log.info("SOLDATI 1GM completato: %d soldati, %d fonti", done, total_saved)
+    return total_saved
+
+
+# ─── Pipeline 1GM — EVENTI ─────────────────────────────────────────────────────
+
+def pipeline_eventi_1gm():
+    """Cerca fonti per eventi della Prima Guerra Mondiale.
+
+    Eventi: battaglie del fronte italo-austriaco, offensive, capitolazioni.
+    Include giornali d'epoca (Europeana Press, IA Newspapers, Gallica/BnF).
+    """
+    log.info("=== PIPELINE EVENTI 1GM ===")
+
+    EVENTI_1GM_FISSI = [
+        "Battaglia di Caporetto 1917",
+        "Battaglia di Vittorio Veneto 1918",
+        "Undicesima battaglia dell'Isonzo 1917",
+        "Battaglia di Ortigara 1917",
+        "Battaglia del Piave 1918",
+        "Battaglia del Monte Grappa 1918",
+        "Battaglia di Asiago 1916",
+        "Battaglia del Carso 1915 1916",
+        "Stragi di Caporetto ritirata 1917",
+        "Prima battaglia dell'Isonzo 1915",
+        "Seconda battaglia dell'Isonzo 1915",
+        "Terza battaglia dell'Isonzo 1915",
+        "Quarta battaglia dell'Isonzo 1915",
+        "Quinta battaglia dell'Isonzo 1916",
+        "Sesta battaglia dell'Isonzo 1916",
+        "Settima battaglia dell'Isonzo 1916",
+        "Ottava battaglia dell'Isonzo 1916",
+        "Nona battaglia dell'Isonzo 1916",
+        "Decima battaglia dell'Isonzo 1917",
+        "Battaglia di Gorizia 1916",
+        "Spedizione di Fiume D'Annunzio 1919",
+        "Armistizio di Villa Giusti 1918",
+        "Battaglia di Galicia italiani 1914",
+        "Fronte macedone italiani 1916 1918",
+        "Battaglia del Solstizio 1918",
+    ]
+
+    # Eventi dal DB entita (tipo='evento') che sembrano 1GM
+    conn = get_conn()
+    conn.row_factory = lambda c, r: dict(zip([col[0] for col in c.description], r))
+    db_eventi = conn.execute(
+        "SELECT id, valore FROM entita WHERE tipo='evento' "
+        "AND (valore LIKE '%isonzo%' OR valore LIKE '%caporetto%' OR "
+        "     valore LIKE '%piave%' OR valore LIKE '%grappa%' OR "
+        "     valore LIKE '%carso%' OR valore LIKE '%ortigara%' OR "
+        "     valore LIKE '%asiago%' OR valore LIKE '%gorizia%' OR "
+        "     valore LIKE '%vittorio veneto%' OR valore LIKE '%1915%' OR "
+        "     valore LIKE '%1916%' OR valore LIKE '%1917%' OR valore LIKE '%1918%') "
+        "ORDER BY id LIMIT 500"
+    ).fetchall()
+    conn.close()
+    log.info("Eventi 1GM: DB=%d + %d fissi = %d totali",
+             len(db_eventi), len(EVENTI_1GM_FISSI), len(db_eventi) + len(EVENTI_1GM_FISSI))
+
+    EVENTI_1GM_PROVIDERS = [
+        "europeana", "internetarchive", "gallica", "hathitrust",
+        "googlebooks", "cwgc", "memoiredeshommes", "iwm_lives",
+        "wikitree", "internetculturale",
+    ]
+
+    total_saved = 0
+    done = 0
+    all_queries = [(e, None) for e in EVENTI_1GM_FISSI] + \
+                  [(r["valore"], r["id"]) for r in db_eventi]
+
+    def process(item):
+        valore, eid = item
+        if len((valore or "").strip()) < 5:
+            return 0
+        cues = {"evento": valore, "periodo": "1914-1918", "nazione": "Italia",
+                "tipo": "articolo giornale documento storico"}
+        saved = index_query(valore, cues, "entita", eid or 0, EVENTI_1GM_PROVIDERS)
+        # Cerca anche in inglese per archivi angloamericani
+        query_en = valore.replace("Battaglia di", "Battle of") \
+                         .replace("Battaglia del", "Battle of") \
+                         .replace("Battaglia", "Battle") \
+                         .replace("Armistizio", "Armistice")
+        if query_en != valore:
+            saved += index_query(query_en, cues, "entita", eid or 0,
+                                 ["cwgc", "iwm_lives", "europeana", "internetarchive"])
+        return saved
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        futures = {ex.submit(process, item): item for item in all_queries}
+        for fut in as_completed(futures):
+            done += 1
+            try:
+                total_saved += fut.result()
+            except Exception as e:
+                log.warning("Errore evento 1GM: %s", e)
+            if done % 20 == 0:
+                log.info("Eventi 1GM: %d/%d — fonti: %d", done, len(all_queries), total_saved)
+                time.sleep(BATCH_SLEEP)
+
+    log.info("EVENTI 1GM completato: %d query, %d fonti", done, total_saved)
+    return total_saved
+
+
+# ─── Pipeline 1GM — LUOGHI ─────────────────────────────────────────────────────
+
+def pipeline_luoghi_1gm():
+    """Cerca fonti per luoghi della Prima Guerra Mondiale.
+
+    Target: campi di battaglia, trincee, fortificazioni del fronte italo-austriaco.
+    Provider: europeana, internet_archive, gallica, cwgc, iwm_lives.
+    """
+    log.info("=== PIPELINE LUOGHI 1GM ===")
+
+    LUOGHI_1GM_FISSI = [
+        "Caporetto Kobarid fronte italiano 1917",
+        "Piave fiume fronte 1917 1918",
+        "Monte Grappa fortificazioni 1917 1918",
+        "Monte Ortigara battaglia 1917",
+        "Asiago altopiano battaglie 1916 1918",
+        "Carso Isonzo fronte 1915 1917",
+        "Gorizia isonzo battaglia 1916",
+        "Vittorio Veneto offensiva finale 1918",
+        "Tolmino fronte isonzo 1915 1917",
+        "Sabotino monte isonzo 1916",
+        "San Michele monte carso 1916",
+        "Podgora monte gorizia 1916",
+        "Marmolada ghiacciaio guerra 1916 1918",
+        "Pasubio monte strategico 1916 1918",
+        "Cima Undici altopiano asiago 1917",
+        "Val d'Assa altopiano vicentino 1916",
+        "Trento irredentismo 1915 1918",
+        "Trieste irredentismo 1915 1918",
+        "Fiume D'Annunzio impresa 1919",
+        "Salonico fronte macedone 1916 1918",
+    ]
+
+    conn = get_conn()
+    conn.row_factory = lambda c, r: dict(zip([col[0] for col in c.description], r))
+    db_luoghi = conn.execute(
+        "SELECT id, valore FROM entita WHERE tipo='luogo' "
+        "AND (valore LIKE '%isonzo%' OR valore LIKE '%caporetto%' OR "
+        "     valore LIKE '%piave%' OR valore LIKE '%grappa%' OR "
+        "     valore LIKE '%carso%' OR valore LIKE '%gorizia%' OR "
+        "     valore LIKE '%asiago%' OR valore LIKE '%trento%' OR "
+        "     valore LIKE '%trieste%' OR valore LIKE '%fiume%') "
+        "ORDER BY id LIMIT 300"
+    ).fetchall()
+    conn.close()
+
+    LUOGHI_1GM_PROVIDERS = [
+        "europeana", "internetarchive", "gallica", "hathitrust",
+        "cwgc", "iwm_lives", "internetculturale",
+    ]
+
+    total_saved = 0
+    done = 0
+    all_queries = [(l, None) for l in LUOGHI_1GM_FISSI] + \
+                  [(r["valore"], r["id"]) for r in db_luoghi]
+
+    def process(item):
+        valore, lid = item
+        if len((valore or "").strip()) < 4:
+            return 0
+        cues = {"luogo": valore, "periodo": "1915-1918", "tipo": "campo battaglia trincea fortezza"}
+        return index_query(valore, cues, "entita", lid or 0, LUOGHI_1GM_PROVIDERS)
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        futures = {ex.submit(process, item): item for item in all_queries}
+        for fut in as_completed(futures):
+            done += 1
+            try:
+                total_saved += fut.result()
+            except Exception as e:
+                log.warning("Errore luogo 1GM: %s", e)
+            if done % 20 == 0:
+                log.info("Luoghi 1GM: %d/%d — fonti: %d", done, len(all_queries), total_saved)
+                time.sleep(BATCH_SLEEP)
+
+    log.info("LUOGHI 1GM completato: %d query, %d fonti", done, total_saved)
+    return total_saved
+
+
+# ─── Pipeline DOCUMENTI 1GM (foto + diari) ─────────────────────────────────────
+
+def pipeline_documenti_1gm():
+    """Archivia metadati + deep link di foto/diari WWI da collezioni aperte.
+
+    Usa archivio_documenti.py per:
+    1. Seed delle 18 collezioni curate (livello collezione)
+    2. Fetch item-level da Internet Archive, Library of Congress, Wikimedia Commons
+    3. Fetch Europeana se VDF_EUROPEANA_KEY è impostata
+
+    Nessun file binario scaricato: solo metadati + link diretto alla fonte.
+    """
+    import os
+    from archivio_documenti import (
+        create_schema as _ad_create_schema,
+        seed_sources as _ad_seed,
+        upsert_documenti as _ad_upsert,
+        fetch_internet_archive as _ad_fetch_ia,
+        fetch_loc as _ad_fetch_loc,
+        fetch_wikimedia_commons as _ad_fetch_wc,
+        fetch_europeana as _ad_fetch_eu,
+    )
+
+    log.info("=== PIPELINE DOCUMENTI 1GM ===")
+    conn = get_conn()
+    try:
+        _ad_create_schema(conn)
+
+        # 1. Seed collezioni
+        n_seed = _ad_seed()
+        log.info("Documenti 1GM: seed %d collezioni-fonte", n_seed)
+
+        # 2. Internet Archive — diari WWI
+        try:
+            ia_rows = _ad_fetch_ia(rows=200)
+            n_ia = _ad_upsert(conn, ia_rows)
+            log.info("Documenti 1GM: Internet Archive +%d diari", n_ia)
+        except Exception as e:
+            log.warning("Documenti 1GM: Internet Archive saltato: %s", e)
+            n_ia = 0
+
+        # 3. Library of Congress — foto WWI
+        try:
+            loc_rows = _ad_fetch_loc(rows=200)
+            n_loc = _ad_upsert(conn, loc_rows)
+            log.info("Documenti 1GM: Library of Congress +%d foto", n_loc)
+        except Exception as e:
+            log.warning("Documenti 1GM: Library of Congress saltato: %s", e)
+            n_loc = 0
+
+        # 4. Wikimedia Commons — foto WWI
+        try:
+            wc_rows = _ad_fetch_wc(rows=200)
+            n_wc = _ad_upsert(conn, wc_rows)
+            log.info("Documenti 1GM: Wikimedia Commons +%d foto", n_wc)
+        except Exception as e:
+            log.warning("Documenti 1GM: Wikimedia Commons saltato: %s", e)
+            n_wc = 0
+
+        # 5. Europeana (richiede API key)
+        key = os.environ.get("VDF_EUROPEANA_KEY")
+        n_eu = 0
+        if key:
+            try:
+                eu_rows = _ad_fetch_eu("prima guerra mondiale OR first world war", key, rows=200)
+                n_eu = _ad_upsert(conn, eu_rows)
+                log.info("Documenti 1GM: Europeana +%d oggetti", n_eu)
+            except Exception as e:
+                log.warning("Documenti 1GM: Europeana saltato: %s", e)
+        else:
+            log.info("Documenti 1GM: Europeana saltato (impostare VDF_EUROPEANA_KEY)")
+
+        total = n_seed + n_ia + n_loc + n_wc + n_eu
+        log.info("DOCUMENTI 1GM completato: %d record totali", total)
+
+        # Stats per tipo
+        by_type = conn.execute(
+            "SELECT doc_type, COUNT(*) as n FROM archivio_documenti GROUP BY doc_type ORDER BY n DESC"
+        ).fetchall()
+        log.info("  Per tipo:")
+        for r in by_type:
+            log.info("    %-15s %d", r[0], r[1])
+
+        by_provider = conn.execute(
+            "SELECT provider, COUNT(*) as n FROM archivio_documenti GROUP BY provider ORDER BY n DESC"
+        ).fetchall()
+        log.info("  Per provider:")
+        for r in by_provider:
+            log.info("    %-30s %d", r[0], r[1])
+
+    finally:
+        conn.close()
+    return total
+
+
 # ─── Report summary ────────────────────────────────────────────────────────────
 
 def print_stats():
@@ -566,7 +920,9 @@ def print_stats():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Pipeline indicizzazione massiva archivi")
-    parser.add_argument("mode", choices=["soldati","reparti","eventi","luoghi","all","stats"],
+    parser.add_argument("mode", choices=["soldati","reparti","eventi","luoghi","all","stats",
+                                           "soldati_1gm","eventi_1gm","luoghi_1gm","all_1gm",
+                                           "documenti_1gm"],
                         help="Pipeline da eseguire")
     parser.add_argument("--limit",  type=int, default=None, help="Max soldati (default: tutti)")
     parser.add_argument("--offset", type=int, default=0,    help="Offset soldati")
@@ -583,6 +939,14 @@ if __name__ == "__main__":
         pipeline_eventi()
     if args.mode in ("luoghi", "all"):
         pipeline_luoghi()
+    if args.mode in ("soldati_1gm", "all_1gm"):
+        pipeline_soldati_1gm(limit=args.limit, offset=args.offset)
+    if args.mode in ("eventi_1gm", "all_1gm"):
+        pipeline_eventi_1gm()
+    if args.mode in ("luoghi_1gm", "all_1gm"):
+        pipeline_luoghi_1gm()
+    if args.mode == "documenti_1gm":
+        pipeline_documenti_1gm()
     if args.mode == "stats":
         print_stats()
 
