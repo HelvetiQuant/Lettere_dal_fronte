@@ -3,6 +3,7 @@ import threading
 import json
 import shutil
 import sqlite3
+from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 
@@ -48,6 +49,7 @@ from source_providers.federation import (
     list_providers, get_provider, federated_search,
     fetch_source as fed_fetch_source, get_federation_stats,
 )
+import search_validator
 from mass_index import (
     MIN_SCORE as MI_MIN_SCORE,
     _is_search_page_url,
@@ -64,7 +66,28 @@ from file_importer import (
 from geocoder import validate_place, validate_record_locations
 from credits import get_usage_summary, init_usage_table
 
-app = FastAPI(title="IMI Extractor - Internati Militari Italiani", version="1.0.0")
+from fastapi.middleware.cors import CORSMiddleware
+
+@asynccontextmanager
+async def lifespan(_app):
+    init_db()
+    init_usage_table()
+    rti._init_tables()
+    yield
+
+
+app = FastAPI(
+    title="IMI Extractor - Internati Militari Italiani",
+    version="1.0.0",
+    lifespan=lifespan,
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 _TEMPLATES = Path(__file__).parent / "templates"
 app.mount("/static", StaticFiles(directory=str(_TEMPLATES)), name="static")
@@ -86,13 +109,6 @@ _sardi_lock = threading.Lock()
 _nara_lock = threading.Lock()
 
 
-@app.on_event("startup")
-def startup():
-    init_db()
-    init_usage_table()
-    rti._init_tables()
-
-
 @app.get("/", response_class=FileResponse)
 def index():
     return FileResponse(str(_TEMPLATES / "index.html"), media_type="text/html")
@@ -106,16 +122,6 @@ def static_support():
 @app.get("/voci-data.js")
 def static_voci_data():
     return FileResponse(str(_TEMPLATES / "voci-data.js"), media_type="application/javascript")
-
-
-@app.get("/1gm", response_class=FileResponse)
-def index_1gm():
-    return FileResponse(str(_TEMPLATES / "PRIMA_Guerra" / "index.html"), media_type="text/html")
-
-
-@app.get("/voci-data-1gm.js")
-def static_voci_data_1gm():
-    return FileResponse(str(_TEMPLATES / "PRIMA_Guerra" / "voci-data-1gm.js"), media_type="application/javascript")
 
 
 @app.get("/api/search/ww1")
@@ -344,7 +350,9 @@ def api_fondi_delete(file_pdf: str):
 def api_search(q: str, limit: int = 100):
     if not q or len(q.strip()) < 2:
         raise HTTPException(status_code=400, detail="Termine di ricerca troppo corto")
-    return search_all(q.strip(), limit=limit)
+    result = search_all(q.strip(), limit=limit)
+    result["events"] = events.search_events(q.strip(), limit=max(10, limit // 7))
+    return result
 
 
 @app.get("/api/conv-search")
@@ -360,6 +368,33 @@ def api_conv_search(q: str, limit: int = 20, scope: str = None):
         return {"soldiers": caduti, "results": caduti}
     soldiers = data.get("internati", [])
     return {"soldiers": soldiers, "results": soldiers, **data}
+
+
+@app.get("/api/search-validated")
+def api_search_validated(q: str, limit: int = 100, external: bool = True):
+    """Ricerca con pipeline di validazione: DB locale + fonti esterne.
+    Se rileva discrepanze (province errate, omonimie, OCR), restituisce
+    status='needs_confirmation' con opzioni da confermare.
+    """
+    if not q or len(q.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Termine di ricerca troppo corto")
+    local = search_all(q.strip(), limit=limit)
+    local["events"] = events.search_events(q.strip(), limit=max(10, limit // 7))
+    validated = search_validator.validate_search(q.strip(), local, external_enabled=external)
+    return validated
+
+
+@app.post("/api/search/confirm")
+def api_search_confirm(confirmation: dict = Body(...)):
+    """Applica una correzione confermata dall'utente al database.
+    Body: {type, record_id, record_table, corrected, ...}
+    """
+    if not confirmation or "type" not in confirmation:
+        raise HTTPException(status_code=400, detail="Confirmation payload non valido")
+    result = search_validator.apply_confirmation(confirmation)
+    if not result.get("ok"):
+        raise HTTPException(status_code=400, detail=result.get("error", "Errore applicazione conferma"))
+    return result
 
 
 # ─── Decorati (Albi della Memoria - ISTORECO) ───
@@ -1483,6 +1518,133 @@ def api_generate_biography(data: dict = Body(...)):
     return result
 
 
+@app.post("/api/event/report")
+def api_generate_event_report(data: dict = Body(...)):
+    """Genera un report oggettivo sull'evento che analizza tutte le fonti
+    verificate ed estrae solo i fatti comuni a tutte le fonti."""
+    event_name = (data.get("event_name") or "").strip()
+    if not event_name:
+        raise HTTPException(status_code=400, detail="event_name richiesto")
+    provider = data.get("provider") or "mistral"
+    result = biography.generate_event_report(event_name, provider=provider)
+    if result.get("error") and "risposta" not in result:
+        raise HTTPException(status_code=502, detail=result["error"])
+    return result
+
+
+@app.post("/api/event/report/chronological")
+def api_generate_chronological_report(data: dict = Body(...)):
+    """Genera un report cronologico narrativo dell'evento."""
+    event_name = (data.get("event_name") or "").strip()
+    if not event_name:
+        raise HTTPException(status_code=400, detail="event_name richiesto")
+    provider = data.get("provider") or None
+    result = biography.generate_chronological_report(event_name, provider=provider)
+    if result.get("error") and "risposta" not in result:
+        raise HTTPException(status_code=502, detail=result["error"])
+    return result
+
+
+@app.post("/api/fonte/analyze")
+def api_analyze_source(data: dict = Body(...)):
+    """Analizza una singola fonte con l'AI e produce un riassunto strutturato."""
+    source_id = data.get("source_id")
+    if not source_id:
+        raise HTTPException(status_code=400, detail="source_id richiesto")
+    event_name = data.get("event_name") or ""
+    provider = data.get("provider") or None
+    result = biography.analyze_single_source(int(source_id), event_name, provider=provider)
+    if result.get("error") and "risposta" not in result:
+        raise HTTPException(status_code=502, detail=result["error"])
+    return result
+
+
+@app.post("/api/fonte/generate-images")
+def api_generate_source_images(data: dict = Body(...)):
+    """Genera immagini AI fotorealistiche per una fonte.
+    L'AI analizza il contesto, genera 3-5 prompt, e li esegue con DALL-E 3
+    (fallback Stability AI). Le immagini vengono salvate in cache."""
+    source_id = data.get("source_id")
+    if not source_id:
+        raise HTTPException(status_code=400, detail="source_id richiesto")
+    event_name = data.get("event_name") or ""
+    provider = data.get("provider") or None
+    result = biography.generate_source_images(int(source_id), event_name, provider=provider)
+    if not result.get("ok"):
+        raise HTTPException(status_code=502, detail=result.get("error", "errore sconosciuto"))
+    return result
+
+
+@app.get("/api/fonte/{source_id}/images")
+def api_get_cached_images(source_id: int):
+    """Recupera immagini AI cached per una fonte."""
+    result = biography.get_cached_images(source_id)
+    return result
+
+
+@app.post("/api/soldier/images")
+def api_generate_soldier_images(data: dict = Body(...)):
+    """Genera immagini AI per un soldato/persona.
+    Usa i dati del soldato (dal DB se soldier_id, o dal nome/subtitle) per
+    generare prompt contestuali e poi immagini con DALL-E (fallback Stability)."""
+    soldier_id = data.get("soldier_id")
+    name = data.get("name", "")
+    subtitle = data.get("subtitle", "")
+    subject_id = data.get("id", "")
+    provider = data.get("provider") or None
+    sid = int(soldier_id) if soldier_id else None
+    result = biography.generate_soldier_images(
+        soldier_id=sid, name=name, subtitle=subtitle,
+        subject_id=subject_id, provider=provider,
+    )
+    if not result.get("ok"):
+        raise HTTPException(status_code=502, detail=result.get("error", "errore sconosciuto"))
+    return result
+
+
+@app.post("/api/event/chat")
+def api_event_chat(data: dict = Body(...)):
+    """Chat di follow-up dopo il report AI: l'utente puo fare domande
+    e l'AI risponde mantenendo il contesto del report generato."""
+    event_name = (data.get("event_name") or "").strip()
+    if not event_name:
+        raise HTTPException(status_code=400, detail="event_name richiesto")
+    user_message = (data.get("message") or "").strip()
+    if not user_message:
+        raise HTTPException(status_code=400, detail="message richiesto")
+    report_text = data.get("report") or ""
+    history = data.get("history") or []
+    provider = data.get("provider") or "mistral"
+
+    messages = [{"role": "system", "content": (
+        "Sei un ricercatore storico specializzato in eventi bellici italiani del '900. "
+        "L'utente ha generato un report AI su un evento e ora fa domande di approfondimento. "
+        "Rispondi in italiano, basandoti sul report e sulle tue conoscenze storiche. "
+        "Se un dato non e' nel report e non sei sicuro, dillo esplicitamente. "
+        "Sii conciso ma preciso."
+    )}]
+    if report_text:
+        messages.append({"role": "system", "content": f"=== REPORT GENERATO SULL'EVENTO '{event_name}' ===\n{report_text}"})
+    for h in history[-10:]:
+        messages.append({"role": h.get("role", "user"), "content": h.get("content", "")})
+    messages.append({"role": "user", "content": user_message})
+
+    try:
+        result = biography._call_with_fallback(
+            system=messages[0]["content"],
+            prompt="\n\n".join([m["content"] for m in messages[1:]]),
+            tag=f"chat evento: {event_name}",
+            preferred=provider,
+        )
+        if result.get("risposta"):
+            return {"risposta": result["risposta"], "provider": result.get("provider", provider)}
+        raise HTTPException(status_code=502, detail=result.get("error", "Errore AI"))
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/api/sources/analyze")
 def api_sources_analyze(body: dict = Body(...)):
     """Prepara contesto minimo per AI analysis. Backend seleziona fonti."""
@@ -1514,10 +1676,10 @@ def api_event_sources(event_name: str, limit: int = 100):
 
 
 @app.get("/api/events/{event_name}/internati")
-def api_event_internati(event_name: str, limit: int = 50, offset: int = 0):
-    """Internati probabilmente collegati a un evento."""
+def api_event_internati(event_name: str, limit: int = 50, offset: int = 0, search: str = ""):
+    """Internati probabilmente collegati a un evento con filtro di ricerca opzionale."""
     nome_decoded = event_name.replace("+", " ")
-    return events.get_internati_per_evento(nome_decoded, limit=limit, offset=offset)
+    return events.get_internati_per_evento(nome_decoded, limit=limit, offset=offset, search=search)
 
 
 @app.get("/api/internati/{rid}/events")
@@ -1548,17 +1710,237 @@ def api_event_1gm_dossier(event_name: str):
 
 
 @app.get("/api/events/1gm/{event_name}/caduti")
-def api_event_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0):
-    """Caduti paginati per un evento 1GM."""
+def api_event_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0, search: str = ""):
+    """Caduti paginati per un evento 1GM con filtro di ricerca opzionale."""
     nome_decoded = event_name.replace("+", " ")
-    return events.get_eventi_1gm_caduti(nome_decoded, limit=limit, offset=offset)
+    return events.get_eventi_1gm_caduti(nome_decoded, limit=limit, offset=offset, search=search)
 
 
 @app.get("/api/events/1gm/{event_name}/decorati")
-def api_event_1gm_decorati(event_name: str, limit: int = 50, offset: int = 0):
-    """Decorati paginati per un evento 1GM."""
+def api_event_1gm_decorati(event_name: str, limit: int = 50, offset: int = 0, search: str = ""):
+    """Decorati paginati per un evento 1GM con filtro di ricerca opzionale."""
     nome_decoded = event_name.replace("+", " ")
-    return events.get_eventi_1gm_decorati(nome_decoded, limit=limit, offset=offset)
+    return events.get_eventi_1gm_decorati(nome_decoded, limit=limit, offset=offset, search=search)
+
+
+@app.get("/api/caduti/{caduto_id}")
+def api_caduto_detail(caduto_id: int):
+    """Scheda dettagliata di un caduto dell'Albo d'Oro con fonti e documenti collegati."""
+    import sqlite3
+    from database import DB_PATH
+    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute("SELECT * FROM caduti_albooro WHERE id=?", (caduto_id,)).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail=f"Caduto id={caduto_id} non trovato")
+        soldato = dict(row)
+
+        # Check if also decorated
+        nom = (soldato.get("nominativo") or "").upper()
+        dec_rows = conn.execute(
+            "SELECT decorazione, anno_morte, guerra, url_scheda FROM decorati "
+            "WHERE (cognome || ' ' || nome) = ? COLLATE NOCASE",
+            (soldato.get("nominativo", ""),)
+        ).fetchall()
+        soldato["decorazioni"] = [dict(r) for r in dec_rows]
+
+        # Documenti collegati via record_links
+        doc_rows = conn.execute(
+            "SELECT ad.rowid as id, ad.title, ad.source_url, ad.doc_type, ad.provider, "
+            "rl.link_type, rl.confidence "
+            "FROM record_links rl "
+            "JOIN archivio_documenti ad ON rl.to_id = ad.rowid "
+            "WHERE rl.from_table='caduti_albooro' AND rl.from_id=? AND rl.to_table='archivio_documenti'",
+            (caduto_id,)
+        ).fetchall()
+        soldato["documenti"] = [dict(r) for r in doc_rows]
+
+        # Fonti collegate via record_links
+        fonte_rows = conn.execute(
+            "SELECT fi.id, fi.archivio, fi.fondo, fi.titolo, fi.tipo_fonte, fi.url_catalogo, fi.url_file, "
+            "rl.link_type, rl.confidence "
+            "FROM record_links rl "
+            "JOIN fonti_indice fi ON rl.to_id = fi.id "
+            "WHERE rl.from_table='caduti_albooro' AND rl.from_id=? AND rl.to_table='fonti_indice'",
+            (caduto_id,)
+        ).fetchall()
+        soldato["fonti"] = [dict(r) for r in fonte_rows]
+
+        # Eventi collegati
+        from pathlib import Path
+        edb = Path(__file__).parent / "eventi_1gm.db"
+        if edb.exists():
+            conn_ev = sqlite3.connect(str(edb), timeout=30)
+            conn_ev.row_factory = sqlite3.Row
+            ev_rows = conn_ev.execute(
+                "SELECT e.nome, e.descrizione FROM event_links el "
+                "JOIN eventi_1gm e ON el.evento_id = e.id "
+                "WHERE el.link_type='soldato_caduto' AND el.target_id=?",
+                (caduto_id,)
+            ).fetchall()
+            soldato["eventi"] = [dict(r) for r in ev_rows]
+            conn_ev.close()
+        else:
+            soldato["eventi"] = []
+
+        soldato["ok"] = True
+        return soldato
+    finally:
+        conn.close()
+
+
+@app.get("/api/decorati/{decorato_id}")
+def api_decorato_detail(decorato_id: int):
+    """Scheda dettagliata di un decorato con dati completi e fonti collegate."""
+    import sqlite3
+    from database import DB_PATH
+    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute("SELECT * FROM decorati_nastroazzurro WHERE id=?", (decorato_id,)).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail=f"Decorato id={decorato_id} non trovato")
+        soldato = dict(row)
+
+        # Check if also in caduti
+        nom = f"{soldato.get('cognome','')} {soldato.get('nome','')}".strip()
+        cad_rows = conn.execute(
+            "SELECT id, nominativo, grado, reparto, luogo_morte, anno_morte, causa_morte, detail_url "
+            "FROM caduti_albooro WHERE nominativo = ? COLLATE NOCASE",
+            (nom,)
+        ).fetchall()
+        soldato["caduto_info"] = [dict(r) for r in cad_rows]
+
+        # Eventi collegati
+        from pathlib import Path
+        edb = Path(__file__).parent / "eventi_1gm.db"
+        if edb.exists():
+            conn_ev = sqlite3.connect(str(edb), timeout=30)
+            conn_ev.row_factory = sqlite3.Row
+            ev_rows = conn_ev.execute(
+                "SELECT e.nome, e.descrizione FROM event_links el "
+                "JOIN eventi_1gm e ON el.evento_id = e.id "
+                "WHERE el.link_type='soldato_decorato' AND el.target_id=?",
+                (decorato_id,)
+            ).fetchall()
+            soldato["eventi"] = [dict(r) for r in ev_rows]
+            conn_ev.close()
+        else:
+            soldato["eventi"] = []
+
+        soldato["ok"] = True
+        return soldato
+    finally:
+        conn.close()
+
+
+@app.get("/api/internati/{rid}/detail")
+def api_internato_detail(rid: int):
+    """Scheda dettagliata di un internato WW2 con fonti, documenti ed eventi collegati."""
+    import sqlite3
+    from database import DB_PATH
+    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute("SELECT * FROM internati WHERE id=?", (rid,)).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail=f"Internato id={rid} non trovato")
+        soldato = dict(row)
+
+        # Fonti collegate via record_links
+        fonti_ids = set()
+        fl_rows = conn.execute(
+            "SELECT DISTINCT to_id FROM record_links "
+            "WHERE link_type='fonte_personale' AND from_table='internati' AND to_table='fonti_indice' AND from_id=?",
+            (rid,)
+        ).fetchall()
+        fonti_ids = {r["to_id"] for r in fl_rows}
+        soldato["has_fonti"] = bool(fonti_ids)
+
+        # Fonti indicizzate: prima quelle collegate esplicitamente, poi fallback per nominativo
+        if fonti_ids:
+            placeholders = ','.join('?' * len(fonti_ids))
+            fi_rows = conn.execute(
+                f"SELECT id, titolo, archivio, url_catalogo, url_file, tipo_fonte, note "
+                f"FROM fonti_indice WHERE id IN ({placeholders})",
+                tuple(fonti_ids)
+            ).fetchall()
+        else:
+            fi_rows = []
+        # Fallback: cerca per soggetti_collegati/persone_possibili che contengano cognome e nome
+        if not fi_rows:
+            nom = f"{soldato.get('cognome','')} {soldato.get('nome','')}".strip()
+            fi_rows = conn.execute(
+                "SELECT id, titolo, archivio, url_catalogo, url_file, tipo_fonte, note "
+                "FROM fonti_indice WHERE (soggetti_collegati LIKE ? OR persone_possibili LIKE ?) AND "
+                "(titolo LIKE ? OR titolo LIKE ?) LIMIT 20",
+                (f"%{soldato.get('cognome','')}%", f"%{soldato.get('cognome','')}%",
+                 f"%{soldato.get('cognome','')}%", f"%{soldato.get('nome','')}%")
+            ).fetchall()
+        soldato["fonti_indice"] = [dict(r) for r in fi_rows]
+
+        # Eventi collegati via event_links (internato_ww2)
+        from pathlib import Path
+        edb = Path(__file__).parent / "eventi_1gm.db"
+        if edb.exists():
+            conn_ev = sqlite3.connect(str(edb), timeout=30)
+            conn_ev.row_factory = sqlite3.Row
+            ev_rows = conn_ev.execute(
+                "SELECT e.nome, e.descrizione FROM event_links el "
+                "JOIN eventi_1gm e ON el.evento_id = e.id "
+                "WHERE el.link_type='internato_ww2' AND el.target_id=?",
+                (rid,)
+            ).fetchall()
+            soldato["eventi"] = [dict(r) for r in ev_rows]
+            conn_ev.close()
+        else:
+            soldato["eventi"] = []
+
+        soldato["ok"] = True
+        return soldato
+    finally:
+        conn.close()
+
+
+# ─── Graph endpoints ──────────────────────────────────────────────────────────
+
+@app.get("/api/graph/luoghi")
+def api_graph_luoghi(limit: int = 50):
+    """Grafo luoghi: nodi = luogo_morte, size = count caduti, link a eventi."""
+    return events.get_graph_luoghi(limit=limit)
+
+
+@app.get("/api/graph/mesi")
+def api_graph_mesi():
+    """Grafo mesi: aggregazione caduti + decorati per anno (1914-1921)."""
+    return events.get_graph_mesi()
+
+
+@app.get("/api/graph/paesi")
+def api_graph_paesi():
+    """Grafo paesi/teatri: aggregazione caduti per teatro operativo."""
+    return events.get_graph_paesi()
+
+
+@app.get("/api/graph/soldati/architecture")
+def api_graph_soldati_architecture():
+    """Architettura network graph soldati: metadati, strategia, top clusters."""
+    return events.get_graph_soldati_architecture()
+
+
+@app.get("/api/graph/soldati/clusters")
+def api_graph_soldati_clusters(field: str = "luogo_morte", limit: int = 50):
+    """Cluster soldati per campo (luogo_morte, reparto, anno_morte)."""
+    return events.get_graph_soldati_clusters(field=field, limit=limit)
+
+
+@app.get("/api/graph/soldati/cluster/{cluster_field}/{cluster_value}")
+def api_graph_soldati_cluster(cluster_field: str, cluster_value: str,
+                               page: int = 1, limit: int = 500):
+    """Soldati singoli paginati per cluster."""
+    return events.get_graph_soldati_cluster(cluster_field, cluster_value,
+                                             page=page, limit=limit)
 
 
 @app.get("/api/events/{event_name}")
@@ -1582,6 +1964,64 @@ def api_event_dossier_unified(event_name: str):
             "total_fonti": fonti.get("total", 0),
         }
     raise HTTPException(status_code=404, detail=f"Evento '{nome_decoded}' non trovato")
+
+
+# ─── CimeTrincee (storie e soldati + foto d'epoca) ────────────────────────────
+
+@app.get("/api/cimeetrincee/storie")
+def api_cimeetrincee_storie(limit: int = 50, offset: int = 0):
+    """Lista storie e soldati da cimeetrincee.it (archivio_documenti provider=CimeTrincee)."""
+    conn = database.get_conn()
+    conn.row_factory = lambda c, r: dict(zip([col[0] for col in c.description], r))
+    try:
+        rows = conn.execute(
+            "SELECT * FROM archivio_documenti WHERE provider = 'CimeTrincee' "
+            "ORDER BY title LIMIT ? OFFSET ?",
+            (limit, offset),
+        ).fetchall()
+        total = conn.execute(
+            "SELECT COUNT(*) as n FROM archivio_documenti WHERE provider = 'CimeTrincee'"
+        ).fetchone()["n"]
+        return {"storie": rows, "total": total}
+    finally:
+        conn.close()
+
+
+@app.get("/api/cimeetrincee/foto")
+def api_cimeetrincee_foto(limit: int = 50, offset: int = 0):
+    """Lista foto d'epoca da cimeetrincee.it (fonti_risorse ente_titolare LIKE ASCET)."""
+    conn = database.get_conn()
+    conn.row_factory = lambda c, r: dict(zip([col[0] for col in c.description], r))
+    try:
+        rows = conn.execute(
+            "SELECT * FROM fonti_risorse WHERE ente_titolare LIKE '%ASCET%' "
+            "ORDER BY id DESC LIMIT ? OFFSET ?",
+            (limit, offset),
+        ).fetchall()
+        total = conn.execute(
+            "SELECT COUNT(*) as n FROM fonti_risorse WHERE ente_titolare LIKE '%ASCET%'"
+        ).fetchone()["n"]
+        return {"foto": rows, "total": total}
+    finally:
+        conn.close()
+
+
+@app.post("/api/cimeetrincee/scrape")
+def api_cimeetrincee_scrape():
+    """Trigger scraping cimeetrincee.it in background (storie + foto).
+    Restituisce immediately con status; il client puo' pollare /storie e /foto."""
+    import threading
+    import mass_index as mi
+
+    def _run():
+        try:
+            mi.pipeline_cimeetrincee()
+        except Exception as e:
+            print(f"Errore scraping cimeetrincee: {e}")
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+    return {"ok": True, "message": "Scraping avviato in background. Poll /api/cimeetrincee/storie e /api/cimeetrincee/foto per i risultati."}
 
 
 # ─── Research-to-Index ───

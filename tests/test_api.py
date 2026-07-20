@@ -75,6 +75,40 @@ class TestAPISmoke(TempDBTestCase):
         r = self.client.get("/api/entita/999999")
         self.assertEqual(r.status_code, 404)
 
+    def test_search_include_curated_events(self):
+        """La ricerca universale deve restituire anche eventi curati WW2."""
+        r = self.client.get("/api/search", params={"q": "operazione achse"})
+        self.assertEqual(r.status_code, 200)
+        body = r.json()
+        self.assertGreaterEqual(len(body.get("events", [])), 1)
+        self.assertTrue(any("Achse" in e["nome"] for e in body["events"]))
+
+    def test_event_internati_achse(self):
+        """L'endpoint evento/internati deve trovare record che matchano le keyword dell'evento curato.
+        Inseriamo un internato con raw_text che contiene una keyword dell'evento (non e' un mock,
+        e' un record di test nel DB temporaneo)."""
+        conn = self.conn()
+        make_internato(conn, cognome="Gaiaschi", nome="Luigi", raw_text="catturato dopo l'armistizio dell'8 settembre")
+        conn.close()
+
+        r = self.client.get("/api/events/Operazione+Achse/internati", params={"limit": 50})
+        self.assertEqual(r.status_code, 200)
+        body = r.json()
+        self.assertEqual(body["total"], 1)
+        self.assertTrue(any(i["cognome"] == "Gaiaschi" for i in body["internati"]))
+
+    def test_search_gaiaschi_returns_internati(self):
+        """La ricerca universale deve trovare internati per cognome/nome."""
+        conn = self.conn()
+        make_internato(conn, cognome="Gaiaschi", nome="Luigi")
+        conn.close()
+
+        r = self.client.get("/api/search", params={"q": "Gaiaschi Luigi"})
+        self.assertEqual(r.status_code, 200)
+        body = r.json()
+        self.assertGreaterEqual(len(body.get("internati", [])), 1)
+        self.assertTrue(any(i["cognome"] == "Gaiaschi" and i["nome"] == "Luigi" for i in body["internati"]))
+
     def test_pagina_index_serve_html(self):
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)

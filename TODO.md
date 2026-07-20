@@ -1,5 +1,24 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
+Aggiornato: 20 luglio 2026 — Rimozione frontend 1GM, fix eventi underscore, AI buttons su ricerca, linter CSS.
+
+---
+
+## Giornata 2026-07-21 — Verifiche e rifiniture
+
+- [ ] **Analisi approfondita connessione DB e frontend**: mappare quali tabelle/query alimentano ogni sezione della UI nel template comune `index.html` (1GM + 2GM).
+- [x] **Rimozione frontend 1GM dedicato**: eliminati `templates/PRIMA_Guerra/`, `templates/voci-data-1gm.js`, `templates/index-1gm.html`, le route `/1gm` e `/voci-data-1gm.js` in `app.py` e `tests/test_frontend_1gm.py`. **⚠️ Nessun dato eliminato dai database**: i file `.db` e i record restano intatti.
+- [ ] **Verifica end-to-end AI buttons in home search**: cercare "gaiaschi", cliccare `Dossier AI` e `Immagini AI` su una card, confermare che il dossier si apre e la generazione parte.
+- [ ] **Test tab evento popolati**: aprire "Battaglia del Carso" e verificare che i tab `Caduti` e `Decorati` mostrino dati nel browser preview.
+- [ ] **Falsi positivi linter CSS**: decidere se disabilitare la validazione CSS per `*.html` o accettare i warning; se necessario, aggiungere `.vscode/settings.json` (ora in gitignore).
+- [ ] **Test suite**: eseguire `python -m pytest tests/ -v` e fixare eventuali regressioni.
+- [ ] **Pulizia workspace**: rimuovere eventuali file `tmp_*` o debug residui.
+- [ ] **Documentazione**: eventualmente aggiornare `README.md` con le nuove feature AI sui risultati di ricerca.
+
+---
+
+# TODO — VOCI DAL FRONTE / IMI Extractor
+
 Aggiornato: 13 luglio 2026 — Pipeline multi-AI parallela, report engine, banner frontend, fix BackgroundTasks, watchdog pipeline.
 
 ---

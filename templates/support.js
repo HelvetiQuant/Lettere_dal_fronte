@@ -723,6 +723,9 @@
     const keySuffix = inlineOnly ? "|" + contentKey(el) : "";
     const { propGetters, pseudoClasses } = collectProps(el, "dom", host);
     const kids = walkChildren(el, host);
+    const hasScHtml = el.hasAttribute("sc-html");
+    const scHtmlGet = hasScHtml ? compileAttr(el.getAttribute("sc-html") || "") : null;
+    if (hasScHtml) el.removeAttribute("sc-html");
     return (vals, ctx, key) => {
       const props = {
         key: key + keySuffix,
@@ -735,6 +738,12 @@
           v = k === "checked" ? false : "";
         }
         props[k] = v;
+      }
+      if (hasScHtml && scHtmlGet) {
+        const hv = scHtmlGet(vals);
+        if (hv != null && hv !== false) {
+          props.dangerouslySetInnerHTML = { __html: String(hv) };
+        }
       }
       if (pseudoClasses.length) {
         props.className = [props.className, ...pseudoClasses].filter(Boolean).join(" ");

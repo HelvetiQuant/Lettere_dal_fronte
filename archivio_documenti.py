@@ -296,7 +296,12 @@ def seed_sources() -> int:
 def _requests_or_raise():
     if requests is None:
         raise RuntimeError("Il modulo 'requests' non è installato: pip install requests")
-    return requests
+    s = requests.Session()
+    s.headers.update({
+        "User-Agent": "IMI-Extractor/1.0 (research; contact: imi-extractor@example.org)",
+        "Accept": "application/json, text/xml, */*",
+    })
+    return s
 
 
 def fetch_europeana(query: str, api_key: str, rows: int = 50) -> List[Dict[str, Any]]:
@@ -421,6 +426,154 @@ def fetch_wikimedia_commons(query: str = "World War I", rows: int = 50) -> List[
             "rights": "pubblico dominio / CC (verificare per item)",
             "language": "mul",
             "raw_json": item,
+        })
+    return out
+
+
+def fetch_gallica_sru(query: str = "guerre mondiale 1914 1918",
+                      rows: int = 50) -> List[Dict[str, Any]]:
+    """Gallica BnF SRU API — foto, manoscritti, periodici 1914-1918.
+    Restituisce righe pronte per upsert. source_url = pagina viewer Gallica.
+    Nessuna chiave API richiesta.
+    """
+    r = _requests_or_raise()
+    params = {
+        "operation": "searchRetrieve",
+        "version": "1.2",
+        "query": f'gallica all "{query}"',
+        "maximumRecords": rows,
+        "recordSchema": "dc",
+    }
+    resp = r.get(
+        "https://gallica.bnf.fr/services/engine/search/sru",
+        params=params, timeout=30,
+    )
+    resp.raise_for_status()
+
+    import xml.etree.ElementTree as ET
+    ns = {
+        "sru": "http://www.loc.gov/zing/srw/",
+        "oai": "http://www.openarchives.org/OAI/2.0/",
+        "dc": "http://purl.org/dc/elements/1.1/",
+    }
+    root = ET.fromstring(resp.text)
+    out = []
+    for rec in root.findall(".//sru:record", ns):
+        ident_el = rec.find(".//oai:header/oai:identifier", ns)
+        ident = ident_el.text if ident_el is not None else None
+        if not ident:
+            continue
+        meta = rec.find(".//oai:metadata/oai:dc", ns)
+        if meta is None:
+            continue
+
+        def dc(tag):
+            el = meta.find(f"dc:{tag}", ns)
+            return el.text if el is not None and el.text else None
+
+        ark = ident.replace("oai:bnf.fr:gallica/ark:/12148/", "")
+        source_url = f"https://gallica.bnf.fr/ark:/12148/{ark}" if ark else ident
+        out.append({
+            "provider": "GallicaBnF",
+            "external_id": ident,
+            "doc_type": "documento",
+            "title": dc("title") or dc("description") or "(senza titolo)",
+            "description": dc("description"),
+            "creator": dc("creator"),
+            "date_text": dc("date"),
+            "year_start": _to_int(dc("date")),
+            "language": dc("language") or "fra",
+            "rights": "domaine public / BnF",
+            "source_url": source_url,
+            "provider_collection": "Gallica — Bibliothèque nationale de France",
+            "raw_json": {"identifier": ident, "title": dc("title"), "creator": dc("creator")},
+        })
+    return out
+
+
+def fetch_tna_discovery(query: str = "WO 95 war diary",
+                        rows: int = 50) -> List[Dict[str, Any]]:
+    """The National Archives Discovery API — war diaries WO 95.
+    Restituisce righe pronte per upsert. source_url = pagina Discovery.
+    Nessuna chiave API richiesta (endpoint pubblico).
+    """
+    r = _requests_or_raise()
+    params = {"q": query, "count": rows}
+    resp = r.get(
+        "https://discovery.nationalarchives.gov.uk/API/search/v1/records",
+        params=params, timeout=30,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    out = []
+    for it in data.get("records", []):
+        ref = it.get("id") or it.get("reference")
+        if not ref:
+            continue
+        title = it.get("title") or it.get("description", "")[:120]
+        url = f"https://discovery.nationalarchives.gov.uk/details/r/{ref}"
+        date_range = it.get("coveringDates") or ""
+        year = None
+        if date_range:
+            year = _to_int(date_range.split("-")[0].strip())
+        out.append({
+            "provider": "TNA",
+            "external_id": ref,
+            "doc_type": "diario",
+            "title": title,
+            "description": it.get("description"),
+            "date_text": date_range,
+            "year_start": year,
+            "language": "eng",
+            "rights": "Crown Copyright / TNA",
+            "source_url": url,
+            "provider_collection": "The National Archives — WO 95 War Diaries",
+            "raw_json": it,
+        })
+    return out
+
+
+def fetch_iwm_collections(query: str = "first world war private papers",
+                          rows: int = 50) -> List[Dict[str, Any]]:
+    """Imperial War Museum Collections API — private papers, diari, foto WWI.
+    Restituisce righe pronte per upsert. source_url = pagina IWM Collections.
+    Nessuna chiave API richiesta (endpoint pubblico).
+    """
+    r = _requests_or_raise()
+    params = {
+        "q": query,
+        "pageSize": rows,
+        "pageNumber": 1,
+    }
+    resp = r.get(
+        "https://api.iwm.org.uk/collections/v1/search",
+        params=params, timeout=30,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    out = []
+    for it in data.get("items", []):
+        ident = it.get("id") or it.get("uid")
+        if not ident:
+            continue
+        title = it.get("title") or it.get("summary", "")[:120]
+        url = it.get("url") or f"https://www.iwm.org.uk/collections/item/object/{ident}"
+        img = it.get("thumbnail") or it.get("image")
+        out.append({
+            "provider": "IWM",
+            "external_id": str(ident),
+            "doc_type": "documento",
+            "title": title,
+            "description": it.get("description") or it.get("summary"),
+            "creator": it.get("creator") or it.get("author"),
+            "date_text": it.get("displayDate"),
+            "year_start": _to_int(it.get("displayDate")),
+            "language": "eng",
+            "rights": "IWM Copyright (verificare per item)",
+            "source_url": url,
+            "thumbnail_url": img,
+            "provider_collection": "Imperial War Museum Collections",
+            "raw_json": it,
         })
     return out
 

@@ -29,11 +29,25 @@ def find_event(conn_ev, query):
     if r:
         return r
 
+    # 1b. Fallback: underscore → spazi
+    normalized = query.replace("_", " ").strip()
+    if normalized != query:
+        r = conn_ev.execute("SELECT * FROM eventi_1gm WHERE UPPER(nome) = ?", (normalized.upper(),)).fetchone()
+        if r:
+            return r
+
     # 2. Match parziale nome
     rows = conn_ev.execute("SELECT * FROM eventi_1gm").fetchall()
     for r in rows:
         if query_up in r["nome"].upper():
             return r
+
+    # 2b. Match parziale con normalized
+    norm_up = normalized.upper()
+    if norm_up != query_up:
+        for r in rows:
+            if norm_up in r["nome"].upper():
+                return r
 
     # 3. Match alias
     for r in rows:
@@ -286,7 +300,14 @@ def query_event(event_name, verbose=True):
             "SELECT f.id, f.archivio, f.titolo, f.tipo_fonte, f.url_catalogo, f.url_file, f.access_type, f.luogo "
             "FROM fonti_indice f JOIN _tmp_ids t ON f.id = t.ids LIMIT 30"
         ).fetchall()
-        result["fonti"]["items"] = [dict(r) for r in sample_fon]
+        result["fonti"]["items"] = []
+        for row in sample_fon:
+            item = dict(row)
+            archivio = (item.get("archivio") or "").lower()
+            if "bundesarchiv" in archivio and not (item.get("url_catalogo") or item.get("url_file")):
+                item["url_catalogo"] = "https://open-data.bundesarchiv.de/ddb-bestand/"
+                item["access_type"] = item.get("access_type") or "online"
+            result["fonti"]["items"].append(item)
 
         conn_ro.execute("DELETE FROM _tmp_ids")
 

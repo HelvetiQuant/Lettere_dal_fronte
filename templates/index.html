@@ -91,13 +91,20 @@
       <a onClick="{{ goEvents }}" style="font-size:13px;color:var(--color-accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px">{{ S.seeAll }} →</a>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-top:20px">
-      <sc-for list="{{ featuredEvents }}" as="ev" hint-placeholder-count="3">
+      <sc-for list="{{ featuredEvents }}" as="ev" hint-placeholder-count="6">
         <div class="card elev-sm" onClick="{{ ev.onClick }}" style="cursor:pointer">
           <span class="card-kicker">{{ ev.subtitle }}</span>
           <span class="card-title">{{ ev.name }}</span>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px">
             <sc-for list="{{ ev.tags }}" as="tg" hint-placeholder-count="2"><span class="tag tag-neutral">{{ tg }}</span></sc-for>
           </div>
+          <sc-if value="{{ ev.hasReport }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:5px;margin-top:8px;font-size:11px;color:var(--color-accent-700);font-weight:600">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span>{{ S.reportAiBadge }}</span>
+              <span style="opacity:0.6;font-weight:400">· {{ ev.sourceCount }} {{ S.sourcesLabel }}</span>
+            </div>
+          </sc-if>
         </div>
       </sc-for>
     </div>
@@ -114,20 +121,61 @@
   </section>
   <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
     <h2 style="font-size:20px;margin:8px 0 20px">{{ S.resultsFor }} «{{ query }}»</h2>
+    <sc-if value="{{ searchConfirmations.length }}" hint-placeholder-val="{{ 0 }}">
+      <div style="margin:0 0 24px;padding:16px 20px;background:#fff3cd;border:1px solid #ffc107;border-radius:10px">
+        <h3 style="font-size:15px;margin:0 0 12px;color:#856404">⚠ Convalida necessaria — confermare le opzioni per proseguire</h3>
+        <sc-for list="{{ searchConfirmations }}" as="conf" hint-placeholder-count="1">
+          <div style="margin-bottom:14px;padding:12px 14px;background:#fff;border-radius:8px;border:1px solid #e0e0e0">
+            <sc-if value="{{ conf.type === 'province_correction' }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:13.5px;margin:0 0 6px"><strong>Provincia errata:</strong> «{{ conf.original }}» → <strong style="color:#28a745">{{ conf.corrected }}</strong></p>
+              <p style="font-size:12px;opacity:0.7;margin:0 0 8px">{{ conf.place }} è in provincia di {{ conf.correct_province }}, non {{ conf.wrong_province }}</p>
+              <sc-if value="{{ !conf._applied }}" hint-placeholder-val="{{ false }}">
+                <button class="btn btn-primary" onClick="{{ conf.onConfirm }}" style="font-size:13px;padding:6px 16px">Applica correzione</button>
+              </sc-if>
+              <sc-if value="{{ conf._applied }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:12px;color:#28a745">✓ Correzione applicata</span>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{ conf.type === 'homonym_check' }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:13.5px;margin:0 0 6px"><strong>Possibile omonimia:</strong> {{ conf.name }}</p>
+              <sc-for list="{{ conf.conflicts }}" as="cfl" hint-placeholder-count="1">
+                <p style="font-size:12px;opacity:0.7;margin:2px 0 0 12px">Colonna <code>{{ cfl.column }}</code>: valori discordanti — {{ cfl.values.join(' vs ') }}</p>
+              </sc-for>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ searchValidations.length }}" hint-placeholder-val="{{ 0 }}">
+      <div style="margin:0 0 16px;padding:10px 14px;background:#d4edda;border:1px solid #c3e6cb;border-radius:8px">
+        <p style="font-size:12.5px;margin:0;color:#155724"><strong>{{ searchValidations.length }}</strong> validazioni automatiche effettuate (fonti esterne e controlli OCR)</p>
+      </div>
+    </sc-if>
+    <sc-if value="{{ externalSourcesCount }}" hint-placeholder-val="{{ 0 }}">
+      <div style="margin:0 0 16px;padding:10px 14px;background:#d1ecf1;border:1px solid #bee5eb;border-radius:8px">
+        <p style="font-size:12.5px;margin:0;color:#0c5460"><strong>{{ externalSourcesCount }}</strong> fonti esterne consultate (federated search)</p>
+      </div>
+    </sc-if>
     <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ false }}">
       <sc-if value="{{ personCards.length }}" hint-placeholder-val="{{ 0 }}">
         <h3 style="font-size:14px;text-transform:uppercase;letter-spacing:0.06em;opacity:0.6;margin-bottom:10px">{{ S.personsSection }}</h3>
         <div style="display:grid;gap:10px;margin-bottom:28px">
           <sc-for list="{{ personCards }}" as="p" hint-placeholder-count="2">
-            <div class="card elev-sm" onClick="{{ p.onClick }}" style="cursor:pointer;flex-direction:row;align-items:center;justify-content:space-between;gap:16px">
-              <div>
+            <div class="card elev-sm" style="flex-direction:row;align-items:center;justify-content:space-between;gap:16px">
+              <div onClick="{{ p.onClick }}" style="cursor:pointer;flex:1;min-width:0">
                 <span class="card-title" style="display:block">{{ p.name }}</span>
                 <span style="font-size:12.5px;opacity:0.65">{{ p.subtitle }}</span>
                 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
                   <sc-for list="{{ p.tags }}" as="tg" hint-placeholder-count="2"><span class="tag tag-neutral">{{ tg }}</span></sc-for>
                 </div>
               </div>
-              <span class="{{ p.statusClass }}" style="flex:none">{{ p.statusLabel }}</span>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none">
+                <span class="{{ p.statusClass }}">{{ p.statusLabel }}</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                  <button class="btn btn-primary btn-sm" onClick="{{ p.onGenerateBio }}">Dossier AI</button>
+                  <button class="btn btn-secondary btn-sm" onClick="{{ p.onGenerateImages }}">Immagini AI</button>
+                </div>
+              </div>
             </div>
           </sc-for>
         </div>
@@ -147,8 +195,6 @@
         </div>
       </sc-if>
     </sc-if>
-    <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
-    </sc-if>
     <p style="font-size:13px;opacity:0.7;max-width:64ch;margin:18px 0 40px;padding:14px 16px;background:var(--color-surface);border-radius:var(--radius-md)">{{ S.federationNote }}</p>
   </sc-if>
 </sc-if>
@@ -167,7 +213,7 @@
     <div style="max-width:280px;margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;font-size:11px;opacity:0.6;margin-bottom:3px"><span>{{ S.dossierConfidence }}</span><span>{{ dossier.confidencePct }}%</span></div>
       <div style="height:5px;background:var(--color-neutral-200);border-radius:3px;overflow:hidden">
-        <div style="height:100%;width:{{ dossier.confidencePct }}%;background:var(--color-accent)"></div>
+        <div style="{{ dossier.confBarStyle }}"></div>
       </div>
     </div>
   </section>
@@ -177,6 +223,15 @@
       <button class="{{ dossier.tabOverviewClass }}" onClick="{{ dossier.onTabOverview }}">{{ S.tabOverview }}</button>
       <button class="{{ dossier.tabPerspectivesClass }}" onClick="{{ dossier.onTabPerspectives }}">{{ S.tabPerspectives }}</button>
       <button class="{{ dossier.tabSourcesClass }}" onClick="{{ dossier.onTabSources }}">{{ S.tabSources }}</button>
+      <sc-if value="{{ dossier.isEvent }}" hint-placeholder-val="{{ false }}">
+        <button class="{{ dossier.tabCadutiClass }}" onClick="{{ dossier.onTabCaduti }}">Caduti</button>
+        <button class="{{ dossier.tabDecoratiClass }}" onClick="{{ dossier.onTabDecorati }}">Decorati</button>
+        <sc-if value="{{ dossier.hasInternati }}" hint-placeholder-val="{{ false }}">
+          <button class="{{ dossier.tabInternatiClass }}" onClick="{{ dossier.onTabInternati }}">Internati</button>
+        </sc-if>
+        <button class="{{ dossier.tabFontiClass }}" onClick="{{ dossier.onTabFonti }}">Fonti</button>
+        <button class="{{ dossier.tabImmaginiClass }}" onClick="{{ dossier.onTabImmagini }}">Immagini AI</button>
+      </sc-if>
       <sc-if value="{{ dossier.hasGaps }}" hint-placeholder-val="{{ false }}">
         <button class="{{ dossier.tabGapsClass }}" onClick="{{ dossier.onTabGaps }}">{{ S.tabGaps }}</button>
       </sc-if>
@@ -188,21 +243,63 @@
         <div style="position:absolute;left:4px;top:4px;bottom:4px;width:1px;background:var(--color-divider)"></div>
         <sc-for list="{{ dossier.timeline }}" as="pt" hint-placeholder-count="4">
           <div style="position:relative;margin-bottom:18px;padding-left:14px">
-            <span style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;background:{{ pt.povColor }}"></span>
+            <span class="timeline-dot" style="{{ pt.dotStyle }}"></span>
             <div style="font-size:12px;font-weight:600;font-family:var(--font-heading);color:color-mix(in srgb, var(--color-text) 70%, transparent)">{{ pt.date }}</div>
             <div style="font-size:14.5px;margin-top:2px">{{ pt.label }}</div>
-            <div style="font-size:11.5px;margin-top:3px;color:{{ pt.povColor }}">{{ pt.povLabel }}</div>
+            <div style="{{ pt.labelStyle }}">{{ pt.povLabel }}</div>
           </div>
         </sc-for>
       </div>
+      <sc-if value="{{ dossier.isEvent }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:20px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onClick="{{ dossier.onGenerateChronoReport }}"
+                    disabled="{{ dossier.chronoReportLoading }}">
+              {{ dossier.chronoReportLoading ? 'Generazione in corso…' : 'Genera Report Cronologico AI' }}
+            </button>
+            <span style="font-size:12px;opacity:0.7">Ricostruzione narrativa in ordine cronologico basata sulle fonti verificate</span>
+          </div>
+          <sc-if value="{{ dossier.hasChronoReport }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:12px;padding:14px 16px;background:var(--color-bg);border-radius:var(--radius-md);font-size:14px;line-height:1.6;border-left:3px solid var(--color-accent-600)" sc-html="{{ dossier.chronoReport }}"></div>
+          </sc-if>
+          <sc-if value="{{ dossier.hasChronoReportError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;font-size:13px;color:var(--color-accent-2-600)">{{ dossier.chronoReportError }}</div>
+          </sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ dossier.isSoldier }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:20px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onClick="{{ dossier.onGenerateBio }}"
+                    disabled="{{ dossier.bioLoading }}">
+              {{ dossier.bioLoading ? 'Generazione in corso…' : 'Genera Dossier Verificato AI' }}
+            </button>
+            <span style="font-size:12px;opacity:0.7">Biografia narrativa con fonti locali + ricerche web integrate (Perplexity + OpenAI/Mistral)</span>
+          </div>
+          <sc-if value="{{ dossier.hasBio }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:12px;padding:14px 16px;background:var(--color-bg);border-radius:var(--radius-md);font-size:14px;line-height:1.6;border-left:3px solid var(--color-accent-600)" sc-html="{{ dossier.bioText }}"></div>
+            <sc-if value="{{ dossier.bioOnlineSourcesCount }}" hint-placeholder-val="{{ 0 }}">
+              <div style="margin-top:10px;font-size:12px;opacity:0.7">
+                <strong>{{ dossier.bioOnlineSourcesCount }}</strong> fonti web trovate:
+                <sc-for list="{{ dossier.bioOnlineSources }}" as="bos" hint-placeholder-count="2">
+                  <a href="{{ bos.url }}" target="_blank" rel="noopener" style="display:inline-block;margin:2px 6px 2px 0;font-size:11.5px;color:var(--color-accent);text-decoration:none">{{ bos.title }} ↗</a>
+                </sc-for>
+              </div>
+            </sc-if>
+          </sc-if>
+          <sc-if value="{{ dossier.hasBioError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;font-size:13px;color:var(--color-accent-2-600)">{{ dossier.bioError }}</div>
+          </sc-if>
+        </div>
+      </sc-if>
     </sc-if>
 
     <sc-if value="{{ dossier.tabPerspectivesActive }}" hint-placeholder-val="{{ false }}">
       <h3 style="font-size:16px;margin-bottom:16px">{{ S.dossierPerspectivesTitle }}</h3>
       <div style="display:grid;gap:14px;max-width:720px;margin-bottom:20px">
         <sc-for list="{{ dossier.perspectives }}" as="pv" hint-placeholder-count="3">
-          <div style="padding:14px 18px;background:var(--color-surface);border-radius:var(--radius-md);border-left:3px solid {{ pv.povColor }}">
-            <div style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:{{ pv.povColor }};margin-bottom:6px">{{ pv.povLabel }}</div>
+          <div style="{{ pv.cardStyle }}">
+            <div style="{{ pv.labelStyle }}">{{ pv.povLabel }}</div>
             <p style="font-size:14px;margin:0 0 10px;line-height:1.55;opacity:0.88">{{ pv.summary }}</p>
             <sc-if value="{{ pv.hasLinks }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
@@ -210,7 +307,7 @@
                   <sc-if value="{{ lk.hasUrl }}" hint-placeholder-val="{{ false }}">
                     <a href="{{ lk.url }}" target="_blank" rel="noopener"
                        title="{{ lk.title }}"
-                       style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:3px 10px;border-radius:20px;border:1px solid {{ pv.povColor }};color:{{ pv.povColor }};text-decoration:none;opacity:0.85;transition:opacity 0.15s;max-width:280px"
+                       style="{{ pv.linkStyle }}"
                        onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.85'">
                       <svg style="flex:none" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                       <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>{{ lk.archive }}</strong> — {{ lk.title }}</span>
@@ -229,6 +326,48 @@
         </sc-for>
       </div>
       <p style="font-size:12px;opacity:0.55;max-width:640px">{{ S.dossierAiNote }}</p>
+
+      <sc-if value="{{ dossier.isEvent }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);margin-top:16px;border:1px solid var(--color-neutral-300)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onClick="{{ dossier.onGenerateReport }}"
+                    disabled="{{ dossier.reportLoading }}">
+              {{ dossier.reportLoading ? S.reportLoading : 'Genera Report Convergenze Fonti AI' }}
+            </button>
+            <span style="font-size:12px;opacity:0.7">Analizza le fonti ed estrae i fatti comuni a più fonti indipendenti</span>
+          </div>
+          <sc-if value="{{ dossier.hasReport }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:12px;padding:14px 16px;background:var(--color-bg);border-radius:var(--radius-md);font-size:14px;line-height:1.6;border-left:3px solid var(--color-accent-600)" sc-html="{{ dossier.eventReport }}"></div>
+          </sc-if>
+          <sc-if value="{{ dossier.hasReportError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;font-size:13px;color:var(--color-accent-2-600)">{{ dossier.reportError }}</div>
+          </sc-if>
+          <sc-if value="{{ dossier.hasReport }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:16px;border-top:1px solid var(--color-neutral-300);padding-top:14px">
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Chat con AI — fai una domanda sul report
+              </div>
+              <div style="max-height:320px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ dossier.chatMessages }}" as="cm" hint-placeholder-count="2">
+                  <div style="{{ cm.rowStyle }}">
+                    <div style="{{ cm.bubbleStyle }}" sc-html="{{ cm.html }}"></div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ dossier.chatLoading }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;justify-content:flex-start">
+                    <div style="padding:10px 14px;border-radius:var(--radius-md);font-size:13.5px;background:var(--color-surface);border:1px solid var(--color-neutral-300);opacity:0.7">AI sta scrivendo…</div>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-end">
+                <textarea class="input" placeholder="Scrivi una domanda…" value="{{ dossier.chatInput }}" onInput="{{ dossier.onChatInput }}" onKeyDown="{{ dossier.onChatKeyDown }}" style="font-size:14px;padding:10px 14px;min-height:42px;flex:1;resize:none;max-height:120px" rows="1"></textarea>
+                <button class="btn btn-primary" onClick="{{ dossier.onChatSend }}" disabled="{{ dossier.chatLoading }}" style="padding:0 18px;font-size:14px;min-height:42px">Invia</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
     </sc-if>
 
     <sc-if value="{{ dossier.tabSourcesActive }}" hint-placeholder-val="{{ false }}">
@@ -236,13 +375,13 @@
       <div style="display:grid;gap:8px;max-width:760px;margin-bottom:20px">
         <sc-for list="{{ dossier.sources }}" as="s" hint-placeholder-count="4">
           <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--color-surface);border-radius:var(--radius-md);flex-wrap:wrap">
-            <span style="width:8px;height:8px;border-radius:50%;background:{{ s.accessColor }};flex:none"></span>
+            <span style="{{ s.dotStyle }}"></span>
             <div style="flex:1;min-width:180px">
               <div style="font-size:14px;font-weight:600">{{ s.title }}</div>
               <div style="font-size:12px;opacity:0.6;margin-top:2px">{{ s.archive }} · {{ s.accessLabel }}</div>
             </div>
             <sc-if value="{{ s.canOpenFile }}" hint-placeholder-val="{{ false }}">
-              <button class="btn btn-secondary btn-sm" onClick="{{ s.onOpenFile }}">{{ S.btnOpenFile }}</button>
+              <a href="{{ s.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">{{ S.btnOpenFile }} ↗</a>
             </sc-if>
             <sc-if value="{{ s.canOpenExternal }}" hint-placeholder-val="{{ false }}">
               <a href="{{ s.url }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">{{ S.btnOpenOriginal }} ↗</a>
@@ -272,7 +411,39 @@
           </sc-for>
         </div>
       </sc-if>
+
+      <sc-if value="{{ dossier.isSoldier }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:24px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onClick="{{ dossier.onGenerateSoldierImages }}"
+                    disabled="{{ dossier.soldierImagesLoading }}">
+              {{ dossier.soldierImagesLoading ? 'Generazione in corso…' : 'Genera Immagini AI' }}
+            </button>
+            <span style="font-size:12px;opacity:0.7">Illustrazioni generate da OpenAI DALL-E basate sui dati del soldato</span>
+          </div>
+          <sc-if value="{{ dossier.hasSoldierImages }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:12px">
+              <sc-for list="{{ dossier.soldierImages }}" as="simg" hint-placeholder-count="2">
+                <div style="padding:12px;background:var(--color-bg);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+                  <sc-if value="{{ simg.hasImage }}" hint-placeholder-val="{{ false }}">
+                    <div sc-html="{{ simg.imageHtml }}"></div>
+                    <button class="btn btn-secondary btn-sm" onClick="{{ simg.onOpen }}" style="margin-top:6px">Apri ↗</button>
+                  </sc-if>
+                  <sc-if value="{{ simg.hasPrompt }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11px;opacity:0.6;margin-top:6px;font-style:italic">Prompt: {{ simg.prompt }}</div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ dossier.hasSoldierImagesError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;font-size:13px;color:var(--color-accent-2-600)">{{ dossier.soldierImagesError }}</div>
+          </sc-if>
+        </div>
+      </sc-if>
     </sc-if>
+
+    <sc-if value="{{ dossier.tabGapsActive }}" hint-placeholder-val="{{ false }}">
       <h3 style="font-size:16px;margin-bottom:16px">{{ S.dossierGapsTitle }}</h3>
       <div style="display:grid;gap:8px;max-width:640px">
         <sc-for list="{{ dossier.gaps }}" as="g" hint-placeholder-count="2">
@@ -286,6 +457,221 @@
         </sc-for>
       </div>
     </sc-if>
+
+    <!-- ── Event-centric: Caduti table ── -->
+    <sc-if value="{{ dossier.tabCadutiActive }}" hint-placeholder-val="{{ false }}">
+      <h3 style="font-size:16px;margin-bottom:4px">Caduti collegati all'evento</h3>
+      <p style="font-size:12px;opacity:0.6;margin:0 0 16px">{{ dossier.eventCadutiShown }} di {{ dossier.eventCadutiTotal }} record mostrati</p>
+      <input type="text" placeholder="Filtra per nome, reparto, luogo..." value="{{ dossier.cadutiFilter }}"
+             onInput="{{ dossier.onCadutiFilterInput }}" style="width:100%;padding:8px 12px;margin-bottom:12px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);font-size:13px" />
+      <div style="display:grid;gap:0;max-width:100%;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);overflow:hidden">
+        <div style="display:grid;grid-template-columns:2fr 0.8fr 1.5fr 1.2fr 0.5fr 1fr 0.7fr;padding:8px 12px;background:var(--color-neutral-100);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;opacity:0.7;border-bottom:1px solid var(--color-neutral-300)">
+          <span>Nominativo</span><span>Grado</span><span>Reparto</span><span>Luogo morte</span><span>Anno</span><span>Decorazione</span><span>Fonti</span>
+        </div>
+        <sc-for list="{{ dossier.eventCadutiFiltered }}" as="c" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:2fr 0.8fr 1.5fr 1.2fr 0.5fr 1fr 0.7fr;padding:8px 12px;font-size:13px;border-bottom:1px solid var(--color-neutral-200);align-items:center;cursor:pointer" onClick="{{ c.onClick }}">
+            <span style="font-weight:600;color:var(--color-accent)">{{ c.nominativo }}</span>
+            <span>{{ c.grado }}</span>
+            <span>{{ c.reparto }}</span>
+            <span>{{ c.luogo_morte }}</span>
+            <span>{{ c.anno_morte }}</span>
+            <span>
+              <sc-if value="{{ c.isDecorato }}" hint-placeholder-val="{{ false }}">
+                <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:var(--color-accent-600);color:#fff">{{ c.decorazione }}</span>
+              </sc-if>
+            </span>
+            <span>
+              <sc-if value="{{ c.hasFonti }}" hint-placeholder-val="{{ false }}">
+                <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:var(--color-accent-2-600);color:#fff">Fonti ✓</span>
+              </sc-if>
+              <a href="{{ c.detail_url }}" target="_blank" rel="noopener" style="font-size:11px;color:var(--color-accent);margin-left:4px" onClick="event.stopPropagation()">Albo ↗</a>
+            </span>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ dossier.canLoadMoreCaduti }}" hint-placeholder-val="{{ false }}">
+        <button class="btn btn-secondary" onClick="{{ dossier.onLoadMoreCaduti }}" disabled="{{ dossier.loadingMoreCaduti }}"
+                style="margin-top:12px">
+          {{ dossier.loadingMoreCaduti ? 'Caricamento…' : 'Carica altri 50' }}
+        </button>
+      </sc-if>
+    </sc-if>
+
+    <!-- ── Event-centric: Decorati table ── -->
+    <sc-if value="{{ dossier.tabDecoratiActive }}" hint-placeholder-val="{{ false }}">
+      <h3 style="font-size:16px;margin-bottom:4px">Decorati collegati all'evento</h3>
+      <p style="font-size:12px;opacity:0.6;margin:0 0 16px">{{ dossier.eventDecoratiShown }} di {{ dossier.eventDecoratiTotal }} record mostrati</p>
+      <input type="text" placeholder="Filtra per nome, arma, decorazione..." value="{{ dossier.decoratiFilter }}"
+             onInput="{{ dossier.onDecoratiFilterInput }}" style="width:100%;padding:8px 12px;margin-bottom:12px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);font-size:13px" />
+      <div style="display:grid;gap:0;max-width:100%;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);overflow:hidden">
+        <div style="display:grid;grid-template-columns:1.5fr 1.5fr 1.5fr 0.8fr 1.5fr 0.7fr 0.7fr;padding:8px 12px;background:var(--color-neutral-100);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;opacity:0.7;border-bottom:1px solid var(--color-neutral-300)">
+          <span>Cognome</span><span>Nome</span><span>Arma</span><span>Anno</span><span>Decorazione</span><span>Caduto</span><span>Fonti</span>
+        </div>
+        <sc-for list="{{ dossier.eventDecoratiFiltered }}" as="d" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:1.5fr 1.5fr 1.5fr 0.8fr 1.5fr 0.7fr 0.7fr;padding:8px 12px;font-size:13px;border-bottom:1px solid var(--color-neutral-200);align-items:center;cursor:pointer" onClick="{{ d.onClick }}">
+            <span style="font-weight:600;color:var(--color-accent)">{{ d.cognome }}</span>
+            <span>{{ d.nome }}</span>
+            <span>{{ d.arma }}</span>
+            <span>{{ d.anno_decorazione }}</span>
+            <span>{{ d.tipo_decorazione }}</span>
+            <span>
+              <sc-if value="{{ d.isCaduto }}" hint-placeholder-val="{{ false }}">
+                <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:var(--color-accent-2-600);color:#fff">Caduto</span>
+              </sc-if>
+            </span>
+            <span>
+              <sc-if value="{{ d.hasFonti }}" hint-placeholder-val="{{ false }}">
+                <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:var(--color-accent-600);color:#fff">Fonti ✓</span>
+              </sc-if>
+            </span>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ dossier.canLoadMoreDecorati }}" hint-placeholder-val="{{ false }}">
+        <button class="btn btn-secondary" onClick="{{ dossier.onLoadMoreDecorati }}" disabled="{{ dossier.loadingMoreDecorati }}"
+                style="margin-top:12px">
+          {{ dossier.loadingMoreDecorati ? 'Caricamento…' : 'Carica altri 50' }}
+        </button>
+      </sc-if>
+    </sc-if>
+
+    <!-- ── Event-centric: Internati WW2 table ── -->
+    <sc-if value="{{ dossier.tabInternatiActive }}" hint-placeholder-val="{{ false }}">
+      <h3 style="font-size:16px;margin-bottom:4px">Internati WW2 collegati all'evento</h3>
+      <p style="font-size:12px;opacity:0.6;margin:0 0 16px">{{ dossier.eventInternatiShown }} di {{ dossier.eventInternatiTotal }} record mostrati</p>
+      <input type="text" placeholder="Filtra per nome, grado, luogo, sorte..." value="{{ dossier.internatiFilter }}"
+             onInput="{{ dossier.onInternatiFilterInput }}" style="width:100%;max-width:400px;margin-bottom:16px;padding:8px 12px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);font-size:14px;font-family:var(--font-body)" />
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="text-align:left;border-bottom:2px solid var(--color-divider)">
+              <th style="padding:8px 12px;font-weight:600">Nominativo</th>
+              <th style="padding:8px 12px;font-weight:600">Grado</th>
+              <th style="padding:8px 12px;font-weight:600">Luogo nascita</th>
+              <th style="padding:8px 12px;font-weight:600">Luogo internamento</th>
+              <th style="padding:8px 12px;font-weight:600">Sorte</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ dossier.eventInternatiFiltered }}" as="int" hint-placeholder-count="5">
+              <tr style="border-bottom:1px solid var(--color-divider)">
+                <td style="padding:8px 12px">
+                  <span style="color:var(--color-accent-700);font-weight:600;cursor:pointer" onClick="{{ int.onClick }}">{{ int.cognome }} {{ int.nome }}</span>
+                </td>
+                <td style="padding:8px 12px">{{ int.grado || '—' }}</td>
+                <td style="padding:8px 12px">{{ int.luogo_nascita || '—' }}</td>
+                <td style="padding:8px 12px">{{ int.luogo_internamento || '—' }}</td>
+                <td style="padding:8px 12px">
+                  <sc-if value="{{ int.sorte }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:11px;padding:2px 8px;border-radius:99px;background:var(--color-neutral-200)">{{ int.sorte }}</span>
+                  </sc-if>
+                  <sc-if value="{{ int.noSorte }}" hint-placeholder-val="{{ false }}">—</sc-if>
+                </td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <sc-if value="{{ dossier.canLoadMoreInternati }}" hint-placeholder-val="{{ false }}">
+        <button class="btn btn-secondary" onClick="{{ dossier.onLoadMoreInternati }}" disabled="{{ dossier.loadingMoreInternati }}"
+                style="margin-top:12px">
+          {{ dossier.loadingMoreInternati ? 'Caricamento…' : 'Carica altri 50' }}
+        </button>
+      </sc-if>
+    </sc-if>
+
+    <!-- ── Event-centric: Fonti archivistiche ── -->
+    <sc-if value="{{ dossier.tabFontiActive }}" hint-placeholder-val="{{ false }}">
+      <h3 style="font-size:16px;margin-bottom:4px">Fonti archivistiche collegate all'evento</h3>
+      <p style="font-size:12px;opacity:0.6;margin:0 0 16px">{{ dossier.eventFonti.length }} fonti trovate</p>
+      <div style="display:grid;gap:8px;max-width:800px">
+        <sc-for list="{{ dossier.eventFonti }}" as="ef" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--color-surface);border-radius:var(--radius-md);flex-wrap:wrap">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--color-accent-600);flex:none"></span>
+            <div style="flex:1;min-width:200px">
+              <div style="font-size:13.5px;font-weight:600">{{ ef.titolo }}</div>
+              <div style="font-size:12px;opacity:0.6;margin-top:2px">{{ ef.archivio }} · {{ ef.tipo_fonte }}</div>
+            </div>
+            <sc-if value="{{ ef.hasCatalogoUrl }}" hint-placeholder-val="{{ false }}">
+              <a href="{{ ef.url_catalogo }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Catalogo ↗</a>
+            </sc-if>
+            <sc-if value="{{ ef.hasFileUrl }}" hint-placeholder-val="{{ false }}">
+              <a href="{{ ef.url_file }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Documento ↗</a>
+            </sc-if>
+            <button class="btn btn-secondary btn-sm" onClick="{{ ef.onAnalyze }}"
+                    disabled="{{ ef.analyzing }}"
+                    title="Genera un riassunto della fonte">
+              {{ ef.analyzing ? 'Analisi…' : 'Analizza con AI' }}
+            </button>
+          </div>
+          <sc-if value="{{ ef.hasAnalysis }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;padding:14px 16px;background:var(--color-bg);border-radius:var(--radius-md);font-size:14px;line-height:1.6;border-left:3px solid var(--color-accent-600)" sc-html="{{ ef.analysisHtml }}"></div>
+          </sc-if>
+          <sc-if value="{{ ef.hasAnalysisError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:6px;font-size:13px;color:var(--color-accent-2-600)">{{ ef.analysisError }}</div>
+          </sc-if>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- ── Event-centric: Immagini AI ── -->
+    <sc-if value="{{ dossier.tabImmaginiActive }}" hint-placeholder-val="{{ false }}">
+      <h3 style="font-size:16px;margin-bottom:4px">Generazione Immagini AI</h3>
+      <p style="font-size:12px;opacity:0.6;margin:0 0 16px">L'AI analizza il contesto di ogni fonte e genera immagini fotorealistiche di paesaggi, truppe, soldati e dettagli storici</p>
+      <div style="display:grid;gap:16px;max-width:900px">
+        <sc-for list="{{ dossier.eventFonti }}" as="ef" hint-placeholder-count="3">
+          <div style="padding:14px 16px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap">
+              <span style="width:8px;height:8px;border-radius:50%;background:var(--color-accent-600);flex:none"></span>
+              <div style="flex:1;min-width:200px">
+                <div style="font-size:13.5px;font-weight:600">{{ ef.titolo }}</div>
+                <div style="font-size:12px;opacity:0.6;margin-top:2px">{{ ef.archivio }} · {{ ef.tipo_fonte }}</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onClick="{{ ef.onGenerateImages }}"
+                      disabled="{{ ef.generatingImages }}">
+                {{ ef.generatingImages ? 'Generazione…' : 'Genera Immagini' }}
+              </button>
+            </div>
+            <sc-if value="{{ ef.hasImages }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+                <sc-for list="{{ ef.aiImages }}" as="aim" hint-placeholder-count="2">
+                  <div style="border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);overflow:hidden">
+                    <sc-if value="{{ aim.hasImage }}" hint-placeholder-val="{{ false }}">
+                      <div style="width:100%;display:block;cursor:pointer" onClick="{{ aim.onOpen }}" sc-html="{{ aim.imageHtml }}"></div>
+                    </sc-if>
+                    <sc-if value="{{ aim.noImage }}" hint-placeholder-val="{{ false }}">
+                      <div style="width:100%;aspect-ratio:4/3;background:var(--color-neutral-200);display:flex;align-items:center;justify-content:center;font-size:12px;opacity:0.5">Nessuna immagine</div>
+                    </sc-if>
+                    <div style="padding:8px 10px;font-size:12px;font-weight:600">{{ aim.title }}</div>
+                    <sc-if value="{{ aim.hasEpisode }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:0 10px 4px;font-size:11px;font-weight:500;color:var(--color-accent-700)">{{ aim.episode }}</div>
+                    </sc-if>
+                    <sc-if value="{{ aim.hasChunk }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:0 10px 4px;font-size:10px;opacity:0.5;text-transform:uppercase;letter-spacing:0.5px">Chunk: {{ aim.chunk }}</div>
+                    </sc-if>
+                    <sc-if value="{{ aim.hasPrompt }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:0 10px 8px;font-size:11px;opacity:0.6;line-height:1.4">{{ aim.prompt }}</div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ ef.hasImagesError }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:6px;font-size:13px;color:var(--color-accent-2-600)">{{ ef.imagesError }}</div>
+            </sc-if>
+            <sc-if value="{{ ef.generatingImages }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:10px;padding:12px 16px;background:var(--color-bg);border-radius:var(--radius-md)">
+                <div style="font-size:13px;margin-bottom:6px">Generazione immagini in corso…</div>
+                <div style="height:6px;background:var(--color-neutral-300);border-radius:3px;overflow:hidden">
+                  <div style="height:100%;background:var(--color-accent-600);width:100%;transition:width 0.3s"></div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
   </section>
 </sc-if>
 </sc-if>
@@ -329,7 +715,10 @@
 <!-- ─── EVENTS ─── -->
 <sc-if value="{{ isEvents }}" hint-placeholder-val="{{ false }}">
   <section style="padding:28px 0 48px">
-    <h1 style="font-size:26px;margin:0 0 6px">{{ S.navEvents }}</h1>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <h1 style="font-size:26px;margin:0">{{ S.navEvents }}</h1>
+      <button class="btn btn-secondary" onClick="{{ goGraph }}">Grafo Event-Centric ↗</button>
+    </div>
     <p style="font-size:13.5px;opacity:0.7;margin:0 0 22px;max-width:64ch">{{ S.eventsSectionSub }}</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
       <sc-for list="{{ allEvents }}" as="ev" hint-placeholder-count="6">
@@ -343,6 +732,159 @@
         </div>
       </sc-for>
     </div>
+  </section>
+</sc-if>
+
+<!-- ─── GRAPH ─── -->
+<sc-if value="{{ isGraph }}" hint-placeholder-val="{{ false }}">
+  <section style="padding:28px 0 48px">
+    <a onClick="{{ goEvents }}" style="font-size:12.5px;color:var(--color-accent);cursor:pointer;text-decoration:none">← Eventi</a>
+    <h1 style="font-size:26px;margin:10px 0 4px">Network Graph</h1>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 18px">
+      <button class="{{ graphTabEventiClass }}" onClick="{{ goGraphEventi }}">Eventi</button>
+      <button class="{{ graphTabLuoghiClass }}" onClick="{{ goGraphLuoghi }}">Luoghi</button>
+      <button class="{{ graphTabMesiClass }}" onClick="{{ goGraphMesi }}">Anni</button>
+      <button class="{{ graphTabPaesiClass }}" onClick="{{ goGraphPaesi }}">Teatri</button>
+      <button class="{{ graphTabSoldatiClass }}" onClick="{{ goGraphSoldati }}">Soldati</button>
+    </div>
+    <sc-if value="{{ isGraphEventi }}" hint-placeholder-val="{{ false }}">
+    <p style="font-size:13.5px;opacity:0.7;margin:0 0 22px;max-width:64ch">22 eventi canonici (15 WW1 + 7 WW2) e i loro collegamenti a caduti, decorati, documenti, fonti e internati. Dimensione nodo = numero totale link. Colore: blu = WW1, rosso = WW2.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;font-size:12px">
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:var(--color-accent-600)"></span>WW1</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:var(--color-accent-2-600)"></span>WW2</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400)"></span>Caduti</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--color-accent-700)"></span>Decorati</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--color-accent-2-500)"></span>Documenti</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-600)"></span>Fonti</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#e76f51"></span>Internati</span>
+    </div>
+    <div id="graph-svg-container" style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto">{{ graphSVG }}</div>
+    <sc-if value="{{ graphSelectedEvent }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:16px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <h3 style="font-size:18px;margin:0">{{ graphSelectedEvent.name }}</h3>
+          <button class="btn btn-primary btn-sm" onClick="{{ graphSelectedEvent.onOpen }}">Apri dossier →</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
+          <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center">
+            <div style="font-size:20px;font-weight:700;color:var(--color-neutral-700)">{{ graphSelectedEvent.caduti }}</div>
+            <div style="font-size:11px;opacity:0.6">Caduti</div>
+          </div>
+          <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center">
+            <div style="font-size:20px;font-weight:700;color:var(--color-accent-700)">{{ graphSelectedEvent.decorati }}</div>
+            <div style="font-size:11px;opacity:0.6">Decorati</div>
+          </div>
+          <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center">
+            <div style="font-size:20px;font-weight:700;color:var(--color-accent-2-500)">{{ graphSelectedEvent.documenti }}</div>
+            <div style="font-size:11px;opacity:0.6">Documenti</div>
+          </div>
+          <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center">
+            <div style="font-size:20px;font-weight:700;color:var(--color-neutral-600)">{{ graphSelectedEvent.fonti }}</div>
+            <div style="font-size:11px;opacity:0.6">Fonti</div>
+          </div>
+          <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center">
+            <div style="font-size:20px;font-weight:700;color:#e76f51">{{ graphSelectedEvent.internati }}</div>
+            <div style="font-size:11px;opacity:0.6">Internati</div>
+          </div>
+          <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center">
+            <div style="font-size:20px;font-weight:700;color:var(--color-accent-600)">{{ graphSelectedEvent.total }}</div>
+            <div style="font-size:11px;opacity:0.6">Totale link</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    </sc-if>
+
+    <!-- Sub-graph: Luoghi -->
+    <sc-if value="{{ isGraphLuoghi }}" hint-placeholder-val="{{ false }}">
+      <p style="font-size:13.5px;opacity:0.7;margin:0 0 22px;max-width:64ch">Top 50 luoghi di morte per caduti. Dimensione nodo = numero caduti. Colori per anno di morte (1915-1918).</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;font-size:12px">
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#2563eb"></span>1915</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#0891b2"></span>1916</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#ca8a04"></span>1917</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#dc2626"></span>1918</span>
+      </div>
+      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto">{{ graphLuoghiSVG }}</div>
+      <sc-if value="{{ graphSelectedLuogo }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:16px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+          <h3 style="font-size:18px;margin:0 0 10px">{{ graphSelectedLuogo.luogo }}</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px">
+            <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center"><div style="font-size:20px;font-weight:700">{{ graphSelectedLuogo.count }}</div><div style="font-size:11px;opacity:0.6">Caduti totali</div></div>
+            <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center"><div style="font-size:20px;font-weight:700;color:#2563eb">{{ graphSelectedLuogo.a1915 }}</div><div style="font-size:11px;opacity:0.6">1915</div></div>
+            <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center"><div style="font-size:20px;font-weight:700;color:#0891b2">{{ graphSelectedLuogo.a1916 }}</div><div style="font-size:11px;opacity:0.6">1916</div></div>
+            <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center"><div style="font-size:20px;font-weight:700;color:#ca8a04">{{ graphSelectedLuogo.a1917 }}</div><div style="font-size:11px;opacity:0.6">1917</div></div>
+            <div style="padding:10px 14px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center"><div style="font-size:20px;font-weight:700;color:#dc2626">{{ graphSelectedLuogo.a1918 }}</div><div style="font-size:11px;opacity:0.6">1918</div></div>
+          </div>
+          <sc-if value="{{ graphSelectedLuogo.hasEventi }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:12px;font-size:13px"><strong>Eventi collegati:</strong>
+              <sc-for list="{{ graphSelectedLuogo.eventi }}" as="evl" hint-placeholder-count="2"><span class="tag tag-accent" style="margin:2px">{{ evl.evento }} ({{ evl.count }})</span></sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <!-- Sub-graph: Mesi/Anni -->
+    <sc-if value="{{ isGraphMesi }}" hint-placeholder-val="{{ false }}">
+      <p style="font-size:13.5px;opacity:0.7;margin:0 0 22px;max-width:64ch">Caduti e decorati per anno (1914-1921). Barre blu = caduti, barre dorate = decorati.</p>
+      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto">{{ graphMesiSVG }}</div>
+    </sc-if>
+
+    <!-- Sub-graph: Paesi/Teatri -->
+    <sc-if value="{{ isGraphPaesi }}" hint-placeholder-val="{{ false }}">
+      <p style="font-size:13.5px;opacity:0.7;margin:0 0 22px;max-width:64ch">Caduti per teatro operativo. Classificazione da luogo_morte. Dimensione nodo = numero caduti.</p>
+      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto">{{ graphPaesiSVG }}</div>
+      <sc-if value="{{ graphSelectedPaese }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:16px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+          <h3 style="font-size:18px;margin:0 0 10px">{{ graphSelectedPaese.teatro }}</h3>
+          <div style="font-size:14px;margin-bottom:8px"><strong>{{ graphSelectedPaese.count }}</strong> caduti · <strong>{{ graphSelectedPaese.luoghi_count }}</strong> luoghi</div>
+          <div style="font-size:13px;opacity:0.8"><strong>Top luoghi:</strong>
+            <sc-for list="{{ graphSelectedPaese.top_luoghi }}" as="tl" hint-placeholder-count="3"><span class="tag tag-neutral" style="margin:2px">{{ tl.luogo }} ({{ tl.count }})</span></sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <!-- Sub-graph: Soldati -->
+    <sc-if value="{{ isGraphSoldati }}" hint-placeholder-val="{{ false }}">
+      <p style="font-size:13.5px;opacity:0.7;margin:0 0 22px;max-width:64ch">342.555 soldati — network graph con clustering server-side e rendering progressivo.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="{{ soldatiFieldLuogoClass }}" onClick="{{ setSoldatiFieldLuogo }}">Per luogo</button>
+        <button class="{{ soldatiFieldRepartoClass }}" onClick="{{ setSoldatiFieldReparto }}">Per reparto</button>
+        <button class="{{ soldatiFieldAnnoClass }}" onClick="{{ setSoldatiFieldAnno }}">Per anno</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:16px">
+        <div class="card elev-sm" style="padding:14px 16px"><div style="font-size:28px;font-weight:700;color:var(--color-accent-600)">{{ soldatiTotal }}</div><div style="font-size:12px;opacity:0.6">Soldati totali</div></div>
+        <div class="card elev-sm" style="padding:14px 16px"><div style="font-size:28px;font-weight:700;color:var(--color-accent-700)">{{ soldatiWithLuogo }}</div><div style="font-size:12px;opacity:0.6">Con luogo morte</div></div>
+        <div class="card elev-sm" style="padding:14px 16px"><div style="font-size:28px;font-weight:700;color:var(--color-accent-2-600)">{{ soldatiWithReparto }}</div><div style="font-size:12px;opacity:0.6">Con reparto</div></div>
+        <div class="card elev-sm" style="padding:14px 16px"><div style="font-size:28px;font-weight:700;color:var(--color-neutral-600)">{{ soldatiClustersCount }}</div><div style="font-size:12px;opacity:0.6">Cluster ({{ soldatiFieldLabel }})</div></div>
+      </div>
+      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto">{{ graphSoldatiSVG }}</div>
+      <sc-if value="{{ graphSelectedCluster }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:16px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <h3 style="font-size:18px;margin:0">{{ graphSelectedCluster.cluster }}</h3>
+            <span class="tag tag-accent">{{ graphSelectedCluster.count }} soldati</span>
+          </div>
+          <p style="font-size:12px;opacity:0.6;margin:0 0 10px">Drill-down: clicca per caricare i soldati singoli (paginati).</p>
+          <button class="btn btn-primary btn-sm" onClick="{{ graphSelectedCluster.onLoad }}">Carica soldati →</button>
+          <sc-if value="{{ graphSelectedCluster.hasSoldati }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:12px;font-size:12px;opacity:0.7">Pagina {{ graphSelectedCluster.page }} di {{ graphSelectedCluster.totalPages }} — {{ graphSelectedCluster.total }} totali</div>
+            <div style="max-height:400px;overflow-y:auto;margin-top:8px">
+              <table style="width:100%;font-size:12px;border-collapse:collapse">
+                <thead><tr style="border-bottom:1px solid var(--color-neutral-300);text-align:left"><th style="padding:6px 8px">Nominativo</th><th style="padding:6px 8px">Grado</th><th style="padding:6px 8px">Reparto</th><th style="padding:6px 8px">Anno</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ graphSelectedCluster.soldati }}" as="s" hint-placeholder-count="5">
+                    <tr style="border-bottom:1px solid var(--color-neutral-200)"><td style="padding:4px 8px">{{ s.nominativo }}</td><td style="padding:4px 8px">{{ s.grado }}</td><td style="padding:4px 8px;font-size:11px;opacity:0.7">{{ s.reparto }}</td><td style="padding:4px 8px">{{ s.anno_morte }}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </sc-if>
+
   </section>
 </sc-if>
 
@@ -390,24 +932,182 @@
 <!-- ═══ LIGHTBOX ═══ -->
 <sc-if value="{{ hasLightbox }}" hint-placeholder-val="{{ false }}">
   <div class="dialog-backdrop" onClick="{{ closeLightbox }}" style="cursor:pointer">
-    <div class="dialog" style="width:min(460px,100%);max-height:88vh;overflow-y:auto;cursor:default" onClick="{{ stopProp }}">
+    <div class="dialog" style="width:min(720px,100%);max-height:92vh;overflow-y:auto;cursor:default" onClick="{{ stopProp }}">
       <div class="dialog-title">{{ lightbox.title }}</div>
       <div style="font-size:12px;opacity:0.6;margin-top:-8px">{{ lightbox.archive }}</div>
-      <div class="halftone" style="aspect-ratio:4/3;max-height:280px;background:var(--color-neutral-300);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;padding:20px">
-        <div style="width:100%;display:grid;gap:7px">
-          <div style="height:6px;background:var(--color-neutral-500);width:70%"></div>
-          <div style="height:6px;background:var(--color-neutral-500);width:92%"></div>
-          <div style="height:6px;background:var(--color-neutral-500);width:55%"></div>
-          <div style="height:6px;background:var(--color-neutral-500);width:80%"></div>
-          <div style="height:6px;background:var(--color-neutral-500);width:40%"></div>
+
+      <!-- Anteprima immagine -->
+      <sc-if value="{{ lightbox.isImage }}" hint-placeholder-val="{{ false }}">
+        <div style="margin:12px 0;display:flex;justify-content:center;background:var(--color-neutral-100);border-radius:var(--radius-sm);padding:12px" sc-html="{{ lightbox.imageHtml }}"></div>
+      </sc-if>
+
+      <!-- Anteprima PDF -->
+      <sc-if value="{{ lightbox.isPdf }}" hint-placeholder-val="{{ false }}">
+        <div style="margin:12px 0" sc-html="{{ lightbox.pdfHtml }}"></div>
+      </sc-if>
+
+      <!-- Nessuna anteprima disponibile -->
+      <sc-if value="{{ lightbox.noPreview }}" hint-placeholder-val="{{ false }}">
+        <div class="halftone" style="aspect-ratio:4/3;max-height:280px;background:var(--color-neutral-300);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;padding:20px;margin:12px 0">
+          <div style="width:100%;display:grid;gap:7px">
+            <div style="height:6px;background:var(--color-neutral-500);width:70%"></div>
+            <div style="height:6px;background:var(--color-neutral-500);width:92%"></div>
+            <div style="height:6px;background:var(--color-neutral-500);width:55%"></div>
+            <div style="height:6px;background:var(--color-neutral-500);width:80%"></div>
+            <div style="height:6px;background:var(--color-neutral-500);width:40%"></div>
+          </div>
         </div>
-      </div>
-      <p style="font-size:11.5px;opacity:0.6;font-style:italic;margin:0">{{ S.lightboxPlaceholderNote }}</p>
+        <p style="font-size:11.5px;opacity:0.6;font-style:italic;margin:0">{{ S.lightboxPlaceholderNote }}</p>
+      </sc-if>
+
       <div class="dialog-actions">
         <sc-if value="{{ lightbox.hasUrl }}" hint-placeholder-val="{{ false }}">
-          <a href="{{ lightbox.url }}" target="_blank" rel="noopener" class="btn btn-primary">{{ S.lightboxOpenExternal }}</a>
+          <a href="{{ lightbox.fileUrl }}" target="_blank" rel="noopener" class="btn btn-primary">{{ S.lightboxOpenExternal }}</a>
         </sc-if>
         <button class="btn btn-secondary" onClick="{{ closeLightbox }}">{{ S.btnClose }}</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ═══ SOLDATO MODAL ═══ -->
+<sc-if value="{{ hasSoldatoModal }}" hint-placeholder-val="{{ false }}">
+  <div class="dialog-backdrop" onClick="{{ closeSoldatoModal }}" style="cursor:pointer">
+    <div class="dialog" style="width:min(640px,100%);max-height:88vh;overflow-y:auto;cursor:default" onClick="{{ stopProp }}">
+      <div class="dialog-title">{{ soldatoModal.nominativo }}</div>
+      <div style="font-size:12px;opacity:0.6;margin-top:-8px;margin-bottom:16px">
+        <span>{{ soldatoModal.grado }}</span>
+        <sc-if value="{{ soldatoModal.reparto }}"><span> · {{ soldatoModal.reparto }}</span></sc-if>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Paternità</div>
+          <div style="font-size:14px">{{ soldatoModal.paternita || '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Classe</div>
+          <div style="font-size:14px">{{ soldatoModal.classe || '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Comune attuale</div>
+          <div style="font-size:14px">{{ soldatoModal.comune_attuale || '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Luogo morte</div>
+          <div style="font-size:14px">{{ soldatoModal.luogo_morte || '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Anno morte</div>
+          <div style="font-size:14px">{{ soldatoModal.anno_morte || '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Causa morte</div>
+          <div style="font-size:14px">{{ soldatoModal.causa_morte || '—' }}</div>
+        </div>
+      </div>
+
+      <!-- Internato-specific fields -->
+      <sc-if value="{{ soldatoModal.isInternato }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Luogo nascita</div>
+            <div style="font-size:14px">{{ soldatoModal.luogo_nascita || '—' }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Residenza</div>
+            <div style="font-size:14px">{{ soldatoModal.residenza || '—' }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Luogo cattura</div>
+            <div style="font-size:14px">{{ soldatoModal.luogo_cattura || '—' }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Data cattura</div>
+            <div style="font-size:14px">{{ soldatoModal.data_cattura || '—' }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Luogo internamento</div>
+            <div style="font-size:14px">{{ soldatoModal.luogo_internamento || '—' }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Arbeitskommando</div>
+            <div style="font-size:14px">{{ soldatoModal.arbeitskommando || '—' }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Mansione</div>
+            <div style="font-size:14px">{{ soldatoModal.mansione || '—' }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Sorte</div>
+            <div style="font-size:14px">
+              <span style="font-size:12px;padding:2px 10px;border-radius:99px;background:var(--color-neutral-200)">{{ soldatoModal.sorte || '—' }}</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Data</div>
+            <div style="font-size:14px">{{ soldatoModal.data || '—' }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Matricola</div>
+            <div style="font-size:14px">{{ soldatoModal.matricola || '—' }}</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ soldatoModal.hasDecorazioni }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:6px">Decorazioni</div>
+          <sc-for list="{{ soldatoModal.decorazioni }}" as="dec">
+            <div style="padding:6px 12px;background:var(--color-accent-600);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:600;margin-bottom:4px">
+              {{ dec.decorazione }} <sc-if value="{{ dec.anno_morte }}"><span style="opacity:0.8">({{ dec.anno_morte }})</span></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ soldatoModal.hasEventi }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:6px">Eventi collegati</div>
+          <sc-for list="{{ soldatoModal.eventi }}" as="ev">
+            <div style="padding:8px 12px;background:var(--color-neutral-100);border-radius:var(--radius-sm);font-size:13px;margin-bottom:4px">
+              <div style="font-weight:600">{{ ev.nome }}</div>
+              <div style="font-size:12px;opacity:0.7">{{ ev.descrizione }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ soldatoModal.hasDocumenti }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:6px">Documenti collegati ({{ soldatoModal.documentiCount }})</div>
+          <sc-for list="{{ soldatoModal.documenti }}" as="doc">
+            <a href="{{ doc.source_url }}" target="_blank" rel="noopener" style="display:block;padding:8px 12px;background:var(--color-neutral-100);border-radius:var(--radius-sm);font-size:13px;margin-bottom:4px;text-decoration:none;color:var(--color-accent)">
+              {{ doc.title }} <span style="opacity:0.6">· {{ doc.provider }} · {{ doc.doc_type }}</span> ↗
+            </a>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ soldatoModal.hasFonti }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;opacity:0.6;margin-bottom:6px">Fonti archivistiche ({{ soldatoModal.fontiCount }})</div>
+          <sc-for list="{{ soldatoModal.fonti }}" as="f">
+            <div style="padding:8px 12px;background:var(--color-neutral-100);border-radius:var(--radius-sm);font-size:13px;margin-bottom:4px">
+              <div style="font-weight:600">{{ f.titolo }}</div>
+              <div style="font-size:12px;opacity:0.7">{{ f.archivio }} · {{ f.fondo || '' }} · {{ f.tipo_fonte || '' }}</div>
+              <sc-if value="{{ f.url_catalogo }}"><a href="{{ f.url_catalogo }}" target="_blank" rel="noopener" style="font-size:12px;color:var(--color-accent)">Catalogo ↗</a></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ soldatoModal.hasDetailUrl }}" hint-placeholder-val="{{ false }}">
+        <a href="{{ soldatoModal.detail_url }}" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-bottom:12px;display:inline-block">Scheda Albo d'Oro ↗</a>
+      </sc-if>
+
+      <div class="dialog-actions">
+        <button class="btn btn-secondary" onClick="{{ closeSoldatoModal }}">Chiudi</button>
       </div>
     </div>
   </div>
@@ -424,7 +1124,18 @@ class Component extends DCLogic {
     lang: 'it', view: 'home', query: '',
     activeKind: null, activeId: null, dossierTab: 'overview',
     exploreId: 'internati', lightbox: null,
+    _soldatoModal: null, _cadutiFilter: '', _decoratiFilter: '', _internatiFilter: '',
     searching: false, adminLive: null,
+    _recentSearches: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportError: null,
+    _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false,
+    _graphSelectedEvent: null, _graphEventsList: null,
+    _graphTab: 'eventi',
+    _graphLuoghiList: null, _graphSelectedLuogo: null,
+    _graphMesiList: null,
+    _graphPaesiList: null, _graphSelectedPaese: null,
+    _soldatiArch: null, _soldatiField: 'luogo_morte', _soldatiClusters: null, _graphSelectedCluster: null,
+    _soldierBio: null, _soldierBioLoading: false, _soldierBioError: null, _soldierBioSources: [],
+    _soldierImages: null, _soldierImagesLoading: false, _soldierImagesError: null,
   };
 
   componentDidMount() {
@@ -443,6 +1154,26 @@ class Component extends DCLogic {
           data: { ...st.data, DB_STATS: liveStats },
         }));
       } catch(e) { console.warn('live stats error', e); }
+      // 2b. Carica eventi 1GM dal backend
+      try {
+        const r = await fetch('/api/events/1gm').then(r => r.json());
+        const eventi = r.eventi || [];
+        const dynamicEvents = {};
+        for (const ev of eventi) {
+          const id = ev.nome.toLowerCase()
+            .replace(/[àá]/g, 'a').replace(/[èé]/g, 'e').replace(/[ìí]/g, 'i').replace(/[òó]/g, 'o').replace(/[ùú]/g, 'u')
+            .replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+          dynamicEvents[id] = {
+            id, type: 'evento', name: ev.nome,
+            subtitle: `${ev.data_inizio || '?'} – ${ev.data_fine || '?'}, ${ev.luogo || ''}`,
+            tags: ev.aliases?.slice(0, 3) || [],
+            status: 'verified', confidence: 0.95,
+            timeline: [], perspectives: [], sources: [], gaps: [],
+            _stats: { caduti: ev.caduti||0, decorati: ev.decorati||0, documenti: ev.documenti||0, fonti: ev.fonti||0, internati: ev.internati||0 },
+          };
+        }
+        this.setState(st => ({ data: { ...st.data, EVENTS: { ...dynamicEvents, ...st.data.EVENTS } } }));
+      } catch(e) { console.warn('load events 1gm error', e); }
     });
   }
 
@@ -469,21 +1200,48 @@ class Component extends DCLogic {
   goExplore(id) { this.setState({ view: 'explore', exploreId: id || 'internati', lightbox: null }); }
   goSearch(q) {
     const query = q !== undefined ? q : this.state.query;
-    this.setState({ view: 'search', query, lightbox: null, searching: true });
+    this.setState(st => ({
+      view: 'search', query, lightbox: null, searching: true,
+      _searchConfirmations: [], _searchValidations: [], _searchStatus: null, _externalSources: [],
+      _recentSearches: [...new Set([query, ...(st._recentSearches || [])])].slice(0, 10),
+    }));
     const m = this.state._mod;
     if (m && m.searchLive) {
-      m.searchLive(query).then(({ subjects, events }) => {
+      m.searchLive(query).then(({ subjects, events, confirmations, validations, searchStatus, externalSources }) => {
         this.setState(st => ({
           searching: false,
           data: { ...st.data, SUBJECTS: { ...st.data.SUBJECTS, ...subjects }, EVENTS: { ...st.data.EVENTS, ...events } },
+          _searchConfirmations: confirmations || [],
+          _searchValidations: validations || [],
+          _searchStatus: searchStatus || 'local_only',
+          _externalSources: externalSources || [],
         }));
       }).catch(() => this.setState({ searching: false }));
     } else {
       this.setState({ searching: false });
     }
   }
+  async confirmSearchFix(confirmation, idx) {
+    try {
+      const res = await fetch('/api/search/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(confirmation),
+      }).then(r => r.json());
+      if (res.ok) {
+        this.setState(st => {
+          const confs = [...(st._searchConfirmations || [])];
+          confs[idx] = { ...confs[idx], _applied: true, _result: res };
+          return { _searchConfirmations: confs };
+        });
+        this.goSearch(this.state.query);
+      }
+    } catch(e) {
+      console.warn('confirmSearchFix error:', e);
+    }
+  }
   openDossier(kind, id) {
-    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null, _externalSources: [] });
+    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null, _externalSources: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportError: null, _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false, _soldierBio: null, _soldierBioLoading: false, _soldierBioError: null, _soldierBioSources: [], _soldierImages: null, _soldierImagesLoading: false, _soldierImagesError: null });
     // Se è un soldato IMI live, carica fonti e timeline dal backend
     const m = this.state._mod;
     if (kind === 'subject' && id && id.startsWith('imi_') && m && m.loadSoldierDossier) {
@@ -497,31 +1255,648 @@ class Component extends DCLogic {
         });
       }).catch(() => {});
     }
+    // Carica dossier evento dal backend se disponibile
+    if (kind === 'event') {
+      const m = this.state._mod;
+      if (m && m.loadEventDossier) {
+        const evData = (this.state.data.EVENTS || {})[id];
+        const eventName = evData ? evData.name : id;
+        m.loadEventDossier(eventName).then(dossier => {
+          this.setState({ _eventDossier: dossier });
+        }).catch(() => {});
+      }
+    }
     // Carica fonti_risorse esterne collegate all'entità
     this.loadExternalSources(kind, id);
   }
+  async generateSoldierBio(bioId = null) {
+    const id = bioId || this.state.activeId;
+    if (!id || !id.startsWith('imi_')) return;
+    const soldierId = parseInt(id.replace('imi_', ''), 10);
+    this.setState({ _soldierBioLoading: true, _soldierBioError: null });
+    try {
+      const res = await fetch('/api/biography', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject_type: 'soldier', soldier_id: soldierId }),
+      }).then(r => r.json());
+      if (res.risposta) {
+        this.setState({ _soldierBio: res.risposta, _soldierBioLoading: false, _soldierBioSources: res.online_sources || [] });
+      } else {
+        this.setState({ _soldierBioError: res.detail || res.error || 'Errore generazione biografia', _soldierBioLoading: false });
+      }
+    } catch(e) {
+      this.setState({ _soldierBioError: 'Errore di connessione: ' + e.message, _soldierBioLoading: false });
+    }
+  }
+  async generateSoldierImages(imgId = null) {
+    const id = imgId || this.state.activeId;
+    if (!id) return;
+    const subj = (this.state.data.SUBJECTS || {})[id];
+    if (!subj) return;
+    const cognome = subj._cognome || subj.name || '';
+    const nome = subj._nome || '';
+    const subtitle = subj.subtitle || '';
+    this.setState({ _soldierImagesLoading: true, _soldierImagesError: null });
+    try {
+      const res = await fetch('/api/soldier/images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: `${nome} ${cognome}`.trim(), subtitle, id }),
+      }).then(r => r.json());
+      if (res.ok && res.images) {
+        this.setState({ _soldierImages: res.images, _soldierImagesLoading: false });
+      } else {
+        this.setState({ _soldierImagesError: res.detail || res.error || 'Errore generazione immagini', _soldierImagesLoading: false });
+      }
+    } catch(e) {
+      this.setState({ _soldierImagesError: 'Errore di connessione: ' + e.message, _soldierImagesLoading: false });
+    }
+  }
+  async generateEventReport() {
+    const evData = (this.state.data.EVENTS || {})[this.state.activeId];
+    const eventName = evData ? evData.name : this.state.activeId;
+    this.setState({ _eventReportLoading: true, _eventReportError: null });
+    try {
+      const res = await fetch('/api/event/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_name: eventName }),
+      }).then(r => r.json());
+      if (res.risposta) {
+        this.setState({ _eventReport: res.risposta, _eventReportLoading: false });
+      } else {
+        this.setState({ _eventReportError: res.detail || 'Errore generazione report', _eventReportLoading: false });
+      }
+    } catch(e) {
+      this.setState({ _eventReportError: 'Errore di connessione: ' + e.message, _eventReportLoading: false });
+    }
+  }
+  async generateChronologicalReport() {
+    const evData = (this.state.data.EVENTS || {})[this.state.activeId];
+    const eventName = evData ? evData.name : this.state.activeId;
+    this.setState({ _chronoReportLoading: true, _chronoReportError: null });
+    try {
+      const res = await fetch('/api/event/report/chronological', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_name: eventName }),
+      }).then(r => r.json());
+      if (res.risposta) {
+        this.setState({ _chronoReport: res.risposta, _chronoReportLoading: false });
+      } else {
+        this.setState({ _chronoReportError: res.detail || 'Errore generazione report', _chronoReportLoading: false });
+      }
+    } catch(e) {
+      this.setState({ _chronoReportError: 'Errore di connessione: ' + e.message, _chronoReportLoading: false });
+    }
+  }
+  async analyzeSource(sourceId) {
+    const evData = (this.state.data.EVENTS || {})[this.state.activeId];
+    const eventName = evData ? evData.name : '';
+    this.setState(st => {
+      const m = { ...(st._sourceAnalysis || {}) };
+      m[sourceId] = { ...(m[sourceId] || {}), loading: true, error: null };
+      return { _sourceAnalysis: m };
+    });
+    try {
+      const res = await fetch('/api/fonte/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source_id: sourceId, event_name: eventName }),
+      }).then(r => r.json());
+      this.setState(st => {
+        const m = { ...(st._sourceAnalysis || {}) };
+        if (res.risposta) {
+          m[sourceId] = { loading: false, result: res.risposta, error: null };
+        } else {
+          m[sourceId] = { loading: false, result: null, error: res.detail || 'Errore analisi' };
+        }
+        return { _sourceAnalysis: m };
+      });
+    } catch(e) {
+      this.setState(st => {
+        const m = { ...(st._sourceAnalysis || {}) };
+        m[sourceId] = { loading: false, result: null, error: 'Errore di connessione: ' + e.message };
+        return { _sourceAnalysis: m };
+      });
+    }
+  }
+  async generateSourceImages(sourceId) {
+    const evData = (this.state.data.EVENTS || {})[this.state.activeId];
+    const eventName = evData ? evData.name : '';
+    this.setState(st => {
+      const m = { ...(st._sourceImages || {}) };
+      m[sourceId] = { loading: true, images: null, error: null };
+      return { _sourceImages: m };
+    });
+    try {
+      const res = await fetch('/api/fonte/generate-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source_id: sourceId, event_name: eventName }),
+      }).then(r => r.json());
+      this.setState(st => {
+        const m = { ...(st._sourceImages || {}) };
+        if (res.ok && res.images) {
+          m[sourceId] = { loading: false, images: res.images, error: null };
+        } else {
+          m[sourceId] = { loading: false, images: null, error: res.detail || 'Errore generazione immagini' };
+        }
+        return { _sourceImages: m };
+      });
+    } catch(e) {
+      this.setState(st => {
+        const m = { ...(st._sourceImages || {}) };
+        m[sourceId] = { loading: false, images: null, error: 'Errore di connessione: ' + e.message };
+        return { _sourceImages: m };
+      });
+    }
+  }
+  setEventChatInput(e) { this.setState({ _eventChatInput: e.target.value }); }
+  async sendEventChatMessage() {
+    const msg = (this.state._eventChatInput || '').trim();
+    if (!msg || this.state._eventChatLoading) return;
+    const evData = (this.state.data.EVENTS || {})[this.state.activeId];
+    const eventName = evData ? evData.name : this.state.activeId;
+    const history = (this.state._eventChatMessages || []).map(m => ({ role: m.role, content: m.text }));
+    this.setState(st => ({ _eventChatInput: '', _eventChatLoading: true, _eventChatMessages: [...(st._eventChatMessages || []), { role: 'user', text: msg }] }));
+    try {
+      const res = await fetch('/api/event/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_name: eventName, message: msg, report: this.state._eventReport || '', history }),
+      }).then(r => r.json());
+      if (res.risposta) {
+        this.setState(st => ({ _eventChatMessages: [...(st._eventChatMessages || []), { role: 'assistant', text: res.risposta, provider: res.provider }], _eventChatLoading: false }));
+      } else {
+        this.setState(st => ({ _eventChatMessages: [...(st._eventChatMessages || []), { role: 'assistant', text: 'Errore: ' + (res.detail || 'risposta non valida') }], _eventChatLoading: false }));
+      }
+    } catch(e) {
+      this.setState(st => ({ _eventChatMessages: [...(st._eventChatMessages || []), { role: 'assistant', text: 'Errore di connessione: ' + e.message }], _eventChatLoading: false }));
+    }
+  }
+  eventChatKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendEventChatMessage(); } }
+  linkify(text) {
+    if (!text) return '';
+    let s = String(text);
+    s = s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const urlRe = /(https?:\/\/[^\s<>"']+)/g;
+    const webRefRe = /\[WEB\s*#(\d+)\]/g;
+    const urlLines = {};
+    const lines = s.split('\n');
+    for (const line of lines) {
+      const m = line.match(/\[WEB\s*#(\d+)\][^\n]*?(https?:\/\/[^\s<>"']+)/);
+      if (m) urlLines[m[1]] = m[2];
+    }
+    s = s.replace(urlRe, (url) => {
+      const display = url.length > 60 ? url.substring(0,57) + '…' : url;
+      return `<a href="${url}" target="_blank" rel="noopener" style="color:var(--color-accent-600);text-decoration:underline;font-weight:500">${display}</a>`;
+    });
+    s = s.replace(webRefRe, (match, num) => {
+      const u = urlLines[num];
+      if (u) {
+        return `<a href="${u}" target="_blank" rel="noopener" style="display:inline-block;padding:1px 7px;border-radius:var(--radius-sm);background:var(--color-accent-600);color:#fff;font-size:11px;font-weight:600;text-decoration:none">WEB #${num} ↗</a>`;
+      }
+      return `<span style="display:inline-block;padding:1px 7px;border-radius:var(--radius-sm);background:var(--color-neutral-400);color:#fff;font-size:11px;font-weight:600">WEB #${num}</span>`;
+    });
+    return s;
+  }
   async loadExternalSources(kind, id) {
     try {
-      const res = await fetch('/api/fonti-risorse?limit=20').then(r => r.json());
+      // Se disponibile un fonte_id dal soggetto corrente, filtra le risorse collegate
+      let fonte_id = null;
+      if (kind === 'subject') {
+        const subj = (this.state.data.SUBJECTS || {})[id] || {};
+        fonte_id = subj.fonte_id || null;
+      }
+      const url = fonte_id ? `/api/fonti-risorse?fonte_id=${encodeURIComponent(fonte_id)}&limit=100` : '/api/fonti-risorse?limit=100';
+      const res = await fetch(url).then(r => r.json());
       if (res.risorse && res.risorse.length) {
-        const mapped = res.risorse.map(r => ({
-          titolo: r.titolo || r.url_pagina,
-          ente_titolare: r.ente_titolare || '',
-          licenza: r.licenza || 'tutti i diritti riservati',
-          tipo_risorsa: r.tipo_risorsa || 'pagina',
-          url_pagina: r.url_pagina,
-          url_documento: r.url_documento,
-          hasDocument: !!r.url_documento,
-          note_copyright: r.note_copyright || null,
-        }));
+        const mapped = res.risorse.map(r => {
+          const access = r.url_documento ? 'locale' : r.url_pagina ? 'online' : 'richiesta';
+          const url = r.url_documento || r.url_pagina || null;
+          return {
+            id: r.id,
+            title: r.titolo || r.url_pagina || 'Fonte #' + r.id,
+            archive: r.ente_titolare || r.archivio || 'Archivio esterno',
+            access,
+            url,
+            accessLabelKey: access,
+            tipo_risorsa: r.tipo_risorsa || 'pagina',
+            url_pagina: r.url_pagina || null,
+            url_documento: r.url_documento || null,
+            hasDocument: !!r.url_documento,
+            note_copyright: r.note_copyright || null,
+          };
+        });
         this.setState({ _externalSources: mapped });
+      } else {
+        this.setState({ _externalSources: [] });
       }
     } catch(e) { console.warn('loadExternalSources error', e); }
   }
   setDossierTab(tab) { this.setState({ dossierTab: tab }); }
+  async loadMoreCaduti() {
+    const st = this.state;
+    const m = st._mod;
+    if (!m || !st._eventDossier) return;
+    const eventName = st._eventDossier.event?.name || st.activeId;
+    if (!eventName) return;
+    this.setState({ _loadingMoreCaduti: true });
+    try {
+      const currentLen = (st._eventDossier.caduti || []).length;
+      const encoded = encodeURIComponent(eventName.replace(/\s+/g, '+'));
+      const r = await fetch(`/api/events/1gm/${encoded}/caduti?limit=50&offset=${currentLen}`).then(r => r.json());
+      const newCaduti = r.caduti || [];
+      this.setState({
+        _eventDossier: {
+          ...st._eventDossier,
+          caduti: [...(st._eventDossier.caduti || []), ...newCaduti],
+        },
+        _loadingMoreCaduti: false,
+      });
+    } catch(e) {
+      this.setState({ _loadingMoreCaduti: false });
+    }
+  }
+  async loadMoreDecorati() {
+    const st = this.state;
+    const m = st._mod;
+    if (!m || !st._eventDossier) return;
+    const eventName = st._eventDossier.event?.name || st.activeId;
+    if (!eventName) return;
+    this.setState({ _loadingMoreDecorati: true });
+    try {
+      const currentLen = (st._eventDossier.decorati || []).length;
+      const encoded = encodeURIComponent(eventName.replace(/\s+/g, '+'));
+      const r = await fetch(`/api/events/1gm/${encoded}/decorati?limit=50&offset=${currentLen}`).then(r => r.json());
+      const newDecorati = r.decorati || [];
+      this.setState({
+        _eventDossier: {
+          ...st._eventDossier,
+          decorati: [...(st._eventDossier.decorati || []), ...newDecorati],
+        },
+        _loadingMoreDecorati: false,
+      });
+    } catch(e) {
+      this.setState({ _loadingMoreDecorati: false });
+    }
+  }
   setLang(l) { this.setState({ lang: l }); }
   openLightbox(source) { this.setState({ lightbox: source }); }
   closeLightbox() { this.setState({ lightbox: null }); }
+  closeSoldatoModal() { this.setState({ _soldatoModal: null }); }
+  _cadutiSearchTimer = null;
+  _decoratiSearchTimer = null;
+  _internatiSearchTimer = null;
+  setCadutiFilter(val) {
+    this.setState({ _cadutiFilter: val });
+    if (this._cadutiSearchTimer) clearTimeout(this._cadutiSearchTimer);
+    this._cadutiSearchTimer = setTimeout(() => this._searchCadutiServer(val), 350);
+  }
+  setDecoratiFilter(val) {
+    this.setState({ _decoratiFilter: val });
+    if (this._decoratiSearchTimer) clearTimeout(this._decoratiSearchTimer);
+    this._decoratiSearchTimer = setTimeout(() => this._searchDecoratiServer(val), 350);
+  }
+  setInternatiFilter(val) {
+    this.setState({ _internatiFilter: val });
+    if (this._internatiSearchTimer) clearTimeout(this._internatiSearchTimer);
+    this._internatiSearchTimer = setTimeout(() => this._searchInternatiServer(val), 350);
+  }
+  async _searchCadutiServer(search) {
+    const st = this.state;
+    const evData = (this.state.data.EVENTS || {})[st.activeId];
+    const eventName = evData ? evData.name : st.activeId;
+    if (!eventName) return;
+    const encoded = encodeURIComponent(eventName.replace(/\s+/g, '+'));
+    const q = search ? `&search=${encodeURIComponent(search)}` : '';
+    this.setState({ _loadingMoreCaduti: true });
+    try {
+      const r = await fetch(`/api/events/1gm/${encoded}/caduti?limit=50&offset=0${q}`).then(r => r.json());
+      this.setState({
+        _eventDossier: { ...st._eventDossier, caduti: r.caduti || [], caduti_total: r.total },
+        _loadingMoreCaduti: false,
+      });
+    } catch(e) { this.setState({ _loadingMoreCaduti: false }); }
+  }
+  async _searchDecoratiServer(search) {
+    const st = this.state;
+    const evData = (this.state.data.EVENTS || {})[st.activeId];
+    const eventName = evData ? evData.name : st.activeId;
+    if (!eventName) return;
+    const encoded = encodeURIComponent(eventName.replace(/\s+/g, '+'));
+    const q = search ? `&search=${encodeURIComponent(search)}` : '';
+    this.setState({ _loadingMoreDecorati: true });
+    try {
+      const r = await fetch(`/api/events/1gm/${encoded}/decorati?limit=50&offset=0${q}`).then(r => r.json());
+      this.setState({
+        _eventDossier: { ...st._eventDossier, decorati: r.decorati || [], decorati_total: r.total },
+        _loadingMoreDecorati: false,
+      });
+    } catch(e) { this.setState({ _loadingMoreDecorati: false }); }
+  }
+  async _searchInternatiServer(search) {
+    const st = this.state;
+    const evData = (this.state.data.EVENTS || {})[st.activeId];
+    const eventName = evData ? evData.name : st.activeId;
+    if (!eventName) return;
+    const encoded = encodeURIComponent(eventName.replace(/\s+/g, '+'));
+    const q = search ? `&search=${encodeURIComponent(search)}` : '';
+    this.setState({ _loadingMoreInternati: true });
+    try {
+      const r = await fetch(`/api/events/${encoded}/internati?limit=50&offset=0${q}`).then(r => r.json());
+      this.setState({
+        _eventDossier: { ...st._eventDossier, internati: r.internati || [], internati_total: r.total },
+        _loadingMoreInternati: false,
+      });
+    } catch(e) { this.setState({ _loadingMoreInternati: false }); }
+  }
+  async loadMoreInternati() {
+    const st = this.state;
+    const evData = (this.state.data.EVENTS || {})[st.activeId];
+    const eventName = evData ? evData.name : st.activeId;
+    if (!eventName) return;
+    const encoded = encodeURIComponent(eventName.replace(/\s+/g, '+'));
+    const currentLen = ((st._eventDossier && st._eventDossier.internati) || []).length;
+    const search = st._internatiFilter || '';
+    const q = search ? `&search=${encodeURIComponent(search)}` : '';
+    this.setState({ _loadingMoreInternati: true });
+    try {
+      const r = await fetch(`/api/events/${encoded}/internati?limit=50&offset=${currentLen}${q}`).then(r => r.json());
+      const newInternati = r.internati || [];
+      this.setState({
+        _eventDossier: { ...st._eventDossier, internati: [...(st._eventDossier.internati || []), ...newInternati] },
+        _loadingMoreInternati: false,
+      });
+    } catch(e) { this.setState({ _loadingMoreInternati: false }); }
+  }
+  async openSoldatoModal(type, id) {
+    this.setState({ _soldatoModal: { loading: true } });
+    try {
+      const endpoint = type === 'caduto' ? `/api/caduti/${id}` : type === 'decorato' ? `/api/decorati/${id}` : `/api/internati/${id}/detail`;
+      const r = await fetch(endpoint).then(r => r.json());
+      this.setState({ _soldatoModal: { ...r, loading: false, type } });
+    } catch(e) {
+      this.setState({ _soldatoModal: { loading: false, error: String(e) } });
+    }
+  }
+  async goGraph(tab) {
+    const t = tab || 'eventi';
+    this.setState({ view: 'graph', _graphTab: t, _graphSelectedEvent: null, _graphSelectedLuogo: null, _graphSelectedPaese: null, _graphSelectedCluster: null });
+    if (t === 'eventi' && !this.state._graphEventsList) {
+      try {
+        const res = await fetch('/api/events/1gm').then(r => r.json());
+        const eventi = (res.eventi || []).map(e => ({
+          ...e,
+          total_links: e.total_links || 0,
+          caduti: e.caduti || 0,
+          decorati: e.decorati || 0,
+          documenti: e.documenti || 0,
+          fonti: e.fonti || 0,
+          internati: e.internati || 0,
+        }));
+        this.setState({ _graphEventsList: eventi });
+      } catch(e) { console.warn('goGraph eventi fetch error', e); }
+    }
+    if (t === 'luoghi' && !this.state._graphLuoghiList) {
+      try {
+        const res = await fetch('/api/graph/luoghi?limit=50').then(r => r.json());
+        this.setState({ _graphLuoghiList: res.nodes || [] });
+      } catch(e) { console.warn('goGraph luoghi fetch error', e); }
+    }
+    if (t === 'mesi' && !this.state._graphMesiList) {
+      try {
+        const res = await fetch('/api/graph/mesi').then(r => r.json());
+        this.setState({ _graphMesiList: res.nodes || [] });
+      } catch(e) { console.warn('goGraph mesi fetch error', e); }
+    }
+    if (t === 'paesi' && !this.state._graphPaesiList) {
+      try {
+        const res = await fetch('/api/graph/paesi').then(r => r.json());
+        this.setState({ _graphPaesiList: res.nodes || [] });
+      } catch(e) { console.warn('goGraph paesi fetch error', e); }
+    }
+    if (t === 'soldati') {
+      if (!this.state._soldatiArch) {
+        try {
+          const arch = await fetch('/api/graph/soldati/architecture').then(r => r.json());
+          this.setState({ _soldatiArch: arch });
+        } catch(e) { console.warn('soldati arch fetch error', e); }
+      }
+      await this.loadSoldatiClusters(this.state._soldatiField);
+    }
+  }
+  goGraphEventi() { this.goGraph('eventi'); }
+  goGraphLuoghi() { this.goGraph('luoghi'); }
+  goGraphMesi() { this.goGraph('mesi'); }
+  goGraphPaesi() { this.goGraph('paesi'); }
+  goGraphSoldati() { this.goGraph('soldati'); }
+  async loadSoldatiClusters(field) {
+    try {
+      const res = await fetch(`/api/graph/soldati/clusters?field=${field}&limit=50`).then(r => r.json());
+      this.setState({ _soldatiClusters: res.clusters || [], _soldatiField: field, _graphSelectedCluster: null });
+    } catch(e) { console.warn('soldati clusters fetch error', e); }
+  }
+  setSoldatiFieldLuogo() { this.loadSoldatiClusters('luogo_morte'); }
+  setSoldatiFieldReparto() { this.loadSoldatiClusters('reparto'); }
+  setSoldatiFieldAnno() { this.loadSoldatiClusters('anno_morte'); }
+  async loadClusterSoldati(cluster) {
+    const field = this.state._soldatiField;
+    try {
+      const res = await fetch(`/api/graph/soldati/cluster/${field}/${encodeURIComponent(cluster.cluster)}?page=1&limit=50`).then(r => r.json());
+      this.setState(st => ({
+        _graphSelectedCluster: {
+          ...cluster,
+          hasSoldati: true,
+          soldati: res.soldati || [],
+          page: res.page,
+          totalPages: res.total_pages,
+          total: res.total,
+          onLoad: () => this.loadClusterSoldati(cluster),
+        },
+      }));
+    } catch(e) { console.warn('load cluster soldati error', e); }
+  }
+  selectGraphLuogo(node) {
+    this.setState({ _graphSelectedLuogo: {
+      luogo: node.luogo,
+      count: (node.count || 0).toLocaleString('it-IT'),
+      a1915: (node.anni?.['1915'] || 0).toLocaleString('it-IT'),
+      a1916: (node.anni?.['1916'] || 0).toLocaleString('it-IT'),
+      a1917: (node.anni?.['1917'] || 0).toLocaleString('it-IT'),
+      a1918: (node.anni?.['1918'] || 0).toLocaleString('it-IT'),
+      hasEventi: (node.eventi || []).length > 0,
+      eventi: node.eventi || [],
+    }});
+  }
+  selectGraphPaese(node) { this.setState({ _graphSelectedPaese: node }); }
+  selectGraphCluster(cluster) {
+    this.setState({ _graphSelectedCluster: { ...cluster, hasSoldati: false, onLoad: () => this.loadClusterSoldati(cluster) }});
+  }
+  buildGraphLuoghiSVG(nodes) {
+    if (!nodes || !nodes.length) return '<p style="opacity:0.5">Nessun luogo</p>';
+    const W = 900, H = 640, cx = W/2, cy = H/2;
+    const maxN = Math.max(...nodes.map(n => n.count || 0), 1);
+    const colors = {'1915':'#2563eb','1916':'#0891b2','1917':'#ca8a04','1918':'#dc2626'};
+    let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">`;
+    const positions = [];
+    nodes.forEach((n, i) => {
+      const angle = (i / nodes.length) * Math.PI * 2;
+      const r = 240 + (n.count / maxN) * 40;
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      const nr = 6 + (n.count / maxN) * 22;
+      positions.push({ x, y, r: nr, n });
+    });
+    for (const p of positions) {
+      svg += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="var(--color-neutral-300)" stroke-width="1" opacity="0.4"/>`;
+    }
+    svg += `<circle cx="${cx}" cy="${cy}" r="20" fill="var(--color-neutral-700)" opacity="0.3"/>`;
+    svg += `<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="10" fill="var(--color-neutral-600)">Caduti</text>`;
+    for (const p of positions) {
+      const n = p.n;
+      const anni = n.anni || {};
+      const dominantYear = Object.entries(anni).sort((a,b) => b[1]-a[1])[0];
+      const col = dominantYear ? (colors[dominantYear[0]] || '#666') : '#666';
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${col}" opacity="0.8" stroke="var(--color-neutral-700)" stroke-width="1" style="cursor:pointer" onClick="${() => this.selectGraphLuogo(n)}"/>`;
+      const label = (n.luogo || '').length > 15 ? (n.luogo || '').substring(0, 13) + '…' : (n.luogo || '');
+      svg += `<text x="${p.x}" y="${p.y + p.r + 12}" text-anchor="middle" font-size="8" fill="var(--color-neutral-700)" style="pointer-events:none">${label}</text>`;
+    }
+    svg += '</svg>';
+    return svg;
+  }
+  buildGraphMesiSVG(nodes) {
+    if (!nodes || !nodes.length) return '<p style="opacity:0.5">Nessun dato</p>';
+    const W = 900, H = 400, pad = 50;
+    const maxV = Math.max(...nodes.map(n => Math.max(n.caduti, n.decorati)), 1);
+    const bw = (W - pad * 2) / nodes.length;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">`;
+    svg += `<line x1="${pad}" y1="${H-pad}" x2="${W-pad}" y2="${H-pad}" stroke="var(--color-neutral-400)" stroke-width="1"/>`;
+    svg += `<line x1="${pad}" y1="${pad}" x2="${pad}" y2="${H-pad}" stroke="var(--color-neutral-400)" stroke-width="1"/>`;
+    for (let i = 0; i <= 4; i++) {
+      const y = H - pad - (i / 4) * (H - pad * 2);
+      const v = Math.round((i / 4) * maxV);
+      svg += `<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="var(--color-neutral-200)" stroke-width="0.5"/>`;
+      svg += `<text x="${pad-8}" y="${y+3}" text-anchor="end" font-size="9" fill="var(--color-neutral-500)">${v.toLocaleString('it-IT')}</text>`;
+    }
+    nodes.forEach((n, i) => {
+      const x = pad + i * bw + bw * 0.15;
+      const barW = bw * 0.3;
+      const hCaduti = (n.caduti / maxV) * (H - pad * 2);
+      const hDecorati = (n.decorati / maxV) * (H - pad * 2);
+      svg += `<rect x="${x}" y="${H-pad-hCaduti}" width="${barW}" height="${hCaduti}" fill="#2563eb" opacity="0.85" rx="2"/>`;
+      svg += `<rect x="${x+barW+2}" y="${H-pad-hDecorati}" width="${barW}" height="${hDecorati}" fill="#ca8a04" opacity="0.85" rx="2"/>`;
+      svg += `<text x="${x+barW}" y="${H-pad+14}" text-anchor="middle" font-size="10" fill="var(--color-neutral-700)">${n.anno}</text>`;
+    });
+    svg += '</svg>';
+    return svg;
+  }
+  buildGraphPaesiSVG(nodes) {
+    if (!nodes || !nodes.length) return '<p style="opacity:0.5">Nessun teatro</p>';
+    const W = 900, H = 500, cx = W/2, cy = H/2;
+    const maxN = Math.max(...nodes.map(n => n.count || 0), 1);
+    const palette = ['#2563eb','#dc2626','#0891b2','#ca8a04','#7c3aed','#059669','#e76f51','#64748b'];
+    let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">`;
+    const positions = [];
+    nodes.forEach((n, i) => {
+      const angle = (i / nodes.length) * Math.PI * 2 - Math.PI/2;
+      const r = 160 + (n.count / maxN) * 60;
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      const nr = 14 + (n.count / maxN) * 36;
+      positions.push({ x, y, r: nr, n, col: palette[i % palette.length] });
+    });
+    for (const p of positions) {
+      svg += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="${p.col}" stroke-width="2" opacity="0.3"/>`;
+    }
+    svg += `<circle cx="${cx}" cy="${cy}" r="24" fill="var(--color-neutral-700)" opacity="0.2"/>`;
+    svg += `<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11" fill="var(--color-neutral-600)">Fronte</text>`;
+    for (const p of positions) {
+      const n = p.n;
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${p.col}" opacity="0.75" stroke="var(--color-neutral-700)" stroke-width="1.5" style="cursor:pointer" onClick="${() => this.selectGraphPaese(n)}"/>`;
+      svg += `<text x="${p.x}" y="${p.y - p.r - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="var(--color-neutral-700)">${n.teatro}</text>`;
+      svg += `<text x="${p.x}" y="${p.y + 4}" text-anchor="middle" font-size="9" fill="white" style="pointer-events:none">${(n.count/1000).toFixed(0)}k</text>`;
+    }
+    svg += '</svg>';
+    return svg;
+  }
+  buildGraphSoldatiSVG(clusters) {
+    if (!clusters || !clusters.length) return '<p style="opacity:0.5">Nessun cluster</p>';
+    const W = 900, H = 500, cx = W/2, cy = H/2;
+    const maxN = Math.max(...clusters.map(c => c.count || 0), 1);
+    let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">`;
+    const positions = [];
+    clusters.forEach((c, i) => {
+      const angle = (i / clusters.length) * Math.PI * 2;
+      const r = 100 + (c.count / maxN) * 180;
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      const nr = 4 + Math.sqrt(c.count / maxN) * 24;
+      positions.push({ x, y, r: nr, c });
+    });
+    for (const p of positions) {
+      svg += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="var(--color-neutral-300)" stroke-width="0.5" opacity="0.3"/>`;
+    }
+    svg += `<circle cx="${cx}" cy="${cy}" r="16" fill="var(--color-accent-600)" opacity="0.3"/>`;
+    for (const p of positions) {
+      const c = p.c;
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="var(--color-accent-600)" opacity="0.7" stroke="var(--color-accent-700)" stroke-width="1" style="cursor:pointer" onClick="${() => this.selectGraphCluster(c)}"/>`;
+      if (p.r > 10) {
+        const label = (c.cluster || '').length > 14 ? (c.cluster || '').substring(0, 12) + '…' : (c.cluster || '');
+        svg += `<text x="${p.x}" y="${p.y + p.r + 10}" text-anchor="middle" font-size="7" fill="var(--color-neutral-700)" style="pointer-events:none">${label}</text>`;
+      }
+    }
+    svg += '</svg>';
+    return svg;
+  }
+  selectGraphEvent(ev) { this.setState({ _graphSelectedEvent: ev }); }
+  buildGraphSVG(events) {
+    if (!events || !events.length) return '<p style="opacity:0.5">Nessun evento</p>';
+    const W = 900, H = 640, cx = W/2, cy = H/2;
+    const maxLinks = Math.max(...events.map(e => e.total_links || 0), 1);
+    const minR = 14, maxR = 42;
+    const radius = (e) => minR + ((e.total_links || 0) / maxLinks) * (maxR - minR);
+    const isWW2 = (e) => (e.nome || '').includes('WW2') || (e.nome || '').includes('Russia') || (e.nome || '').includes('Cefalonia') || (e.nome || '').includes('Achse') || (e.nome || '').includes('Mauthausen') || (e.nome || '').includes('Tobruk') || (e.nome || '').includes('Cassino') || (e.nome || '').includes('Reich');
+    const evColor = (e) => isWW2(e) ? 'var(--color-accent-2-600)' : 'var(--color-accent-600)';
+    const N = events.length;
+    const orbitR = 240;
+    const positions = events.map((e, i) => {
+      const angle = (i / N) * 2 * Math.PI - Math.PI / 2;
+      return { e, x: cx + orbitR * Math.cos(angle), y: cy + orbitR * Math.sin(angle), r: radius(e) };
+    });
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="max-width:100%" viewBox="0 0 ${W} ${H}">`;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${orbitR}" fill="none" stroke="var(--color-neutral-300)" stroke-dasharray="4,4"/>`;
+    svg += `<text x="${cx}" y="${cy - 8}" text-anchor="middle" font-size="14" fill="var(--color-neutral-600)" font-weight="600">Event-Centric Graph</text>`;
+    svg += `<text x="${cx}" y="${cy + 12}" text-anchor="middle" font-size="11" fill="var(--color-neutral-400)">${N} eventi · ${events.reduce((s,e)=>s+(e.total_links||0),0)} link totali</text>`;
+    const catColors = { caduti: 'var(--color-neutral-400)', decorati: 'var(--color-accent-700)', documenti: 'var(--color-accent-2-500)', fonti: 'var(--color-neutral-600)', internati: '#e76f51' };
+    const catCats = ['caduti','decorati','documenti','fonti','internati'];
+    for (const p of positions) {
+      const e = p.e;
+      const cats = catCats.filter(c => (e[c] || 0) > 0);
+      const subR = p.r + 18;
+      cats.forEach((cat, ci) => {
+        const ang = (ci / Math.max(cats.length,1)) * 2 * Math.PI;
+        const sx = p.x + subR * Math.cos(ang);
+        const sy = p.y + subR * Math.sin(ang);
+        const sr = Math.min(8, 3 + Math.log10((e[cat] || 0) + 1) * 3);
+        svg += `<line x1="${p.x}" y1="${p.y}" x2="${sx}" y2="${sy}" stroke="${catColors[cat]}" stroke-width="1" opacity="0.4"/>`;
+        svg += `<circle cx="${sx}" cy="${sy}" r="${sr}" fill="${catColors[cat]}" opacity="0.7"/>`;
+      });
+    }
+    for (const p of positions) {
+      svg += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="var(--color-neutral-200)" stroke-width="1"/>`;
+    }
+    for (const p of positions) {
+      const e = p.e;
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${evColor(e)}" opacity="0.85" stroke="var(--color-neutral-700)" stroke-width="1.5" style="cursor:pointer" onClick="${() => this.selectGraphEvent(e)}"/>`;
+      const label = (e.nome || '').length > 18 ? (e.nome || '').substring(0, 16) + '…' : (e.nome || '');
+      svg += `<text x="${p.x}" y="${p.y + p.r + 14}" text-anchor="middle" font-size="9" fill="var(--color-neutral-700)" style="pointer-events:none">${label}</text>`;
+    }
+    svg += '</svg>';
+    return svg;
+  }
 
   buildSourceView(s, t) {
     const accessMap = {
@@ -531,13 +1906,14 @@ class Component extends DCLogic {
       errore: { labelKey: 'statusError', color: 'var(--color-accent-2-600)' },
     };
     const a = accessMap[s.access] || accessMap.richiesta;
-    const canOpenFile = s.access === 'locale';
-    const canOpenExternal = s.access === 'online' && !!s.url;
+    const url = typeof s.url === 'string' && s.url.trim() ? s.url.trim() : null;
+    const canOpenFile = s.access === 'locale' && !!url;
+    const canOpenExternal = s.access === 'online' && !!url;
     return {
       id: s.id, title: s.title, archive: s.archive,
       accessLabel: t(a.labelKey), accessColor: a.color,
-      canOpenFile, canOpenExternal, url: s.url || null,
-      onOpenFile: canOpenFile ? () => this.openLightbox(s) : null,
+      canOpenFile, canOpenExternal, url,
+      onOpenFile: canOpenFile ? () => window.open(url, '_blank', 'noopener,noreferrer') : null,
     };
   }
 
@@ -547,6 +1923,7 @@ class Component extends DCLogic {
     const t = (k) => this.t(k);
     const data = st.data, lang = st.lang;
     const S = st.strings[lang];
+    const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;');
 
     const langs = ['it', 'en', 'de', 'fr'].map(code => ({
       code, label: code.toUpperCase(),
@@ -560,7 +1937,32 @@ class Component extends DCLogic {
     }));
 
     const eventList = Object.values(data.EVENTS);
-    const featuredEvents = eventList.slice(0, 3).map(ev => ({ id: ev.id, name: ev.name, subtitle: ev.subtitle, tags: ev.tags, onClick: () => this.openDossier('event', ev.id) }));
+    const _isReportEligible = (ev) => {
+      const stats = ev._stats || {};
+      const totalSources = (stats.caduti || 0) + (stats.decorati || 0) + (stats.documenti || 0) + (stats.fonti || 0) + (stats.internati || 0);
+      return totalSources >= 3;
+    };
+    const _recentSearches = (st._recentSearches || []).map(s => (s || '').toLowerCase());
+    const _eventScore = (ev) => {
+      const stats = ev._stats || {};
+      const totalSources = (stats.caduti || 0) + (stats.decorati || 0) + (stats.documenti || 0) + (stats.fonti || 0) + (stats.internati || 0);
+      let score = totalSources;
+      const nameLower = (ev.name || '').toLowerCase();
+      const subLower = (ev.subtitle || '').toLowerCase();
+      for (const rs of _recentSearches) {
+        if (rs && (nameLower.includes(rs) || subLower.includes(rs) || (ev.tags || []).some(tg => tg.toLowerCase().includes(rs)))) {
+          score += 100;
+        }
+      }
+      return score;
+    };
+    const sortedEvents = eventList.slice().sort((a, b) => _eventScore(b) - _eventScore(a));
+    const featuredEvents = sortedEvents.slice(0, 8).map(ev => ({
+      id: ev.id, name: ev.name, subtitle: ev.subtitle, tags: ev.tags,
+      hasReport: _isReportEligible(ev),
+      sourceCount: ((ev._stats?.caduti || 0) + (ev._stats?.decorati || 0) + (ev._stats?.documenti || 0) + (ev._stats?.fonti || 0) + (ev._stats?.internati || 0)),
+      onClick: () => this.openDossier('event', ev.id),
+    }));
 
     const examples = [
       { label: 'Francesco Baracca', q: 'Baracca' }, { label: 'Enrico Toti', q: 'Toti' },
@@ -574,7 +1976,13 @@ class Component extends DCLogic {
       personMatches = Object.values(data.SUBJECTS).filter(s => s.name.toLowerCase().includes(qn) || s.subtitle.toLowerCase().includes(qn));
       eventMatches = Object.values(data.EVENTS).filter(e => e.name.toLowerCase().includes(qn) || e.subtitle.toLowerCase().includes(qn) || (e.tags || []).some(tg => tg.toLowerCase().includes(qn)));
     }
-    const personCards = personMatches.map(s => ({ id: s.id, name: s.name, subtitle: s.subtitle, tags: s.tags, statusLabel: t(this.statusKey(s.status)), statusClass: this.statusTagClass(s.status), onClick: () => this.openDossier('subject', s.id) }));
+    const personCards = personMatches.map(s => ({
+      id: s.id, name: s.name, subtitle: s.subtitle, tags: s.tags,
+      statusLabel: t(this.statusKey(s.status)), statusClass: this.statusTagClass(s.status),
+      onClick: () => this.openDossier('subject', s.id),
+      onGenerateBio: () => { this.openDossier('subject', s.id); this.generateSoldierBio(s.id); },
+      onGenerateImages: () => { this.openDossier('subject', s.id); this.generateSoldierImages(s.id); },
+    }));
     const eventCards = eventMatches.map(e => ({ id: e.id, name: e.name, subtitle: e.subtitle, tags: e.tags, statusLabel: t(this.statusKey(e.status)), statusClass: this.statusTagClass(e.status), onClick: () => this.openDossier('event', e.id) }));
     const hasResults = personCards.length > 0 || eventCards.length > 0;
 
@@ -582,7 +1990,13 @@ class Component extends DCLogic {
     if (st.view === 'dossier' && st.activeId) {
       const src = st.activeKind === 'event' ? data.EVENTS[st.activeId] : data.SUBJECTS[st.activeId];
       if (src) {
-        const timeline = (src.timeline || []).map(pt => ({ ...pt, povLabel: t(this.povKey(pt.pov)), povColor: this.povColor(pt.pov) }));
+        const timeline = (src.timeline || []).map(pt => ({
+          ...pt,
+          povLabel: t(this.povKey(pt.pov)),
+          povColor: this.povColor(pt.pov),
+          dotStyle: `position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;background:${this.povColor(pt.pov)}`,
+          labelStyle: `font-size:11.5px;margin-top:3px;color:${this.povColor(pt.pov)}`,
+        }));
         // Indice rapido id→fonte per costruire i link nelle prospettive
         const srcById = {};
         for (const s of (src.sources || [])) { if (s.id) srcById[s.id] = s; }
@@ -605,14 +2019,24 @@ class Component extends DCLogic {
               url, hasUrl: !!(url), hasNoUrl: !(url), access,
             };
           }).filter(Boolean);
-          return { ...p, povLabel: t(this.povKey(p.pov)), povColor: this.povColor(p.pov), links, hasLinks: links.length > 0 };
+          const color = this.povColor(p.pov);
+          return { ...p, povLabel: t(this.povKey(p.pov)), povColor: color, links, hasLinks: links.length > 0,
+            cardStyle: `padding:14px 18px;background:var(--color-surface);border-radius:var(--radius-md);border-left:3px solid ${color}`,
+            labelStyle: `font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:${color};margin-bottom:6px`,
+            linkStyle: `display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:3px 10px;border-radius:20px;border:1px solid ${color};color:${color};text-decoration:none;opacity:0.85;transition:opacity 0.15s;max-width:280px`,
+          };
         });
-        const sources = (src.sources || []).map(s => this.buildSourceView(s, t));
+        const sources = (src.sources || []).map(s => {
+          const v = this.buildSourceView(s, t);
+          v.dotStyle = `width:8px;height:8px;border-radius:50%;background:${v.accessColor || 'var(--color-accent-600)'};flex:none`;
+          return v;
+        });
         const gaps = (src.gaps || []).map(g => ({ ...g, priorityLabel: t(this.gapPriorityKey(g.priority)), priorityClass: this.gapPriorityClass(g.priority) }));
         dossier = {
           name: src.name, subtitle: src.subtitle, tags: src.tags || [],
           statusLabel: t(this.statusKey(src.status)), statusClass: this.statusTagClass(src.status),
           confidencePct: Math.round((src.confidence || 0) * 100),
+          confBarStyle: `height:100%;width:${Math.round((src.confidence || 0) * 100)}%;background:var(--color-accent)`,
           timeline, perspectives, sources, gaps, hasGaps: gaps.length > 0,
           tabOverviewActive: st.dossierTab === 'overview', tabPerspectivesActive: st.dossierTab === 'perspectives',
           tabSourcesActive: st.dossierTab === 'sources', tabGapsActive: st.dossierTab === 'gaps',
@@ -623,6 +2047,161 @@ class Component extends DCLogic {
           onTabOverview: () => this.setDossierTab('overview'), onTabPerspectives: () => this.setDossierTab('perspectives'),
           onTabSources: () => this.setDossierTab('sources'), onTabGaps: () => this.setDossierTab('gaps'),
           externalSources: (st._externalSources || []), hasExternalSources: (st._externalSources || []).length > 0,
+          isEvent: st.activeKind === 'event',
+          isSoldier: st.activeKind === 'subject' && !!st.activeId && (st.activeId.startsWith('imi_') || st.activeId.startsWith('cad_') || st.activeId.startsWith('dec_')),
+          // Soldier bio AI generation
+          onGenerateBio: () => this.generateSoldierBio(),
+          bioLoading: !!st._soldierBioLoading,
+          hasBio: !!st._soldierBio,
+          bioText: st._soldierBio ? this.linkify(st._soldierBio) : null,
+          bioError: st._soldierBioError || null,
+          hasBioError: !!st._soldierBioError,
+          bioOnlineSources: (st._soldierBioSources || []).map(s => ({ title: s.title || s.url, url: s.url })),
+          bioOnlineSourcesCount: (st._soldierBioSources || []).length,
+          // Soldier AI image generation
+          onGenerateSoldierImages: () => this.generateSoldierImages(),
+          soldierImagesLoading: !!st._soldierImagesLoading,
+          soldierImagesError: st._soldierImagesError || null,
+          hasSoldierImagesError: !!st._soldierImagesError,
+          soldierImages: (st._soldierImages || []).map(im => ({
+            ...im,
+            imageHtml: (im.image_base64 && im.image_base64.startsWith('data:image')) ? `<img src="${esc(im.image_base64)}" alt="${esc(im.title || 'Immagine AI')}" style="width:100%;display:block;border-radius:8px;margin-top:8px">` : null,
+            hasImage: !!(im.image_base64 && im.image_base64.startsWith('data:image')),
+            noImage: !(im.image_base64 && im.image_base64.startsWith('data:image')),
+            hasPrompt: !!im.prompt,
+            onOpen: () => window.open(im.image_base64, '_blank'),
+          })),
+          hasSoldierImages: !!(st._soldierImages && st._soldierImages.length),
+          eventStats: src._stats || null,
+          eventDescrizione: src._descrizione || '',
+          tabCadutiActive: st.dossierTab === 'caduti',
+          tabDecoratiActive: st.dossierTab === 'decorati',
+          tabInternatiActive: st.dossierTab === 'internati',
+          tabFontiActive: st.dossierTab === 'fonti',
+          tabImmaginiActive: st.dossierTab === 'immagini',
+          tabCadutiClass: st.dossierTab === 'caduti' ? 'btn btn-secondary' : 'btn btn-ghost',
+          tabDecoratiClass: st.dossierTab === 'decorati' ? 'btn btn-secondary' : 'btn btn-ghost',
+          tabInternatiClass: st.dossierTab === 'internati' ? 'btn btn-secondary' : 'btn btn-ghost',
+          tabFontiClass: st.dossierTab === 'fonti' ? 'btn btn-secondary' : 'btn btn-ghost',
+          tabImmaginiClass: st.dossierTab === 'immagini' ? 'btn btn-secondary' : 'btn btn-ghost',
+          onTabCaduti: () => this.setDossierTab('caduti'),
+          onTabDecorati: () => this.setDossierTab('decorati'),
+          onTabInternati: () => this.setDossierTab('internati'),
+          onTabFonti: () => this.setDossierTab('fonti'),
+          onTabImmagini: () => this.setDossierTab('immagini'),
+          eventCaduti: ((st._eventDossier && st._eventDossier.caduti) || []).map(c => ({
+            ...c,
+            isDecorato: !!c.is_decorato,
+            hasFonti: !!c.has_fonti,
+            decorazione: c.decorazione || '',
+          })),
+          cadutiFilter: st._cadutiFilter || '',
+          onCadutiFilterInput: (e) => this.setCadutiFilter(e.target.value),
+          eventCadutiFiltered: ((st._eventDossier && st._eventDossier.caduti) || []).map(c => ({
+            ...c,
+            isDecorato: !!c.is_decorato,
+            hasFonti: !!c.has_fonti,
+            decorazione: c.decorazione || '',
+            onClick: () => this.openSoldatoModal('caduto', c.id),
+          })),
+          eventCadutiTotal: (st._eventDossier && st._eventDossier.caduti_total) || 0,
+          eventCadutiShown: ((st._eventDossier && st._eventDossier.caduti) || []).length,
+          canLoadMoreCaduti: ((st._eventDossier && st._eventDossier.caduti) || []).length < ((st._eventDossier && st._eventDossier.caduti_total) || 0),
+          loadingMoreCaduti: !!st._loadingMoreCaduti,
+          onLoadMoreCaduti: () => this.loadMoreCaduti(),
+          eventDecorati: ((st._eventDossier && st._eventDossier.decorati) || []).map(d => ({
+            ...d,
+            isCaduto: !!d.is_caduto,
+            hasFonti: !!d.has_fonti,
+          })),
+          decoratiFilter: st._decoratiFilter || '',
+          onDecoratiFilterInput: (e) => this.setDecoratiFilter(e.target.value),
+          eventDecoratiFiltered: ((st._eventDossier && st._eventDossier.decorati) || []).map(d => ({
+            ...d,
+            isCaduto: !!d.is_caduto,
+            hasFonti: !!d.has_fonti,
+            onClick: () => this.openSoldatoModal('decorato', d.id),
+          })),
+          eventDecoratiTotal: (st._eventDossier && st._eventDossier.decorati_total) || 0,
+          eventDecoratiShown: ((st._eventDossier && st._eventDossier.decorati) || []).length,
+          canLoadMoreDecorati: ((st._eventDossier && st._eventDossier.decorati) || []).length < ((st._eventDossier && st._eventDossier.decorati_total) || 0),
+          loadingMoreDecorati: !!st._loadingMoreDecorati,
+          onLoadMoreDecorati: () => this.loadMoreDecorati(),
+          hasInternati: !!(((src && src._stats && src._stats.internati) || 0) + ((st._eventDossier && (st._eventDossier.internati_total || (st._eventDossier.internati || []).length)) || 0)),
+          internatiFilter: st._internatiFilter || '',
+          onInternatiFilterInput: (e) => this.setInternatiFilter(e.target.value),
+          eventInternatiFiltered: ((st._eventDossier && st._eventDossier.internati) || []).map(int => ({
+            ...int,
+            sorte: int.sorte || '',
+            noSorte: !int.sorte,
+            onClick: () => this.openSoldatoModal('internato', int.id),
+          })),
+          eventInternatiTotal: (st._eventDossier && st._eventDossier.internati_total) || ((st._eventDossier && st._eventDossier.internati && st._eventDossier.internati.length) || 0),
+          eventInternatiShown: ((st._eventDossier && st._eventDossier.internati) || []).length,
+          canLoadMoreInternati: ((st._eventDossier && st._eventDossier.internati) || []).length < ((st._eventDossier && st._eventDossier.internati_total) || 0),
+          loadingMoreInternati: !!st._loadingMoreInternati,
+          onLoadMoreInternati: () => this.loadMoreInternati(),
+          eventDocumenti: (st._eventDossier && st._eventDossier.documenti) || [],
+          eventFonti: ((st._eventDossier && st._eventDossier.fonti) || []).map(ef => {
+            const sid = ef.id || ef.titolo;
+            const analysis = (st._sourceAnalysis || {})[sid] || {};
+            const imgState = (st._sourceImages || {})[sid] || {};
+            const isHttp = (u) => typeof u === 'string' && /^https?:\/\//.test(u);
+            return {
+              ...ef,
+              hasCatalogoUrl: isHttp(ef.url_catalogo),
+              hasFileUrl: isHttp(ef.url_file),
+              onAnalyze: () => this.analyzeSource(sid),
+              analyzing: !!analysis.loading,
+              hasAnalysis: !!analysis.result,
+              analysisHtml: analysis.result ? this.linkify(analysis.result) : null,
+              hasAnalysisError: !!analysis.error,
+              analysisError: analysis.error || null,
+              onGenerateImages: () => this.generateSourceImages(sid),
+              generatingImages: !!imgState.loading,
+              hasImages: !!(imgState.images && imgState.images.length),
+              aiImages: (imgState.images || []).map(im => ({
+                ...im,
+                imageHtml: (im.image_base64 && im.image_base64.startsWith('data:image')) ? `<img src="${esc(im.image_base64)}" alt="${esc(im.title || 'Immagine AI')}" style="width:100%;display:block">` : null,
+                hasImage: !!(im.image_base64 && im.image_base64.startsWith('data:image')),
+                noImage: !(im.image_base64 && im.image_base64.startsWith('data:image')),
+                hasPrompt: !!im.prompt,
+                hasEpisode: !!im.episode,
+                hasChunk: !!im.chunk,
+                onOpen: () => window.open(im.image_base64, '_blank'),
+              })),
+              hasImagesError: !!imgState.error,
+              imagesError: imgState.error || null,
+            };
+          }),
+          eventInternati: (st._eventDossier && st._eventDossier.internati) || [],
+          eventReport: st._eventReport ? this.linkify(st._eventReport) : null,
+          hasReport: !!st._eventReport,
+          reportLoading: !!st._eventReportLoading,
+          reportError: st._eventReportError || null,
+          hasReportError: !!st._eventReportError,
+          onGenerateReport: () => this.generateEventReport(),
+          // Chronological report
+          chronoReport: st._chronoReport ? this.linkify(st._chronoReport) : null,
+          hasChronoReport: !!st._chronoReport,
+          chronoReportLoading: !!st._chronoReportLoading,
+          chronoReportError: st._chronoReportError || null,
+          hasChronoReportError: !!st._chronoReportError,
+          onGenerateChronoReport: () => this.generateChronologicalReport(),
+          chatMessages: (st._eventChatMessages || []).map(m => {
+            const isUser = m.role === 'user';
+            return {
+              ...m,
+              html: isUser ? m.text : this.linkify(m.text),
+              rowStyle: `display:flex;justify-content:${isUser ? 'flex-end' : 'flex-start'}`,
+              bubbleStyle: `max-width:80%;padding:10px 14px;border-radius:var(--radius-md);font-size:13.5px;line-height:1.55;background:${isUser ? 'var(--color-accent-600)' : 'var(--color-surface)'};color:${isUser ? '#fff' : 'var(--color-text)'};border:1px solid ${isUser ? 'var(--color-accent-600)' : 'var(--color-neutral-300)'}`,
+            };
+          }),
+          chatInput: st._eventChatInput || '',
+          chatLoading: !!st._eventChatLoading,
+          onChatInput: (e) => this.setEventChatInput(e),
+          onChatSend: () => this.sendEventChatMessage(),
+          onChatKeyDown: (e) => this.eventChatKeyDown(e),
         };
       }
     }
@@ -640,7 +2219,29 @@ class Component extends DCLogic {
     const allEvents = eventList.map(ev => ({ id: ev.id, name: ev.name, subtitle: ev.subtitle, tags: ev.tags, statusLabel: t(this.statusKey(ev.status)), statusClass: this.statusTagClass(ev.status), onClick: () => this.openDossier('event', ev.id) }));
 
     let lightbox = null;
-    if (st.lightbox) lightbox = { title: st.lightbox.title, archive: st.lightbox.archive, url: st.lightbox.url || null, hasUrl: !!st.lightbox.url };
+    if (st.lightbox) {
+      const rawUrl = st.lightbox.url || null;
+      const fileUrl = rawUrl ? new URL(rawUrl, window.location.origin).href : null;
+      const lower = (rawUrl || '').toLowerCase();
+      const isImage = lower.startsWith('data:image') || /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/.test(lower);
+      const isPdf = lower.startsWith('data:application/pdf') || /\.pdf(\?.*)?$/.test(lower);
+      const noPreview = !isImage && !isPdf;
+      const isExternal = rawUrl ? /^https?:\/\//.test(rawUrl) : false;
+      lightbox = {
+        title: st.lightbox.title,
+        archive: st.lightbox.archive,
+        url: rawUrl,
+        fileUrl,
+        hasUrl: !!rawUrl,
+        isImage,
+        isPdf,
+        isExternal,
+        hasPreview: isImage || isPdf,
+        noPreview,
+        imageHtml: isImage ? `<img src="${esc(fileUrl)}" alt="${esc(st.lightbox.title)}" style="max-width:100%;max-height:60vh;border-radius:var(--radius-sm);object-fit:contain">` : null,
+        pdfHtml: isPdf ? `<iframe src="${esc(fileUrl)}" title="${esc(st.lightbox.title)}" style="width:100%;height:60vh;border:1px solid var(--color-neutral-300);border-radius:var(--radius-sm)"></iframe>` : null,
+      };
+    }
 
     // ── Admin live data ──────────────────────────────────────
     const al = st.adminLive || {};
@@ -656,20 +2257,108 @@ class Component extends DCLogic {
     return {
       appReady: true, notReady: false, S, lang, langs, query: st.query,
       dbStats, featuredEvents, examples,
+      hasRecentSearches: (st._recentSearches || []).length > 0,
       personCards, eventCards, hasResults, hasQuery: !!qn,
       searching: st.searching,
+      searchConfirmations: (st._searchConfirmations || []).map((c, i) => ({
+        ...c,
+        onConfirm: () => this.confirmSearchFix(c, i),
+      })),
+      searchValidations: st._searchValidations || [],
+      externalSourcesCount: (st._externalSources || []).length,
+      searchStatus: st._searchStatus || null,
       dossier, hasDossier: !!dossier,
       explore, hasExplore: !!explore,
       allEvents,
+      graphSVG: st.view === 'graph' && st._graphTab === 'eventi' ? this.buildGraphSVG(st._graphEventsList || []) : '',
+      graphSelectedEvent: st._graphSelectedEvent ? {
+        name: st._graphSelectedEvent.nome || st._graphSelectedEvent.name || '',
+        caduti: (st._graphSelectedEvent.caduti || 0).toLocaleString('it-IT'),
+        decorati: (st._graphSelectedEvent.decorati || 0).toLocaleString('it-IT'),
+        documenti: (st._graphSelectedEvent.documenti || 0).toLocaleString('it-IT'),
+        fonti: (st._graphSelectedEvent.fonti || 0).toLocaleString('it-IT'),
+        internati: (st._graphSelectedEvent.internati || 0).toLocaleString('it-IT'),
+        total: (st._graphSelectedEvent.total_links || 0).toLocaleString('it-IT'),
+        onOpen: () => this.openDossier('event', st._graphSelectedEvent.nome || st._graphSelectedEvent.name),
+      } : null,
+      isGraphEventi: st.view === 'graph' && st._graphTab === 'eventi',
+      isGraphLuoghi: st.view === 'graph' && st._graphTab === 'luoghi',
+      isGraphMesi: st.view === 'graph' && st._graphTab === 'mesi',
+      isGraphPaesi: st.view === 'graph' && st._graphTab === 'paesi',
+      isGraphSoldati: st.view === 'graph' && st._graphTab === 'soldati',
+      graphTabEventiClass: st._graphTab === 'eventi' ? 'btn btn-secondary btn-sm' : 'btn btn-ghost btn-sm',
+      graphTabLuoghiClass: st._graphTab === 'luoghi' ? 'btn btn-secondary btn-sm' : 'btn btn-ghost btn-sm',
+      graphTabMesiClass: st._graphTab === 'mesi' ? 'btn btn-secondary btn-sm' : 'btn btn-ghost btn-sm',
+      graphTabPaesiClass: st._graphTab === 'paesi' ? 'btn btn-secondary btn-sm' : 'btn btn-ghost btn-sm',
+      graphTabSoldatiClass: st._graphTab === 'soldati' ? 'btn btn-secondary btn-sm' : 'btn btn-ghost btn-sm',
+      goGraphEventi: () => this.goGraphEventi(), goGraphLuoghi: () => this.goGraphLuoghi(),
+      goGraphMesi: () => this.goGraphMesi(), goGraphPaesi: () => this.goGraphPaesi(),
+      goGraphSoldati: () => this.goGraphSoldati(),
+      graphLuoghiSVG: st.view === 'graph' && st._graphTab === 'luoghi' ? this.buildGraphLuoghiSVG(st._graphLuoghiList || []) : '',
+      graphSelectedLuogo: st._graphSelectedLuogo || null,
+      graphMesiSVG: st.view === 'graph' && st._graphTab === 'mesi' ? this.buildGraphMesiSVG(st._graphMesiList || []) : '',
+      graphPaesiSVG: st.view === 'graph' && st._graphTab === 'paesi' ? this.buildGraphPaesiSVG(st._graphPaesiList || []) : '',
+      graphSelectedPaese: st._graphSelectedPaese || null,
+      graphSoldatiSVG: st.view === 'graph' && st._graphTab === 'soldati' ? this.buildGraphSoldatiSVG(st._soldatiClusters || []) : '',
+      soldatiTotal: st._soldatiArch ? (st._soldatiArch.total_soldati || 0).toLocaleString('it-IT') : '—',
+      soldatiWithLuogo: st._soldatiArch ? (st._soldatiArch.with_luogo || 0).toLocaleString('it-IT') : '—',
+      soldatiWithReparto: st._soldatiArch ? (st._soldatiArch.with_reparto || 0).toLocaleString('it-IT') : '—',
+      soldatiClustersCount: (st._soldatiClusters || []).length,
+      soldatiFieldLabel: st._soldatiField === 'luogo_morte' ? 'luogo' : st._soldatiField === 'reparto' ? 'reparto' : 'anno',
+      soldatiFieldLuogoClass: st._soldatiField === 'luogo_morte' ? 'btn btn-secondary btn-sm' : 'btn btn-ghost btn-sm',
+      soldatiFieldRepartoClass: st._soldatiField === 'reparto' ? 'btn btn-secondary btn-sm' : 'btn btn-ghost btn-sm',
+      soldatiFieldAnnoClass: st._soldatiField === 'anno_morte' ? 'btn btn-secondary btn-sm' : 'btn btn-ghost btn-sm',
+      setSoldatiFieldLuogo: () => this.setSoldatiFieldLuogo(),
+      setSoldatiFieldReparto: () => this.setSoldatiFieldReparto(),
+      setSoldatiFieldAnno: () => this.setSoldatiFieldAnno(),
+      graphSelectedCluster: st._graphSelectedCluster || null,
       lightbox, hasLightbox: !!lightbox,
+      soldatoModal: st._soldatoModal ? {
+        nominativo: st._soldatoModal.nominativo || ((st._soldatoModal.cognome || '') + ' ' + (st._soldatoModal.nome || '')).trim(),
+        grado: st._soldatoModal.grado || '',
+        reparto: st._soldatoModal.reparto || '',
+        paternita: st._soldatoModal.paternita || '',
+        classe: st._soldatoModal.classe || '',
+        comune_attuale: st._soldatoModal.comune_attuale || '',
+        luogo_morte: st._soldatoModal.luogo_morte || '',
+        anno_morte: st._soldatoModal.anno_morte || '',
+        causa_morte: st._soldatoModal.causa_morte || '',
+        detail_url: st._soldatoModal.detail_url || '',
+        hasDetailUrl: !!st._soldatoModal.detail_url,
+        decorazioni: st._soldatoModal.decorazioni || [],
+        hasDecorazioni: (st._soldatoModal.decorazioni || []).length > 0,
+        eventi: st._soldatoModal.eventi || [],
+        hasEventi: (st._soldatoModal.eventi || []).length > 0,
+        documenti: st._soldatoModal.documenti || [],
+        hasDocumenti: (st._soldatoModal.documenti || []).length > 0,
+        documentiCount: (st._soldatoModal.documenti || []).length,
+        fonti: st._soldatoModal.fonti || (st._soldatoModal.fonti_indice || []),
+        hasFonti: (st._soldatoModal.fonti || st._soldatoModal.fonti_indice || []).length > 0,
+        fontiCount: (st._soldatoModal.fonti || st._soldatoModal.fonti_indice || []).length,
+        // Internato-specific
+        isInternato: st._soldatoModal.type === 'internato',
+        luogo_nascita: st._soldatoModal.luogo_nascita || '',
+        residenza: st._soldatoModal.residenza || '',
+        luogo_cattura: st._soldatoModal.luogo_cattura || '',
+        data_cattura: st._soldatoModal.data_cattura || '',
+        luogo_internamento: st._soldatoModal.luogo_internamento || '',
+        arbeitskommando: st._soldatoModal.arbeitskommando || '',
+        mansione: st._soldatoModal.mansione || '',
+        sorte: st._soldatoModal.sorte || '',
+        data: st._soldatoModal.data || '',
+        matricola: st._soldatoModal.matricola || '',
+        loading: !!st._soldatoModal.loading,
+      } : null,
+      hasSoldatoModal: !!st._soldatoModal,
+      closeSoldatoModal: () => this.closeSoldatoModal(),
       isHome: st.view === 'home', isSearch: st.view === 'search', isDossier: st.view === 'dossier',
-      isExplore: st.view === 'explore', isEvents: st.view === 'events', isAdmin: st.view === 'admin',
+      isExplore: st.view === 'explore', isEvents: st.view === 'events', isGraph: st.view === 'graph', isAdmin: st.view === 'admin',
       adminCreditsRemaining, adminCreditsTotal, adminCreditsToday,
       adminInternati, adminFonti, adminRunning, adminDecorati,
       onQueryInput: (e) => this.setState({ query: e.target.value }),
       onQueryKeyDown: (e) => { if (e.key === 'Enter') this.goSearch(); },
       onSearchSubmit: () => this.goSearch(),
-      goHome: () => this.goHome(), goEvents: () => this.goEvents(), goAdmin: () => this.goAdmin(),
+      goHome: () => this.goHome(), goEvents: () => this.goEvents(), goGraph: () => this.goGraph(), goAdmin: () => this.goAdmin(),
       goExploreDefault: () => this.goExplore('internati'),
       closeLightbox: () => this.closeLightbox(),
       stopProp: (e) => e.stopPropagation(),

@@ -72,4 +72,6 @@ SCRAPER_ALLOWED_DOMAINS = [
     "www.bundesarchiv.de",
     "discovery.nationalarchives.gov.uk",
     "catalog.archives.gov",
+    "www.cimeetrincee.it",
+    "cimeetrincee.it",
 ]

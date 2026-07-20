@@ -822,6 +822,9 @@ def pipeline_documenti_1gm():
         fetch_loc as _ad_fetch_loc,
         fetch_wikimedia_commons as _ad_fetch_wc,
         fetch_europeana as _ad_fetch_eu,
+        fetch_gallica_sru as _ad_fetch_gallica,
+        fetch_tna_discovery as _ad_fetch_tna,
+        fetch_iwm_collections as _ad_fetch_iwm,
     )
 
     log.info("=== PIPELINE DOCUMENTI 1GM ===")
@@ -873,7 +876,34 @@ def pipeline_documenti_1gm():
         else:
             log.info("Documenti 1GM: Europeana saltato (impostare VDF_EUROPEANA_KEY)")
 
-        total = n_seed + n_ia + n_loc + n_wc + n_eu
+        # 6. Gallica BnF SRU — foto, manoscritti, periodici francesi WWI
+        try:
+            gallica_rows = _ad_fetch_gallica("guerre mondiale 1914 1918", rows=200)
+            n_gallica = _ad_upsert(conn, gallica_rows)
+            log.info("Documenti 1GM: Gallica BnF +%d documenti", n_gallica)
+        except Exception as e:
+            log.warning("Documenti 1GM: Gallica BnF saltato: %s", e)
+            n_gallica = 0
+
+        # 7. TNA Discovery — war diaries WO 95
+        try:
+            tna_rows = _ad_fetch_tna("WO 95 war diary", rows=200)
+            n_tna = _ad_upsert(conn, tna_rows)
+            log.info("Documenti 1GM: TNA Discovery +%d diari", n_tna)
+        except Exception as e:
+            log.warning("Documenti 1GM: TNA Discovery saltato: %s", e)
+            n_tna = 0
+
+        # 8. IWM Collections — private papers WWI
+        try:
+            iwm_rows = _ad_fetch_iwm("first world war private papers", rows=200)
+            n_iwm = _ad_upsert(conn, iwm_rows)
+            log.info("Documenti 1GM: IWM Collections +%d documenti", n_iwm)
+        except Exception as e:
+            log.warning("Documenti 1GM: IWM Collections saltato: %s", e)
+            n_iwm = 0
+
+        total = n_seed + n_ia + n_loc + n_wc + n_eu + n_gallica + n_tna + n_iwm
         log.info("DOCUMENTI 1GM completato: %d record totali", total)
 
         # Stats per tipo
@@ -894,6 +924,150 @@ def pipeline_documenti_1gm():
     finally:
         conn.close()
     return total
+
+
+def pipeline_cimeetrincee():
+    """Scraping cimeetrincee.it: storie e soldati + foto d'epoca.
+
+    1. /storie-e-soldati/ → archivio_documenti (provider=CimeTrincee, doc_type=storia)
+    2. /foto-depoca/ → fonti_risorse (metadati + link diretto immagini)
+    3. Collegamenti: storie → caduti/decorati, storie/foto → eventi canonici
+    """
+    from archivio_documenti import create_schema as _ad_create_schema, upsert_documenti as _ad_upsert
+    from database import insert_fonti_risorsa, get_conn as _get_db_conn
+    import scraper_cimeetrincee as sct
+
+    log.info("=== PIPELINE CIMETRINCEE ===")
+    conn = get_conn()
+    db_conn = _get_db_conn()
+    try:
+        _ad_create_schema(conn)
+
+        # 1. Storie e soldati → archivio_documenti
+        storie = sct.scrape_storie_e_soldati()
+        n_storie = 0
+        if storie:
+            n_storie = _ad_upsert(conn, storie)
+            log.info("CimeTrincee: storie e soldati +%d record in archivio_documenti", n_storie)
+
+        # 2. Foto d'epoca → fonti_risorse
+        foto = sct.scrape_foto_depoca()
+        n_foto = 0
+        for record in foto:
+            try:
+                rid = insert_fonti_risorsa(record)
+                if rid:
+                    n_foto += 1
+            except Exception as e:
+                log.debug("Foto skip (probabile duplicato): %s", e)
+        log.info("CimeTrincee: foto d'epoca +%d record in fonti_risorse", n_foto)
+
+        # 3. Collegamenti storie → caduti/decorati + eventi
+        n_collegamenti = _collega_storie_cimeetrincee(db_conn, storie)
+        log.info("CimeTrincee: %d collegamenti creati", n_collegamenti)
+
+        total = n_storie + n_foto
+        log.info("CIMETRINCEE completato: %d storie + %d foto = %d record totali", n_storie, n_foto, total)
+
+    finally:
+        conn.close()
+        db_conn.close()
+    return total
+
+
+def _collega_storie_cimeetrincee(conn, storie: list) -> int:
+    """Crea collegamenti tra storie cimeetrincee e entita/eventi esistenti.
+    - Storie → caduti_albooro (match cognome+nome)
+    - Storie → decorati (match cognome+nome)
+    - Storie/foto → eventi canonici (match keyword nel titolo)
+    """
+    import re
+    n = 0
+    # Eventi canonici 1GM con keyword di match
+    eventi_keywords = {
+        "caporetto": "Caporetto",
+        "carso": "Carso",
+        "isonzo": "Isonzo",
+        "vittorio veneto": "Vittorio Veneto",
+        "piave": "Piave",
+        "trento": "Trento",
+        "trieste": "Trieste",
+        "gorizia": "Gorizia",
+        "udine": "Udine",
+        "col di lana": "Col di Lana",
+        "adamello": "Adamello",
+        "ortigara": "Ortigara",
+        "pasubio": "Pasubio",
+        "grappa": "Grappa",
+        "sabbia": "Sabbia",
+        "tagliamento": "Tagliamento",
+    }
+
+    for s in storie:
+        title = (s.get("title") or "").lower()
+        slug = s.get("external_id", "")
+        url = s.get("source_url", "")
+        raw = s.get("raw_json", {})
+        soldier_name = raw.get("soldier_name")
+
+        # Match con caduti (Albo d'Oro)
+        if soldier_name:
+            parts = soldier_name.split()
+            if len(parts) >= 2:
+                cognome, nome = parts[0], parts[1]
+                try:
+                    rows = conn.execute(
+                        "SELECT id, cognome, nome FROM caduti_albooro WHERE cognome = ? AND nome LIKE ?",
+                        (cognome, f"{nome}%"),
+                    ).fetchall()
+                    for row in rows:
+                        conn.execute(
+                            "INSERT OR IGNORE INTO collegamenti (entita_a_tipo, entita_a_id, entita_b_tipo, entita_b_id, tipo_collegamento, fonte, note) "
+                            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            ("documento", slug, "caduto", row["id"], "riferimento",
+                             "CimeTrincee", f"Storia su {soldier_name} — {url}"),
+                        )
+                        n += 1
+                except Exception:
+                    pass
+
+            # Match con decorati
+            try:
+                rows = conn.execute(
+                    "SELECT id, cognome, nome FROM decorati WHERE cognome = ? AND nome LIKE ?",
+                    (cognome, f"{nome}%"),
+                ).fetchall()
+                for row in rows:
+                    conn.execute(
+                        "INSERT OR IGNORE INTO collegamenti (entita_a_tipo, entita_a_id, entita_b_tipo, entita_b_id, tipo_collegamento, fonte, note) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        ("documento", slug, "decorato", row["id"], "riferimento",
+                         "CimeTrincee", f"Storia su {soldier_name} — {url}"),
+                    )
+                    n += 1
+            except Exception:
+                pass
+
+        # Match con eventi canonici (keyword nel titolo)
+        for kw, event_name in eventi_keywords.items():
+            if kw in title:
+                try:
+                    ev_row = conn.execute(
+                        "SELECT id FROM eventi_1gm WHERE nome LIKE ?", (f"%{event_name}%",),
+                    ).fetchone()
+                    if ev_row:
+                        conn.execute(
+                            "INSERT OR IGNORE INTO collegamenti (entita_a_tipo, entita_a_id, entita_b_tipo, entita_b_id, tipo_collegamento, fonte, note) "
+                            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            ("documento", slug, "evento", ev_row["id"], "contesto",
+                             "CimeTrincee", f"Storia relativa a {event_name} — {url}"),
+                        )
+                        n += 1
+                except Exception:
+                    pass
+
+    conn.commit()
+    return n
 
 
 # ─── Report summary ────────────────────────────────────────────────────────────
@@ -922,7 +1096,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Pipeline indicizzazione massiva archivi")
     parser.add_argument("mode", choices=["soldati","reparti","eventi","luoghi","all","stats",
                                            "soldati_1gm","eventi_1gm","luoghi_1gm","all_1gm",
-                                           "documenti_1gm"],
+                                           "documenti_1gm","cimeetrincee"],
                         help="Pipeline da eseguire")
     parser.add_argument("--limit",  type=int, default=None, help="Max soldati (default: tutti)")
     parser.add_argument("--offset", type=int, default=0,    help="Offset soldati")
@@ -947,6 +1121,8 @@ if __name__ == "__main__":
         pipeline_luoghi_1gm()
     if args.mode == "documenti_1gm":
         pipeline_documenti_1gm()
+    if args.mode == "cimeetrincee":
+        pipeline_cimeetrincee()
     if args.mode == "stats":
         print_stats()
 

@@ -324,6 +324,8 @@ _DOMAIN_TO_ENTE = {
     "www.bundesarchiv.de": "Bundesarchiv (Archivio Federale Tedesco)",
     "discovery.nationalarchives.gov.uk": "The National Archives (UK)",
     "catalog.archives.gov": "U.S. National Archives and Records Administration",
+    "www.cimeetrincee.it": "ASCET - Cime e Trincee",
+    "cimeetrincee.it": "ASCET - Cime e Trincee",
 }
 
 

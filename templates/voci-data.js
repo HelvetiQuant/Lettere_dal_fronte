@@ -43,6 +43,10 @@ it: {
   adminDemoNote:"Pannello dimostrativo — le azioni non sono connesse a un backend in questo prototipo.",
   povItaly:"Fonti italiane", povAxis:"Fonti dell'Asse", povAllied:"Fonti alleate", povIntl:"Archivi internazionali",
   loading:"Caricamento…", langLabel:"Lingua", demoBadge:"Dato dimostrativo", of:"di",
+  btnGenerateReport:"Genera Report", reportExplanation:"Analizza tutte le fonti verificate dell'evento ed estrae solo i fatti comuni a tutte le fonti, creando una ricostruzione oggettiva.",
+  reportLoading:"Generazione in corso…", reportTitle:"Report AI — Fatti accertati da fonti convergenti",
+  reportAiBadge:"Report AI", sourcesLabel:"fonti",
+  eventsBasedOnSearches:"Eventi in evidenza selezionati in base alle tue ricerche recenti.",
 },
 en: {
   navHome:"Home", navSearch:"Search", navExplore:"Explore databases", navEvents:"Historical events", navAdmin:"Administration",
@@ -84,6 +88,10 @@ en: {
   adminDemoNote:"Demo panel — actions are not wired to a backend in this prototype.",
   povItaly:"Italian sources", povAxis:"Axis sources", povAllied:"Allied sources", povIntl:"International archives",
   loading:"Loading…", langLabel:"Language", demoBadge:"Sample data", of:"of",
+  btnGenerateReport:"Generate Report", reportExplanation:"Analyzes all verified sources for this event and extracts only facts common to all sources, producing an objective reconstruction.",
+  reportLoading:"Generating…", reportTitle:"AI Report — Facts verified by converging sources",
+  reportAiBadge:"AI Report", sourcesLabel:"sources",
+  eventsBasedOnSearches:"Featured events selected based on your recent searches.",
 },
 de: {
   navHome:"Start", navSearch:"Suche", navExplore:"Datenbanken durchsuchen", navEvents:"Historische Ereignisse", navAdmin:"Verwaltung",
@@ -125,6 +133,10 @@ de: {
   adminDemoNote:"Demo-Panel — Aktionen sind in diesem Prototyp nicht mit einem Backend verbunden.",
   povItaly:"Italienische Quellen", povAxis:"Quellen der Achsenmächte", povAllied:"Alliierte Quellen", povIntl:"Internationale Archive",
   loading:"Wird geladen…", langLabel:"Sprache", demoBadge:"Beispieldaten", of:"von",
+  btnGenerateReport:"Bericht erstellen", reportExplanation:"Analysiert alle verifizierten Quellen dieses Ereignisses und extrahiert nur Fakten, die allen Quellen gemeinsam sind, um eine objektive Rekonstruktion zu erstellen.",
+  reportLoading:"Wird erstellt…", reportTitle:"KI-Bericht — Durch Quellenkonvergenz verifizierte Fakten",
+  reportAiBadge:"KI-Bericht", sourcesLabel:"Quellen",
+  eventsBasedOnSearches:"Hervorgehobene Ereignisse basierend auf Ihren letzten Suchen.",
 },
 fr: {
   navHome:"Accueil", navSearch:"Recherche", navExplore:"Explorer les bases", navEvents:"Événements historiques", navAdmin:"Administration",
@@ -166,6 +178,10 @@ fr: {
   adminDemoNote:"Panneau de démonstration — les actions ne sont pas connectées à un backend dans ce prototype.",
   povItaly:"Sources italiennes", povAxis:"Sources de l'Axe", povAllied:"Sources alliées", povIntl:"Archives internationales",
   loading:"Chargement…", langLabel:"Langue", demoBadge:"Donnée de démonstration", of:"sur",
+  btnGenerateReport:"Générer le rapport", reportExplanation:"Analyse toutes les sources vérifiées de l'événement et extrait uniquement les faits communs à toutes les sources, produisant une reconstitution objective.",
+  reportLoading:"Génération en cours…", reportTitle:"Rapport IA — Faits vérifiés par convergence des sources",
+  reportAiBadge:"Rapport IA", sourcesLabel:"sources",
+  eventsBasedOnSearches:"Événements en vedette sélectionnés selon vos recherches récentes.",
 },
 };
 
@@ -282,14 +298,30 @@ export function buildArchiveUrl(archivio, cognome, nome) {
 
 // ── Ricerca live: interroga il backend e converte in formato SUBJECTS ────────
 export async function searchLive(query) {
-  if (!query || query.trim().length < 2) return { subjects: {}, events: {} };
+  if (!query || query.trim().length < 2) return { subjects: {}, events: {}, confirmations: [], validations: [] };
   try {
-    const res = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}&limit=20`).then(r=>r.json());
+    const res = await fetch(`/api/search-validated?q=${encodeURIComponent(query.trim())}&limit=20`).then(r=>r.json());
     const subjects = {};
-    const internati = res.internati || [];
-    const menzioni  = res.menzioni  || [];
-    const decorati  = res.decorati  || [];
-    const caduti    = res.caduti    || [];
+    const eventsOut = {};
+    const data = res.results || res;
+    const internati = data.internati || [];
+    const menzioni  = data.menzioni  || [];
+    const decorati  = data.decorati  || [];
+    const caduti    = data.caduti    || [];
+    const confirmations = res.confirmations || [];
+    const validations = res.validations || [];
+
+    for (const ev of (data.events || [])) {
+      const id = ev.id || ev.nome.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+      eventsOut[id] = {
+        id, type: 'evento', name: ev.nome,
+        subtitle: ev.descrizione || '',
+        tags: (ev.keywords || []).slice(0, 3),
+        status: 'verified', confidence: 0.95,
+        timeline: [], perspectives: [], sources: [], gaps: [],
+        _stats: { caduti: 0, decorati: 0, documenti: 0, fonti: 0, internati: 0 },
+      };
+    }
 
     for (const s of internati) {
       const id = `imi_${s.id}`;
@@ -333,10 +365,10 @@ export async function searchLive(query) {
       };
     }
 
-    return { subjects, events: {} };
+    return { subjects, events: eventsOut, confirmations, validations, searchStatus: res.status || 'local_only', externalSources: res.external_sources || [] };
   } catch(e) {
     console.warn('searchLive error:', e);
-    return { subjects:{}, events:{} };
+    return { subjects:{}, events:{}, confirmations: [], validations: [] };
   }
 }
 
@@ -438,6 +470,60 @@ export async function loadSoldierDossier(soldierId) {
   }
 }
 
+// ── Carica dossier evento dal backend (eventi curati + 1GM) ──────────────────
+export async function loadEventDossier(eventName) {
+  try {
+    const encoded = encodeURIComponent(eventName.replace(/\s+/g, '+'));
+    const [dossierR, cadutiR, decoratiR, internatiR] = await Promise.all([
+      fetch(`/api/events/1gm/${encoded}`).then(r => r.json()).catch(() => ({})),
+      fetch(`/api/events/1gm/${encoded}/caduti?limit=50`).then(r => r.json()).catch(() => ({caduti:[],total:0})),
+      fetch(`/api/events/1gm/${encoded}/decorati?limit=50`).then(r => r.json()).catch(() => ({decorati:[],total:0})),
+      fetch(`/api/events/${encoded}/internati?limit=50`).then(r => r.json()).catch(() => ({internati:[],total:0})),
+    ]);
+    return {
+      event: dossierR.event || {},
+      caduti: cadutiR.caduti || [],
+      caduti_total: cadutiR.total || 0,
+      decorati: decoratiR.decorati || [],
+      decorati_total: decoratiR.total || 0,
+      documenti: dossierR.documenti?.items || [],
+      fonti: dossierR.fonti?.items || [],
+      internati: internatiR.internati || dossierR.internati?.items || [],
+      internati_total: internatiR.total || 0,
+      ok: dossierR.ok !== false,
+    };
+  } catch(e) {
+    console.warn('loadEventDossier error:', e);
+    return { ok: false, caduti: [], decorati: [], documenti: [], fonti: [], internati: [] };
+  }
+}
+
+// ── Carica eventi canonici 1GM+WW2 dal backend ───────────────────────────────
+export async function loadEvents1gm() {
+  try {
+    const r = await fetch('/api/events/1gm').then(r => r.json());
+    const eventi = r.eventi || [];
+    const events = {};
+    for (const ev of eventi) {
+      const id = ev.nome.toLowerCase()
+        .replace(/[àá]/g, 'a').replace(/[èé]/g, 'e').replace(/[ìí]/g, 'i').replace(/[òó]/g, 'o').replace(/[ùú]/g, 'u')
+        .replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+      events[id] = {
+        id, type: 'evento', name: ev.nome,
+        subtitle: `${ev.data_inizio || '?'} – ${ev.data_fine || '?'}, ${ev.luogo || ''}`,
+        tags: ev.aliases?.slice(0, 3) || [],
+        status: 'verified', confidence: 0.95,
+        timeline: [], perspectives: [], sources: [], gaps: [],
+        _stats: { caduti: ev.caduti||0, decorati: ev.decorati||0, documenti: ev.documenti||0, fonti: ev.fonti||0, internati: ev.internati||0 },
+      };
+    }
+    return events;
+  } catch(e) {
+    console.warn('loadEvents1gm error', e);
+    return {};
+  }
+}
+
 // ── Carica crediti AI dal backend ────────────────────────────────────────────
 export async function loadLiveCredits() {
   try {
@@ -475,31 +561,21 @@ export const SUBJECTS = {
   gaiaschi: {
     id:"gaiaschi", type:"persona", name:"Luigi Gaiaschi", _cognome:"Gaiaschi", _nome:"Luigi",
     subtitle:"Soldato, Internato Militare Italiano (IMI) — 2ª Guerra Mondiale",
-    tags:["IMI · 2GM","Bergamo","Sorte: rimpatriato"], status:"partial", confidence:0.72,
+    tags:["IMI · 2GM","Nibbiano (Piacenza)","Sorte: rimpatriato"], status:"partial", confidence:0.72,
     timeline:[
-      { date:"1917-03-14", label:"Nascita a Bergamo", pov:"it", sourceId:"g1" },
-      { date:"1943-09-12", label:"Catturato dalle truppe tedesche a Belgrado dopo l'armistizio dell'8 settembre", pov:"de", sourceId:"g2" },
-      { date:"1943-10-02", label:"Registrato come internato militare — Arbeitskommando 1054, Norimberga", pov:"de", sourceId:"g3" },
-      { date:"1944-05-18", label:"Scheda di trasferimento tra campi di lavoro", pov:"de", sourceId:"g4" },
-      { date:"1945-04-29", label:"Zona liberata dalle forze alleate", pov:"allied", sourceId:"g5" },
-      { date:"1945-07-20", label:"Rimpatrio, registrato dall'Archivio di Stato di Bolzano", pov:"it", sourceId:"g1" },
+      { date:"1912-01-09", label:"Nascita a Nibbiano (Piacenza)", pov:"it", sourceId:"g1" },
+      { date:"1943-09-12", label:"Catturato in Grecia dopo l'armistizio dell'8 settembre 1943", pov:"it", sourceId:"g1" },
     ],
     perspectives:[
-      { pov:"it",     summary:"I registri dell'Archivio di Stato di Bolzano documentano cattura, dati anagrafici e rimpatrio del luglio 1945.",     sourceIds:["g1","g6"] },
-      { pov:"de",     summary:"Le schede Arolsen ITS e i documenti del Kommando 1054 tracciano il trasferimento tra i campi di lavoro in Baviera.", sourceIds:["g2","g3","g4"] },
-      { pov:"allied", summary:"I rapporti TNA sulla liberazione dell'area collocano la zona di internamento nella fase finale del conflitto.",  sourceIds:["g5"] },
+      { pov:"it", summary:"Registro IMI: nato a Nibbiano (Piacenza) il 9 gennaio 1912, catturato in Grecia il 12 settembre 1943. Divergenza tra fonti italiane (Belgrado) e fonti dell'Asse (Grecia) sul luogo di cattura — confermata Grecia.", sourceIds:["g1"] },
     ],
     sources:[
-      { id:"g1", title:"Registro IMI, vol. G, p. 214", archive:"Archivio di Stato di Bolzano", access:"locale", kind:"immagine" },
-      { id:"g3", title:"Tätigkeitsbericht — Kommando 1054, Norimberga", archive:"archivio_fonti (NARA/AUSSME)", access:"locale", kind:"immagine" },
-      { id:"g2", title:"Scheda cattura, settembre 1943", archive:"Bundesarchiv", access:"locale", kind:"immagine" },
-      { id:"g4", title:"Scheda ITS — trasferimento campo di lavoro", archive:"Arolsen Archives", access:"richiesta", kind:"metadato" },
-      { id:"g5", title:"WO 361 — Enquiries into Missing Personnel, 1939-45 (catalogo serie)", archive:"TNA Discovery", access:"online", kind:"metadato", url:"https://discovery.nationalarchives.gov.uk/details/r/C13455" },
-      { id:"g6", title:"Menzione indiretta, fondo Ufficio Storico SME", archive:"USSME", access:"locale", kind:"immagine" },
+      { id:"g1", title:"Registro IMI — GAIASCHI Luigi (id 22808)", archive:"Database locale IMI", access:"locale", kind:"metadato" },
     ],
     gaps:[
-      { field:"unità precisa di internamento", provider:"Bundesarchiv", priority:"low" },
-      { field:"documento di rimpatrio originale", provider:"Arolsen Archives", priority:"medium" },
+      { field:"campo di internamento specifico", provider:"Arolsen Archives", priority:"medium" },
+      { field:"data e luogo di rimpatrio", provider:"Archivio di Stato Bolzano", priority:"medium" },
+      { field:"unità militare di appartenenza", provider:"USSME", priority:"low" },
     ],
   },
   rossi_imi:{

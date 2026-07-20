@@ -1,5 +1,184 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-20 — Rimozione frontend 1GM dedicato
+
+### Frontend
+- **Rimosso il sito web dedicato alla Prima Guerra Mondiale** (`/1gm`):
+  - eliminato `templates/PRIMA_Guerra/` (index.html, voci-data-1gm.js);
+  - eliminato `templates/voci-data-1gm.js` e `templates/index-1gm.html`;
+  - rimosse le route FastAPI `/1gm` e `/voci-data-1gm.js` da `app.py`;
+  - rimosso `tests/test_frontend_1gm.py`.
+- **Unificazione frontend comune**: `templates/index.html` rimane l'unico punto di accesso per Prima e Seconda Guerra Mondiale.
+- **Dati 1GM intatti**: nessun database `.db` eliminato; record, tabelle e API `/api/events/1gm` restano invariati.
+
+## 2026-07-20 — Fix tab evento Caduti/Decorati e AI buttons su risultati ricerca
+
+### Backend (`events.py`, `event_query_engine.py`)
+- **Normalizzazione nome evento**: fix per ID URL-friendly con underscore (`battaglia_del_carso` → `Battaglia del Carso`) nei lookup di `find_event`, `get_eventi_1gm_caduti`, `get_eventi_1gm_decorati` e `get_internati_per_evento`.
+- **Case-insensitive fallback**: i fallback dopo sostituzione underscore usano `UPPER(nome)` e `UPPER(value)` nelle query SQLite, risolvendo il mismatch tra `battaglia del carso` e `Battaglia del Carso`.
+- **Endpoint verificati**: `/api/events/1gm/battaglia_del_carso`, `/.../caduti`, `/.../decorati` restituiscono ora i dati corretti (caduti: 45869, decorati: 36339 per Battaglia del Carso).
+
+### Frontend (`templates/index.html`)
+- **Stili pre-calcolati**: spostate tutte le espressioni dinamiche da inline `style` a proprietà JS pre-computate (`confBarStyle`, `dotStyle`, `labelStyle`, `cardStyle`, `linkStyle`, `bubbleStyle`, `rowStyle`), riducendo i falsi positivi del linter CSS.
+- **AI buttons su risultati ricerca**: aggiunti bottoni `Dossier AI` e `Immagini AI` sulle card persona nella home search, con handler che aprono il dossier e lanciano la generazione.
+- **`generateSoldierBio` / `generateSoldierImages`**: estese per accettare un `id` opzionale, permettendo la generazione direttamente dalla lista risultati.
+
+### Server
+- Riavvio del backend FastAPI/uvicorn su `http://127.0.0.1:8123` con `--reload`.
+
+## 2026-07-20 — Ricerca universale e tab Internati WW2
+
+### Backend (`events.py`, `app.py`)
+- **`search_events`**: nuova funzione per cercare eventi curati WW2 per nome, descrizione o keyword.
+- **`/api/search`**: include ora anche la sezione `events` con gli eventi curati trovati.
+- **`get_internati_per_evento`**: aggiunto fallback di lookup per nome abbreviato o completo parziale, così l'endpoint funziona sia con "Operazione Achse" che con il nome esteso.
+
+### Frontend (`templates/index.html`, `templates/PRIMA_Guerra/index.html`, `templates/voci-data.js`)
+- **Tab Internati evento**: `hasInternati` ora è `true` anche quando il conteggio statico dell'evento indica internati (`src._stats.internati`), quindi il tab compare immediatamente per eventi WW2 con internati collegati.
+- **`searchLive`**: popola `events` dai risultati `/api/search`; cerca "Operazione Achse" in home restituisce l'evento curato.
+- **`loadEvents1gm`**: nuova funzione in `voci-data.js` per caricare eventi canonici 1GM+WW2 anche nel template PRIMA_Guerra.
+- **Scheda internato in PRIMA_Guerra**: `openDossier` per subject `imi_*` carica `loadSoldierDossier` come già avveniva nel template generico.
+
+### Test (`tests/test_api.py`)
+- Aggiunti test reali (fixture DB temporaneo) per:
+  - ricerca universale che include eventi curati;
+  - ricerca "Gaiaschi Luigi" che trova internati;
+  - endpoint `/api/events/.../internati` che restituisce internati per l'evento Operazione Achse.
+
+## 2026-07-20 — Fix tab Fonti e anteprima file nel lightbox
+
+### Backend: fix encoding nome evento per internati (`events.py`)
+- **`get_internati_per_evento`**: decodifica `+` come spazio prima del lookup dell'evento, per allinearsi al frontend che usa `encodeURIComponent(name.replace(/\s+/g, '+'))`. Senza questo fix l'endpoint restituiva sempre 0 internati per eventi con spazi nel nome.
+
+### Frontend: tab Fonti e lightbox (`templates/PRIMA_Guerra/index.html`, `templates/index.html`)
+- **Fix `loadExternalSources`**: ora filtra per `fonte_id` quando disponibile e popola correttamente `access` (`locale`/`online`/`richiesta`) e `url` (`url_documento` o `url_pagina`). Prima il mapping mancava di questi campi, quindi i pulsanti "Apri file" / "Apri originale" non venivano mai attivati.
+- **Fix pulsanti evento Fonti**: aggiunti flag booleani `hasCatalogoUrl` e `hasFileUrl` con validazione `http(s)://` per evitare link vuoti/non validi nel tab "Fonti archivistiche collegate all'evento".
+- **Lightbox file preview**: il lightbox mostrava solo un placeholder; ora:
+  - visualizza **immagini** (`<img>`) per URL che terminano in `.jpg/.png/.webp/...` o `data:image`;
+  - visualizza **PDF** in `<iframe>` per URL `.pdf` o `data:application/pdf`;
+  - mantiene il placeholder solo quando non c'è anteprima;
+  - il pulsante "Apri sul sito dell'archivio" usa l'URL completo (anche se relativo).
+  - **Nota tecnica**: gli elementi `<img>` e `<iframe>` vengono iniettati tramite `sc-html` per evitare che il browser tenti di caricare i placeholder `{{ ... }}` come URL reali (404).
+- **Immagini AI**: stesso fix `sc-html` per evitare 404 su `{{ aim.image_base64 }}`.
+
+### Backend: CORS (`app.py`)
+- Aggiunto `CORSMiddleware` per permettere al browser preview/proxy di caricare asset JS/CSS dal server locale senza blocchi cross-origin.
+
+## 2026-07-20 — Tab Internati WW2, Ricerca server-side, Scheda internato, Record Luigi Gaiaschi
+
+### Backend: endpoint internati (`app.py`, `events.py`)
+- **`GET /api/events/{event}/internati`**: parametro `search` aggiunto; filtro SQL LIKE su cognome, nome, grado, luogo_nascita, residenza, luogo_cattura, luogo_internamento, sorte.
+- **`GET /api/internati/{rid}/detail`**: scheda dettagliata internato con fonti collegate via `record_links` e fallback per soggetti/persone in `fonti_indice`.
+- **Fix** `api_internato_detail`: corretta query `record_links` (`to_id` invece di `from_id`) per recuperare fonti collegate; evitati match generici solo per nome.
+- **Indici SQLite** su `imi_internati.db`: creati indici per `cognome`, `nome`, `luogo_internamento`, `luogo_cattura`, `sorte`, `luogo_nascita` per ottimizzare ricerche su grandi dataset.
+
+### Frontend: tab Internati e modale (`templates/PRIMA_Guerra/index.html`, `templates/index.html`)
+- **Tab "Internati"** visibile negli eventi che hanno internati; tab con tabella, campo ricerca server-side debounce 350ms, paginazione "Carica altri 50".
+- **Modale internato**: campi specifici WW2 (luogo nascita, residenza, luogo cattura, data cattura, luogo internamento, arbeitskommando, mansione, sorte, data, matricola).
+- **JS**: `_internatiFilter`, `setInternatiFilter`, `_searchInternatiServer`, `loadMoreInternati`, `openSoldatoModal` esteso a tipo `internato` con endpoint `/api/internati/{id}/detail`.
+- **Moduli `voci-data.js` e `voci-data-1gm.js`**: `loadEventDossier` ora carica direttamente `/api/events/{event}/internati` con totale.
+
+### Dati: inserimento record Luigi Gaiaschi (`imi_internati.db`)
+- Inserito internato **Luigi Gaiaschi** (id `22808`):
+  - Nato a **Nibbiaño (Bergamo)**, **9 gennaio 1912**.
+  - Catturato in **Grecia** il **12 settembre 1943** dopo l'armistizio dell'8 settembre.
+  - Evento: **Operazione Achse e internamento militare italiano (1943-1945)**.
+  - **Divergenza fonti** documentata: fonti italiane indicano Belgrado; fonti dell'Asse indicano Grecia (confermata).
+- Inserite 2 fonti in `fonti_indice` e collegate tramite `record_links`:
+  - Fonti italiane: cattura a Belgrado (divergenza, confidence 0.5).
+  - Fonti dell'Asse: cattura in Grecia (confermata, confidence 0.9).
+- Inserita entità corrispondente in `entita` per ricerca globale.
+
+### Testing
+- **`/api/events/Operazione+Achse.../internati?search=Gaiaschi`**: ✅ total=1, record id 22808.
+- **`/api/internati/22808/detail`**: ✅ has_fonti=true, 2 fonti corrette, luogo cattura Grecia.
+
+## 2026-07-19/20 — Scheda soldato, Ricerca server-side, Fix bug
+
+### Backend: endpoint scheda soldato (`app.py`, `events.py`)
+- **`GET /api/caduti/{id}`**: scheda dettagliata caduto con paternità, classe, comune, causa morte, decorazioni collegate, documenti, fonti archivistiche, eventi collegati.
+- **`GET /api/decorati/{id}`**: scheda dettagliata decorato con info caduto, eventi collegati.
+- **Parametro `search`** in `GET /api/events/1gm/{event}/caduti` e `/decorati`: filtro SQL LIKE su nominativo, grado, reparto, luogo, anno (caduti) / cognome, nome, arma, decorazione, anno (decorati). Permette ricerca su tutti i 45.869 caduti del Carso, non solo sui primi 50 caricati.
+
+### Frontend: modale scheda soldato + ricerca (`templates/PRIMA_Guerra/index.html`, `templates/index.html`)
+- **Modale scheda**: cliccando nome caduto/decorato si apre dialog con tutti i dati anagrafici, decorazioni, eventi, documenti, fonti.
+- **Campo di ricerca** sopra lista Caduti e Decorati con debounce 350ms → chiama API con `&search=` per filtrare lato server.
+- **Nom cliccabili**: evidenziati in colore accento con `cursor:pointer`.
+- **Stato JS**: `_soldatoModal`, `_cadutiFilter`, `_decoratiFilter` + metodi `openSoldatoModal`, `closeSoldatoModal`, `setCadutiFilter`, `setDecoratiFilter`, `_searchCadutiServer`, `_searchDecoratiServer`.
+
+### Fix bug
+- **Duplicate export `loadEventDossier`** in `voci-data-1gm.js`: rimosso dalla re-export list (era già `export async function`).
+- **404 `image_base64`**: immagini AI senza data URI valido → aggiunto check `hasImage`/`noImage` con fallback "Nessuna immagine" in entrambi i template.
+- **File temp `_check_schema2.py`** rimosso.
+
+### Testing
+- **`/api/caduti/109`** (ALBANI BIAGIO): ✅ 200 OK, nominativo corretto.
+- **`/api/decorati/28`** (ABATE ANDREA): ✅ 200 OK, 13 eventi collegati.
+- **Ricerca Carso + Gaiaschi**: ✅ Total 1, GAIASCHI GIUSEPPE (id 102126, luogo_morte: Carso).
+- **Server**: avviato su `127.0.0.1:8001` con uvicorn `--reload`.
+
+## 2026-07-18 — Report cronologico AI, Analisi fonti AI, Generazione immagini AI
+
+### Backend: nuovi prompt e funzioni (`biography.py`)
+- **`CHRONOLOGICAL_REPORT_PROMPT`**: prompt per report cronologico narrativo discorsivo che ricostruisce l'evento in ordine temporale.
+- **`SOURCE_ANALYSIS_PROMPT`**: prompt per analisi dettagliata di una singola fonte (metadati + contenuto + contesto evento).
+- **`IMAGE_PROMPT_GENERATOR`**: prompt che fa generare all'AI 3-5 prompt in inglese per `gpt-image-1`, con regole di accuratezza storica.
+- **`generate_chronological_report()`**: raccoglie fonti verificate e genera report cronologico con fallback provider.
+- **`analyze_single_source()`**: analisi singola fonte con metadati DB, contenuto in cache, e contesto evento.
+- **`generate_source_images()`**: pipeline completa — genera prompt AI → `gpt-image-1` → fallback Stability AI → caching in `source_fetch_cache`.
+- **`_generate_image_dalle()`**: generazione immagini via REST API diretta (bypass SDK OpenAI v1.3.7 incompatibile con httpx). Usa `gpt-image-1` (DALL-E 3 non disponibile con la key corrente).
+- **`_generate_image_stability()`**: fallback Stability AI SD3.
+- **`_save_generated_image()`** / **`_check_cached_images()`** / **`get_cached_images()`**: caching immagini in `source_fetch_cache` (tabella DB), evita rigenerazione.
+- **Fix**: `generate_event_report` ora usa `preferred=None` invece di `"mistral"` per fallback naturale dei provider.
+- **Fix**: escape parentesi graffe `{{` `}}` in `IMAGE_PROMPT_GENERATOR` per compatibilità con `.format()`.
+
+### Backend: nuovi endpoint API (`app.py`)
+- **`POST /api/event/report/chronological`**: genera report cronologico AI per evento.
+- **`POST /api/fonte/analyze`**: analisi AI di singola fonte (richiede `source_id`, `event_name`).
+- **`POST /api/fonte/generate-images`**: generazione 3-5 immagini AI per fonte con caching.
+- **`GET /api/fonte/{source_id}/images`**: recupera immagini cached per fonte.
+
+### Frontend: nuovi bottoni e UI (`templates/index.html`, `templates/PRIMA_Guerra/index.html`)
+- **Tab Cronologia**: bottone "Genera Report Cronologico AI" con display report e gestione errori.
+- **Tab Punti Vista**: etichetta aggiornata da "Genera Report" a "Genera Report Convergenze Fonti AI".
+- **Tab Fonti**: per ogni fonte, due nuovi bottoni:
+  - "Analizza con AI" — genera riassunto strutturato della fonte.
+  - "Genera Immagini AI" — genera 3-5 immagini fotorealistiche con barra progresso.
+- **Barra progresso** durante generazione immagini (CSS animato).
+- **Display immagini** in grid con titolo, prompt, e click per ingrandire.
+- **Metodi JS**: `generateChronologicalReport()`, `analyzeSource()`, `generateSourceImages()` in entrambi i template.
+- **`renderVals`** aggiornato con stati per-fonte (`_sourceAnalysis`, `_sourceImages`) e report cronologico.
+
+### Testing (18 luglio 2026)
+- **Server**: avviato su `127.0.0.1:8000`, 22 eventi caricati, tutti endpoint rispondono.
+- **`/api/event/report/chronological`** (Caporetto): ✅ 200 OK, provider Mistral, report cronologico generato.
+- **`/api/fonte/analyze`** (source_id=55487, Caporetto): ✅ 200 OK, provider Mistral, analisi generata.
+- **`/api/fonte/generate-images`** (source_id=55487, Caporetto): ✅ 5 immagini generate con `gpt-image-1`.
+- **Caching**: ✅ seconda chiamata restituisce `from_cache: true`, 5 immagini cached.
+- **`/api/fonte/55487/images`**: ✅ 200 OK, 5 immagini recuperate da cache.
+- **Fix API key**: aggiornata `OPENAI_API_KEY` nel `.env` con nuova key (`sk-proj-sE-PetMIS0L...`).
+- **Fix modello immagini**: DALL-E 3 non disponibile → switch a `gpt-image-1` (disponibile con key corrente).
+- **Fix SDK OpenAI**: `openai==1.3.7` incompatibile con `httpx` → REST API diretta con `requests`.
+
+## 2026-07-18 — Fetcher documenti (Gallica/TNA/IWM), Tab Fonti frontend, Chat AI report
+
+### Nuovi fetcher documenti 1GM (`archivio_documenti.py`)
+- **`fetch_gallica_sru()`**: Gallica BnF SRU API — foto, manoscritti, periodici francesi WWI. Parsing XML SRU/OAI-DC, estrazione ARK identifier, link diretto al viewer Gallica. Nessuna chiave API richiesta.
+- **`fetch_tna_discovery()`**: The National Archives Discovery API — war diaries WO 95. Endpoint pubblico REST JSON, estrazione reference, coveringDates, description. Link diretto a Discovery.
+- **`fetch_iwm_collections()`**: Imperial War Museum Collections API — private papers, diari, foto WWI. Endpoint pubblico REST JSON, estrazione id, title, displayDate, thumbnail.
+- **Pipeline `documenti_1gm`** aggiornata in `mass_index.py`: 8 step totali (seed + IA + LoC + Wikimedia + Europeana + Gallica + TNA + IWM), stats finali per tipo e provider.
+
+### Frontend: tab Fonti event-centric (`templates/index.html`, `templates/PRIMA_Guerra/index.html`)
+- **Nuovo tab "Fonti"** nel dossier evento: visibile solo per eventi (sc-if `dossier.isEvent`), mostra lista fonti archivistiche con titolo, archivio, tipo_fonte, link a catalogo e documento.
+- **Tab Caduti e Decorati** aggiunti al template generico `index.html` (erano già presenti in `PRIMA_Guerra/index.html`).
+- **Stato tab** (`tabFontiActive`, `tabFontiClass`, `onTabFonti`) aggiunto a `renderVals` in entrambi i template.
+- API verificata: `/api/events/1gm/{name}` restituisce 30 fonti per evento (es. Prigionia: 689 fonti totali, 30 mostrate).
+
+### Chat AI follow-up report (`app.py`, `templates/index.html`, `templates/PRIMA_Guerra/index.html`)
+- **`POST /api/event/chat`**: endpoint per domande di follow-up dopo il report AI. Riceve `event_name`, `message`, `report` (contesto), `history` (storico chat), usa `_call_with_fallback` (Mistral → Perplexity → GPT).
+- **UI chat** sotto il report: area messaggi scrollabile con bubble user/AI, textarea + pulsante Invia, indicatore "AI sta scrivendo…", Enter per inviare.
+- **Stato chat** (`_eventChatMessages`, `_eventChatInput`, `_eventChatLoading`) e metodi (`sendEventChatMessage`, `setEventChatInput`, `eventChatKeyDown`) in entrambi i template.
+
 ## 2026-07-17 — Integrazione event-centric: API, biography, frontend
 
 ### Grafo event-centric esteso (`_gen_event_links.py`, `eventi_1gm.db`)

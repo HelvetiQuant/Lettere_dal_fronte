@@ -47,3 +47,5 @@ Thumbs.db
 archivio_storage/
 local_*/
 outputs/
+audit_*.html
+audit_*.json
