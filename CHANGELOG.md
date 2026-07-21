@@ -13,6 +13,15 @@
 ### Verifica
 - `GET /api/events/1gm/battaglia_del_carso/caduti?limit=1`: restituisce `detail_url` corretto come `https://www.cadutigrandeguerra.it/DettagliNominativi.aspx?id=...`.
 
+### Test suite (`tests/`)
+- Eseguita suite completa: **220 passed, 1 skipped**.
+- Fix `tests/test_project_health.py`: esclusi `.venv/` e `.git/` dalla scansione degli import per evitare falsi positivi su pacchetti installati.
+- Fix `tests/test_fonti_risorse_master.py`: conteggio `SCRAPER_ALLOWED_DOMAINS` aggiornato a 14.
+- Fix `tests/test_soldier_dashboard.py`: mock `federated_search` arricchito con `score` e `direct_url` per superare i filtri di `_get_external_sources`.
+
+### Documentazione
+- `README.md`: aggiunta sezione "AI nel frontend" con pulsanti Dossier/Immagini AI e progress bar sui report AI.
+
 ## 2026-07-20 — Rimozione frontend 1GM dedicato
 
 ### Frontend

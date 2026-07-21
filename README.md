@@ -161,6 +161,12 @@ DDB_API_KEY=...  (opzionale, per Archivportal-D)
 | `/api/sources/search` | GET | Ricerca federata su 16 provider |
 | `/api/cwgc/search` | GET | Ricerca CWGC |
 
+## AI nel frontend
+
+- **Pulsanti AI sui risultati di ricerca**: ogni card persona nella home ha i bottoni `Dossier AI` (biografia verificata) e `Immagini AI` (ricostruzione visiva), che aprono il dossier e avviano la generazione.
+- **Report AI con progress bar**: nella scheda evento, i bottoni `Genera Report Convergenze Fonti AI` e `Genera Report Cronologico AI` mostrano una barra di avanzamento percentuale durante la generazione.
+- **Fallback multi-provider**: le chiamate AI usano la catena OpenAI → Anthropic → Mistral → Perplexity per garantire risposta anche in caso di indisponibilità o esaurimento crediti.
+
 ## Testing
 
 ```bash

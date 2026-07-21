@@ -12,10 +12,10 @@ Aggiornato: 21 luglio 2026 — Fix URL Albo d'Oro, progress bar AI, frontend 1GM
 - [x] **Fix URL Albo d'Oro per caduti**: normalizzazione `detail_url` relativo in URL assoluto `https://www.cadutigrandeguerra.it/...` in `events.py`, `app.py` e `caduti_albooro.py`. Verificato su `Battaglia del Carso` (id 1 → ABBONIZIO GIUSEPPE).
 - [ ] **Verifica end-to-end AI buttons in home search**: cercare "gaiaschi", cliccare `Dossier AI` e `Immagini AI` su una card, confermare che il dossier si apre e la generazione parte.
 - [ ] **Test tab evento popolati**: aprire "Battaglia del Carso" e verificare che i tab `Caduti` e `Decorati` mostrino dati nel browser preview.
-- [ ] **Falsi positivi linter CSS**: decidere se disabilitare la validazione CSS per `*.html` o accettare i warning; se necessario, aggiungere `.vscode/settings.json` (ora in gitignore).
-- [ ] **Test suite**: eseguire `python -m pytest tests/ -v` e fixare eventuali regressioni.
-- [ ] **Pulizia workspace**: rimuovere eventuali file `tmp_*` o debug residui.
-- [ ] **Documentazione**: eventualmente aggiornare `README.md` con le nuove feature AI sui risultati di ricerca.
+- [x] **Falsi positivi linter CSS**: warning da templating `{{ }}` negli attributi `style` accettati come noti; `.vscode/settings.json` non creato perché la cartella `.vscode/` è in `.gitignore`.
+- [x] **Test suite**: eseguito `python -m pytest tests/ -q` → **220 passed, 1 skipped**. Fixati 3 fallimenti: scansione `.venv` in `test_project_health.py`, conteggio `SCRAPER_ALLOWED_DOMAINS` in `test_fonti_risorse_master.py`, mock `federated_search` in `test_soldier_dashboard.py`.
+- [x] **Pulizia workspace**: rimossi file `tmp_*`, DB vuoti, audit HTML/JSON residui e output HTML di debug.
+- [x] **Documentazione**: aggiornato `README.md` con sezione "AI nel frontend".
 
 ---
 
