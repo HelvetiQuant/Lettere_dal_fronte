@@ -53,7 +53,8 @@ class TestGetSoldierDashboard(TempDBTestCase):
     def test_fonti_federate_vengono_passate_alla_dashboard(self, mock_fed):
         mock_fed.return_value = [
             {"archivio": "NARA", "titolo": "Foglio matricolare", "access_type": "online",
-             "downloadable": True},
+             "downloadable": True, "score": 0.9,
+             "direct_url": "https://nara.gov/document/123456"},
         ]
         conn = self.conn()
         rid = make_internato(conn, cognome="Gaiaschi", nome="Luigi")

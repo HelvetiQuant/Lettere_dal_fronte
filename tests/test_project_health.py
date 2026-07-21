@@ -49,28 +49,30 @@ def _local_module_names() -> set:
     comunque eseguite come mini-app standalone col proprio sys.path
     (es. import_ocr_lettere/app.py che fa `from ocr_engine import run_ocr`
     risolvendo ocr_engine.py come modulo top-level a runtime). Scansionare
-    tutto l'albero (esclusi tests/ e __pycache__) evita falsi positivi
+    tutto l'albero (esclusi tests/, __pycache__, .venv e .git) evita falsi positivi
     senza dover elencare eccezioni a mano ogni volta che si aggiunge una
     sotto-app con questo stesso pattern.
     """
     names = set()
+    skip = {"tests", "__pycache__", ".venv", ".git"}
     for py_file in REPO_ROOT.rglob("*.py"):
         rel_parts = py_file.relative_to(REPO_ROOT).parts
-        if rel_parts[0] in ("tests", "__pycache__") or "__pycache__" in rel_parts:
+        if rel_parts[0] in skip or any(p in skip for p in rel_parts):
             continue
         names.add(py_file.stem)
     for init_file in REPO_ROOT.glob("*/__init__.py"):
+        if any(p in skip for p in init_file.relative_to(REPO_ROOT).parts):
+            continue
         names.add(init_file.parent.name)
     return names
 
 
 def _iter_project_py_files():
+    skip = {"tests", "__pycache__", ".venv", ".git"}
     for py_file in REPO_ROOT.rglob("*.py"):
         rel = py_file.relative_to(REPO_ROOT)
         parts = rel.parts
-        if parts[0] in ("tests", "__pycache__"):
-            continue
-        if any(p == "__pycache__" for p in parts):
+        if parts[0] in skip or any(p in skip for p in parts):
             continue
         yield py_file
 

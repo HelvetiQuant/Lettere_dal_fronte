@@ -73,7 +73,7 @@ class TestConfig:
         assert SCRAPER_MAX_HTML_BYTES == 2 * 1024 * 1024
 
     def test_allowed_domains_count(self):
-        assert len(SCRAPER_ALLOWED_DOMAINS) == 12
+        assert len(SCRAPER_ALLOWED_DOMAINS) == 14
 
     def test_allowed_domains_known(self):
         for d in ["cadutigrandeguerra.it", "www.cwgc.org", "www.ussme.gov.it"]:
