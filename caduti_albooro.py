@@ -5,6 +5,7 @@ import re
 import time
 import threading
 import requests
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from datetime import datetime
 from database import get_conn
@@ -124,9 +125,9 @@ def _parse_row(row_html, volume_id: str, volume_name: str) -> dict:
         for a in c.find_all("a"):
             href = a.get("href", "")
             if "DettagliNominativi" in href:
-                detail_url = href
+                detail_url = urljoin(BASE, href)
             elif "ShowImg" in href:
-                img_url = href
+                img_url = urljoin(BASE, href)
 
     return {
         "source_id": detail_url.split("id=")[-1].split("%")[0] if detail_url else "",

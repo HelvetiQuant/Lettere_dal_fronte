@@ -1735,6 +1735,7 @@ def api_caduto_detail(caduto_id: int):
         if not row:
             raise HTTPException(status_code=404, detail=f"Caduto id={caduto_id} non trovato")
         soldato = dict(row)
+        soldato["detail_url"] = events.normalize_albo_url(soldato.get("detail_url"))
 
         # Check if also decorated
         nom = (soldato.get("nominativo") or "").upper()
@@ -1810,7 +1811,12 @@ def api_decorato_detail(decorato_id: int):
             "FROM caduti_albooro WHERE nominativo = ? COLLATE NOCASE",
             (nom,)
         ).fetchall()
-        soldato["caduto_info"] = [dict(r) for r in cad_rows]
+        caduto_info = []
+        for r in cad_rows:
+            c = dict(r)
+            c["detail_url"] = events.normalize_albo_url(c.get("detail_url"))
+            caduto_info.append(c)
+        soldato["caduto_info"] = caduto_info
 
         # Eventi collegati
         from pathlib import Path

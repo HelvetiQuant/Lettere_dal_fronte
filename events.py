@@ -18,6 +18,19 @@ import source_locator
 
 _EDB = Path(__file__).parent / "eventi_1gm.db"
 
+_ALBO_BASE = "https://www.cadutigrandeguerra.it"
+
+def normalize_albo_url(url: Optional[str]) -> str:
+    """Converte detail_url relativo dell'Albo d'Oro in URL assoluto."""
+    if not url:
+        return ""
+    url = url.strip()
+    if url.startswith("http://") or url.startswith("https://"):
+        return url
+    if url.startswith("/"):
+        return _ALBO_BASE + url
+    return _ALBO_BASE + "/" + url
+
 
 # Eventi curati con keyword di matching sui campi degli internati.
 # Per ogni evento si definiscono i campi da cercare e le keyword.
@@ -377,6 +390,7 @@ def get_eventi_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0, sea
         caduti_list = []
         for r in rows:
             d = dict(r)
+            d["detail_url"] = normalize_albo_url(d.get("detail_url"))
             nom_upper = (d.get("nominativo") or "").upper()
             d["is_decorato"] = nom_upper in decorati_map
             d["decorazione"] = decorati_map.get(nom_upper, "")
@@ -733,7 +747,11 @@ def get_graph_soldati_cluster(cluster_field: str, cluster_value: str,
             (cluster_value, limit, offset)
         ).fetchall()
 
-        soldati = [dict(r) for r in rows]
+        soldati = []
+        for r in rows:
+            d = dict(r)
+            d["detail_url"] = normalize_albo_url(d.get("detail_url"))
+            soldati.append(d)
         return {
             "cluster_field": cluster_field,
             "cluster_value": cluster_value,
