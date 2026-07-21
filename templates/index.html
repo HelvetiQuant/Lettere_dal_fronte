@@ -613,7 +613,7 @@
               <sc-if value="{{ c.hasFonti }}" hint-placeholder-val="{{ false }}">
                 <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:var(--color-accent-2-600);color:#fff">Fonti ✓</span>
               </sc-if>
-              <a href="{{ c.detail_url }}" target="_blank" rel="noopener" style="font-size:11px;color:var(--color-accent);margin-left:4px" onClick="event.stopPropagation()">Albo ↗</a>
+              <a href="{{ c.detail_url }}" target="_blank" rel="noopener" style="font-size:11px;color:var(--color-accent);margin-left:4px" onClick="{{ c.onAlboClick }}">Albo ↗</a>
             </span>
           </div>
         </sc-for>
@@ -1445,8 +1445,9 @@ class Component extends DCLogic {
     }
   }
   async generateEventReport() {
-    const evData = (this.state.data.EVENTS || {})[this.state.activeId];
-    const eventName = evData ? evData.name : this.state.activeId;
+    const st = this.state;
+    const evData = (st.data.EVENTS || {})[st.activeId];
+    const eventName = (st._eventDossier && st._eventDossier.event && st._eventDossier.event.name) || (evData && evData.name) || st.activeId;
     const tabMap = { overview: 'panoramica', perspectives: 'punti_di_vista', sources: 'fonti', gaps: 'cronologia' };
     const tab = tabMap[this.state.dossierTab] || 'punti_di_vista';
     this.setState({ _eventReportLoading: true, _eventReportError: null, _eventReportProgress: 1 });
@@ -1480,8 +1481,10 @@ class Component extends DCLogic {
     }
   }
   async generateChronologicalReport() {
-    const evData = (this.state.data.EVENTS || {})[this.state.activeId];
-    const eventName = evData ? evData.name : this.state.activeId;
+    const st = this.state;
+    const evData = (st.data.EVENTS || {})[st.activeId];
+    const eventName = (st._eventDossier && st._eventDossier.event && st._eventDossier.event.name) || (evData && evData.name) || st.activeId;
+    if (!eventName) { this.setState({ _chronoReportError: 'Evento non identificato' }); return; }
     this.setState({ _chronoReportLoading: true, _chronoReportError: null, _chronoReportProgress: 1 });
     let progress = 1;
     const interval = setInterval(() => {
@@ -1571,8 +1574,9 @@ class Component extends DCLogic {
   async sendEventChatMessage() {
     const msg = (this.state._eventChatInput || '').trim();
     if (!msg || this.state._eventChatLoading) return;
-    const evData = (this.state.data.EVENTS || {})[this.state.activeId];
-    const eventName = evData ? evData.name : this.state.activeId;
+    const st = this.state;
+    const evData = (st.data.EVENTS || {})[st.activeId];
+    const eventName = (st._eventDossier && st._eventDossier.event && st._eventDossier.event.name) || (evData && evData.name) || st.activeId;
     const history = (this.state._eventChatMessages || []).map(m => ({ role: m.role, content: m.text }));
     this.setState(st => ({ _eventChatInput: '', _eventChatLoading: true, _eventChatMessages: [...(st._eventChatMessages || []), { role: 'user', text: msg }] }));
     try {
@@ -2295,6 +2299,7 @@ class Component extends DCLogic {
             hasFonti: !!c.has_fonti,
             decorazione: c.decorazione || '',
             onClick: () => this.openSoldatoModal('caduto', c.id),
+            onAlboClick: (e) => { e.stopPropagation(); },
           })),
           eventCadutiTotal: (st._eventDossier && st._eventDossier.caduti_total) || 0,
           eventCadutiShown: ((st._eventDossier && st._eventDossier.caduti) || []).length,
