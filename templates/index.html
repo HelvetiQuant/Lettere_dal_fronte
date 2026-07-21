@@ -259,6 +259,14 @@
             </button>
             <span style="font-size:12px;opacity:0.7">Ricostruzione narrativa in ordine cronologico basata sulle fonti verificate</span>
           </div>
+          <sc-if value="{{ dossier.chronoReportLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:10px">
+              <div style="height:8px;background:var(--color-neutral-200);border-radius:var(--radius-md);overflow:hidden">
+                <div style="height:100%;background:var(--color-accent-600);border-radius:var(--radius-md);transition:width 0.25s ease;{{ dossier.chronoReportBarStyle }}"></div>
+              </div>
+              <div style="font-size:12px;opacity:0.7;margin-top:4px">{{ dossier.chronoReportProgressLabel }}</div>
+            </div>
+          </sc-if>
           <sc-if value="{{ dossier.hasChronoReport }}" hint-placeholder-val="{{ false }}">
             <div style="margin-top:12px;padding:14px 16px;background:var(--color-bg);border-radius:var(--radius-md);font-size:14px;line-height:1.6;border-left:3px solid var(--color-accent-600)" sc-html="{{ dossier.chronoReport }}"></div>
           </sc-if>
@@ -336,6 +344,14 @@
             </button>
             <span style="font-size:12px;opacity:0.7">Analizza le fonti ed estrae i fatti comuni a più fonti indipendenti</span>
           </div>
+          <sc-if value="{{ dossier.reportLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:10px">
+              <div style="height:8px;background:var(--color-neutral-200);border-radius:var(--radius-md);overflow:hidden">
+                <div style="height:100%;background:var(--color-accent-600);border-radius:var(--radius-md);transition:width 0.25s ease;{{ dossier.reportBarStyle }}"></div>
+              </div>
+              <div style="font-size:12px;opacity:0.7;margin-top:4px">{{ dossier.reportProgressLabel }}</div>
+            </div>
+          </sc-if>
           <sc-if value="{{ dossier.hasReport }}" hint-placeholder-val="{{ false }}">
             <div style="margin-top:12px;padding:14px 16px;background:var(--color-bg);border-radius:var(--radius-md);font-size:14px;line-height:1.6;border-left:3px solid var(--color-accent-600)" sc-html="{{ dossier.eventReport }}"></div>
           </sc-if>
@@ -1126,8 +1142,8 @@ class Component extends DCLogic {
     exploreId: 'internati', lightbox: null,
     _soldatoModal: null, _cadutiFilter: '', _decoratiFilter: '', _internatiFilter: '',
     searching: false, adminLive: null,
-    _recentSearches: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportError: null,
-    _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false,
+    _recentSearches: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportProgress: 0, _eventReportError: null,
+    _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false, _chronoReportProgress: 0,
     _graphSelectedEvent: null, _graphEventsList: null,
     _graphTab: 'eventi',
     _graphLuoghiList: null, _graphSelectedLuogo: null,
@@ -1241,7 +1257,7 @@ class Component extends DCLogic {
     }
   }
   openDossier(kind, id) {
-    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null, _externalSources: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportError: null, _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false, _soldierBio: null, _soldierBioLoading: false, _soldierBioError: null, _soldierBioSources: [], _soldierImages: null, _soldierImagesLoading: false, _soldierImagesError: null });
+    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null, _externalSources: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportProgress: 0, _eventReportError: null, _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false, _chronoReportProgress: 0, _soldierBio: null, _soldierBioLoading: false, _soldierBioError: null, _soldierBioSources: [], _soldierImages: null, _soldierImagesLoading: false, _soldierImagesError: null });
     // Se è un soldato IMI live, carica fonti e timeline dal backend
     const m = this.state._mod;
     if (kind === 'subject' && id && id.startsWith('imi_') && m && m.loadSoldierDossier) {
@@ -1316,7 +1332,12 @@ class Component extends DCLogic {
   async generateEventReport() {
     const evData = (this.state.data.EVENTS || {})[this.state.activeId];
     const eventName = evData ? evData.name : this.state.activeId;
-    this.setState({ _eventReportLoading: true, _eventReportError: null });
+    this.setState({ _eventReportLoading: true, _eventReportError: null, _eventReportProgress: 1 });
+    let progress = 1;
+    const interval = setInterval(() => {
+      progress = Math.min(progress + Math.floor(Math.random() * 4) + 2, 95);
+      this.setState({ _eventReportProgress: progress });
+    }, 700);
     try {
       const res = await fetch('/api/event/report', {
         method: 'POST',
@@ -1324,18 +1345,25 @@ class Component extends DCLogic {
         body: JSON.stringify({ event_name: eventName }),
       }).then(r => r.json());
       if (res.risposta) {
-        this.setState({ _eventReport: res.risposta, _eventReportLoading: false });
+        this.setState({ _eventReport: res.risposta, _eventReportLoading: false, _eventReportProgress: 100 });
       } else {
-        this.setState({ _eventReportError: res.detail || 'Errore generazione report', _eventReportLoading: false });
+        this.setState({ _eventReportError: res.detail || 'Errore generazione report', _eventReportLoading: false, _eventReportProgress: 0 });
       }
     } catch(e) {
-      this.setState({ _eventReportError: 'Errore di connessione: ' + e.message, _eventReportLoading: false });
+      this.setState({ _eventReportError: 'Errore di connessione: ' + e.message, _eventReportLoading: false, _eventReportProgress: 0 });
+    } finally {
+      clearInterval(interval);
     }
   }
   async generateChronologicalReport() {
     const evData = (this.state.data.EVENTS || {})[this.state.activeId];
     const eventName = evData ? evData.name : this.state.activeId;
-    this.setState({ _chronoReportLoading: true, _chronoReportError: null });
+    this.setState({ _chronoReportLoading: true, _chronoReportError: null, _chronoReportProgress: 1 });
+    let progress = 1;
+    const interval = setInterval(() => {
+      progress = Math.min(progress + Math.floor(Math.random() * 4) + 2, 95);
+      this.setState({ _chronoReportProgress: progress });
+    }, 700);
     try {
       const res = await fetch('/api/event/report/chronological', {
         method: 'POST',
@@ -1343,12 +1371,14 @@ class Component extends DCLogic {
         body: JSON.stringify({ event_name: eventName }),
       }).then(r => r.json());
       if (res.risposta) {
-        this.setState({ _chronoReport: res.risposta, _chronoReportLoading: false });
+        this.setState({ _chronoReport: res.risposta, _chronoReportLoading: false, _chronoReportProgress: 100 });
       } else {
-        this.setState({ _chronoReportError: res.detail || 'Errore generazione report', _chronoReportLoading: false });
+        this.setState({ _chronoReportError: res.detail || 'Errore generazione report', _chronoReportLoading: false, _chronoReportProgress: 0 });
       }
     } catch(e) {
-      this.setState({ _chronoReportError: 'Errore di connessione: ' + e.message, _chronoReportLoading: false });
+      this.setState({ _chronoReportError: 'Errore di connessione: ' + e.message, _chronoReportLoading: false, _chronoReportProgress: 0 });
+    } finally {
+      clearInterval(interval);
     }
   }
   async analyzeSource(sourceId) {
@@ -2178,6 +2208,9 @@ class Component extends DCLogic {
           eventReport: st._eventReport ? this.linkify(st._eventReport) : null,
           hasReport: !!st._eventReport,
           reportLoading: !!st._eventReportLoading,
+          reportProgress: st._eventReportProgress || 0,
+          reportBarStyle: `width:${st._eventReportProgress || 0}%`,
+          reportProgressLabel: (st._eventReportProgress || 0) + '%',
           reportError: st._eventReportError || null,
           hasReportError: !!st._eventReportError,
           onGenerateReport: () => this.generateEventReport(),
@@ -2185,6 +2218,9 @@ class Component extends DCLogic {
           chronoReport: st._chronoReport ? this.linkify(st._chronoReport) : null,
           hasChronoReport: !!st._chronoReport,
           chronoReportLoading: !!st._chronoReportLoading,
+          chronoReportProgress: st._chronoReportProgress || 0,
+          chronoReportBarStyle: `width:${st._chronoReportProgress || 0}%`,
+          chronoReportProgressLabel: (st._chronoReportProgress || 0) + '%',
           chronoReportError: st._chronoReportError || null,
           hasChronoReportError: !!st._chronoReportError,
           onGenerateChronoReport: () => this.generateChronologicalReport(),
