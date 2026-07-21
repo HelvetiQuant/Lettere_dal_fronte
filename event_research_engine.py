@@ -190,15 +190,41 @@ def _event_db_context(canonical: str) -> Dict[str, Any]:
     return query_event(canonical, verbose=False)
 
 
+def _relevance_tokens(canonical: str) -> set:
+    """Token significativi (>3 char) del nome evento per filtro rilevanza."""
+    stop = {"della", "delle", "degli", "dello", "battaglia", "eccidio",
+            "campagna", "operazione", "campo", "campi"}
+    toks = {t.lower() for t in re.findall(r"\w{4,}", canonical)}
+    return toks - stop
+
+
+def _is_relevant(c: Dict[str, Any], tokens: set) -> bool:
+    """Verifica che una fonte candidata contenga almeno un token evento nei metadati."""
+    if not tokens:
+        return True
+    hay = " ".join(str(c.get(k, "")) for k in
+                   ("titolo", "soggetti_collegati", "luogo", "note", "fondo", "serie")).lower()
+    return any(t in hay for t in tokens)
+
+
 def _local_sources_context(canonical: str, limit: int = 10) -> List[Dict[str, Any]]:
-    """Fonti dall'indice locale legate all'evento (match esatto + full-text)."""
+    """Fonti dall'indice locale legate all'evento (match esatto + full-text filtrato)."""
     exact = sl.find_sources_by_subject(canonical, limit=limit).get("candidates", [])
     candidate = sl.find_candidate_sources(canonical, limit=limit).get("candidates", [])
+    tokens = _relevance_tokens(canonical)
     seen = set()
     candidates = []
-    for c in exact + candidate:
+    for c in exact:
         sid = c.get("id")
         if not sid or sid in seen:
+            continue
+        seen.add(sid)
+        candidates.append(c)
+    for c in candidate:
+        sid = c.get("id")
+        if not sid or sid in seen:
+            continue
+        if not _is_relevant(c, tokens):
             continue
         seen.add(sid)
         candidates.append(c)
@@ -460,8 +486,16 @@ def _build_prompt(canonical: str, context: str, tab: str) -> str:
 
 
 def research_event(query: str, options: Optional[Dict[str, Any]] = None,
-                   provider: Optional[str] = None, tab: str = "punti_di_vista") -> Dict[str, Any]:
-    """Genera la scheda storica documentata per un evento."""
+                   provider: Optional[str] = None, tab: str = "punti_di_vista",
+                   mode: str = "specialist") -> Dict[str, Any]:
+    """Genera la scheda storica documentata per un evento.
+
+    mode:
+      - 'specialist' (default): usa il provider specialista del tab (o `provider`
+        se esplicito), con fallback Perplexity→OpenAI→Anthropic→Mistral.
+      - 'parallel': interroga TUTTI i provider disponibili sulla stessa ricerca e
+        restituisce le risposte affiancate per confronto.
+    """
     import biography as bio
 
     options = options or {}
@@ -475,10 +509,14 @@ def research_event(query: str, options: Optional[Dict[str, Any]] = None,
             "matches": dis.get("matches", []),
         }
 
-    selected_provider = provider or TAB_PROVIDER.get(tab, "perplexity")
     context = _build_context(canonical, query, options)
     prompt = _build_prompt(canonical, context[:15000], tab)
+    sources = _local_sources_context(canonical, limit=15) + _federated_sources_context(canonical, limit=15)
 
+    if mode == "parallel":
+        return _research_parallel(bio, canonical, query, tab, prompt, sources, dis)
+
+    selected_provider = provider or TAB_PROVIDER.get(tab, "perplexity")
     result = bio._call_with_fallback(
         system=EVENT_RESEARCH_SYSTEM,
         prompt=prompt,
@@ -495,11 +533,11 @@ def research_event(query: str, options: Optional[Dict[str, Any]] = None,
     if json_data is None:
         json_data = {"event": {"canonical_name": canonical}, "research_status": {"overall_confidence": "NON VERIFICATA"}}
 
-    sources = _local_sources_context(canonical, limit=15) + _federated_sources_context(canonical, limit=15)
     matrix = _build_evidence_matrix(json_data, sources)
 
     return {
         "ok": True,
+        "mode": "specialist",
         "risposta": scheda or raw,
         "json": json_data,
         "evidence_matrix": matrix,
@@ -511,6 +549,52 @@ def research_event(query: str, options: Optional[Dict[str, Any]] = None,
         "canonical": canonical,
         "attempted": result.get("attempted", []),
         "provider": result.get("provider"),
+    }
+
+
+def _research_parallel(bio, canonical: str, query: str, tab: str, prompt: str,
+                       sources: List[Dict[str, Any]], dis: Dict[str, Any]) -> Dict[str, Any]:
+    """Interroga tutti i provider in parallelo sulla stessa ricerca."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    def _run(prov: str) -> Dict[str, Any]:
+        r = bio._call_with_fallback(
+            system=EVENT_RESEARCH_SYSTEM, prompt=prompt,
+            tag=f"ricerca evento: {canonical} [{tab}] ({prov})",
+            preferred=prov, fallback_order=[prov],
+        )
+        if r.get("error"):
+            return {"provider": prov, "ok": False, "error": r.get("error")}
+        raw = r.get("risposta", "")
+        jd, scheda = _split_json_and_text(raw)
+        if jd is None:
+            jd = {"event": {"canonical_name": canonical}}
+        return {
+            "provider": r.get("provider", prov), "ok": True,
+            "risposta": scheda or raw, "json": jd,
+            "disputed_data": jd.get("disputed_data", []),
+            "unverified_claims": jd.get("unverified_claims", []),
+        }
+
+    results = []
+    with ThreadPoolExecutor(max_workers=len(EVENT_RESEARCH_FALLBACK)) as ex:
+        futures = {ex.submit(_run, p): p for p in EVENT_RESEARCH_FALLBACK}
+        for fut in as_completed(futures):
+            results.append(fut.result())
+
+    order = {p: i for i, p in enumerate(EVENT_RESEARCH_FALLBACK)}
+    results.sort(key=lambda r: order.get(r.get("provider"), 99))
+    ok_results = [r for r in results if r.get("ok")]
+
+    return {
+        "ok": bool(ok_results),
+        "mode": "parallel",
+        "error": None if ok_results else "Tutti i provider hanno fallito.",
+        "providers_results": results,
+        "sources": sources,
+        "disambiguation": dis,
+        "query": query,
+        "canonical": canonical,
     }
 
 

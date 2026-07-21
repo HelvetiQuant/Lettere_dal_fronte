@@ -752,17 +752,20 @@ def generate_event_biography(query: str, provider: Optional[str] = None) -> dict
 
 
 def generate_event_report(query: str, provider: Optional[str] = None,
-                         options: Optional[dict] = None) -> dict:
+                         options: Optional[dict] = None, mode: str = "specialist") -> dict:
     """Genera la scheda per il tab 'punti_di_vista' (default)."""
-    return generate_event_tab_report(query, tab="punti_di_vista", provider=provider, options=options)
+    return generate_event_tab_report(query, tab="punti_di_vista", provider=provider,
+                                     options=options, mode=mode)
 
 
 def generate_event_tab_report(query: str, tab: str = "punti_di_vista",
                                 provider: Optional[str] = None,
-                                options: Optional[dict] = None) -> dict:
+                                options: Optional[dict] = None,
+                                mode: str = "specialist") -> dict:
     """Genera una scheda storica documentata per l'evento specifica per tab."""
     import event_research_engine as ere
-    return ere.research_event(query, options=options or {}, provider=provider, tab=tab)
+    return ere.research_event(query, options=options or {}, provider=provider,
+                              tab=tab, mode=mode)
 
 
 def generate_biography(subject_type: str, ref, provider: Optional[str] = None) -> dict:

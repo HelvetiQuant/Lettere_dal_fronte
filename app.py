@@ -1536,9 +1536,10 @@ def api_generate_event_report(data: dict = Body(...)):
     event_name = (data.get("event_name") or "").strip()
     if not event_name:
         raise HTTPException(status_code=400, detail="event_name richiesto")
-    provider = data.get("provider") or "mistral"
+    provider = data.get("provider") or None
+    mode = data.get("mode") or "specialist"
     options = data.get("options") or {}
-    result = biography.generate_event_report(event_name, provider=provider, options=options)
+    result = biography.generate_event_report(event_name, provider=provider, options=options, mode=mode)
     if result.get("error") and "risposta" not in result:
         raise HTTPException(status_code=502, detail=result["error"])
     return result
@@ -1554,9 +1555,10 @@ def api_generate_event_tab_report(tab: str, data: dict = Body(...)):
     event_name = (data.get("event_name") or "").strip()
     if not event_name:
         raise HTTPException(status_code=400, detail="event_name richiesto")
-    provider = data.get("provider") or "mistral"
+    provider = data.get("provider") or None
+    mode = data.get("mode") or "specialist"
     options = data.get("options") or {}
-    result = biography.generate_event_tab_report(event_name, tab=tab, provider=provider, options=options)
+    result = biography.generate_event_tab_report(event_name, tab=tab, provider=provider, options=options, mode=mode)
     if result.get("error") and "risposta" not in result:
         raise HTTPException(status_code=502, detail=result["error"])
     return result
