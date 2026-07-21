@@ -1,5 +1,18 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-21 — Fix URL Albo d'Oro e progress bar AI
+
+### Backend (`events.py`, `app.py`, `caduti_albooro.py`)
+- **Fix link "Albo ↗" per caduti**: `detail_url` memorizzato come relativo (`DettagliNominativi.aspx?id=...`) veniva erroneamente risolto sul dominio locale (`127.0.0.1:8123`) causando 404.
+- `events.normalize_albo_url()`: helper che converte URL relativi in assoluti prependendo `https://www.cadutigrandeguerra.it/`; applicato in `get_eventi_1gm_caduti`, `get_graph_soldati_cluster`, `api_caduto_detail` e nei `caduto_info` di `api_decorato_detail`.
+- `caduti_albooro.py`: lo scraper ora salva `detail_url` e `img_url` già assoluti tramite `urllib.parse.urljoin(BASE, href)`.
+
+### Frontend (`templates/index.html`)
+- **Barra progresso percentuale per report AI**: durante la generazione di "Report Convergenze Fonti AI" e "Report Cronologico AI" viene mostrata una barra colorata con lo stato in percentuale (`_eventReportProgress`, `_chronoReportProgress`).
+
+### Verifica
+- `GET /api/events/1gm/battaglia_del_carso/caduti?limit=1`: restituisce `detail_url` corretto come `https://www.cadutigrandeguerra.it/DettagliNominativi.aspx?id=...`.
+
 ## 2026-07-20 — Rimozione frontend 1GM dedicato
 
 ### Frontend

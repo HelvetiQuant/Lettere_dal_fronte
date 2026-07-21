@@ -1,13 +1,15 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 20 luglio 2026 — Rimozione frontend 1GM, fix eventi underscore, AI buttons su ricerca, linter CSS.
+Aggiornato: 21 luglio 2026 — Fix URL Albo d'Oro, progress bar AI, frontend 1GM rimosso.
 
 ---
 
 ## Giornata 2026-07-21 — Verifiche e rifiniture
 
-- [ ] **Analisi approfondita connessione DB e frontend**: mappare quali tabelle/query alimentano ogni sezione della UI nel template comune `index.html` (1GM + 2GM).
+- [x] **Analisi approfondita connessione DB e frontend**: mappare quali tabelle/query alimentano ogni sezione della UI nel template comune `index.html` (1GM + 2GM). Documento `ANALISI_DB_FRONTEND.md` creato.
 - [x] **Rimozione frontend 1GM dedicato**: eliminati `templates/PRIMA_Guerra/`, `templates/voci-data-1gm.js`, `templates/index-1gm.html`, le route `/1gm` e `/voci-data-1gm.js` in `app.py` e `tests/test_frontend_1gm.py`. **⚠️ Nessun dato eliminato dai database**: i file `.db` e i record restano intatti.
+- [x] **Barra progresso percentuale per generazione report AI**: aggiunta in `templates/index.html` per report evento e report cronologico con `_eventReportProgress`/`_chronoReportProgress`.
+- [x] **Fix URL Albo d'Oro per caduti**: normalizzazione `detail_url` relativo in URL assoluto `https://www.cadutigrandeguerra.it/...` in `events.py`, `app.py` e `caduti_albooro.py`. Verificato su `Battaglia del Carso` (id 1 → ABBONIZIO GIUSEPPE).
 - [ ] **Verifica end-to-end AI buttons in home search**: cercare "gaiaschi", cliccare `Dossier AI` e `Immagini AI` su una card, confermare che il dossier si apre e la generazione parte.
 - [ ] **Test tab evento popolati**: aprire "Battaglia del Carso" e verificare che i tab `Caduti` e `Decorati` mostrino dati nel browser preview.
 - [ ] **Falsi positivi linter CSS**: decidere se disabilitare la validazione CSS per `*.html` o accettare i warning; se necessario, aggiungere `.vscode/settings.json` (ora in gitignore).
