@@ -280,7 +280,11 @@
                     disabled="{{ dossier.reportLoading }}">
               {{ dossier.reportLoading ? 'Generazione in corso…' : 'Genera Panoramica AI' }}
             </button>
-            <span style="font-size:12px;opacity:0.7">Scheda panoramica dell'evento con fonti verificate</span>
+            <div style="display:inline-flex;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);overflow:hidden">
+              <button class="{{ dossier.modeSpecialistCls }}" onClick="{{ dossier.onReportModeSpecialist }}" style="padding:6px 12px;font-size:12px;border:none;border-radius:0">Specialista/tab</button>
+              <button class="{{ dossier.modeParallelCls }}" onClick="{{ dossier.onReportModeParallel }}" style="padding:6px 12px;font-size:12px;border:none;border-radius:0">Parallelo (tutte le AI)</button>
+            </div>
+            <span style="font-size:12px;opacity:0.7">{{ dossier.reportModeHint }}</span>
           </div>
           <sc-if value="{{ dossier.reportLoading }}" hint-placeholder-val="{{ false }}">
             <div style="margin-top:10px">
@@ -1259,6 +1263,7 @@ class Component extends DCLogic {
     searching: false, adminLive: null,
     _recentSearches: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportProgress: 0, _eventReportError: null,
     _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false, _chronoReportProgress: 0,
+    _eventReportMode: 'specialist',
     _graphSelectedEvent: null, _graphEventsList: null,
     _graphTab: 'eventi',
     _graphLuoghiList: null, _graphSelectedLuogo: null,
@@ -1444,6 +1449,7 @@ class Component extends DCLogic {
       this.setState({ _soldierImagesError: 'Errore di connessione: ' + e.message, _soldierImagesLoading: false });
     }
   }
+  setEventReportMode(mode) { this.setState({ _eventReportMode: mode }); }
   async generateEventReport() {
     const st = this.state;
     const evData = (st.data.EVENTS || {})[st.activeId];
@@ -1456,17 +1462,27 @@ class Component extends DCLogic {
       progress = Math.min(progress + Math.floor(Math.random() * 4) + 2, 95);
       this.setState({ _eventReportProgress: progress });
     }, 700);
+    const mode = st._eventReportMode || 'specialist';
     try {
       const res = await fetch(`/api/event/report/${tab}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ event_name: eventName }),
+        body: JSON.stringify({ event_name: eventName, mode }),
       }).then(r => r.json());
-      if (res.risposta) {
+      let risposta = res.risposta;
+      if (!risposta && res.mode === 'parallel' && Array.isArray(res.providers_results)) {
+        const labels = { perplexity: 'Perplexity', gpt: 'OpenAI', claude: 'Anthropic', mistral: 'Mistral' };
+        risposta = res.providers_results.map(p => {
+          const name = labels[p.provider] || p.provider;
+          if (!p.ok) return `## ${name}\n\n_Errore: ${p.error || 'non disponibile'}_`;
+          return `## ${name}\n\n${p.risposta || ''}`;
+        }).join('\n\n---\n\n');
+      }
+      if (risposta) {
         this.setState({
-          _eventReports: { ...this.state._eventReports, [tab]: res.risposta },
+          _eventReports: { ...this.state._eventReports, [tab]: risposta },
           _eventReportsData: { ...this.state._eventReportsData, [tab]: res },
-          _eventReport: res.risposta,
+          _eventReport: risposta,
           _eventReportData: res,
           _eventReportLoading: false,
           _eventReportProgress: 100,
@@ -2384,6 +2400,13 @@ class Component extends DCLogic {
           reportError: st._eventReportError || null,
           hasReportError: !!st._eventReportError,
           onGenerateReport: () => this.generateEventReport(),
+          onReportModeSpecialist: () => this.setEventReportMode('specialist'),
+          onReportModeParallel: () => this.setEventReportMode('parallel'),
+          modeSpecialistCls: (st._eventReportMode || 'specialist') === 'specialist' ? 'btn btn-primary' : 'btn btn-ghost',
+          modeParallelCls: (st._eventReportMode || 'specialist') === 'parallel' ? 'btn btn-primary' : 'btn btn-ghost',
+          reportModeHint: (st._eventReportMode || 'specialist') === 'parallel'
+            ? 'Tutte le AI (Perplexity, OpenAI, Anthropic, Mistral) analizzano in parallelo — risposte a confronto'
+            : 'La AI specialista del tab (Panoramica→Perplexity, Fonti→Anthropic, Punti di vista→OpenAI, Cronologia→Mistral)',
           eventReportData: currentReportData,
           eventReportJson: currentReportData ? JSON.stringify(currentReportData.json, null, 2) : null,
           eventReportSources: (currentReportData && currentReportData.sources) || [],
