@@ -1,5 +1,23 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-21 (sera) — Fix crash frontend, provider AI per-tab e modalità parallela
+
+### Frontend (`templates/index.html`)
+- **Fix crash React #231**: il link "Albo ↗" nella tabella Caduti aveva `onClick="event.stopPropagation()"` come **stringa letterale**, passata a React come prop `onClick` di tipo string → crash che bloccava il mount dell'intera UI (da cui tutti i warning `{{ }}` never resolved e l'errore sul `value` del number input pagina caduti). Sostituito con handler funzione `onAlboClick` sugli item.
+- **Fix 400 su report cronologico**: il nome evento era ricavato solo da `data.EVENTS[activeId]` (assente per eventi 1GM caricati dinamicamente). Ora usa `_eventDossier.event.name` come fonte primaria in `generateChronologicalReport`, `generateEventReport` e `sendEventChatMessage`, con guard se vuoto.
+- **Toggle Specialista/Parallelo** per i report evento: la modalità parallela compone le risposte di tutte le AI (Perplexity, OpenAI, Anthropic, Mistral) a confronto in un'unica scheda.
+
+### Backend (`event_research_engine.py`, `biography.py`, `app.py`)
+- **Provider specialista per-tab**: rimosso il default forzato `provider="mistral"` dagli endpoint `/api/event/report` e `/api/event/report/{tab}`, così entra in azione la mappatura per-tab (Panoramica→Perplexity, Fonti→Anthropic, Punti di vista→OpenAI, Cronologia→Mistral) con fallback Perplexity→OpenAI→Anthropic→Mistral.
+- **Modalità `parallel`**: nuovo parametro `mode` in `research_event()` che interroga tutti i provider in `ThreadPoolExecutor` sulla stessa ricerca e restituisce `providers_results`.
+- **Filtro rilevanza fonti locali**: `_is_relevant()` scarta i falsi positivi del match full-text (es. fonti WWII agganciate a eventi WWI).
+
+### Diagnosi
+- **502 `/api/fonte/generate-images`**: verificato con chiamata reale che `gpt-image-1` risponde 200 OK — il 502 è specifico della fonte (metadata mancanti o parsing JSON prompt), non un bug di codice/chiave. Da riprodurre con il `source_id` esatto.
+
+### Server
+- Riavvio uvicorn su `http://127.0.0.1:8123` (risolto socket orfano da worker `multiprocessing-fork`). Commit `c71848b`, `eedf042`, `a8ee657` pushati su `helvetiquant/lettere_dal_fronte`.
+
 ## 2026-07-21 — Fix URL Albo d'Oro e progress bar AI
 
 ### Backend (`events.py`, `app.py`, `caduti_albooro.py`)

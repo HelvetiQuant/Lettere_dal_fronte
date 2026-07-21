@@ -1,6 +1,20 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 21 luglio 2026 — Fix URL Albo d'Oro, progress bar AI, frontend 1GM rimosso.
+Aggiornato: 21 luglio 2026 (sera) — Fix crash frontend, provider AI per-tab, modalità parallela.
+
+---
+
+## Giornata 2026-07-21 (sera) — Fix errori console e AI multi-provider
+
+- [x] **Fix crash React #231**: `onClick` stringa nel link "Albo ↗" → sostituito con handler funzione `onAlboClick`. Risolti a cascata tutti i `{{ }}` non risolti e l'errore sul `value` del number input caduti.
+- [x] **Fix 400 report cronologico**: nome evento robusto da `_eventDossier.event.name` in `generateChronologicalReport`/`generateEventReport`/`sendEventChatMessage`.
+- [x] **Provider AI specialista per-tab**: rimosso default `mistral` forzato negli endpoint report evento (Panoramica→Perplexity, Fonti→Anthropic, Punti di vista→OpenAI, Cronologia→Mistral).
+- [x] **Modalità parallela multi-AI**: toggle Specialista/Parallelo nella UI + `mode="parallel"` nel backend con `ThreadPoolExecutor`.
+- [x] **Filtro rilevanza fonti locali**: `_is_relevant()` scarta falsi positivi full-text (WWII su eventi WWI).
+- [ ] **📧 GUARDARE EMAIL ERIKA**: controllare la posta in arrivo di Erika per eventuali richieste/comunicazioni in sospeso e rispondere/agire di conseguenza.
+- [ ] **502 immagini AI (`/api/fonte/generate-images`)**: riprodurre con il `source_id` esatto che fallisce (gpt-image-1 conferma 200 OK; problema in metadata fonte o parsing JSON prompt).
+- [ ] **Bug latente grafi SVG**: gli `onClick="${() => ...}"` nei grafi (`index.html` ~1941, 1996, 2023, 2071) vengono stringificati nell'SVG → click nodi non funzionanti. Sistemare con event delegation.
+- [ ] **Verifica end-to-end nel browser preview**: aprire "Battaglia del Carso", testare i 4 tab report in entrambe le modalità (specialista + parallelo) e confermare assenza di errori console.
 
 ---
 
