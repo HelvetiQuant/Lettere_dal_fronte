@@ -18,6 +18,7 @@ from typing import Any, Dict, List, Optional
 
 import events
 import source_locator as sl
+import search_service as ss
 from database import DB_PATH
 
 
@@ -190,11 +191,19 @@ def _event_db_context(canonical: str) -> Dict[str, Any]:
 
 
 def _local_sources_context(canonical: str, limit: int = 10) -> List[Dict[str, Any]]:
-    """Fonti dall'indice locale legate all'evento."""
-    found = sl.find_sources_by_subject(canonical, limit=limit)
-    candidates = found.get("candidates", [])
+    """Fonti dall'indice locale legate all'evento (match esatto + full-text)."""
+    exact = sl.find_sources_by_subject(canonical, limit=limit).get("candidates", [])
+    candidate = sl.find_candidate_sources(canonical, limit=limit).get("candidates", [])
+    seen = set()
+    candidates = []
+    for c in exact + candidate:
+        sid = c.get("id")
+        if not sid or sid in seen:
+            continue
+        seen.add(sid)
+        candidates.append(c)
     enriched = []
-    for c in candidates:
+    for c in candidates[:limit]:
         snippet = sl._read_cached_text(c.get("id"))
         enriched.append({
             "source_id": f"LOC-{c.get('id')}",
@@ -206,6 +215,7 @@ def _local_sources_context(canonical: str, limit: int = 10) -> List[Dict[str, An
             "date": c.get("data_inizio", ""),
             "excerpt": (snippet or "")[:1200],
             "authority": "istituzionale" if c.get("archivio") else "locale",
+            "availability": c.get("availability", "da_richiedere"),
         })
     return enriched
 
@@ -250,7 +260,60 @@ def _caduti_decorati_context(canonical: str, limit: int = 10) -> Dict[str, Any]:
     }
 
 
-def _build_context(canonical: str, options: Dict[str, Any]) -> str:
+def _internal_db_context(canonical: str, query: str, limit: int = 20) -> Dict[str, Any]:
+    """Cerca nel database interno (entità, grafo, record sorgente) per l'evento.
+
+    Usa search_service per interrogare l'indice FTS5 e, per le entità più rilevanti,
+    recupera il record sorgente e il grafo dei collegamenti.
+    """
+    try:
+        entities = ss.search_entities(canonical, limit=limit)
+        if canonical != query:
+            more = ss.search_entities(query, limit=limit // 2)
+            seen = {e["entita_id"] for e in entities}
+            for e in more:
+                if e["entita_id"] not in seen:
+                    entities.append(e)
+                    seen.add(e["entita_id"])
+    except Exception:
+        entities = []
+
+    full_contexts = []
+    network_nodes = []
+    processed = set()
+    for e in entities[:10]:
+        eid = e.get("entita_id")
+        if not eid or eid in processed:
+            continue
+        processed.add(eid)
+        try:
+            ctx = ss.get_entity_full_context(eid)
+            full_contexts.append(ctx)
+        except Exception:
+            ctx = None
+        if e.get("tipo") in ("evento", "luogo") and ctx:
+            try:
+                net = ss.get_entity_network(eid, max_depth=2)
+                network_nodes.extend(net.get("nodes", [])[:20])
+            except Exception:
+                pass
+
+    records_by_table: Dict[str, List[Dict[str, Any]]] = {}
+    for ctx in full_contexts:
+        src = ctx.get("source_record") if ctx else None
+        if not src or isinstance(src, dict) and src.get("error"):
+            continue
+        tbl = ctx.get("source_table") or "record"
+        records_by_table.setdefault(tbl, []).append(src)
+
+    return {
+        "entities": entities[:limit],
+        "records_by_table": {k: v[:10] for k, v in records_by_table.items()},
+        "network_nodes": network_nodes[:limit],
+    }
+
+
+def _build_context(canonical: str, query: str, options: Dict[str, Any]) -> str:
     """Compila il contesto testuale per il prompt AI."""
     parts = []
     parts.append(f"EVENTO CANONICO: {canonical}")
@@ -278,10 +341,15 @@ def _build_context(canonical: str, options: Dict[str, Any]) -> str:
         for s in fed:
             parts.append(json.dumps(s, ensure_ascii=False, default=str))
 
-    sold = _caduti_decorati_context(canonical, limit=5)
+    sold = _caduti_decorati_context(canonical, limit=10)
     if sold.get("caduti") or sold.get("decorati"):
         parts.append("--- CAMPIONE CADUTI/DECORATI ---")
         parts.append(json.dumps(sold, ensure_ascii=False, default=str))
+
+    internal = _internal_db_context(canonical, query, limit=20)
+    if internal.get("entities"):
+        parts.append("--- RICERCA DATABASE INTERNO (entità, record, grafo) ---")
+        parts.append(json.dumps(internal, ensure_ascii=False, default=str, indent=2))
 
     return "\n\n".join(parts)
 
@@ -373,6 +441,19 @@ TAB_INSTRUCTIONS = {
 }
 
 
+# Provider per tab: Perplexity (panoramica/web), Anthropic (analisi fonti),
+# OpenAI (sintesi punti di vista), Mistral (cronologia veloce).
+TAB_PROVIDER = {
+    "panoramica": "perplexity",
+    "fonti": "claude",
+    "punti_di_vista": "gpt",
+    "cronologia": "mistral",
+}
+
+# Ordine di fallback per i report evento: Perplexity -> OpenAI -> Anthropic -> Mistral.
+EVENT_RESEARCH_FALLBACK = ["perplexity", "gpt", "claude", "mistral"]
+
+
 def _build_prompt(canonical: str, context: str, tab: str) -> str:
     instruction = TAB_INSTRUCTIONS.get(tab, TAB_INSTRUCTIONS["punti_di_vista"])
     return EVENT_RESEARCH_PROMPT.format(subject_label=canonical, context=context) + "\n\n" + instruction
@@ -394,14 +475,16 @@ def research_event(query: str, options: Optional[Dict[str, Any]] = None,
             "matches": dis.get("matches", []),
         }
 
-    context = _build_context(canonical, options)
+    selected_provider = provider or TAB_PROVIDER.get(tab, "perplexity")
+    context = _build_context(canonical, query, options)
     prompt = _build_prompt(canonical, context[:15000], tab)
 
     result = bio._call_with_fallback(
         system=EVENT_RESEARCH_SYSTEM,
         prompt=prompt,
-        tag=f"ricerca evento: {canonical}",
-        preferred=provider,
+        tag=f"ricerca evento: {canonical} [{tab}]",
+        preferred=selected_provider,
+        fallback_order=EVENT_RESEARCH_FALLBACK,
     )
     if result.get("error"):
         return {"ok": False, "error": result.get("error"), "attempted": result.get("attempted", [])}

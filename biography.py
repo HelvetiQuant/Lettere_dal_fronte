@@ -323,9 +323,11 @@ def _dispatch(provider: str, system: str, prompt: str):
     raise ValueError(f"Provider sconosciuto: {provider}")
 
 
-def _call_with_fallback(system: str, prompt: str, tag: str, preferred: Optional[str] = None) -> dict:
-    order = ([preferred] if preferred in _FALLBACK_ORDER else []) + \
-            [p for p in _FALLBACK_ORDER if p != preferred]
+def _call_with_fallback(system: str, prompt: str, tag: str, preferred: Optional[str] = None,
+                        fallback_order: Optional[list] = None) -> dict:
+    base_order = fallback_order if fallback_order is not None else _FALLBACK_ORDER
+    order = ([preferred] if preferred in base_order else []) + \
+            [p for p in base_order if p != preferred]
     attempted = []
     for provider in order:
         try:
