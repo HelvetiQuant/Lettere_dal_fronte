@@ -346,12 +346,19 @@ def api_fondi_delete(file_pdf: str):
     return {"ok": True, "deleted": n}
 
 
+def _normalize_caduti_urls(result: dict) -> None:
+    for c in result.get("caduti") or []:
+        c["detail_url"] = events.normalize_albo_url(c.get("detail_url"))
+        c["img_url"] = events.normalize_albo_url(c.get("img_url"))
+
+
 @app.get("/api/search")
 def api_search(q: str, limit: int = 100):
     if not q or len(q.strip()) < 2:
         raise HTTPException(status_code=400, detail="Termine di ricerca troppo corto")
     result = search_all(q.strip(), limit=limit)
     result["events"] = events.search_events(q.strip(), limit=max(10, limit // 7))
+    _normalize_caduti_urls(result)
     return result
 
 
@@ -363,6 +370,7 @@ def api_conv_search(q: str, limit: int = 20, scope: str = None):
     if not q or len(q.strip()) < 2:
         raise HTTPException(status_code=400, detail="Termine troppo corto")
     data = search_all(q.strip(), limit=limit)
+    _normalize_caduti_urls(data)
     if scope == "caduti":
         caduti = data.get("caduti", [])
         return {"soldiers": caduti, "results": caduti}
@@ -379,8 +387,11 @@ def api_search_validated(q: str, limit: int = 100, external: bool = True):
     if not q or len(q.strip()) < 2:
         raise HTTPException(status_code=400, detail="Termine di ricerca troppo corto")
     local = search_all(q.strip(), limit=limit)
+    _normalize_caduti_urls(local)
     local["events"] = events.search_events(q.strip(), limit=max(10, limit // 7))
     validated = search_validator.validate_search(q.strip(), local, external_enabled=external)
+    if isinstance(validated, dict):
+        _normalize_caduti_urls(validated)
     return validated
 
 
@@ -1520,13 +1531,32 @@ def api_generate_biography(data: dict = Body(...)):
 
 @app.post("/api/event/report")
 def api_generate_event_report(data: dict = Body(...)):
-    """Genera un report oggettivo sull'evento che analizza tutte le fonti
-    verificate ed estrae solo i fatti comuni a tutte le fonti."""
+    """Genera una scheda storica documentata sull'evento con fonti, matrice
+    evidenze e JSON strutturato."""
     event_name = (data.get("event_name") or "").strip()
     if not event_name:
         raise HTTPException(status_code=400, detail="event_name richiesto")
     provider = data.get("provider") or "mistral"
-    result = biography.generate_event_report(event_name, provider=provider)
+    options = data.get("options") or {}
+    result = biography.generate_event_report(event_name, provider=provider, options=options)
+    if result.get("error") and "risposta" not in result:
+        raise HTTPException(status_code=502, detail=result["error"])
+    return result
+
+
+@app.post("/api/event/report/{tab}")
+def api_generate_event_tab_report(tab: str, data: dict = Body(...)):
+    """Genera una scheda AI specifica per tab: panoramica, fonti,
+    punti_di_vista, cronologia."""
+    allowed = {"panoramica", "fonti", "punti_di_vista", "cronologia"}
+    if tab not in allowed:
+        raise HTTPException(status_code=400, detail=f"tab non valido: scegliere tra {allowed}")
+    event_name = (data.get("event_name") or "").strip()
+    if not event_name:
+        raise HTTPException(status_code=400, detail="event_name richiesto")
+    provider = data.get("provider") or "mistral"
+    options = data.get("options") or {}
+    result = biography.generate_event_tab_report(event_name, tab=tab, provider=provider, options=options)
     if result.get("error") and "risposta" not in result:
         raise HTTPException(status_code=502, detail=result["error"])
     return result
@@ -1710,10 +1740,10 @@ def api_event_1gm_dossier(event_name: str):
 
 
 @app.get("/api/events/1gm/{event_name}/caduti")
-def api_event_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0, search: str = ""):
-    """Caduti paginati per un evento 1GM con filtro di ricerca opzionale."""
+def api_event_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0, search: str = "", letter: str = ""):
+    """Caduti paginati per un evento 1GM con filtro di ricerca e lettera iniziale."""
     nome_decoded = event_name.replace("+", " ")
-    return events.get_eventi_1gm_caduti(nome_decoded, limit=limit, offset=offset, search=search)
+    return events.get_eventi_1gm_caduti(nome_decoded, limit=limit, offset=offset, search=search, letter=letter)
 
 
 @app.get("/api/events/1gm/{event_name}/decorati")

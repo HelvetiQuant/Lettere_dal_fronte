@@ -12,6 +12,7 @@ import re
 import sqlite3
 from pathlib import Path
 from typing import List, Dict, Optional
+from urllib.parse import urljoin
 
 from database import get_conn, DB_PATH
 import source_locator
@@ -27,9 +28,7 @@ def normalize_albo_url(url: Optional[str]) -> str:
     url = url.strip()
     if url.startswith("http://") or url.startswith("https://"):
         return url
-    if url.startswith("/"):
-        return _ALBO_BASE + url
-    return _ALBO_BASE + "/" + url
+    return urljoin(_ALBO_BASE, url)
 
 
 # Eventi curati con keyword di matching sui campi degli internati.
@@ -301,9 +300,10 @@ def get_evento_1gm_dossier(query: str) -> Dict:
         return {"ok": False, "error": str(e)}
 
 
-def get_eventi_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0, search: str = "") -> Dict:
+def get_eventi_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0, search: str = "", letter: str = "") -> Dict:
     """Caduti paginati per un evento 1GM con flag decorato e fonti collegate.
-    Se search è specificato, filtra per nominativo/grado/reparto/luogo_morte."""
+    Se search è specificato, filtra per nominativo/grado/reparto/luogo_morte.
+    Se letter è specificato, filtra per iniziale del nominativo."""
     if not _EDB.exists():
         return {"event": event_name, "caduti": [], "total": 0}
     conn_ev = sqlite3.connect(str(_EDB), timeout=30)
@@ -338,23 +338,27 @@ def get_eventi_1gm_caduti(event_name: str, limit: int = 50, offset: int = 0, sea
         # Use temp table for large ID sets
         conn_ro.execute("CREATE TEMP TABLE _tmp_ids(ids INTEGER)")
         conn_ro.executemany("INSERT INTO _tmp_ids VALUES(?)", [(i,) for i in ids])
-        search_clause = ""
-        search_params = []
+        filter_clause = ""
+        filter_params = []
         if search:
-            search_clause = (" AND (c.nominativo LIKE ? OR c.grado LIKE ? OR c.reparto LIKE ? "
+            filter_clause = (" AND (c.nominativo LIKE ? OR c.grado LIKE ? OR c.reparto LIKE ? "
                              "OR c.luogo_morte LIKE ? OR c.anno_morte LIKE ?) ")
             sp = f"%{search}%"
-            search_params = [sp, sp, sp, sp, sp]
+            filter_params = [sp, sp, sp, sp, sp]
+        if letter:
+            letter = letter.strip().upper()[:1]
+            filter_clause += " AND UPPER(c.nominativo) LIKE ? "
+            filter_params.append(f"{letter}%")
         total = conn_ro.execute(
-            f"SELECT COUNT(*) FROM caduti_albooro c JOIN _tmp_ids t ON c.id = t.ids{search_clause}",
-            search_params
+            f"SELECT COUNT(*) FROM caduti_albooro c JOIN _tmp_ids t ON c.id = t.ids{filter_clause}",
+            filter_params
         ).fetchone()[0]
         rows = conn_ro.execute(
             f"SELECT c.id, c.nominativo, c.grado, c.reparto, c.luogo_morte, c.anno_morte, "
             f"c.causa_morte, c.paternita, c.comune_attuale, c.detail_url "
-            f"FROM caduti_albooro c JOIN _tmp_ids t ON c.id = t.ids{search_clause} "
+            f"FROM caduti_albooro c JOIN _tmp_ids t ON c.id = t.ids{filter_clause} "
             f"LIMIT ? OFFSET ?",
-            search_params + [limit, offset]
+            filter_params + [limit, offset]
         ).fetchall()
 
         # Build set of decorated soldati by nominativo match

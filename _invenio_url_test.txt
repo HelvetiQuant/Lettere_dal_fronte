@@ -1,5 +1,0 @@
-200 | https://invenio.bundesarchiv.de/invenio/switch.xhtml | ct=text/html;charset=UTF-8 | len=1421
-404 | https://invenio.bundesarchiv.de/invenio/search.xhtml | ct=text/html | len=272
-404 | https://invenio.bundesarchiv.de/invenio/suche.xhtml | ct=text/html | len=272
-404 | https://invenio.bundesarchiv.de/invenio/start.xhtml | ct=text/html | len=272
-200 | https://invenio.bundesarchiv.de/invenio/index.xhtml | ct=text/html;charset=UTF-8 | len=800

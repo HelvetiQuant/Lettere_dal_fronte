@@ -274,6 +274,29 @@
             <div style="margin-top:8px;font-size:13px;color:var(--color-accent-2-600)">{{ dossier.chronoReportError }}</div>
           </sc-if>
         </div>
+        <div style="margin-top:20px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onClick="{{ dossier.onGenerateReport }}"
+                    disabled="{{ dossier.reportLoading }}">
+              {{ dossier.reportLoading ? 'Generazione in corso…' : 'Genera Panoramica AI' }}
+            </button>
+            <span style="font-size:12px;opacity:0.7">Scheda panoramica dell'evento con fonti verificate</span>
+          </div>
+          <sc-if value="{{ dossier.reportLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:10px">
+              <div style="height:8px;background:var(--color-neutral-200);border-radius:var(--radius-md);overflow:hidden">
+                <div style="height:100%;background:var(--color-accent-600);border-radius:var(--radius-md);transition:width 0.25s ease;{{ dossier.reportBarStyle }}"></div>
+              </div>
+              <div style="font-size:12px;opacity:0.7;margin-top:4px">{{ dossier.reportProgressLabel }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ dossier.hasReport }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:12px;padding:14px 16px;background:var(--color-bg);border-radius:var(--radius-md);font-size:14px;line-height:1.6;border-left:3px solid var(--color-accent-600)" sc-html="{{ dossier.eventReport }}"></div>
+          </sc-if>
+          <sc-if value="{{ dossier.hasReportError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;font-size:13px;color:var(--color-accent-2-600)">{{ dossier.reportError }}</div>
+          </sc-if>
+        </div>
       </sc-if>
       <sc-if value="{{ dossier.isSoldier }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:20px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
@@ -354,6 +377,25 @@
           </sc-if>
           <sc-if value="{{ dossier.hasReport }}" hint-placeholder-val="{{ false }}">
             <div style="margin-top:12px;padding:14px 16px;background:var(--color-bg);border-radius:var(--radius-md);font-size:14px;line-height:1.6;border-left:3px solid var(--color-accent-600)" sc-html="{{ dossier.eventReport }}"></div>
+            <sc-if value="{{ dossier.eventReportDisputed.length > 0 }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:16px">
+                <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--color-accent-2-600)">Dati discordanti</div>
+                <sc-for list="{{ dossier.eventReportDisputed }}" as="dd" hint-placeholder-count="3">
+                  <div style="padding:10px 12px;background:var(--color-surface);border-radius:var(--radius-sm);border:1px solid var(--color-neutral-300);margin-bottom:8px">
+                    <div style="font-size:13px;font-weight:600">{{ dd.field }}</div>
+                    <div style="font-size:12.5px;opacity:0.85;margin-top:4px">{{ dd.description }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ dossier.eventReportUnverified.length > 0 }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:16px">
+                <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--color-neutral-600)">Affermazioni non verificate</div>
+                <sc-for list="{{ dossier.eventReportUnverified }}" as="uv" hint-placeholder-count="3">
+                  <div style="padding:8px 12px;background:var(--color-bg);border-radius:var(--radius-sm);border:1px solid var(--color-neutral-300);margin-bottom:6px;font-size:12.5px">{{ uv.claim || uv }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
           </sc-if>
           <sc-if value="{{ dossier.hasReportError }}" hint-placeholder-val="{{ false }}">
             <div style="margin-top:8px;font-size:13px;color:var(--color-accent-2-600)">{{ dossier.reportError }}</div>
@@ -388,6 +430,31 @@
 
     <sc-if value="{{ dossier.tabSourcesActive }}" hint-placeholder-val="{{ false }}">
       <h3 style="font-size:16px;margin-bottom:16px">{{ S.dossierSourcesTitle }}</h3>
+      <sc-if value="{{ dossier.isEvent }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);margin-bottom:20px;border:1px solid var(--color-neutral-300)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onClick="{{ dossier.onGenerateReport }}"
+                    disabled="{{ dossier.reportLoading }}">
+              {{ dossier.reportLoading ? 'Generazione in corso…' : 'Genera Analisi Fonti AI' }}
+            </button>
+            <span style="font-size:12px;opacity:0.7">Analisi delle fonti, autorevolezza e matrice delle evidenze</span>
+          </div>
+          <sc-if value="{{ dossier.reportLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:10px">
+              <div style="height:8px;background:var(--color-neutral-200);border-radius:var(--radius-md);overflow:hidden">
+                <div style="height:100%;background:var(--color-accent-600);border-radius:var(--radius-md);transition:width 0.25s ease;{{ dossier.reportBarStyle }}"></div>
+              </div>
+              <div style="font-size:12px;opacity:0.7;margin-top:4px">{{ dossier.reportProgressLabel }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ dossier.hasReport }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:12px;padding:14px 16px;background:var(--color-bg);border-radius:var(--radius-md);font-size:14px;line-height:1.6;border-left:3px solid var(--color-accent-600)" sc-html="{{ dossier.eventReport }}"></div>
+          </sc-if>
+          <sc-if value="{{ dossier.hasReportError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;font-size:13px;color:var(--color-accent-2-600)">{{ dossier.reportError }}</div>
+          </sc-if>
+        </div>
+      </sc-if>
       <div style="display:grid;gap:8px;max-width:760px;margin-bottom:20px">
         <sc-for list="{{ dossier.sources }}" as="s" hint-placeholder-count="4">
           <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--color-surface);border-radius:var(--radius-md);flex-wrap:wrap">
@@ -426,6 +493,47 @@
             </div>
           </sc-for>
         </div>
+      </sc-if>
+
+      <sc-if value="{{ dossier.eventReportSources.length > 0 }}" hint-placeholder-val="{{ false }}">
+        <h3 style="font-size:16px;margin:20px 0 16px">Fonti della ricerca AI</h3>
+        <div style="display:grid;gap:8px;max-width:760px;margin-bottom:20px">
+          <sc-for list="{{ dossier.eventReportSources }}" as="rs" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--color-surface);border-radius:var(--radius-md);flex-wrap:wrap">
+              <span style="width:8px;height:8px;border-radius:50%;background:var(--color-accent-600);flex:none"></span>
+              <div style="flex:1;min-width:180px">
+                <div style="font-size:14px;font-weight:600">{{ rs.title }}</div>
+                <div style="font-size:12px;opacity:0.6;margin-top:2px">{{ rs.author_or_institution }} · {{ rs.source_type }}</div>
+                <sc-if value="{{ rs.url }}">
+                  <a href="{{ rs.url }}" target="_blank" rel="noopener" style="font-size:11px;color:var(--color-accent)">{{ rs.url }}</a>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ dossier.eventReportMatrix.length > 0 }}" hint-placeholder-val="{{ false }}">
+          <h3 style="font-size:16px;margin:20px 0 12px">Matrice delle evidenze</h3>
+          <div style="max-width:760px;overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+              <thead>
+                <tr style="background:var(--color-neutral-100);text-align:left">
+                  <th style="padding:8px 10px;border:1px solid var(--color-neutral-300)">Campo</th>
+                  <th style="padding:8px 10px;border:1px solid var(--color-neutral-300)">Valore</th>
+                  <th style="padding:8px 10px;border:1px solid var(--color-neutral-300)">Affidabilità</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ dossier.eventReportMatrix }}" as="m" hint-placeholder-count="10">
+                  <tr>
+                    <td style="padding:8px 10px;border:1px solid var(--color-neutral-300)">{{ m.campo }}</td>
+                    <td style="padding:8px 10px;border:1px solid var(--color-neutral-300)">{{ m.valore }}</td>
+                    <td style="padding:8px 10px;border:1px solid var(--color-neutral-300)">{{ m.affidabilita }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </sc-if>
       </sc-if>
 
       <sc-if value="{{ dossier.isSoldier }}" hint-placeholder-val="{{ false }}">
@@ -477,10 +585,15 @@
     <!-- ── Event-centric: Caduti table ── -->
     <sc-if value="{{ dossier.tabCadutiActive }}" hint-placeholder-val="{{ false }}">
       <h3 style="font-size:16px;margin-bottom:4px">Caduti collegati all'evento</h3>
-      <p style="font-size:12px;opacity:0.6;margin:0 0 16px">{{ dossier.eventCadutiShown }} di {{ dossier.eventCadutiTotal }} record mostrati</p>
+      <p style="font-size:12px;opacity:0.6;margin:0 0 8px">{{ dossier.eventCadutiShown }} di {{ dossier.eventCadutiTotal }} record mostrati — Pagina {{ dossier.cadutiCurrentPage }} di {{ dossier.cadutiTotalPages }}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">
+        <sc-for list="{{ dossier.cadutiLetters }}" as="l" hint-placeholder-count="27">
+          <button class="{{ l.cls }}" onClick="{{ l.onClick }}" style="padding:4px 8px;font-size:12px;min-width:28px">{{ l.label }}</button>
+        </sc-for>
+      </div>
       <input type="text" placeholder="Filtra per nome, reparto, luogo..." value="{{ dossier.cadutiFilter }}"
              onInput="{{ dossier.onCadutiFilterInput }}" style="width:100%;padding:8px 12px;margin-bottom:12px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);font-size:13px" />
-      <div style="display:grid;gap:0;max-width:100%;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);overflow:hidden">
+      <div style="display:grid;gap:0;max-width:100%;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);max-height:65vh;overflow-y:auto;overflow-x:hidden">
         <div style="display:grid;grid-template-columns:2fr 0.8fr 1.5fr 1.2fr 0.5fr 1fr 0.7fr;padding:8px 12px;background:var(--color-neutral-100);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;opacity:0.7;border-bottom:1px solid var(--color-neutral-300)">
           <span>Nominativo</span><span>Grado</span><span>Reparto</span><span>Luogo morte</span><span>Anno</span><span>Decorazione</span><span>Fonti</span>
         </div>
@@ -505,12 +618,14 @@
           </div>
         </sc-for>
       </div>
-      <sc-if value="{{ dossier.canLoadMoreCaduti }}" hint-placeholder-val="{{ false }}">
-        <button class="btn btn-secondary" onClick="{{ dossier.onLoadMoreCaduti }}" disabled="{{ dossier.loadingMoreCaduti }}"
-                style="margin-top:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onClick="{{ dossier.onLoadMoreCaduti }}" disabled="{{ dossier.loadingMoreCaduti }}">
           {{ dossier.loadingMoreCaduti ? 'Caricamento…' : 'Carica altri 50' }}
         </button>
-      </sc-if>
+        <span style="font-size:13px;opacity:0.7">Vai a pagina</span>
+        <input type="number" min="1" max="{{ dossier.cadutiTotalPages }}" value="{{ dossier.cadutiCurrentPage }}" onChange="{{ dossier.onCadutiPageChange }}" style="width:70px;padding:4px 8px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-md);font-size:13px" />
+        <span style="font-size:13px;opacity:0.7">di {{ dossier.cadutiTotalPages }}</span>
+      </div>
     </sc-if>
 
     <!-- ── Event-centric: Decorati table ── -->
@@ -1140,7 +1255,7 @@ class Component extends DCLogic {
     lang: 'it', view: 'home', query: '',
     activeKind: null, activeId: null, dossierTab: 'overview',
     exploreId: 'internati', lightbox: null,
-    _soldatoModal: null, _cadutiFilter: '', _decoratiFilter: '', _internatiFilter: '',
+    _soldatoModal: null, _cadutiFilter: '', _cadutiLetter: '', _cadutiOffset: 0, _decoratiFilter: '', _internatiFilter: '',
     searching: false, adminLive: null,
     _recentSearches: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportProgress: 0, _eventReportError: null,
     _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false, _chronoReportProgress: 0,
@@ -1332,6 +1447,8 @@ class Component extends DCLogic {
   async generateEventReport() {
     const evData = (this.state.data.EVENTS || {})[this.state.activeId];
     const eventName = evData ? evData.name : this.state.activeId;
+    const tabMap = { overview: 'panoramica', perspectives: 'punti_di_vista', sources: 'fonti', gaps: 'cronologia' };
+    const tab = tabMap[this.state.dossierTab] || 'punti_di_vista';
     this.setState({ _eventReportLoading: true, _eventReportError: null, _eventReportProgress: 1 });
     let progress = 1;
     const interval = setInterval(() => {
@@ -1339,15 +1456,22 @@ class Component extends DCLogic {
       this.setState({ _eventReportProgress: progress });
     }, 700);
     try {
-      const res = await fetch('/api/event/report', {
+      const res = await fetch(`/api/event/report/${tab}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ event_name: eventName }),
       }).then(r => r.json());
       if (res.risposta) {
-        this.setState({ _eventReport: res.risposta, _eventReportLoading: false, _eventReportProgress: 100 });
+        this.setState({
+          _eventReports: { ...this.state._eventReports, [tab]: res.risposta },
+          _eventReportsData: { ...this.state._eventReportsData, [tab]: res },
+          _eventReport: res.risposta,
+          _eventReportData: res,
+          _eventReportLoading: false,
+          _eventReportProgress: 100,
+        });
       } else {
-        this.setState({ _eventReportError: res.detail || 'Errore generazione report', _eventReportLoading: false, _eventReportProgress: 0 });
+        this.setState({ _eventReportError: res.detail || res.error || 'Errore generazione report', _eventReportLoading: false, _eventReportProgress: 0 });
       }
     } catch(e) {
       this.setState({ _eventReportError: 'Errore di connessione: ' + e.message, _eventReportLoading: false, _eventReportProgress: 0 });
@@ -1536,13 +1660,19 @@ class Component extends DCLogic {
     this.setState({ _loadingMoreCaduti: true });
     try {
       const currentLen = (st._eventDossier.caduti || []).length;
+      const baseOffset = (st._cadutiOffset || 0) + currentLen;
       const encoded = encodeURIComponent(eventName.replace(/\s+/g, '+'));
-      const r = await fetch(`/api/events/1gm/${encoded}/caduti?limit=50&offset=${currentLen}`).then(r => r.json());
+      const search = st._cadutiFilter || '';
+      const letter = st._cadutiLetter || '';
+      const q = search ? `&search=${encodeURIComponent(search)}` : '';
+      const l = letter ? `&letter=${encodeURIComponent(letter)}` : '';
+      const r = await fetch(`/api/events/1gm/${encoded}/caduti?limit=50&offset=${baseOffset}${q}${l}`).then(r => r.json());
       const newCaduti = r.caduti || [];
       this.setState({
         _eventDossier: {
           ...st._eventDossier,
           caduti: [...(st._eventDossier.caduti || []), ...newCaduti],
+          caduti_total: r.total,
         },
         _loadingMoreCaduti: false,
       });
@@ -1583,7 +1713,20 @@ class Component extends DCLogic {
   setCadutiFilter(val) {
     this.setState({ _cadutiFilter: val });
     if (this._cadutiSearchTimer) clearTimeout(this._cadutiSearchTimer);
-    this._cadutiSearchTimer = setTimeout(() => this._searchCadutiServer(val), 350);
+    this._cadutiSearchTimer = setTimeout(() => this._searchCadutiServer(val, this.state._cadutiLetter), 350);
+  }
+  setCadutiLetter(letter) {
+    this.setState({ _cadutiLetter: letter, _cadutiOffset: 0 });
+    this._searchCadutiServer(this.state._cadutiFilter || '', letter);
+  }
+  goToCadutiPage(page) {
+    const st = this.state;
+    const total = (st._eventDossier && st._eventDossier.caduti_total) || 0;
+    const totalPages = Math.max(1, Math.ceil(total / 50));
+    let p = parseInt(page, 10) || 1;
+    if (p < 1) p = 1;
+    if (p > totalPages) p = totalPages;
+    this._loadCadutiOffset((p - 1) * 50, st._cadutiFilter || '', st._cadutiLetter || '');
   }
   setDecoratiFilter(val) {
     this.setState({ _decoratiFilter: val });
@@ -1595,18 +1738,23 @@ class Component extends DCLogic {
     if (this._internatiSearchTimer) clearTimeout(this._internatiSearchTimer);
     this._internatiSearchTimer = setTimeout(() => this._searchInternatiServer(val), 350);
   }
-  async _searchCadutiServer(search) {
+  async _searchCadutiServer(search, letter) {
+    this._loadCadutiOffset(0, search, letter);
+  }
+  async _loadCadutiOffset(offset, search, letter) {
     const st = this.state;
     const evData = (this.state.data.EVENTS || {})[st.activeId];
     const eventName = evData ? evData.name : st.activeId;
     if (!eventName) return;
     const encoded = encodeURIComponent(eventName.replace(/\s+/g, '+'));
     const q = search ? `&search=${encodeURIComponent(search)}` : '';
+    const l = letter ? `&letter=${encodeURIComponent(letter)}` : '';
     this.setState({ _loadingMoreCaduti: true });
     try {
-      const r = await fetch(`/api/events/1gm/${encoded}/caduti?limit=50&offset=0${q}`).then(r => r.json());
+      const r = await fetch(`/api/events/1gm/${encoded}/caduti?limit=50&offset=${offset}${q}${l}`).then(r => r.json());
       this.setState({
         _eventDossier: { ...st._eventDossier, caduti: r.caduti || [], caduti_total: r.total },
+        _cadutiOffset: offset,
         _loadingMoreCaduti: false,
       });
     } catch(e) { this.setState({ _loadingMoreCaduti: false }); }
@@ -1954,6 +2102,9 @@ class Component extends DCLogic {
     const data = st.data, lang = st.lang;
     const S = st.strings[lang];
     const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;');
+    const reportTabKey = { overview: 'panoramica', perspectives: 'punti_di_vista', sources: 'fonti', gaps: 'cronologia' }[st.dossierTab] || 'punti_di_vista';
+    const currentReport = (st._eventReports || {})[reportTabKey] || null;
+    const currentReportData = (st._eventReportsData || {})[reportTabKey] || null;
 
     const langs = ['it', 'en', 'de', 'fr'].map(code => ({
       code, label: code.toUpperCase(),
@@ -2127,6 +2278,17 @@ class Component extends DCLogic {
           })),
           cadutiFilter: st._cadutiFilter || '',
           onCadutiFilterInput: (e) => this.setCadutiFilter(e.target.value),
+          cadutiLetter: st._cadutiLetter || '',
+          cadutiLetters: (() => {
+            const current = (st._cadutiLetter || '');
+            const arr = [];
+            for (let i = 0; i < 26; i++) {
+              const ch = String.fromCharCode(65 + i);
+              arr.push({ letter: ch, label: ch, cls: current === ch ? 'btn btn-secondary' : 'btn btn-ghost', onClick: () => this.setCadutiLetter(ch) });
+            }
+            arr.push({ letter: '', label: 'Tutti', cls: current ? 'btn btn-ghost' : 'btn btn-secondary', onClick: () => this.setCadutiLetter('') });
+            return arr;
+          })(),
           eventCadutiFiltered: ((st._eventDossier && st._eventDossier.caduti) || []).map(c => ({
             ...c,
             isDecorato: !!c.is_decorato,
@@ -2136,9 +2298,12 @@ class Component extends DCLogic {
           })),
           eventCadutiTotal: (st._eventDossier && st._eventDossier.caduti_total) || 0,
           eventCadutiShown: ((st._eventDossier && st._eventDossier.caduti) || []).length,
+          cadutiTotalPages: (st._eventDossier && st._eventDossier.caduti_total) ? Math.max(1, Math.ceil(st._eventDossier.caduti_total / 50)) : 1,
+          cadutiCurrentPage: ((st._eventDossier && st._eventDossier.caduti_total) ? Math.ceil((((st._eventDossier && st._eventDossier.caduti) || []).length + (st._cadutiOffset || 0)) / 50) : 1),
           canLoadMoreCaduti: ((st._eventDossier && st._eventDossier.caduti) || []).length < ((st._eventDossier && st._eventDossier.caduti_total) || 0),
           loadingMoreCaduti: !!st._loadingMoreCaduti,
           onLoadMoreCaduti: () => this.loadMoreCaduti(),
+          onCadutiPageChange: (e) => this.goToCadutiPage(e.target.value),
           eventDecorati: ((st._eventDossier && st._eventDossier.decorati) || []).map(d => ({
             ...d,
             isCaduto: !!d.is_caduto,
@@ -2205,8 +2370,8 @@ class Component extends DCLogic {
             };
           }),
           eventInternati: (st._eventDossier && st._eventDossier.internati) || [],
-          eventReport: st._eventReport ? this.linkify(st._eventReport) : null,
-          hasReport: !!st._eventReport,
+          eventReport: currentReport ? this.linkify(currentReport) : null,
+          hasReport: !!currentReport,
           reportLoading: !!st._eventReportLoading,
           reportProgress: st._eventReportProgress || 0,
           reportBarStyle: `width:${st._eventReportProgress || 0}%`,
@@ -2214,6 +2379,12 @@ class Component extends DCLogic {
           reportError: st._eventReportError || null,
           hasReportError: !!st._eventReportError,
           onGenerateReport: () => this.generateEventReport(),
+          eventReportData: currentReportData,
+          eventReportJson: currentReportData ? JSON.stringify(currentReportData.json, null, 2) : null,
+          eventReportSources: (currentReportData && currentReportData.sources) || [],
+          eventReportMatrix: (currentReportData && currentReportData.evidence_matrix) || [],
+          eventReportDisputed: (currentReportData && currentReportData.disputed_data) || [],
+          eventReportUnverified: (currentReportData && currentReportData.unverified_claims) || [],
           // Chronological report
           chronoReport: st._chronoReport ? this.linkify(st._chronoReport) : null,
           hasChronoReport: !!st._chronoReport,

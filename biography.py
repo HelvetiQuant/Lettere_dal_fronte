@@ -749,64 +749,18 @@ def generate_event_biography(query: str, provider: Optional[str] = None) -> dict
     return result
 
 
-def generate_event_report(query: str, provider: Optional[str] = None) -> dict:
-    """Genera un report oggettivo sull'evento che riporta SOLO i fatti comuni
-    a tutte le fonti verificate. Usa EVENT_REPORT_PROMPT (non BIOGRAPHY_PROMPT).
+def generate_event_report(query: str, provider: Optional[str] = None,
+                         options: Optional[dict] = None) -> dict:
+    """Genera la scheda per il tab 'punti_di_vista' (default)."""
+    return generate_event_tab_report(query, tab="punti_di_vista", provider=provider, options=options)
 
-    Riusa la stessa pipeline di raccolta dati di generate_event_biography ma
-    con un prompt diverso che enfatizza le convergenze tra fonti."""
-    import memory_router as mr
-    routed = mr.route_query(query, use_cloud_fallback=False)
-    cues = routed.get("cues", {})
 
-    ext_candidates = []
-    try:
-        from source_providers.federation import federated_search
-        priority_providers = ["nara", "antenati", "cwgc", "ussme", "archivio_stato",
-                               "europeana", "internetarchive"]
-        ext_candidates = federated_search(query, cues=cues, providers=priority_providers)
-    except Exception:
-        pass
-
-    verified = _event_verified_context(query, routed)
-    unverified = _event_unverified_context(routed, ext_candidates)
-    online_ctx, online_sources = _online_verified_context(f"Evento: {query}")
-
-    event_ctx, event_sources = _event_centric_context(query)
-    if event_ctx:
-        verified = event_ctx + "\n\n" + verified
-    if event_sources:
-        online_sources = online_sources + event_sources
-
-    prompt = EVENT_REPORT_PROMPT.format(
-        subject_label=f"Evento: {query}",
-        verified_context=verified,
-        online_context=online_ctx,
-        unverified_context=unverified,
-    )
-
-    result = _call_with_fallback(
-        system=(
-            "Sei un ricercatore storico specializzato in eventi bellici italiani del '900. "
-            "Il tuo compito e' analizzare le fonti e estrarre SOLO i fatti comuni a tutte "
-            "le fonti, producendo una ricostruzione oggettiva e verificabile."
-        ),
-        prompt=prompt, tag=f"report evento: {query}",
-        preferred=provider or None,
-    )
-    result["subject_type"] = "event_report"
-    result["query"] = query
-    result["cues"] = cues
-    result["confidence_locale"] = routed.get("confidence")
-    result["unverified_sources_count"] = len(routed.get("image_only_sources", [])) + \
-        len([r for r in ext_candidates if not r.get("error")])
-    result["verified_sources"] = _verified_labels_event(routed)
-    if event_sources:
-        result["verified_sources"] = result["verified_sources"] + [
-            f"[EVENT_DB] {s['title']} — {s['url']}" for s in event_sources
-        ]
-    result["online_sources"] = online_sources
-    return result
+def generate_event_tab_report(query: str, tab: str = "punti_di_vista",
+                                provider: Optional[str] = None,
+                                options: Optional[dict] = None) -> dict:
+    """Genera una scheda storica documentata per l'evento specifica per tab."""
+    import event_research_engine as ere
+    return ere.research_event(query, options=options or {}, provider=provider, tab=tab)
 
 
 def generate_biography(subject_type: str, ref, provider: Optional[str] = None) -> dict:
