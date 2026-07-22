@@ -1,0 +1,300 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Venue {
+  id        String   @id @default(cuid())
+  name      String
+  plan      String   @default("PRO")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tables    Table[]
+  users     User[]
+  products  Product[]
+  customers Customer[]
+  suppliers Supplier[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  venueId   String
+  venue     Venue    @relation(fields: [venueId], references: [id])
+  email     String
+  name      String
+  roles     String[] @default(["WAITER"])
+  pin       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([venueId, email])
+}
+
+model Table {
+  id        String    @id @default(cuid())
+  venueId   String
+  venue     Venue     @relation(fields: [venueId], references: [id])
+  code      String
+  name      String
+  area      String    @default("indoor")
+  seats     Int       @default(4)
+  state     String    @default("FREE")
+  sessions  TableSession[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([venueId, code])
+}
+
+model TableSession {
+  id        String   @id @default(cuid())
+  tableId   String
+  table     Table    @relation(fields: [tableId], references: [id])
+  guests    Int      @default(1)
+  state     String   @default("OPEN")
+  orders    Order[]
+  createdAt DateTime @default(now())
+  closedAt  DateTime?
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  sessionId     String
+  session       TableSession @relation(fields: [sessionId], references: [id])
+  clientOrderId String?     @unique
+  status        String      @default("DRAFT")
+  totalCents    Int         @default(0)
+  items         OrderItem[]
+
+  // --- Ciclo di vita: timestamp per statistiche tempi (ordine -> consegna al tavolo) ---
+  placedAt      DateTime    @default(now()) // comanda registrata al tavolo dal cameriere
+  sentAt        DateTime?                    // inviata a bar/cucina
+  servedAt      DateTime?                    // interamente consegnata al tavolo
+  paidAt        DateTime?                    // conto pagato
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([sessionId])
+  @@index([status])
+  @@index([placedAt])
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  order       Order   @relation(fields: [orderId], references: [id])
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  quantity    Int
+  unitCents   Int
+  status      String  @default("PENDING")
+
+  // Postazione derivata dalla category del prodotto e denormalizzata alla creazione
+  // (BAR | TAVOLA_CALDA) cosi' le statistiche restano stabili anche se in futuro
+  // cambiano le mappature category->station.
+  station     String  @default("BAR")
+
+  // --- Timestamp del ciclo per tipologia di piatto/cocktail ---
+  sentAt      DateTime? // riga inviata alla postazione
+  startedAt   DateTime? // presa in preparazione
+  readyAt     DateTime? // pronta al pass
+  servedAt    DateTime? // consegnata al tavolo
+
+  @@index([orderId])
+  @@index([station])
+  @@index([status])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  venueId     String
+  venue       Venue    @relation(fields: [venueId], references: [id])
+  code        String
+  name        String
+  category    String   @default("generic")
+  priceCents  Int
+  unit        String   @default("pz") // unità base di consumo: pz, cl, g, ml...
+  stock       StockItem?
+  orderItems  OrderItem[]
+  recipeItems RecipeItem[] @relation("Recipe")
+  usedIn      RecipeItem[] @relation("UsedIn")
+  movements   StockMovement[]
+  listings    SupplierProduct[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([venueId, code])
+}
+
+model StockItem {
+  id            String  @id @default(cuid())
+  productId     String  @unique
+  product       Product @relation(fields: [productId], references: [id])
+  quantity      Int     @default(0) // in unità base del prodotto
+  reorderLevel  Int     @default(0) // soglia che fa scattare la proposta di riordino
+  parLevel      Int     @default(0) // livello target a cui riportare la giacenza (0 = usa reorderLevel)
+}
+
+// Storico dei movimenti di magazzino: audit trail + base per report sprechi/consumi.
+model StockMovement {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  // LOAD (carico) | WASTE (scarto) | RETURN (reso) | PHYSICAL (rettifica inventario)
+  // | SALE (scarico da vendita) | RECEIPT (ricezione ordine fornitore)
+  type       String
+  qtyDelta   Int      // variazione (può essere negativa: scarico/scarto)
+  qtyAfter   Int      // giacenza risultante (audit)
+  reason     String?
+  orderId    String?  // se generato da una vendita
+  createdBy  String?  // operatore
+  createdAt  DateTime @default(now())
+
+  @@index([productId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ===================================================================
+//  Fornitori e listini (riordino)
+// ===================================================================
+
+model Supplier {
+  id         String   @id @default(cuid())
+  venueId    String
+  venue      Venue    @relation(fields: [venueId], references: [id])
+  name       String
+  email      String?
+  phone      String?
+  notes      String?
+  active     Boolean  @default(true)
+  listings   SupplierProduct[]
+  purchaseOrders PurchaseOrder[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([venueId])
+}
+
+// ===================================================================
+//  Ordini d'acquisto (ciclo: bozza -> inviato -> ricevuto)
+// ===================================================================
+
+model PurchaseOrder {
+  id         String   @id @default(cuid())
+  venueId    String
+  supplierId String
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+  // DRAFT (bozza) | SENT (inviato al fornitore) | PARTIAL (ricevuto in parte)
+  // | RECEIVED (ricevuto completo) | CANCELLED
+  status     String   @default("DRAFT")
+  totalCents Int      @default(0)
+  note       String?
+  createdBy  String?
+  items      PurchaseOrderItem[]
+  sentAt     DateTime?
+  receivedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([venueId])
+  @@index([supplierId])
+  @@index([status])
+}
+
+model PurchaseOrderItem {
+  id             String  @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder  PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  productId      String
+  packSize       Int     @default(1) // unità base per confezione (snapshot dal listino)
+  packsOrdered   Int             // confezioni ordinate
+  packsReceived  Int     @default(0) // confezioni già ricevute
+  packPriceCents Int     @default(0)
+
+  @@index([purchaseOrderId])
+  @@index([productId])
+}
+
+// Listino: cosa vende un fornitore e a quali condizioni.
+model SupplierProduct {
+  id            String   @id @default(cuid())
+  supplierId    String
+  supplier      Supplier @relation(fields: [supplierId], references: [id])
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id])
+  supplierSku   String?  // codice articolo del fornitore
+  // Una confezione d'acquisto contiene `packSize` unità BASE del prodotto
+  // (es. 1 bottiglia = 75 cl -> packSize=75). Default 1 = acquisto per unità.
+  packSize      Int      @default(1)
+  packPriceCents Int     @default(0) // prezzo per confezione
+  leadTimeDays  Int      @default(2)
+  preferred     Boolean  @default(false) // fornitore preferito per questo prodotto
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([supplierId, productId])
+  @@index([productId])
+}
+
+model RecipeItem {
+  id           String  @id @default(cuid())
+  productId    String
+  product      Product @relation(fields: [productId], references: [id], name: "Recipe")
+  ingredientId String
+  ingredient   Product @relation(fields: [ingredientId], references: [id], name: "UsedIn")
+  amount       Int
+}
+
+// ===================================================================
+//  Crediti clienti (conti aperti) — gestione manuale in cassa
+// ===================================================================
+
+model Customer {
+  id            String   @id @default(cuid())
+  venueId       String
+  venue         Venue    @relation(fields: [venueId], references: [id])
+  name          String
+  phone         String?
+  email         String?
+  notes         String?
+
+  // Contabilita' del credito. balanceCents > 0 = il cliente DEVE al locale.
+  balanceCents  Int      @default(0)
+  limitCents    Int      @default(0) // 0 = nessun limite
+  active        Boolean  @default(true)
+
+  transactions  CreditTransaction[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([venueId])
+  @@index([venueId, name])
+}
+
+model CreditTransaction {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
+
+  // CHARGE = addebito (conto messo a credito) -> aumenta balance
+  // PAYMENT = incasso (rientro del credito)   -> diminuisce balance
+  // ADJUST  = rettifica manuale (+/-)
+  type        String
+  amountCents Int      // sempre positivo; il segno lo determina `type`
+  balanceAfterCents Int // saldo dopo la transazione (audit trail)
+
+  orderId     String?  // opzionale: addebito collegato a un ordine
+  method      String?  // per i PAYMENT: CASH | POS
+  note        String?
+  createdBy   String?  // userId dell'operatore in cassa
+  createdAt   DateTime @default(now())
+
+  @@index([customerId])
+  @@index([createdAt])
+}
