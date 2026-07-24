@@ -16,6 +16,7 @@ from urllib.parse import urljoin
 
 from database import get_conn, DB_PATH
 import source_locator
+from indexing_rules import clean_toponym
 
 _EDB = Path(__file__).parent / "eventi_1gm.db"
 
@@ -136,6 +137,8 @@ def match_eventi_per_internato(internato: Dict) -> List[Dict]:
         str(internato.get(c, "") or "") for c in
         ["luogo_cattura", "luogo_internamento", "arbeitskommando", "raw_text", "sorte", "mansione"]
     ).lower()
+    # Normalizza toponimi nel testo per migliorare il matching con le keyword
+    text = clean_toponym(text).lower() if text else ""
     for e in EVENTI_CURATI:
         for kw in e["keywords"]:
             if kw.lower() in text:

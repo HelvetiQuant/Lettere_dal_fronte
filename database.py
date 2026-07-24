@@ -13,8 +13,25 @@ from config import COLUMNS
 
 DB_PATH = Path(__file__).parent / "imi_internati.db"
 
+# Check if PostgreSQL is configured
+_DATABASE_URL = os.environ.get("DATABASE_URL", "")
+_USE_POSTGRES = bool(_DATABASE_URL and _DATABASE_URL.startswith("postgresql"))
 
-def get_conn() -> sqlite3.Connection:
+
+def get_conn():
+    """Restituisce una connessione SQLite o PostgreSQL a seconda della configurazione.
+    
+    Se DATABASE_URL è impostato e inizia con 'postgresql://', usa PostgreSQL (Supabase).
+    Altrimenti usa SQLite (default, retrocompatibile).
+    """
+    if _USE_POSTGRES:
+        from db_adapter import PostgresConnection
+        import psycopg2
+        import psycopg2.extras
+        pg_conn = psycopg2.connect(_DATABASE_URL)
+        pg_conn.autocommit = False
+        return PostgresConnection(pg_conn)
+    
     conn = sqlite3.connect(str(DB_PATH), timeout=60)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
@@ -948,9 +965,14 @@ def is_page_processed(lettera: str, pagina: int) -> bool:
 # ─── Entità e collegamenti ───
 
 def _normalize_name(name: str) -> str:
-    if not name:
-        return ""
-    return re.sub(r"\s+", " ", name.strip().lower())
+    """Chiave normalizzata per dedup entità.
+
+    Delega a ``indexing_rules.normalize_match_key`` (regole Antenati/FamilySearch,
+    sez. 1.3.1.1/1.3.2): minuscolo, spazi collassati, punteggiatura rimossa tranne
+    apostrofi/trattini interni al nome.
+    """
+    from indexing_rules import normalize_match_key
+    return normalize_match_key(name)
 
 
 def save_entita(tipo: str, valore: str, fonte_tabella: str, fonte_id: int,

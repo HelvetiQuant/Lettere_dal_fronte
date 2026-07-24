@@ -467,17 +467,17 @@ TAB_INSTRUCTIONS = {
 }
 
 
-# Provider per tab: Perplexity (panoramica/web), Anthropic (analisi fonti),
-# OpenAI (sintesi punti di vista), Mistral (cronologia veloce).
+# Provider per tab: OpenAI primario per tutti i tab, altri come specialisti
+# opzionali in modalità parallela.
 TAB_PROVIDER = {
-    "panoramica": "perplexity",
-    "fonti": "claude",
+    "panoramica": "gpt",
+    "fonti": "gpt",
     "punti_di_vista": "gpt",
-    "cronologia": "mistral",
+    "cronologia": "gpt",
 }
 
-# Ordine di fallback per i report evento: Perplexity -> OpenAI -> Anthropic -> Mistral.
-EVENT_RESEARCH_FALLBACK = ["perplexity", "gpt", "claude", "mistral"]
+# Ordine di fallback per i report evento: OpenAI -> Perplexity -> Anthropic -> Mistral.
+EVENT_RESEARCH_FALLBACK = ["gpt", "perplexity", "claude", "mistral"]
 
 
 def _build_prompt(canonical: str, context: str, tab: str) -> str:

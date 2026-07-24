@@ -14,6 +14,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
+from indexing_rules import normalize_match_key as _norm_key, is_empty_value as _is_empty
+
 ROOT = Path(__file__).resolve().parent
 OCR_ROOT = ROOT.parent / "ocr_lettere"
 DEFAULT_DATABASES = {
@@ -35,11 +37,8 @@ PLACEHOLDERS = {"", "-", "n/d", "nd", "n.a.", "na", "n/a", "unknown", "sconosciu
 
 
 def normalize_text(value: object) -> str:
-    if value is None:
-        return ""
-    value = str(value).strip().lower()
-    value = re.sub(r"[\u2010-\u2015\-_/,:;.]+", " ", value)
-    return re.sub(r"\s+", " ", value).strip()
+    """Delega a indexing_rules.normalize_match_key (sez. 1.3.1.1)."""
+    return _norm_key(value)
 
 
 def normalize_name(value: object) -> str:
@@ -47,7 +46,7 @@ def normalize_name(value: object) -> str:
 
 
 def is_empty(value: object) -> bool:
-    return normalize_text(value) in PLACEHOLDERS
+    return _is_empty(value)
 
 
 def severity_counts(findings: list[dict]) -> dict[str, int]:

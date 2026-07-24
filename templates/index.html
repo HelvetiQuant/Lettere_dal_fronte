@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/shared/design-tokens.css">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -34,7 +35,8 @@
       <a onClick="{{ goHome }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer">{{ S.navHome }}</a>
       <a onClick="{{ goExploreDefault }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer">{{ S.navExplore }}</a>
       <a onClick="{{ goEvents }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer">{{ S.navEvents }}</a>
-      <a href="/1gm" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer;font-weight:600;color:var(--color-accent)">Prima Guerra Mondiale →</a>
+      <a onClick="{{ goResearch }}" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer;font-weight:600;color:var(--color-accent)">Ricerca AI</a>
+      <a href="/riconoscimenti" style="color:inherit;text-decoration:none;font-size:14px;cursor:pointer;font-weight:600;color:var(--color-accent)">Percorso Riconoscimenti →</a>
     </nav>
     <div style="display:flex;gap:3px">
       <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="4">
@@ -113,6 +115,12 @@
 
 <!-- ─── SEARCH ─── -->
 <sc-if value="{{ isSearch }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ hasSearchError }}" hint-placeholder-val="{{ false }}">
+    <div class="error-banner" style="margin:20px 0">
+      <span class="error-banner-text">Errore ricerca: {{ searchError }}</span>
+      <button class="btn btn-secondary btn-sm" onClick="{{ onRetrySearch }}">Riprova</button>
+    </div>
+  </sc-if>
   <section style="padding:32px 0 16px">
     <div style="display:flex;gap:10px">
       <input class="input" type="text" placeholder="{{ S.searchPlaceholder }}" value="{{ query }}" onInput="{{ onQueryInput }}" onKeyDown="{{ onQueryKeyDown }}" style="font-size:15px;padding:10px 14px">
@@ -152,8 +160,47 @@
       </div>
     </sc-if>
     <sc-if value="{{ externalSourcesCount }}" hint-placeholder-val="{{ 0 }}">
-      <div style="margin:0 0 16px;padding:10px 14px;background:#d1ecf1;border:1px solid #bee5eb;border-radius:8px">
-        <p style="font-size:12.5px;margin:0;color:#0c5460"><strong>{{ externalSourcesCount }}</strong> fonti esterne consultate (federated search)</p>
+      <div style="margin:0 0 20px;padding:16px 20px;background:#d1ecf1;border:1px solid #bee5eb;border-radius:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <p style="font-size:13px;margin:0;color:#0c5460;font-weight:600">Fonti esterne consultate ({{ externalSourcesCount }})</p>
+          <button class="btn btn-secondary btn-sm" onClick="{{ onToggleExternalSources }}">{{ externalSourcesExpanded ? 'Nascondi' : 'Dettagli' }}</button>
+        </div>
+        <sc-if value="{{ externalSourcesExpanded }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ externalSourcesList }}" as="es" hint-placeholder-count="2">
+            <div style="padding:10px 14px;background:var(--color-surface);border-radius:var(--radius-md);margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span class="tag tag-accent">{{ es.providerLabel }}</span>
+                <sc-if value="{{ es.hasSearchedName }}" hint-placeholder-val="{{ false }}">
+                  <span class="tag tag-success">Nome archivio: {{ es.searchedName }}</span>
+                </sc-if>
+                <span style="font-size:13px;font-weight:500">{{ es.titolo }}</span>
+              </div>
+              <p style="font-size:12.5px;opacity:0.7;margin:0 0 8px">{{ es.description }}</p>
+              <sc-if value="{{ es.hasFilters }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+                  <sc-if value="{{ es.filtersNationality }}" hint-placeholder-val="{{ false }}"><span class="tag tag-neutral">Nazionalità: {{ es.filtersNationality }}</span></sc-if>
+                  <sc-if value="{{ es.filtersStatus }}" hint-placeholder-val="{{ false }}"><span class="tag tag-neutral">Status: {{ es.filtersStatus }}</span></sc-if>
+                  <sc-if value="{{ es.filtersFiles }}" hint-placeholder-val="{{ false }}"><span class="tag tag-neutral">Files: {{ es.filtersFiles }}</span></sc-if>
+                </div>
+              </sc-if>
+              <sc-if value="{{ es.hasUrl }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ es.catalogUrl }}" target="_blank" rel="noopener noreferrer" style="font-size:12.5px;color:var(--color-accent);text-decoration:none">Apri scheda su {{ es.providerLabel }} ↗</a>
+              </sc-if>
+              <sc-if value="{{ es.hasSearchUrl }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ es.searchUrl }}" target="_blank" rel="noopener noreferrer" style="font-size:12.5px;color:var(--color-accent);text-decoration:none;margin-left:12px">Ricerca manuale su {{ es.providerLabel }} ↗</a>
+              </sc-if>
+              <sc-if value="{{ es.hasPdfUrl }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ es.pdfUrl }}" target="_blank" rel="noopener noreferrer" style="font-size:12.5px;color:var(--color-accent);text-decoration:none;margin-left:12px">Scarica PDF ↗</a>
+              </sc-if>
+            </div>
+          </sc-for>
+          <div style="margin-top:10px;padding:10px 14px;background:#e8f4f8;border-radius:var(--radius-md)">
+            <p style="font-size:12px;margin:0;color:#0c5460">
+              <strong>Fonti esterne:</strong> ICRC (filtri pre-compilati: nome, nazionalità, status, files) e LeBI/ANRP (ricerca per cognome).
+              Cliccando i link sopra si accede ai portali con la ricerca già impostata.
+            </p>
+          </div>
+        </sc-if>
       </div>
     </sc-if>
     <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ false }}">
@@ -234,6 +281,9 @@
       </sc-if>
       <sc-if value="{{ dossier.hasGaps }}" hint-placeholder-val="{{ false }}">
         <button class="{{ dossier.tabGapsClass }}" onClick="{{ dossier.onTabGaps }}">{{ S.tabGaps }}</button>
+      </sc-if>
+      <sc-if value="{{ dossier.isIMISoldier }}" hint-placeholder-val="{{ false }}">
+        <button class="{{ dossier.tabLeBIClass }}" onClick="{{ dossier.onTabLeBI }}">LeBI</button>
       </sc-if>
     </div>
 
@@ -410,7 +460,7 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Chat con AI — fai una domanda sul report
               </div>
-              <div style="max-height:320px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px">
+              <div data-event-chat style="max-height:320px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px">
                 <sc-for list="{{ dossier.chatMessages }}" as="cm" hint-placeholder-count="2">
                   <div style="{{ cm.rowStyle }}">
                     <div style="{{ cm.bubbleStyle }}" sc-html="{{ cm.html }}"></div>
@@ -584,6 +634,109 @@
           </div>
         </sc-for>
       </div>
+    </sc-if>
+
+    <!-- ── LeBI Comparison Tab ── -->
+    <sc-if value="{{ dossier.tabLeBIActive }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ dossier.isIMISoldier }}" hint-placeholder-val="{{ false }}">
+        <h3 style="font-size:16px;margin-bottom:16px">Confronto LeBI — Lessico Biografico degli IMI (ANRP)</h3>
+        <p style="font-size:12px;opacity:0.6;margin:0 0 16px">305.827 nominativi IMI deportati nei lager nazisti (1943-1945). Fonte: lessicobiograficoimi.it</p>
+
+        <sc-if value="{{ dossier.lebiLoading }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:24px;text-align:center;opacity:0.6">
+            <div style="display:inline-block;width:24px;height:24px;border:3px solid var(--color-neutral-300);border-top-color:var(--color-accent);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+            <p style="margin-top:12px;font-size:13px">Ricerca in corso su LeBI...</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ dossier.hasLeBIError }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px;background:color-mix(in srgb,var(--color-accent-2-600) 10%,transparent);border-radius:var(--radius-md);color:var(--color-accent-2-600);font-size:13px">
+            {{ dossier.lebiError }}
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ dossier.hasLeBIMatches }}" hint-placeholder-val="{{ false }}">
+          <p style="font-size:13px;margin-bottom:12px">{{ dossier.lebiTotal }} match trovato/i su LeBI</p>
+          <div style="display:grid;gap:16px;max-width:900px">
+            <sc-for list="{{ dossier.lebiMatches }}" as="lm" hint-placeholder-count="2">
+              <div style="padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+                  <div>
+                    <span style="font-size:14px;font-weight:600">{{ lm.title }}</span>
+                    <span class="{{ lm.matchScoreClass }}" style="margin-left:8px">{{ lm.matchScoreLabel }}</span>
+                  </div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <sc-if value="{{ lm.url }}" hint-placeholder-val="{{ false }}">
+                      <a href="{{ lm.url }}" target="_blank" rel="noopener" class="btn btn-ghost" style="font-size:12px;padding:4px 10px">Apri scheda</a>
+                    </sc-if>
+                    <sc-if value="{{ lm.hasPdf }}" hint-placeholder-val="{{ false }}">
+                      <a href="{{ lm.pdfUrl }}" target="_blank" rel="noopener" class="btn btn-ghost" style="font-size:12px;padding:4px 10px">PDF</a>
+                    </sc-if>
+                  </div>
+                </div>
+
+                <sc-if value="{{ lm.hasMatchFields }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-bottom:10px">
+                    <div style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-accent);margin-bottom:6px">Campi corrispondenti</div>
+                    <div style="display:grid;gap:4px">
+                      <sc-for list="{{ lm.matchFieldsList }}" as="mf" hint-placeholder-count="3">
+                        <div style="display:flex;gap:12px;font-size:12px;padding:4px 0;border-bottom:1px solid color-mix(in srgb,var(--color-neutral-300) 50%,transparent)">
+                          <span style="flex:0 0 120px;font-weight:600;opacity:0.7">{{ mf.field }}</span>
+                          <span style="flex:1">{{ mf.local }}</span>
+                          <span style="flex:0 0 16px;text-align:center;opacity:0.4">=</span>
+                          <span style="flex:1">{{ mf.lebi }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ lm.hasDiffFields }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-bottom:10px">
+                    <div style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-accent-2-600);margin-bottom:6px">Campi divergenti</div>
+                    <div style="display:grid;gap:4px">
+                      <sc-for list="{{ lm.diffFieldsList }}" as="df" hint-placeholder-count="3">
+                        <div style="display:flex;gap:12px;font-size:12px;padding:4px 0;border-bottom:1px solid color-mix(in srgb,var(--color-neutral-300) 50%,transparent)">
+                          <span style="flex:0 0 120px;font-weight:600;opacity:0.7">{{ df.field }}</span>
+                          <span style="flex:1">{{ df.local }}</span>
+                          <span style="flex:0 0 16px;text-align:center;opacity:0.4">≠</span>
+                          <span style="flex:1">{{ df.lebi }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <details style="margin-top:8px">
+                  <summary style="font-size:12px;cursor:pointer;opacity:0.7">Dettagli scheda LeBI</summary>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-top:8px">
+                    <sc-for list="{{ lm.detailFields }}" as="df" hint-placeholder-count="6">
+                      <div style="display:flex;gap:8px;font-size:12px;padding:3px 0">
+                        <span style="flex:0 0 100px;font-weight:600;opacity:0.6">{{ df.label }}</span>
+                        <span>{{ df.value }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </details>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ dossier.lebiLoading }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ dossier.hasLeBIMatches }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:24px;text-align:center;opacity:0.5">
+              <p style="font-size:13px">Nessun match trovato su LeBI per questo nominativo.</p>
+              <p style="font-size:12px;margin-top:4px">Consulta il portale direttamente: <a href="https://www.lessicobiograficoimi.it" target="_blank" rel="noopener">lessicobiograficoimi.it</a></p>
+            </div>
+          </sc-if>
+        </sc-if>
+      </sc-if>
+      <sc-if value="{{ dossier.isIMISoldier }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:24px;text-align:center;opacity:0.5">
+          <p style="font-size:13px">Il confronto LeBI è disponibile solo per i soldati IMI.</p>
+        </div>
+      </sc-if>
     </sc-if>
 
     <!-- ── Event-centric: Caduti table ── -->
@@ -872,6 +1025,12 @@
 
 <!-- ─── GRAPH ─── -->
 <sc-if value="{{ isGraph }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ hasGraphError }}" hint-placeholder-val="{{ false }}">
+    <div class="error-banner" style="margin:20px 0">
+      <span class="error-banner-text">Errore grafo: {{ graphError }}</span>
+      <button class="btn btn-secondary btn-sm" onClick="{{ onRetryGraph }}">Riprova</button>
+    </div>
+  </sc-if>
   <section style="padding:28px 0 48px">
     <a onClick="{{ goEvents }}" style="font-size:12.5px;color:var(--color-accent);cursor:pointer;text-decoration:none">← Eventi</a>
     <h1 style="font-size:26px;margin:10px 0 4px">Network Graph</h1>
@@ -893,7 +1052,7 @@
       <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-600)"></span>Fonti</span>
       <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#e76f51"></span>Internati</span>
     </div>
-    <div id="graph-svg-container" style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto">{{ graphSVG }}</div>
+    <div id="graph-svg-container" style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto" onClick="{{ onGraphSVGClick }}">{{ graphSVG }}</div>
     <sc-if value="{{ graphSelectedEvent }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:16px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -939,7 +1098,7 @@
         <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#ca8a04"></span>1917</span>
         <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#dc2626"></span>1918</span>
       </div>
-      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto">{{ graphLuoghiSVG }}</div>
+      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto" onClick="{{ onGraphSVGClick }}">{{ graphLuoghiSVG }}</div>
       <sc-if value="{{ graphSelectedLuogo }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:16px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
           <h3 style="font-size:18px;margin:0 0 10px">{{ graphSelectedLuogo.luogo }}</h3>
@@ -968,7 +1127,7 @@
     <!-- Sub-graph: Paesi/Teatri -->
     <sc-if value="{{ isGraphPaesi }}" hint-placeholder-val="{{ false }}">
       <p style="font-size:13.5px;opacity:0.7;margin:0 0 22px;max-width:64ch">Caduti per teatro operativo. Classificazione da luogo_morte. Dimensione nodo = numero caduti.</p>
-      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto">{{ graphPaesiSVG }}</div>
+      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto" onClick="{{ onGraphSVGClick }}">{{ graphPaesiSVG }}</div>
       <sc-if value="{{ graphSelectedPaese }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:16px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
           <h3 style="font-size:18px;margin:0 0 10px">{{ graphSelectedPaese.teatro }}</h3>
@@ -994,7 +1153,7 @@
         <div class="card elev-sm" style="padding:14px 16px"><div style="font-size:28px;font-weight:700;color:var(--color-accent-2-600)">{{ soldatiWithReparto }}</div><div style="font-size:12px;opacity:0.6">Con reparto</div></div>
         <div class="card elev-sm" style="padding:14px 16px"><div style="font-size:28px;font-weight:700;color:var(--color-neutral-600)">{{ soldatiClustersCount }}</div><div style="font-size:12px;opacity:0.6">Cluster ({{ soldatiFieldLabel }})</div></div>
       </div>
-      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto">{{ graphSoldatiSVG }}</div>
+      <div style="background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300);padding:20px;overflow:auto" onClick="{{ onGraphSVGClick }}">{{ graphSoldatiSVG }}</div>
       <sc-if value="{{ graphSelectedCluster }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:16px;padding:16px 18px;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-neutral-300)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -1018,6 +1177,152 @@
           </sc-if>
         </div>
       </sc-if>
+    </sc-if>
+
+  </section>
+</sc-if>
+
+<!-- ─── RESEARCH ENGINE ─── -->
+<sc-if value="{{ isResearch }}" hint-placeholder-val="{{ false }}">
+  <section style="padding:28px 0 48px">
+    <h1 style="font-size:26px;margin:0 0 6px">Motore di Ricerca Storica</h1>
+    <p style="font-size:13.5px;opacity:0.7;margin:0 0 24px;max-width:64ch">Ricerca progressiva multi-fonte con risoluzione entita', claim atomici, tracciamento provenienza e generazione narrazioni.</p>
+
+    <!-- Search input -->
+    <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:20px">
+      <input class="input" type="text" placeholder="Nome, evento, luogo, reparto..." value="{{ researchQuery }}" onInput="{{ onResearchInput }}" onKeyDown="{{ onResearchKeyDown }}" style="font-size:15px;padding:12px 16px;min-height:48px;flex:1;max-width:600px">
+      <button class="btn btn-primary" onClick="{{ onResearchSubmit }}" style="padding:0 26px;font-size:14px" disabled="{{ researchLoading }}">Avvia ricerca</button>
+    </div>
+
+    <!-- Loading -->
+    <sc-if value="{{ researchLoading }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:20px;text-align:center;opacity:0.6;font-size:14px">Ricerca in corso... <span style="display:inline-block;width:16px;height:16px;border:2px solid var(--color-divider);border-top-color:var(--color-accent);border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-left:6px"></span></div>
+    </sc-if>
+
+    <!-- Error -->
+    <sc-if value="{{ hasResearchError }}" hint-placeholder-val="{{ false }}">
+      <div class="error-banner" style="margin:20px 0">
+        <span class="error-banner-text">Errore: {{ researchError }}</span>
+      </div>
+    </sc-if>
+
+    <!-- Results -->
+    <sc-if value="{{ researchResult }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:1fr;gap:20px">
+
+        <!-- Summary -->
+        <div style="background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:20px">
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+            <div><span style="font-size:12px;opacity:0.6">Tipo entita'</span><br><strong>{{ researchEntityType }}</strong></div>
+            <div><span style="font-size:12px;opacity:0.6">Cicli</span><br><strong>{{ researchTotalCycles }}</strong></div>
+            <div><span style="font-size:12px;opacity:0.6">Stato</span><br><strong>{{ researchStatus }}</strong></div>
+            <div><span style="font-size:12px;opacity:0.6">Plan ID</span><br><strong>{{ researchPlanId }}</strong></div>
+          </div>
+        </div>
+
+        <!-- Cycles -->
+        <sc-if value="{{ researchHasCycles }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:20px">
+            <h3 style="font-size:16px;margin:0 0 14px">Cicli di ricerca</h3>
+            <sc-for list="{{ researchCycles }}" as="cy" hint-placeholder-count="3">
+              <div style="border-left:3px solid var(--color-accent);padding:8px 0 8px 14px;margin-bottom:12px">
+                <div style="display:flex;gap:12px;align-items:center;margin-bottom:6px">
+                  <strong style="font-size:14px">Ciclo {{ cy.cycleNumber }}</strong>
+                  <span class="tag {{ cy.decisionClass }}" style="font-size:11px">{{ cy.decisionLabel }}</span>
+                  <sc-if value="{{ cy.stopReason }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:11px;opacity:0.6">{{ cy.stopReason }}</span>
+                  </sc-if>
+                </div>
+                <div style="font-size:12px;opacity:0.7;display:flex;gap:16px;flex-wrap:wrap">
+                  <span>Interni: {{ cy.internalResults }}</span>
+                  <span>Esterni: {{ cy.externalResults }}</span>
+                  <span>Frammenti: {{ cy.fragmentCount }}</span>
+                </div>
+                <sc-if value="{{ cy.hasFragments }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:8px;font-size:12px">
+                    <sc-for list="{{ cy.topFragments }}" as="fr" hint-placeholder-count="3">
+                      <div style="padding:3px 0;border-bottom:1px solid var(--color-divider)">
+                        <span style="opacity:0.5;font-size:10px;text-transform:uppercase">{{ fr.type }}</span>
+                        <span style="margin-left:6px">{{ fr.clue }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ cy.hasNewQueries }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:8px;font-size:12px;opacity:0.6">
+                    <span style="font-size:10px;text-transform:uppercase;opacity:0.5">Query generate:</span>
+                    <sc-for list="{{ cy.topQueries }}" as="q" hint-placeholder-count="3">
+                      <span style="display:inline-block;margin:2px 4px 0;padding:2px 8px;background:var(--color-bg);border:1px solid var(--color-divider);border-radius:10px;font-size:11px">{{ q.query }}</span>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- Timeline -->
+        <sc-if value="{{ researchHasTimeline }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:20px">
+            <h3 style="font-size:16px;margin:0 0 14px">Timeline</h3>
+            <sc-for list="{{ researchTimeline }}" as="tl" hint-placeholder-count="3">
+              <div style="display:flex;gap:12px;padding:6px 0;border-bottom:1px solid var(--color-divider)">
+                <div style="min-width:80px;font-size:12px;font-weight:600;color:var(--color-accent)">{{ tl.dateStart }}</div>
+                <div style="flex:1">
+                  <div style="font-size:13px"><strong>{{ tl.predicate }}</strong>: {{ tl.objectValue }}</div>
+                  <div style="font-size:11px;opacity:0.6">
+                    <span class="tag {{ tl.statusClass }}" style="font-size:10px">{{ tl.epistemicStatus }}</span>
+                    <span style="margin-left:6px">Evidenze: {{ tl.evidenceCount }}</span>
+                    <sc-if value="{{ tl.place }}" hint-placeholder-val="{{ false }}">
+                      <span style="margin-left:6px">Luogo: {{ tl.place }}</span>
+                    </sc-if>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- Narrative Synthesis -->
+        <sc-if value="{{ researchHasNarrative }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:20px">
+            <h3 style="font-size:16px;margin:0 0 14px">Sintesi Narrativa (AI)</h3>
+            <div style="font-size:11px;opacity:0.6;margin-bottom:10px">
+              Generata da <strong>{{ researchNarrativeProvider }}</strong> · {{ researchNarrativeModel }} · Costo: ${{ researchNarrativeCost }}
+            </div>
+            <div style="font-size:14px;line-height:1.7;white-space:pre-wrap">{{ researchNarrativeText }}</div>
+          </div>
+        </sc-if>
+
+        <!-- AI Providers -->
+        <div style="background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:20px">
+          <h3 style="font-size:16px;margin:0 0 14px">Provider IA</h3>
+          <sc-for list="{{ researchProviders }}" as="p" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--color-divider)">
+              <div>
+                <strong style="font-size:13px">{{ p.name }}</strong>
+                <span style="font-size:11px;opacity:0.5;margin-left:6px">{{ p.creditStatus }}</span>
+              </div>
+              <div style="font-size:12px;opacity:0.7">
+                <span>Budget: {{ p.budget }}</span>
+                <span style="margin-left:8px">Speso: {{ p.spent }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- Archive Connectors -->
+        <div style="background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:20px">
+          <h3 style="font-size:16px;margin:0 0 14px">Fonti collegate ({{ researchConnectorsCount }})</h3>
+          <sc-for list="{{ researchConnectors }}" as="c" hint-placeholder-count="6">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--color-divider);font-size:12px">
+              <span>{{ c.name }}</span>
+              <span style="opacity:0.5">{{ c.accessMode }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+      </div>
     </sc-if>
 
   </section>
@@ -1262,6 +1567,7 @@ class Component extends DCLogic {
     _soldatoModal: null, _cadutiFilter: '', _cadutiLetter: '', _cadutiOffset: 0, _decoratiFilter: '', _internatiFilter: '',
     searching: false, adminLive: null,
     _recentSearches: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportProgress: 0, _eventReportError: null,
+    _externalSourcesExpanded: false,
     _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false, _chronoReportProgress: 0,
     _eventReportMode: 'specialist',
     _graphSelectedEvent: null, _graphEventsList: null,
@@ -1272,6 +1578,10 @@ class Component extends DCLogic {
     _soldatiArch: null, _soldatiField: 'luogo_morte', _soldatiClusters: null, _graphSelectedCluster: null,
     _soldierBio: null, _soldierBioLoading: false, _soldierBioError: null, _soldierBioSources: [],
     _soldierImages: null, _soldierImagesLoading: false, _soldierImagesError: null,
+    _statsError: null, _eventsError: null, _searchError: null, _dossierError: null, _graphError: null,
+    _scrollPos: 0,
+    researchQuery: '', _researchResult: null, _researchError: null, _researchLoading: false,
+    _researchProviders: [], _researchConnectors: [],
   };
 
   componentDidMount() {
@@ -1283,13 +1593,16 @@ class Component extends DCLogic {
         loaded: true,
         _mod: m,
       });
+      // 1b. Inizializza router URL-based
+      this._initRouter();
       // 2. Aggiorna statistiche dal backend in background
       try {
         const liveStats = await m.loadLiveStats();
         this.setState(st => ({
           data: { ...st.data, DB_STATS: liveStats },
+          _statsError: null,
         }));
-      } catch(e) { console.warn('live stats error', e); }
+      } catch(e) { console.warn('live stats error', e); this.setState({ _statsError: e.message }); }
       // 2b. Carica eventi 1GM dal backend
       try {
         const r = await fetch('/api/events/1gm').then(r => r.json());
@@ -1308,10 +1621,42 @@ class Component extends DCLogic {
             _stats: { caduti: ev.caduti||0, decorati: ev.decorati||0, documenti: ev.documenti||0, fonti: ev.fonti||0, internati: ev.internati||0 },
           };
         }
-        this.setState(st => ({ data: { ...st.data, EVENTS: { ...dynamicEvents, ...st.data.EVENTS } } }));
-      } catch(e) { console.warn('load events 1gm error', e); }
+        this.setState(st => ({ data: { ...st.data, EVENTS: { ...dynamicEvents, ...st.data.EVENTS } }, _eventsError: null }));
+      } catch(e) { console.warn('load events 1gm error', e); this.setState({ _eventsError: e.message }); }
     });
   }
+
+  _initRouter() {
+    if (!window.Router) return;
+    Router.register('/', (params, query) => this.goHome());
+    Router.register('/search', (params, query) => { if (query.q) this.goSearch(query.q); else this.setState({ view: 'search' }); });
+    Router.register('/events', (params, query) => this.goEvents());
+    Router.register('/explore/:id', (params) => this.goExplore(params.id));
+    Router.register('/dossier/:kind/:id', (params) => this.openDossier(params.kind, params.id));
+    Router.register('/graph', (params, query) => this.goGraph(query.tab || 'eventi'));
+    Router.register('/research', (params, query) => { if (query.q) this.goResearch(query.q); else this.goResearch(); });
+    Router.register('/admin', (params) => this.goAdmin());
+    Router.setDefault((params, query) => this.goHome());
+    Router.init();
+  }
+
+  _updateTitle() {
+    const st = this.state;
+    const titles = {
+      home: 'Voci dal Fronte',
+      search: st.query ? `Ricerca: ${st.query} — Voci dal Fronte` : 'Ricerca — Voci dal Fronte',
+      events: 'Eventi storici — Voci dal Fronte',
+      explore: 'Esplora database — Voci dal Fronte',
+      graph: 'Grafo — Voci dal Fronte',
+      research: 'Ricerca AI — Voci dal Fronte',
+      admin: 'Amministrazione — Voci dal Fronte',
+      dossier: st.activeId ? `${st.activeId} — Voci dal Fronte` : 'Dossier — Voci dal Fronte',
+    };
+    document.title = titles[st.view] || 'Voci dal Fronte';
+  }
+
+  _saveScroll() { this.state._scrollPos = window.scrollY; }
+  _restoreScroll() { window.scrollTo(0, this.state._scrollPos || 0); }
 
   t(key) { const s = this.state.strings, l = this.state.lang; return (s && s[l] && s[l][key]) || key; }
   fmtNum(n) { return Number(n).toLocaleString('it-IT'); }
@@ -1323,24 +1668,68 @@ class Component extends DCLogic {
   gapPriorityKey(p) { return p === 'high' ? 'gapPriorityHigh' : p === 'medium' ? 'gapPriorityMedium' : 'gapPriorityLow'; }
   gapPriorityClass(p) { return p === 'high' ? 'tag tag-accent-2' : p === 'medium' ? 'tag tag-accent' : 'tag tag-neutral'; }
 
-  goHome() { this.setState({ view: 'home', query: '', lightbox: null }); }
-  goEvents() { this.setState({ view: 'events', lightbox: null }); }
+  goHome() { this._saveScroll(); this.setState({ view: 'home', query: '', lightbox: null }); this._updateTitle(); if (window.Router) Router.navigate('/'); }
+  goEvents() { this._saveScroll(); this.setState({ view: 'events', lightbox: null }); this._updateTitle(); if (window.Router) Router.navigate('/events'); }
   goAdmin() {
-    this.setState({ view: 'admin', lightbox: null });
+    this._saveScroll(); this.setState({ view: 'admin', lightbox: null }); this._updateTitle(); if (window.Router) Router.navigate('/admin');
     const m = this.state._mod;
     if (m && m.loadAdminStatus) {
       m.loadAdminStatus().then(adminLive => this.setState({ adminLive })).catch(() => {});
       m.loadLiveCredits().then(credits => this.setState(st => ({ adminLive: { ...st.adminLive, credits } }))).catch(() => {});
     }
   }
-  goExplore(id) { this.setState({ view: 'explore', exploreId: id || 'internati', lightbox: null }); }
+  goResearch(q) {
+    this._saveScroll();
+    const query = q !== undefined ? q : (this.state.researchQuery || '');
+    this.setState({ view: 'research', researchQuery: query, lightbox: null, _researchResult: null, _researchError: null, _researchLoading: false });
+    this._updateTitle();
+    if (window.Router) Router.navigate('/research', query ? { q: query } : {});
+    this.loadResearchProviders();
+    this.loadResearchConnectors();
+  }
+  onResearchInput(e) { this.setState({ researchQuery: e.target.value }); }
+  onResearchKeyDown(e) { if (e.key === 'Enter') this.onResearchSubmit(); }
+  async onResearchSubmit() {
+    const query = (this.state.researchQuery || '').trim();
+    if (!query) return;
+    this.setState({ _researchLoading: true, _researchError: null, _researchResult: null });
+    if (window.Router) Router.navigate('/research', { q: query });
+    try {
+      const res = await fetch('/api/research-engine/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: query, max_cycles: 3, strategy: 'balanced' }),
+      }).then(r => r.json());
+      if (res.error) throw new Error(res.error);
+      this.setState({ _researchResult: res, _researchLoading: false });
+    } catch(e) {
+      this.setState({ _researchError: e.message, _researchLoading: false });
+    }
+  }
+  async loadResearchProviders() {
+    try {
+      const res = await fetch('/api/research-engine/ai/credits').then(r => r.json());
+      this.setState({ _researchProviders: res.providers || [] });
+    } catch(e) { /* silent */ }
+  }
+  async loadResearchConnectors() {
+    try {
+      const res = await fetch('/api/research-engine/archive-connectors').then(r => r.json());
+      this.setState({ _researchConnectors: res.connectors || [] });
+    } catch(e) { /* silent */ }
+  }
+  goExplore(id) { this._saveScroll(); this.setState({ view: 'explore', exploreId: id || 'internati', lightbox: null }); this._updateTitle(); if (window.Router) Router.navigate('/explore/' + (id || 'internati')); }
   goSearch(q) {
     const query = q !== undefined ? q : this.state.query;
+    this._saveScroll();
     this.setState(st => ({
       view: 'search', query, lightbox: null, searching: true,
       _searchConfirmations: [], _searchValidations: [], _searchStatus: null, _externalSources: [],
+      _searchError: null,
       _recentSearches: [...new Set([query, ...(st._recentSearches || [])])].slice(0, 10),
     }));
+    this._updateTitle();
+    if (window.Router) Router.navigate('/search', { q: query });
     const m = this.state._mod;
     if (m && m.searchLive) {
       m.searchLive(query).then(({ subjects, events, confirmations, validations, searchStatus, externalSources }) => {
@@ -1351,8 +1740,9 @@ class Component extends DCLogic {
           _searchValidations: validations || [],
           _searchStatus: searchStatus || 'local_only',
           _externalSources: externalSources || [],
+          _searchError: null,
         }));
-      }).catch(() => this.setState({ searching: false }));
+      }).catch((err) => this.setState({ searching: false, _searchError: err.message }));
     } else {
       this.setState({ searching: false });
     }
@@ -1377,7 +1767,10 @@ class Component extends DCLogic {
     }
   }
   openDossier(kind, id) {
-    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null, _externalSources: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportProgress: 0, _eventReportError: null, _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false, _chronoReportProgress: 0, _soldierBio: null, _soldierBioLoading: false, _soldierBioError: null, _soldierBioSources: [], _soldierImages: null, _soldierImagesLoading: false, _soldierImagesError: null });
+    this._saveScroll();
+    this.setState({ view: 'dossier', activeKind: kind, activeId: id, dossierTab: 'overview', lightbox: null, _externalSources: [], _eventDossier: null, _eventReport: null, _eventReportLoading: false, _eventReportProgress: 0, _eventReportError: null, _eventChatMessages: [], _eventChatInput: '', _eventChatLoading: false, _chronoReportProgress: 0, _soldierBio: null, _soldierBioLoading: false, _soldierBioError: null, _soldierBioSources: [], _soldierImages: null, _soldierImagesLoading: false, _soldierImagesError: null, _dossierError: null });
+    this._updateTitle();
+    if (window.Router) Router.navigate('/dossier/' + kind + '/' + id);
     // Se è un soldato IMI live, carica fonti e timeline dal backend
     const m = this.state._mod;
     if (kind === 'subject' && id && id.startsWith('imi_') && m && m.loadSoldierDossier) {
@@ -1603,14 +1996,18 @@ class Component extends DCLogic {
       }).then(r => r.json());
       if (res.risposta) {
         this.setState(st => ({ _eventChatMessages: [...(st._eventChatMessages || []), { role: 'assistant', text: res.risposta, provider: res.provider }], _eventChatLoading: false }));
+        this._scrollChatToBottom();
       } else {
         this.setState(st => ({ _eventChatMessages: [...(st._eventChatMessages || []), { role: 'assistant', text: 'Errore: ' + (res.detail || 'risposta non valida') }], _eventChatLoading: false }));
+        this._scrollChatToBottom();
       }
     } catch(e) {
       this.setState(st => ({ _eventChatMessages: [...(st._eventChatMessages || []), { role: 'assistant', text: 'Errore di connessione: ' + e.message }], _eventChatLoading: false }));
+      this._scrollChatToBottom();
     }
   }
   eventChatKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendEventChatMessage(); } }
+  _scrollChatToBottom() { setTimeout(() => { const el = document.querySelector('[data-event-chat]'); if (el) el.scrollTop = el.scrollHeight; }, 50); }
   linkify(text) {
     if (!text) return '';
     let s = String(text);
@@ -1671,6 +2068,23 @@ class Component extends DCLogic {
     } catch(e) { console.warn('loadExternalSources error', e); }
   }
   setDossierTab(tab) { this.setState({ dossierTab: tab }); }
+  async loadLeBIComparison() {
+    const id = this.state.activeId;
+    if (!id || !id.startsWith('imi_')) return;
+    const soldierId = parseInt(id.replace('imi_', ''), 10);
+    this.setState({ _lebiLoading: true, _lebiError: null, _lebiMatches: [], _lebiTotal: 0 });
+    try {
+      const m = this.state._mod;
+      if (!m || !m.loadLeBIComparison) {
+        this.setState({ _lebiLoading: false, _lebiError: 'Modulo LeBI non disponibile' });
+        return;
+      }
+      const { matches, total } = await m.loadLeBIComparison(soldierId);
+      this.setState({ _lebiLoading: false, _lebiMatches: matches, _lebiTotal: total, _lebiError: null });
+    } catch(e) {
+      this.setState({ _lebiLoading: false, _lebiError: e.message || 'Errore caricamento LeBI' });
+    }
+  }
   async loadMoreCaduti() {
     const st = this.state;
     const m = st._mod;
@@ -1842,7 +2256,10 @@ class Component extends DCLogic {
   }
   async goGraph(tab) {
     const t = tab || 'eventi';
-    this.setState({ view: 'graph', _graphTab: t, _graphSelectedEvent: null, _graphSelectedLuogo: null, _graphSelectedPaese: null, _graphSelectedCluster: null });
+    this._saveScroll();
+    this.setState({ view: 'graph', _graphTab: t, _graphSelectedEvent: null, _graphSelectedLuogo: null, _graphSelectedPaese: null, _graphSelectedCluster: null, _graphError: null });
+    this._updateTitle();
+    if (window.Router) Router.navigate('/graph', { tab: t });
     if (t === 'eventi' && !this.state._graphEventsList) {
       try {
         const res = await fetch('/api/events/1gm').then(r => r.json());
@@ -1855,33 +2272,33 @@ class Component extends DCLogic {
           fonti: e.fonti || 0,
           internati: e.internati || 0,
         }));
-        this.setState({ _graphEventsList: eventi });
-      } catch(e) { console.warn('goGraph eventi fetch error', e); }
+        this.setState({ _graphEventsList: eventi, _graphError: null });
+      } catch(e) { console.warn('goGraph eventi fetch error', e); this.setState({ _graphError: 'Errore caricamento eventi: ' + e.message }); }
     }
     if (t === 'luoghi' && !this.state._graphLuoghiList) {
       try {
         const res = await fetch('/api/graph/luoghi?limit=50').then(r => r.json());
         this.setState({ _graphLuoghiList: res.nodes || [] });
-      } catch(e) { console.warn('goGraph luoghi fetch error', e); }
+      } catch(e) { console.warn('goGraph luoghi fetch error', e); this.setState({ _graphError: 'Errore caricamento luoghi: ' + e.message }); }
     }
     if (t === 'mesi' && !this.state._graphMesiList) {
       try {
         const res = await fetch('/api/graph/mesi').then(r => r.json());
         this.setState({ _graphMesiList: res.nodes || [] });
-      } catch(e) { console.warn('goGraph mesi fetch error', e); }
+      } catch(e) { console.warn('goGraph mesi fetch error', e); this.setState({ _graphError: 'Errore caricamento anni: ' + e.message }); }
     }
     if (t === 'paesi' && !this.state._graphPaesiList) {
       try {
         const res = await fetch('/api/graph/paesi').then(r => r.json());
         this.setState({ _graphPaesiList: res.nodes || [] });
-      } catch(e) { console.warn('goGraph paesi fetch error', e); }
+      } catch(e) { console.warn('goGraph paesi fetch error', e); this.setState({ _graphError: 'Errore caricamento teatri: ' + e.message }); }
     }
     if (t === 'soldati') {
       if (!this.state._soldatiArch) {
         try {
           const arch = await fetch('/api/graph/soldati/architecture').then(r => r.json());
           this.setState({ _soldatiArch: arch });
-        } catch(e) { console.warn('soldati arch fetch error', e); }
+        } catch(e) { console.warn('soldati arch fetch error', e); this.setState({ _graphError: 'Errore caricamento soldati: ' + e.message }); }
       }
       await this.loadSoldatiClusters(this.state._soldatiField);
     }
@@ -1946,7 +2363,7 @@ class Component extends DCLogic {
       const x = cx + Math.cos(angle) * r;
       const y = cy + Math.sin(angle) * r;
       const nr = 6 + (n.count / maxN) * 22;
-      positions.push({ x, y, r: nr, n });
+      positions.push({ x, y, r: nr, n, idx: i });
     });
     for (const p of positions) {
       svg += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="var(--color-neutral-300)" stroke-width="1" opacity="0.4"/>`;
@@ -1958,7 +2375,7 @@ class Component extends DCLogic {
       const anni = n.anni || {};
       const dominantYear = Object.entries(anni).sort((a,b) => b[1]-a[1])[0];
       const col = dominantYear ? (colors[dominantYear[0]] || '#666') : '#666';
-      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${col}" opacity="0.8" stroke="var(--color-neutral-700)" stroke-width="1" style="cursor:pointer" onClick="${() => this.selectGraphLuogo(n)}"/>`;
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${col}" opacity="0.8" stroke="var(--color-neutral-700)" stroke-width="1" style="cursor:pointer" data-graph-idx="${p.idx}"/>`;
       const label = (n.luogo || '').length > 15 ? (n.luogo || '').substring(0, 13) + '…' : (n.luogo || '');
       svg += `<text x="${p.x}" y="${p.y + p.r + 12}" text-anchor="middle" font-size="8" fill="var(--color-neutral-700)" style="pointer-events:none">${label}</text>`;
     }
@@ -2004,7 +2421,7 @@ class Component extends DCLogic {
       const x = cx + Math.cos(angle) * r;
       const y = cy + Math.sin(angle) * r;
       const nr = 14 + (n.count / maxN) * 36;
-      positions.push({ x, y, r: nr, n, col: palette[i % palette.length] });
+      positions.push({ x, y, r: nr, n, col: palette[i % palette.length], idx: i });
     });
     for (const p of positions) {
       svg += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="${p.col}" stroke-width="2" opacity="0.3"/>`;
@@ -2013,7 +2430,7 @@ class Component extends DCLogic {
     svg += `<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11" fill="var(--color-neutral-600)">Fronte</text>`;
     for (const p of positions) {
       const n = p.n;
-      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${p.col}" opacity="0.75" stroke="var(--color-neutral-700)" stroke-width="1.5" style="cursor:pointer" onClick="${() => this.selectGraphPaese(n)}"/>`;
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${p.col}" opacity="0.75" stroke="var(--color-neutral-700)" stroke-width="1.5" style="cursor:pointer" data-graph-idx="${p.idx}"/>`;
       svg += `<text x="${p.x}" y="${p.y - p.r - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="var(--color-neutral-700)">${n.teatro}</text>`;
       svg += `<text x="${p.x}" y="${p.y + 4}" text-anchor="middle" font-size="9" fill="white" style="pointer-events:none">${(n.count/1000).toFixed(0)}k</text>`;
     }
@@ -2032,7 +2449,7 @@ class Component extends DCLogic {
       const x = cx + Math.cos(angle) * r;
       const y = cy + Math.sin(angle) * r;
       const nr = 4 + Math.sqrt(c.count / maxN) * 24;
-      positions.push({ x, y, r: nr, c });
+      positions.push({ x, y, r: nr, c, idx: i });
     });
     for (const p of positions) {
       svg += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="var(--color-neutral-300)" stroke-width="0.5" opacity="0.3"/>`;
@@ -2040,7 +2457,7 @@ class Component extends DCLogic {
     svg += `<circle cx="${cx}" cy="${cy}" r="16" fill="var(--color-accent-600)" opacity="0.3"/>`;
     for (const p of positions) {
       const c = p.c;
-      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="var(--color-accent-600)" opacity="0.7" stroke="var(--color-accent-700)" stroke-width="1" style="cursor:pointer" onClick="${() => this.selectGraphCluster(c)}"/>`;
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="var(--color-accent-600)" opacity="0.7" stroke="var(--color-accent-700)" stroke-width="1" style="cursor:pointer" data-graph-idx="${p.idx}"/>`;
       if (p.r > 10) {
         const label = (c.cluster || '').length > 14 ? (c.cluster || '').substring(0, 12) + '…' : (c.cluster || '');
         svg += `<text x="${p.x}" y="${p.y + p.r + 10}" text-anchor="middle" font-size="7" fill="var(--color-neutral-700)" style="pointer-events:none">${label}</text>`;
@@ -2050,6 +2467,26 @@ class Component extends DCLogic {
     return svg;
   }
   selectGraphEvent(ev) { this.setState({ _graphSelectedEvent: ev }); }
+  onGraphSVGClick(e) {
+    const target = e.target.closest('[data-graph-idx]');
+    if (!target) return;
+    const idx = parseInt(target.getAttribute('data-graph-idx'), 10);
+    if (isNaN(idx)) return;
+    const tab = this.state._graphTab;
+    if (tab === 'eventi') {
+      const events = this.state._graphEventsList || [];
+      if (events[idx]) this.selectGraphEvent(events[idx]);
+    } else if (tab === 'luoghi') {
+      const nodes = this.state._graphLuoghiList || [];
+      if (nodes[idx]) this.selectGraphLuogo(nodes[idx]);
+    } else if (tab === 'paesi') {
+      const nodes = this.state._graphPaesiList || [];
+      if (nodes[idx]) this.selectGraphPaese(nodes[idx]);
+    } else if (tab === 'soldati') {
+      const clusters = this.state._soldatiClusters || [];
+      if (clusters[idx]) this.selectGraphCluster(clusters[idx]);
+    }
+  }
   buildGraphSVG(events) {
     if (!events || !events.length) return '<p style="opacity:0.5">Nessun evento</p>';
     const W = 900, H = 640, cx = W/2, cy = H/2;
@@ -2062,7 +2499,7 @@ class Component extends DCLogic {
     const orbitR = 240;
     const positions = events.map((e, i) => {
       const angle = (i / N) * 2 * Math.PI - Math.PI / 2;
-      return { e, x: cx + orbitR * Math.cos(angle), y: cy + orbitR * Math.sin(angle), r: radius(e) };
+      return { e, x: cx + orbitR * Math.cos(angle), y: cy + orbitR * Math.sin(angle), r: radius(e), idx: i };
     });
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="max-width:100%" viewBox="0 0 ${W} ${H}">`;
     svg += `<circle cx="${cx}" cy="${cy}" r="${orbitR}" fill="none" stroke="var(--color-neutral-300)" stroke-dasharray="4,4"/>`;
@@ -2088,7 +2525,7 @@ class Component extends DCLogic {
     }
     for (const p of positions) {
       const e = p.e;
-      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${evColor(e)}" opacity="0.85" stroke="var(--color-neutral-700)" stroke-width="1.5" style="cursor:pointer" onClick="${() => this.selectGraphEvent(e)}"/>`;
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${evColor(e)}" opacity="0.85" stroke="var(--color-neutral-700)" stroke-width="1.5" style="cursor:pointer" data-graph-idx="${p.idx}"/>`;
       const label = (e.nome || '').length > 18 ? (e.nome || '').substring(0, 16) + '…' : (e.nome || '');
       svg += `<text x="${p.x}" y="${p.y + p.r + 14}" text-anchor="middle" font-size="9" fill="var(--color-neutral-700)" style="pointer-events:none">${label}</text>`;
     }
@@ -2241,15 +2678,49 @@ class Component extends DCLogic {
           timeline, perspectives, sources, gaps, hasGaps: gaps.length > 0,
           tabOverviewActive: st.dossierTab === 'overview', tabPerspectivesActive: st.dossierTab === 'perspectives',
           tabSourcesActive: st.dossierTab === 'sources', tabGapsActive: st.dossierTab === 'gaps',
+          tabLeBIActive: st.dossierTab === 'lebi',
           tabOverviewClass: st.dossierTab === 'overview' ? 'btn btn-secondary' : 'btn btn-ghost',
           tabPerspectivesClass: st.dossierTab === 'perspectives' ? 'btn btn-secondary' : 'btn btn-ghost',
           tabSourcesClass: st.dossierTab === 'sources' ? 'btn btn-secondary' : 'btn btn-ghost',
           tabGapsClass: st.dossierTab === 'gaps' ? 'btn btn-secondary' : 'btn btn-ghost',
+          tabLeBIClass: st.dossierTab === 'lebi' ? 'btn btn-secondary' : 'btn btn-ghost',
           onTabOverview: () => this.setDossierTab('overview'), onTabPerspectives: () => this.setDossierTab('perspectives'),
           onTabSources: () => this.setDossierTab('sources'), onTabGaps: () => this.setDossierTab('gaps'),
+          onTabLeBI: () => { this.setDossierTab('lebi'); this.loadLeBIComparison(); },
+          lebiMatches: (st._lebiMatches || []).map(m => ({
+            ...m,
+            matchScoreLabel: `${m.matchScore}%`,
+            matchScoreClass: m.matchScore >= 70 ? 'tag tag-success' : (m.matchScore >= 40 ? 'tag tag-warning' : 'tag tag-muted'),
+            hasMatchFields: m.matchFields && m.matchFields.length > 0,
+            hasDiffFields: m.diffFields && m.diffFields.length > 0,
+            matchFieldsList: (m.matchFields || []).map(f => ({ field: f.field, local: f.local || '—', lebi: f.lebi || '—' })),
+            diffFieldsList: (m.diffFields || []).map(f => ({ field: f.field, local: f.local || '—', lebi: f.lebi || '—' })),
+            hasPdf: !!m.pdfUrl,
+            detailFields: m.detail ? [
+              { label: 'Cognome', value: m.detail.cognome || '' },
+              { label: 'Nome', value: m.detail.nome || '' },
+              { label: 'Data nascita', value: m.detail.data_nascita || '' },
+              { label: 'Comune nascita', value: m.detail.comune_nascita || '' },
+              { label: 'Grado', value: m.detail.grado || '' },
+              { label: 'Reparto', value: m.detail.reparto || '' },
+              { label: 'Data cattura', value: m.detail.data_cattura || '' },
+              { label: 'Luogo cattura', value: m.detail.luogo_cattura || '' },
+              { label: 'Data decesso', value: m.detail.data_decesso || '' },
+              { label: 'Causa morte', value: m.detail.causa_morte || '' },
+              { label: 'Campi internamento', value: Array.isArray(m.detail.campi_internamento) ? m.detail.campi_internamento.join(', ') : (m.detail.campi_internamento || '') },
+              { label: 'Matricola', value: m.detail.matricola || '' },
+            ].filter(f => f.value) : [],
+          })),
+          lebiLoading: !!st._lebiLoading,
+          lebiError: st._lebiError || null,
+          hasLeBIError: !!st._lebiError,
+          lebiTotal: st._lebiTotal || 0,
+          hasLeBIMatches: (st._lebiMatches && st._lebiMatches.length > 0),
+          isIMISoldier: st.activeKind === 'subject' && !!st.activeId && st.activeId.startsWith('imi_'),
           externalSources: (st._externalSources || []), hasExternalSources: (st._externalSources || []).length > 0,
           isEvent: st.activeKind === 'event',
           isSoldier: st.activeKind === 'subject' && !!st.activeId && (st.activeId.startsWith('imi_') || st.activeId.startsWith('cad_') || st.activeId.startsWith('dec_')),
+          // LeBI comparison is only for IMI soldiers
           // Soldier bio AI generation
           onGenerateBio: () => this.generateSoldierBio(),
           bioLoading: !!st._soldierBioLoading,
@@ -2320,7 +2791,7 @@ class Component extends DCLogic {
           eventCadutiTotal: (st._eventDossier && st._eventDossier.caduti_total) || 0,
           eventCadutiShown: ((st._eventDossier && st._eventDossier.caduti) || []).length,
           cadutiTotalPages: (st._eventDossier && st._eventDossier.caduti_total) ? Math.max(1, Math.ceil(st._eventDossier.caduti_total / 50)) : 1,
-          cadutiCurrentPage: ((st._eventDossier && st._eventDossier.caduti_total) ? Math.ceil((((st._eventDossier && st._eventDossier.caduti) || []).length + (st._cadutiOffset || 0)) / 50) : 1),
+          cadutiCurrentPage: Math.max(1, Math.min(((st._eventDossier && st._eventDossier.caduti_total) ? Math.ceil((((st._eventDossier && st._eventDossier.caduti) || []).length + (st._cadutiOffset || 0)) / 50) : 1), (st._eventDossier && st._eventDossier.caduti_total) ? Math.max(1, Math.ceil(st._eventDossier.caduti_total / 50)) : 1)),
           canLoadMoreCaduti: ((st._eventDossier && st._eventDossier.caduti) || []).length < ((st._eventDossier && st._eventDossier.caduti_total) || 0),
           loadingMoreCaduti: !!st._loadingMoreCaduti,
           onLoadMoreCaduti: () => this.loadMoreCaduti(),
@@ -2492,6 +2963,14 @@ class Component extends DCLogic {
     return {
       appReady: true, notReady: false, S, lang, langs, query: st.query,
       dbStats, featuredEvents, examples,
+      statsError: st._statsError || null, eventsError: st._eventsError || null,
+      searchError: st._searchError || null, graphError: st._graphError || null,
+      hasStatsError: !!st._statsError, hasEventsError: !!st._eventsError,
+      hasSearchError: !!st._searchError, hasGraphError: !!st._graphError,
+      onRetryStats: () => { this.setState({ _statsError: null }); const m = this.state._mod; if (m) m.loadLiveStats().then(s => this.setState(st2 => ({ data: { ...st2.data, DB_STATS: s } }))).catch(e => this.setState({ _statsError: e.message })); },
+      onRetryEvents: () => { this.setState({ _eventsError: null }); fetch('/api/events/1gm').then(r => r.json()).then(r => { const dynamicEvents = {}; for (const ev of (r.eventi || [])) { const id = ev.nome.toLowerCase().replace(/[àá]/g,'a').replace(/[èé]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,''); dynamicEvents[id] = { id, type:'evento', name:ev.nome, subtitle:`${ev.data_inizio||'?'} – ${ev.data_fine||'?'}, ${ev.luogo||''}`, tags:ev.aliases?.slice(0,3)||[], status:'verified', confidence:0.95, timeline:[], perspectives:[], sources:[], gaps:[], _stats:{caduti:ev.caduti||0,decorati:ev.decorati||0,documenti:ev.documenti||0,fonti:ev.fonti||0,internati:ev.internati||0} }; } this.setState(st => ({ data:{...st.data, EVENTS:{...dynamicEvents, ...st.data.EVENTS}}, _eventsError:null })); }).catch(e => this.setState({ _eventsError: e.message })); },
+      onRetrySearch: () => this.goSearch(this.state.query),
+      onRetryGraph: () => this.goGraph(this.state._graphTab),
       hasRecentSearches: (st._recentSearches || []).length > 0,
       personCards, eventCards, hasResults, hasQuery: !!qn,
       searching: st.searching,
@@ -2501,6 +2980,36 @@ class Component extends DCLogic {
       })),
       searchValidations: st._searchValidations || [],
       externalSourcesCount: (st._externalSources || []).length,
+      externalSourcesExpanded: !!st._externalSourcesExpanded,
+      onToggleExternalSources: () => this.setState({ _externalSourcesExpanded: !st._externalSourcesExpanded }),
+      externalSourcesList: (st._externalSources || []).map(es => {
+        const fa = es.filters_applied || {};
+        const hasFilters = !!(fa.nationality || fa.status || fa.files);
+        const hasUrl = !!(es.catalog_url || es.direct_url);
+        const isLeBI = es.provider === 'lebi';
+        const isICRC = es.provider === 'icrc_ww1' || (es.catalog_url && es.catalog_url.includes('grandeguerre.icrc.org'));
+        const hasSearchUrl = isICRC || isLeBI;
+        const providerLabel = isLeBI ? 'LeBI' : (isICRC ? 'ICRC' : (es.provider_display || es.provider || 'Esterno'));
+        const pdfUrl = isLeBI && es.direct_url ? es.direct_url.replace('/caduti/show/', '/caduti/showpdf/') : '';
+        const hasPdfUrl = !!pdfUrl;
+        return {
+          providerLabel,
+          titolo: es.titolo || es.title || 'Risultato',
+          description: es.description || '',
+          searchedName: es.searched_name || '',
+          hasSearchedName: !!es.searched_name,
+          hasFilters,
+          filtersNationality: fa.nationality || '',
+          filtersStatus: fa.status || '',
+          filtersFiles: fa.files || '',
+          hasUrl,
+          catalogUrl: es.catalog_url || es.direct_url || '',
+          hasSearchUrl,
+          searchUrl: hasSearchUrl ? (es.catalog_url || es.direct_url || '') : '',
+          hasPdfUrl,
+          pdfUrl,
+        };
+      }),
       searchStatus: st._searchStatus || null,
       dossier, hasDossier: !!dossier,
       explore, hasExplore: !!explore,
@@ -2529,6 +3038,7 @@ class Component extends DCLogic {
       goGraphEventi: () => this.goGraphEventi(), goGraphLuoghi: () => this.goGraphLuoghi(),
       goGraphMesi: () => this.goGraphMesi(), goGraphPaesi: () => this.goGraphPaesi(),
       goGraphSoldati: () => this.goGraphSoldati(),
+      onGraphSVGClick: (e) => this.onGraphSVGClick(e),
       graphLuoghiSVG: st.view === 'graph' && st._graphTab === 'luoghi' ? this.buildGraphLuoghiSVG(st._graphLuoghiList || []) : '',
       graphSelectedLuogo: st._graphSelectedLuogo || null,
       graphMesiSVG: st.view === 'graph' && st._graphTab === 'mesi' ? this.buildGraphMesiSVG(st._graphMesiList || []) : '',
@@ -2587,20 +3097,76 @@ class Component extends DCLogic {
       hasSoldatoModal: !!st._soldatoModal,
       closeSoldatoModal: () => this.closeSoldatoModal(),
       isHome: st.view === 'home', isSearch: st.view === 'search', isDossier: st.view === 'dossier',
-      isExplore: st.view === 'explore', isEvents: st.view === 'events', isGraph: st.view === 'graph', isAdmin: st.view === 'admin',
+      isExplore: st.view === 'explore', isEvents: st.view === 'events', isGraph: st.view === 'graph', isResearch: st.view === 'research', isAdmin: st.view === 'admin',
       adminCreditsRemaining, adminCreditsTotal, adminCreditsToday,
       adminInternati, adminFonti, adminRunning, adminDecorati,
       onQueryInput: (e) => this.setState({ query: e.target.value }),
       onQueryKeyDown: (e) => { if (e.key === 'Enter') this.goSearch(); },
       onSearchSubmit: () => this.goSearch(),
-      goHome: () => this.goHome(), goEvents: () => this.goEvents(), goGraph: () => this.goGraph(), goAdmin: () => this.goAdmin(),
+      goHome: () => this.goHome(), goEvents: () => this.goEvents(), goGraph: () => this.goGraph(), goAdmin: () => this.goAdmin(), goResearch: () => this.goResearch(),
       goExploreDefault: () => this.goExplore('internati'),
       closeLightbox: () => this.closeLightbox(),
       stopProp: (e) => e.stopPropagation(),
+      // Research Engine bindings
+      researchQuery: st.researchQuery || '',
+      researchLoading: !!st._researchLoading,
+      researchError: st._researchError || null,
+      hasResearchError: !!st._researchError,
+      researchResult: st._researchResult || null,
+      researchEntityType: st._researchResult?.entity_type || '—',
+      researchTotalCycles: st._researchResult?.total_cycles || 0,
+      researchStatus: st._researchResult?.status || '—',
+      researchPlanId: st._researchResult?.plan_id || '—',
+      researchHasCycles: !!(st._researchResult?.cycles?.length),
+      researchCycles: (st._researchResult?.cycles || []).map(cy => ({
+        cycleNumber: cy.cycle_number || cy.cycleNumber,
+        decision: cy.decision || '—',
+        decisionLabel: cy.decision === 'continue' ? 'Continua' : cy.decision === 'stop' ? 'Stop' : cy.decision,
+        decisionClass: cy.decision === 'continue' ? 'tag-accent' : cy.decision === 'stop' ? 'tag-neutral' : 'tag-outline',
+        stopReason: cy.stop_reason || '',
+        internalResults: cy.internal_results ?? 0,
+        externalResults: cy.external_results ?? 0,
+        fragmentCount: cy.fragments?.length ?? cy.fragments ?? 0,
+        hasFragments: !!(cy.fragments?.length),
+        topFragments: (cy.fragments || []).slice(0, 5).map(f => ({ type: f.type || '', clue: f.clue || '' })),
+        hasNewQueries: !!(cy.new_queries?.length),
+        topQueries: (cy.new_queries || []).slice(0, 5).map(q => ({ query: q.query || q.query_text || '' })),
+      })),
+      researchHasTimeline: !!(st._researchResult?.timeline?.length),
+      researchTimeline: (st._researchResult?.timeline || []).map(tl => ({
+        dateStart: tl.date_start || '—',
+        predicate: tl.predicate || '',
+        objectValue: tl.object_value || '',
+        epistemicStatus: tl.epistemic_status || 'possible',
+        statusClass: tl.epistemic_status === 'confirmed' ? 'tag-accent' : tl.epistemic_status === 'rejected' ? 'tag-neutral' : 'tag-outline',
+        evidenceCount: tl.evidence_count ?? 0,
+        place: tl.place || '',
+      })),
+      researchHasNarrative: !!(st._researchResult?.narrative?.text),
+      researchNarrativeText: st._researchResult?.narrative?.text || '',
+      researchNarrativeProvider: st._researchResult?.narrative?.provider || '—',
+      researchNarrativeModel: st._researchResult?.narrative?.model || '—',
+      researchNarrativeCost: (st._researchResult?.narrative?.cost ?? 0).toFixed(6),
+      researchProviders: (st._researchProviders || []).map(p => ({
+        name: p.name || p.provider_code,
+        creditStatus: p.credit_status || 'unknown',
+        budget: p.budget_configured ?? 0,
+        spent: p.spent_this_month ?? 0,
+      })),
+      researchConnectors: (st._researchConnectors || []).slice(0, 12).map(c => ({
+        name: c.name || c.code,
+        accessMode: c.access_mode || '—',
+      })),
+      researchConnectorsCount: st._researchConnectors?.length || 0,
+      onResearchInput: (e) => this.onResearchInput(e),
+      onResearchKeyDown: (e) => this.onResearchKeyDown(e),
+      onResearchSubmit: () => this.onResearchSubmit(),
     };
   }
 }
 
 </script>
+<script src="/shared/components.js"></script>
+<script src="/shared/router.js"></script>
 </body>
 </html>

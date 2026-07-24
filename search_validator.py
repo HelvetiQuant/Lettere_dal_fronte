@@ -124,6 +124,49 @@ def _extract_cues(records: dict) -> dict:
     return {k: list(v)[:10] for k, v in cues.items()}
 
 
+def _extract_icrc_filters(records: dict) -> dict:
+    """Auto-compila i filtri del form ICRC dai risultati locali.
+    
+    Determina:
+    - nationality: dal contesto dei record (internati italiani → italy)
+    - status: military (default per soldati) o civilian
+    - files: all (default, cerca in tutti i dataset)
+    - names: lista nomi reali estratti dai record archivio (cognome + nome)
+    """
+    filters = {"nationality": "italy", "status": "", "files": "", "names": []}
+    
+    internati = records.get("internati", [])
+    decorati = records.get("decorati", [])
+    caduti = records.get("caduti", [])
+    
+    if internati:
+        filters["nationality"] = "italy"
+        filters["status"] = "military"
+    elif decorati:
+        filters["nationality"] = "italy"
+        filters["status"] = "military"
+    elif caduti:
+        filters["nationality"] = "italy"
+        filters["status"] = "military"
+    
+    # Estrai nomi reali dai record archivio (max 5)
+    names = []
+    for category in ("internati", "decorati", "caduti"):
+        for rec in records.get(category, []):
+            cognome = (rec.get("cognome") or rec.get("nom") or "").strip()
+            nome = (rec.get("nome") or "").strip()
+            full = f"{cognome} {nome}".strip()
+            if full and full not in names:
+                names.append(full)
+            if len(names) >= 5:
+                break
+        if len(names) >= 5:
+            break
+    filters["names"] = names
+    
+    return filters
+
+
 def _validate_record_fields(record: dict) -> list[dict]:
     """Valida i campi di un singolo record per problemi OCR e province errate."""
     issues = []
@@ -247,10 +290,49 @@ def validate_search(query: str, local_results: dict, external_enabled: bool = Tr
     external_sources = []
     if external_enabled and total_records > 0:
         cues = _extract_cues(local_results)
+        icrc_filters = _extract_icrc_filters(local_results)
+        archive_names = icrc_filters.pop("names", [])
         try:
-            ext_results = federated_search(query, cues=cues)
-            external_sources = ext_results[:20]  # top 20
-            # Confronta: se fonti esterne trovano dati aggiuntivi, aggiungi come validazioni
+            # Ricerca federata con la query originale
+            ext_results = federated_search(query, cues=cues, filters=icrc_filters)
+            
+            # Ricerca ICRC per ogni nome reale estratto dall'archivio
+            icrc_by_name = []
+            from source_providers.federation import get_provider
+            icrc_provider = get_provider("icrc_ww1")
+            if icrc_provider and archive_names:
+                base_filters = {k: v for k, v in icrc_filters.items() if v}
+                for full_name in archive_names[:5]:
+                    try:
+                        hits = icrc_provider.search(full_name, base_filters)
+                        for h in hits:
+                            h["searched_name"] = full_name
+                            h["provider"] = "icrc_ww1"
+                        icrc_by_name.extend(hits)
+                    except Exception:
+                        pass
+
+            # Ricerca LeBI per ogni nome reale estratto dall'archivio
+            lebi_by_name = []
+            lebi_provider = get_provider("lebi")
+            if lebi_provider and archive_names:
+                for full_name in archive_names[:5]:
+                    try:
+                        hits = lebi_provider.search(full_name)
+                        for h in hits:
+                            h["searched_name"] = full_name
+                            h["provider"] = "lebi"
+                        lebi_by_name.extend(hits)
+                    except Exception:
+                        pass
+
+            # Combina: prima ICRC per-nome, poi LeBI per-nome, poi ICRC per query, poi altri
+            icrc_query_results = [r for r in ext_results if r.get("provider") == "icrc_ww1" and not r.get("error")]
+            lebi_query_results = [r for r in ext_results if r.get("provider") == "lebi" and not r.get("error")]
+            other_results = [r for r in ext_results if r.get("provider") not in ("icrc_ww1", "lebi") and not r.get("error")]
+            external_sources = icrc_by_name[:10] + lebi_by_name[:10] + icrc_query_results[:5] + lebi_query_results[:5] + other_results[:5]
+            external_sources = external_sources[:25]
+            
             for ext in external_sources:
                 if ext.get("error"):
                     continue

@@ -49,6 +49,8 @@ MODULES_WITH_SCHEMA_INIT = {
     "research_to_index": "_init_tables",
     "archivio_fonti": "_init_table",
     "caduti_albooro": "_init_table",
+    "auth": "init_auth_tables",
+    "rc_schema": "init_rc_schema",
 }
 
 # ─── Registro moduli con DB_PATH proprio (non da database.py) ─────────────

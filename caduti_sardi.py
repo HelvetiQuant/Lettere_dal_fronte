@@ -10,6 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 from database import get_conn
+from indexing_rules import titlecase_name, clean_toponym
 import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -76,10 +77,17 @@ def _save_record(rec: dict):
                 comune_residenza, guerra, grado, reparto, data_morte, luogo_morte,
                 causa_morte, decorazioni, scheda_url, elaborato_il)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (rec["source_id"], rec["cognome"], rec["nome"], rec["paternita"],
-             rec["luogo_nascita"], rec["data_nascita"],
-             rec["comune_residenza"], rec["guerra"], rec["grado"], rec["reparto"],
-             rec["data_morte"], rec["luogo_morte"], rec["causa_morte"],
+            (rec["source_id"],
+             titlecase_name(rec["cognome"]) if rec["cognome"] else "",
+             titlecase_name(rec["nome"]) if rec["nome"] else "",
+             titlecase_name(rec["paternita"]) if rec["paternita"] else "",
+             clean_toponym(rec["luogo_nascita"]) if rec["luogo_nascita"] else "",
+             rec["data_nascita"],
+             clean_toponym(rec["comune_residenza"]) if rec["comune_residenza"] else "",
+             rec["guerra"], rec["grado"], rec["reparto"],
+             rec["data_morte"],
+             clean_toponym(rec["luogo_morte"]) if rec["luogo_morte"] else "",
+             rec["causa_morte"],
              rec["decorazioni"], rec["scheda_url"], rec["elaborato_il"]),
         )
         conn.commit()

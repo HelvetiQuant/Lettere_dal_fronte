@@ -10,6 +10,7 @@ from typing import Optional
 from database import (
     get_conn, save_entita, count_entita, count_collegamenti,
 )
+from indexing_rules import expand_or_variants
 
 
 stop_event = threading.Event()
@@ -33,9 +34,36 @@ def get_progress() -> dict:
 
 
 def _norm(name: str) -> str:
-    if not name:
-        return ""
-    return re.sub(r"\s+", " ", name.strip().lower())
+    """Chiave normalizzata (regole Antenati/FamilySearch, sez. 1.3.1.1/1.3.2).
+
+    Delega a ``indexing_rules.normalize_match_key`` per coerenza con la dedup
+    delle entità in ``database.save_entita``.
+    """
+    from indexing_rules import normalize_match_key
+    return normalize_match_key(name)
+
+
+def _save_persona_with_variants(valore: str, fonte_tabella: str, fonte_id: int,
+                                cognome: str = None, nome: str = None,
+                                data: str = None, luogo: str = None,
+                                contesto: str = None):
+    """Salva una persona e, se il nome contiene varianti "O" (sez. 1.4.5),
+    indicizza ogni variante come entità separata collegata allo stesso record.
+
+    Esempio: "Giuseppe O Pino" → entità "Giuseppe O Pino" + "Giuseppe" + "Pino",
+    tutte collegate al record originale.
+    """
+    eid = save_entita("persona", valore, fonte_tabella, fonte_id,
+                     cognome=cognome, nome=nome, data=data,
+                     luogo=luogo, contesto=contesto)
+    variants = expand_or_variants(valore)
+    if len(variants) > 1:
+        for v in variants:
+            if v.strip() and v.strip() != valore.strip():
+                save_entita("persona", v.strip(), fonte_tabella, fonte_id,
+                           cognome=cognome, nome=v.strip(), data=data,
+                           luogo=luogo, contesto=contesto)
+    return eid
 
 
 ALL_TABLES = (
@@ -99,7 +127,7 @@ def build_links(resume: bool = True):
         _progress["current"] = f"internati:{r['id']}"
         # Persona
         if r["cognome"]:
-            save_entita("persona", f"{r['cognome']} {r['nome'] or ''}".strip(),
+            _save_persona_with_variants( f"{r['cognome']} {r['nome'] or ''}".strip(),
                         "internati", r["id"],
                         cognome=r["cognome"], nome=r["nome"],
                         data=r["data_nascita"], luogo=r["luogo_nascita"])
@@ -133,7 +161,7 @@ def build_links(resume: bool = True):
         _progress["processed"] = processed
         _progress["current"] = f"decorati:{r['id']}"
         if r["cognome"]:
-            save_entita("persona", f"{r['cognome']} {r['nome'] or ''}".strip(),
+            _save_persona_with_variants( f"{r['cognome']} {r['nome'] or ''}".strip(),
                         "decorati", r["id"],
                         cognome=r["cognome"], nome=r["nome"],
                         data=r["data_nascita"], luogo=r["comune_nascita"])
@@ -163,7 +191,7 @@ def build_links(resume: bool = True):
         _progress["processed"] = processed
         _progress["current"] = f"menzioni:{r['id']}"
         if r["cognome"]:
-            save_entita("persona", f"{r['cognome']} {r['nome'] or ''}".strip(),
+            _save_persona_with_variants( f"{r['cognome']} {r['nome'] or ''}".strip(),
                         "menzioni", r["id"],
                         cognome=r["cognome"], nome=r["nome"],
                         data=r["data"], luogo=r["luogo"], contesto=r["contesto"])
@@ -214,7 +242,7 @@ def build_links(resume: bool = True):
             if resume and already > 0 and r["id"] <= already:
                 continue
             if r["cognome"]:
-                save_entita("persona", f"{r['cognome']} {r['nome'] or ''}".strip(),
+                _save_persona_with_variants( f"{r['cognome']} {r['nome'] or ''}".strip(),
                             "caduti_ministero", r["id"],
                             cognome=r["cognome"], nome=r["nome"],
                             data=r["data_nascita"], luogo=r["comune_nascita"])
@@ -250,7 +278,7 @@ def build_links(resume: bool = True):
             if resume and already > 0 and r["id"] <= already:
                 continue
             if r["cognome"]:
-                save_entita("persona", f"{r['cognome']} {r['nome'] or ''}".strip(),
+                _save_persona_with_variants( f"{r['cognome']} {r['nome'] or ''}".strip(),
                             "caduti_sardi", r["id"],
                             cognome=r["cognome"], nome=r["nome"],
                             data=r["data_nascita"], luogo=r["comune_residenza"])
@@ -287,7 +315,7 @@ def build_links(resume: bool = True):
                 parts = r["nome"].strip().split(None, 1)
                 cognome_b = parts[0] if parts else r["nome"]
                 nome_b = parts[1] if len(parts) > 1 else ""
-                save_entita("persona", r["nome"].strip(),
+                _save_persona_with_variants( r["nome"].strip(),
                             "caduti_bologna", r["id"],
                             cognome=cognome_b, nome=nome_b,
                             data=str(r["anno_nascita"]) if r["anno_nascita"] else None,
@@ -326,7 +354,7 @@ def build_links(resume: bool = True):
                 parts = r["nominativo"].strip().split(None, 1)
                 cognome_a = parts[0] if parts else r["nominativo"]
                 nome_a = parts[1] if len(parts) > 1 else ""
-                save_entita("persona", r["nominativo"].strip(),
+                _save_persona_with_variants( r["nominativo"].strip(),
                             "caduti_albooro", r["id"],
                             cognome=cognome_a, nome=nome_a,
                             luogo=r["comune_attuale"])
@@ -362,7 +390,7 @@ def build_links(resume: bool = True):
                 continue
             if r["cognome"]:
                 full_name = f"{r['cognome']} {r['nome'] or r['initials'] or ''}".strip()
-                save_entita("persona", full_name, "caduti_cwgc", r["id"],
+                _save_persona_with_variants( full_name, "caduti_cwgc", r["id"],
                             cognome=r["cognome"], nome=r["nome"] or r["initials"],
                             data=r["data_nascita"], luogo=r["paese_cimitero"])
             for campo, val in [("cimitero", r["cimitero"]),
@@ -399,7 +427,7 @@ def build_links(resume: bool = True):
                 continue
             if r["cognome"]:
                 full_name = f"{r['cognome']} {r['nome'] or ''}".strip()
-                save_entita("persona", full_name, "decorati_nastroazzurro", r["id"],
+                _save_persona_with_variants( full_name, "decorati_nastroazzurro", r["id"],
                             cognome=r["cognome"], nome=r["nome"],
                             data=r["anno_decorazione"], contesto=r["tipo_decorazione"])
             if r["arma"]:
@@ -434,7 +462,7 @@ def build_links(resume: bool = True):
                 parts = r["nom"].strip().split(None, 1)
                 cognome_f = parts[0] if parts else r["nom"]
                 nome_f = parts[1] if len(parts) > 1 else ""
-                save_entita("persona", r["nom"].strip(), "caduti_francia_ww1", r["id"],
+                _save_persona_with_variants( r["nom"].strip(), "caduti_francia_ww1", r["id"],
                             cognome=cognome_f, nome=nome_f,
                             luogo=r["lieu_naissance"])
             for campo, val in [("lieu_naissance", r["lieu_naissance"]),

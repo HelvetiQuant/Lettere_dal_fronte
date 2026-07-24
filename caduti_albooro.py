@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from datetime import datetime
 from database import get_conn
+from indexing_rules import titlecase_name, clean_toponym
 
 BASE = "https://www.cadutigrandeguerra.it"
 REQUEST_DELAY = 2.0
@@ -133,14 +134,14 @@ def _parse_row(row_html, volume_id: str, volume_name: str) -> dict:
         "source_id": detail_url.split("id=")[-1].split("%")[0] if detail_url else "",
         "volume_id": volume_id,
         "volume_name": volume_name,
-        "nominativo": nominativo,
-        "paternita": paternita,
+        "nominativo": titlecase_name(nominativo) if nominativo else "",
+        "paternita": titlecase_name(paternita) if paternita else "",
         "classe": cells[1].text.strip(),
-        "comune_attuale": cells[2].text.strip(),
+        "comune_attuale": clean_toponym(cells[2].text.strip()),
         "grado": cells[3].text.strip(),
         "reparto": cells[4].text.strip(),
         "anno_morte": cells[5].text.strip(),
-        "luogo_morte": cells[6].text.strip(),
+        "luogo_morte": clean_toponym(cells[6].text.strip()),
         "causa_morte": cells[7].text.strip(),
         "detail_url": detail_url,
         "img_url": img_url,

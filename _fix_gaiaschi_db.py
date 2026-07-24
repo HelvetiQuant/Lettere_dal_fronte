@@ -1,15 +1,30 @@
 import sqlite3
+from datetime import datetime
 
 conn = sqlite3.connect('imi_internati.db')
+conn.row_factory = sqlite3.Row
+now = datetime.now().isoformat(timespec="seconds")
 
-# 1. Fix internati table
+# 1. Fix internati table — overlay correction, raw_text IMMUTABLE
+# Aggiorna il campo normalizzato (luogo_nascita) ma NON raw_text
 conn.execute("UPDATE internati SET luogo_nascita = 'Nibbiano (Piacenza)' WHERE id = 22808")
-conn.execute("UPDATE internati SET raw_text = REPLACE(raw_text, 'Nibbiaño (Bergamo)', 'Nibbiano (Piacenza)') WHERE id = 22808")
 conn.execute("UPDATE internati SET review_reason = 'Divergenza fonti: italiane=Belgrado, Asse=Grecia. Confermata Grecia. Luogo nascita corretto: Nibbiano (Piacenza) non Bergamo.' WHERE id = 22808")
 
-# 2. Fix entita table
+# Registra la correzione come overlay in entity_variants (non tocca raw_text)
+conn.execute("""
+    INSERT OR REPLACE INTO entity_variants
+        (entity_type, entity_id, field_name, original_value, variant_value, variant_type, origin, confidence, verified, created_at)
+    VALUES ('internati', 22808, 'luogo_nascita', 'Nibbiaño (Bergamo)', 'Nibbiano (Piacenza)', 'correction', 'manual_review', 1.0, 1, ?)
+""", (now,))
+
+# 2. Fix entita table — aggiorna luogo normalizzato, non contesto originale
 conn.execute("UPDATE entita SET luogo = 'Nibbiano (Piacenza)' WHERE fonte_tabella = 'internati' AND fonte_id = 22808")
-conn.execute("UPDATE entita SET contesto = REPLACE(contesto, 'Nibbiaño (Bergamo)', 'Nibbiano (Piacenza)') WHERE fonte_tabella = 'internati' AND fonte_id = 22808")
+# Registra anche variant per entita.contesto
+conn.execute("""
+    INSERT OR REPLACE INTO entity_variants
+        (entity_type, entity_id, field_name, original_value, variant_value, variant_type, origin, confidence, verified, created_at)
+    VALUES ('entita', NULL, 'contesto', 'Nibbiaño (Bergamo)', 'Nibbiano (Piacenza)', 'correction', 'manual_review', 1.0, 1, ?)
+""", (now,))
 
 conn.commit()
 

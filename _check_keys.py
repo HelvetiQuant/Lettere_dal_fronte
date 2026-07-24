@@ -19,6 +19,6 @@ keys = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "MISTRAL_API_KEY",
 for k in keys:
     val = os.environ.get(k) or env.get(k, "")
     if val:
-        print(f"  {k}: YES ({val[:8]}...)")
+        print(f"  {k}: YES (configured, {len(val)} chars)")
     else:
         print(f"  {k}: NO")

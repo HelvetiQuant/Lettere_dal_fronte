@@ -91,7 +91,12 @@ def _init_tables():
 # ─── Helper ────────────────────────────────────────────────────────────────────
 
 def _normalize_name(name: str) -> str:
-    return re.sub(r'\s+', ' ', name.strip().lower())
+    """Chiave normalizzata per dedup research_subjects.
+
+    Delega a ``indexing_rules.normalize_match_key`` (regole Antenati/FamilySearch).
+    """
+    from indexing_rules import normalize_match_key
+    return normalize_match_key(name)
 
 
 def _detect_subject_type(query: str) -> str:

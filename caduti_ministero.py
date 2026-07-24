@@ -11,6 +11,7 @@ import requests
 import urllib3
 from datetime import datetime
 from database import get_conn
+from indexing_rules import titlecase_name, clean_toponym, is_empty_value
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -84,6 +85,15 @@ def _save_record(item: dict):
     try:
         nominativo = item.get("nominativoePaternita", "")
         cognome, nome = _parse_nominativo(nominativo)
+        cognome = titlecase_name(cognome) if cognome else ""
+        nome = titlecase_name(nome) if nome else ""
+        paternita = titlecase_name(item.get("paternita", "")) if item.get("paternita") else ""
+        maternita = titlecase_name(item.get("maternita", "")) if item.get("maternita") else ""
+        comune_nascita = clean_toponym(item.get("comuneNascita", ""))
+        luogo_sepoltura = clean_toponym(item.get("luogoSepoltura", ""))
+        nazione_decesso = item.get("nazioneDecesso", "")
+        if is_empty_value(nazione_decesso):
+            nazione_decesso = ""
         scheda_url = f"https://www.difesa.it/assets/albooro/{item.get('codiceVolume','')}/{item.get('pagina','')}.jpg"
         conn.execute(
             """INSERT OR IGNORE INTO caduti_ministero
@@ -93,10 +103,10 @@ def _save_record(item: dict):
                 scheda_url, elaborato_il)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (item.get("id"), cognome, nome, nominativo,
-             item.get("paternita", ""), item.get("maternita", ""),
+             paternita, maternita,
              item.get("dataNascita", ""), item.get("dataDecesso", ""),
-             item.get("provinciaNascita", ""), item.get("comuneNascita", ""),
-             item.get("nazioneDecesso", ""), item.get("luogoSepoltura", ""),
+             item.get("provinciaNascita", ""), comune_nascita,
+             nazione_decesso, luogo_sepoltura,
              item.get("codiceVolume"), item.get("pagina"), item.get("sub"),
              scheda_url, datetime.now().isoformat()),
         )

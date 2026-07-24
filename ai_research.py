@@ -22,7 +22,7 @@ except ImportError:
 
 PROVIDERS = {
     "gpt": {"label": "OpenAI GPT-4o-mini", "model": "gpt-4o-mini"},
-    "mistral": {"label": "Mistral Large", "model": "mistral-large-latest"},
+    "mistral": {"label": "Mistral Small", "model": "mistral-small-latest"},
     "perplexity": {"label": "Perplexity Sonar", "model": "sonar"},
     "claude": {"label": "Anthropic Claude Sonnet", "model": "claude-sonnet-4-5-20250929"},
 }

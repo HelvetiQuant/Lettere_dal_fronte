@@ -1,16 +1,19 @@
 """Information Retrieval Layer per IMI Extractor.
 
 Tre funzioni core:
-1. search_entities()  - Full-Text Search con BM25 ranking su FTS5
+1. search_entities()  - Full-Text Search con BM25 ranking su FTS5 (SQLite) o tsvector (PostgreSQL)
 2. get_entity_network() - Graph traversal via recursive CTE su entita'/collegamenti
 3. get_entity_full_context() - Deep-dive: risolve dinamicamente il record sorgente
 
-Usa solo sqlite3 nativo. Nessun DB esterno.
+Supporta SQLite (FTS5) e PostgreSQL (tsvector + GIN) trasparentemente.
 """
+import os
 import sqlite3
 from typing import List, Dict, Optional, Any
 from database import get_conn, DB_PATH, get_fonti_risorse_by_fonte_id
 from scraper_service import scrape_if_stale
+
+_USE_POSTGRES = bool(os.environ.get("DATABASE_URL", "").startswith("postgresql"))
 
 
 # ─── Helper ───────────────────────────────────────────────────────────
@@ -21,13 +24,21 @@ def _row_to_dict(row: sqlite3.Row) -> Dict:
 
 def _normalize_query(query_string: str) -> str:
     """Normalizza la query per FTS5: aggiunge prefix matching (*) se manca.
-    Gestisce query vuote o con soli spazi."""
-    query_string = query_string.strip()
+
+    Applica le regole Antenati/FamilySearch (sez. 1.4.6, 1.3.1.1.4): rimuove i
+    titoli iniziali ("signor", "don"...) e i token-placeholder di campo vuoto
+    ("N.N.", "sconosciuto"...) che non aiutano il matching. Gestisce query vuote.
+    """
+    from indexing_rules import strip_titles, is_empty_value
+
+    query_string = strip_titles((query_string or "").strip())
     if not query_string:
         return ""
     tokens = query_string.split()
     normalized = []
     for t in tokens:
+        if is_empty_value(t):
+            continue
         if not t.endswith("*") and not t.endswith('"'):
             normalized.append(t + "*")
         else:
@@ -42,7 +53,7 @@ def search_entities(
     limit: int = 10,
     tipo: Optional[str] = None,
 ) -> List[Dict]:
-    """Cerca entita' con FTS5 + BM25 ranking.
+    """Cerca entita' con FTS (BM25 su SQLite, tsvector ranking su PostgreSQL).
 
     Args:
         query_string: testo da cercare (es. "Rossi Mario", "Agrigento", "deceduto 1945")
@@ -58,35 +69,66 @@ def search_entities(
 
     conn = get_conn()
     try:
-        if tipo:
-            sql = """
-                SELECT e.id as entita_id, e.tipo, e.valore, e.cognome, e.nome,
-                       e.luogo, e.contesto, e.fonte_tabella, e.fonte_id,
-                       bm25(idx_entita_search) as rank
-                FROM idx_entita_search
-                JOIN entita e ON e.id = idx_entita_search.entita_id
-                WHERE idx_entita_search MATCH ?
-                  AND idx_entita_search.tipo = ?
-                ORDER BY rank
-                LIMIT ?
-            """
-            rows = conn.execute(sql, (normalized, tipo, limit)).fetchall()
+        if _USE_POSTGRES:
+            # PostgreSQL: use tsvector with plainto_tsquery
+            # Remove FTS5 prefix wildcards (*) for tsquery
+            clean_q = normalized.replace("*", "").strip()
+            if not clean_q:
+                return []
+            if tipo:
+                sql = """
+                    SELECT e.id as entita_id, e.tipo, e.valore, e.cognome, e.nome,
+                           e.luogo, e.contesto, e.fonte_tabella, e.fonte_id,
+                           ts_rank(e.search_vector, plainto_tsquery('simple', %s)) as rank
+                    FROM entita e
+                    WHERE e.search_vector @@ plainto_tsquery('simple', %s)
+                      AND e.tipo = %s
+                    ORDER BY rank DESC
+                    LIMIT %s
+                """
+                rows = conn.execute(sql, (clean_q, clean_q, tipo, limit)).fetchall()
+            else:
+                sql = """
+                    SELECT e.id as entita_id, e.tipo, e.valore, e.cognome, e.nome,
+                           e.luogo, e.contesto, e.fonte_tabella, e.fonte_id,
+                           ts_rank(e.search_vector, plainto_tsquery('simple', %s)) as rank
+                    FROM entita e
+                    WHERE e.search_vector @@ plainto_tsquery('simple', %s)
+                    ORDER BY rank DESC
+                    LIMIT %s
+                """
+                rows = conn.execute(sql, (clean_q, clean_q, limit)).fetchall()
         else:
-            sql = """
-                SELECT e.id as entita_id, e.tipo, e.valore, e.cognome, e.nome,
-                       e.luogo, e.contesto, e.fonte_tabella, e.fonte_id,
-                       bm25(idx_entita_search) as rank
-                FROM idx_entita_search
-                JOIN entita e ON e.id = idx_entita_search.entita_id
-                WHERE idx_entita_search MATCH ?
-                ORDER BY rank
-                LIMIT ?
-            """
-            rows = conn.execute(sql, (normalized, limit)).fetchall()
+            # SQLite: FTS5 with BM25
+            if tipo:
+                sql = """
+                    SELECT e.id as entita_id, e.tipo, e.valore, e.cognome, e.nome,
+                           e.luogo, e.contesto, e.fonte_tabella, e.fonte_id,
+                           bm25(idx_entita_search) as rank
+                    FROM idx_entita_search
+                    JOIN entita e ON e.id = idx_entita_search.entita_id
+                    WHERE idx_entita_search MATCH ?
+                      AND idx_entita_search.tipo = ?
+                    ORDER BY rank
+                    LIMIT ?
+                """
+                rows = conn.execute(sql, (normalized, tipo, limit)).fetchall()
+            else:
+                sql = """
+                    SELECT e.id as entita_id, e.tipo, e.valore, e.cognome, e.nome,
+                           e.luogo, e.contesto, e.fonte_tabella, e.fonte_id,
+                           bm25(idx_entita_search) as rank
+                    FROM idx_entita_search
+                    JOIN entita e ON e.id = idx_entita_search.entita_id
+                    WHERE idx_entita_search MATCH ?
+                    ORDER BY rank
+                    LIMIT ?
+                """
+                rows = conn.execute(sql, (normalized, limit)).fetchall()
 
         return [_row_to_dict(r) for r in rows]
-    except sqlite3.OperationalError as e:
-        print(f"Errore FTS5: {e}")
+    except (sqlite3.OperationalError, Exception) as e:
+        print(f"Errore FTS: {e}")
         return []
     finally:
         conn.close()
@@ -528,10 +570,15 @@ def get_fonti_risorse_for_entity(
 # ─── Utility: statistiche indice ──────────────────────────────────────
 
 def get_fts_stats() -> Dict:
-    """Ritorna statistiche sull'indice FTS5 e sulle entita'."""
+    """Ritorna statistiche sull'indice FTS e sulle entita'."""
     conn = get_conn()
     try:
-        fts_count = conn.execute("SELECT COUNT(*) FROM idx_entita_search").fetchone()[0]
+        if _USE_POSTGRES:
+            fts_count = conn.execute(
+                "SELECT COUNT(*) FROM entita WHERE search_vector IS NOT NULL"
+            ).fetchone()[0]
+        else:
+            fts_count = conn.execute("SELECT COUNT(*) FROM idx_entita_search").fetchone()[0]
         entita_count = conn.execute("SELECT COUNT(*) FROM entita").fetchone()[0]
         coll_count = conn.execute("SELECT COUNT(*) FROM collegamenti").fetchone()[0]
 

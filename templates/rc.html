@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Percorso Riconoscimenti — Lettere dal Fronte</title>
+<link rel="stylesheet" href="/shared/components.css">
+<style>
+.tag-accent { background: #e8f0f7; color: #2a5c8a; }
+.tag-accent-2 { background: #e8f0f7; color: #1e4466; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// PERCORSO RICONOSCIMENTI — Frontend SPA
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const API = '/api/rc';
+
+function getAuthHeaders() {
+  return { 'Content-Type': 'application/json' };
+}
+
+let state = {
+  user: null,
+  view: 'login',
+  dashboard: null,
+  candidates: [],
+  candidateTotal: 0,
+  candidatePage: 0,
+  selectedCandidate: null,
+  candidateTab: 'dati',
+  recognitionTypes: [],
+  auditEntries: [],
+  filters: {},
+  modal: null,
+  toast: null,
+  discoverQuery: '',
+  discoverResults: [],
+  discoverTotal: 0,
+  discoverLoading: false,
+  discoverFilterSource: '',
+  discoverFilterConflict: '',
+  discoverFilterFate: '',
+  redCrossQuery: '',
+  redCrossSource: 'all',
+  redCrossResults: [],
+  redCrossLoading: false,
+  redCrossDetail: null,
+  compliancePolicies: [],
+  complianceDecisions: [],
+  complianceReviewQueue: [],
+  complianceTab: 'policies',
+  users: [],
+  userError: null,
+  userLoading: false,
+  dashboardError: null,
+  candidatesError: null,
+};
+
+// ─── API helpers ─────────────────────────────────────────────────────────────
+
+async function api(path, opts = {}) {
+  const r = await fetch(`${API}${path}`, {
+    headers: { 'Content-Type': 'application/json', ...opts.headers },
+    ...opts,
+  });
+  if (r.status === 401) { state.user = null; state.view = 'login'; render(); throw new Error('Non autenticato'); }
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({ detail: r.statusText }));
+    throw new Error(err.detail || 'Errore');
+  }
+  return r;
+}
+
+async function apiJson(path, opts = {}) {
+  const r = await api(path, opts);
+  return r.json();
+}
+
+async function apiLogin(username, password) {
+  const r = await fetch(`${API}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  if (!r.ok) throw new Error('Credenziali non valide');
+  return r.json();
+}
+
+async function apiLogout() {
+  await fetch(`${API}/auth/logout`, { method: 'POST' });
+}
+
+// ─── Toast ───────────────────────────────────────────────────────────────────
+
+function toast(msg, type = 'info') {
+  state.toast = { msg, type };
+  render();
+  const duration = type === 'error' ? 8000 : type === 'success' ? 4000 : 3000;
+  setTimeout(() => { state.toast = null; render(); }, duration);
+}
+
+// ─── State helpers ───────────────────────────────────────────────────────────
+
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function stateTag(stato) {
+  const cls = stato === 'BOZZA' ? 'tag-bozza' :
+    stato.startsWith('PRATICA_ARCHIVIATA') || stato === 'RICONOSCIMENTO_CONCESSO' || stato === 'PRATICA_RESPINTA' ? 'tag-terminal' :
+    stato.includes('NON_') || stato.includes('INSUFFICIENTE') ? 'tag-error' :
+    'tag-progress';
+  return `<span class="tag ${cls}">${stato.replace(/_/g, ' ')}</span>`;
+}
+
+function roleBadge(role) {
+  return `<span class="badge badge-${role}">${role}</span>`;
+}
+
+// ─── Views ───────────────────────────────────────────────────────────────────
+
+async function checkAuth() {
+  try {
+    const me = await apiJson('/auth/me');
+    state.user = me;
+    state.view = 'dashboard';
+  } catch {
+    state.user = null;
+    state.view = 'login';
+  }
+}
+
+async function loadDashboard() {
+  state.dashboardError = null;
+  render();
+  try {
+    const [basic, ext] = await Promise.all([
+      apiJson('/dashboard'),
+      apiJson('/dashboard-ext').catch(() => ({})),
+    ]);
+    state.dashboard = { ...basic, ...ext };
+  } catch (err) {
+    state.dashboardError = err.message;
+  }
+  render();
+}
+
+async function discoverSearch() {
+  const q = state.discoverQuery.trim();
+  if (q.length < 2) return;
+  state.discoverLoading = true;
+  render();
+  try {
+    let url = `/discover-candidates?q=${encodeURIComponent(q)}&limit=50`;
+    if (state.discoverFilterSource) url += `&source=${encodeURIComponent(state.discoverFilterSource)}`;
+    if (state.discoverFilterConflict) url += `&conflict=${encodeURIComponent(state.discoverFilterConflict)}`;
+    if (state.discoverFilterFate) url += `&fate=${encodeURIComponent(state.discoverFilterFate)}`;
+    const data = await apiJson(url);
+    state.discoverResults = data.results;
+    state.discoverTotal = data.total;
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+  state.discoverLoading = false;
+  render();
+}
+
+async function importCandidate(source, recordId) {
+  try {
+    const data = await apiJson(`/discover-candidates/${source}/${recordId}/import`, { method: 'POST' });
+    if (data.already_exists) {
+      toast(`Candidato gia' presente (id ${data.candidate_id})`, 'info');
+    } else {
+      toast(`Candidato importato (id ${data.candidate_id})`, 'success');
+    }
+    await loadCandidate(data.candidate_id);
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+function setDiscoverQuery(v) {
+  state.discoverQuery = v;
+}
+
+function discoverKeyDown(e) {
+  if (e.key === 'Enter') discoverSearch();
+}
+
+async function loadCandidates(page = 0) {
+  state.candidatesError = null;
+  const params = new URLSearchParams({ limit: 100, offset: page * 100 });
+  for (const [k, v] of Object.entries(state.filters)) if (v) params.set(k, v);
+  try {
+    const data = await apiJson(`/candidates?${params}`);
+    state.candidates = data.candidates;
+    state.candidateTotal = data.total;
+    state.candidatePage = page;
+  } catch (err) {
+    state.candidatesError = err.message;
+  }
+  render();
+}
+
+async function loadCandidate(cid) {
+  const [cand, sources, events, assessments, family, contacts, adminCases, history, aiAnalyses, descContacts, extPractices, practiceDocs] = await Promise.all([
+    apiJson(`/candidates/${cid}`),
+    apiJson(`/candidates/${cid}/sources`),
+    apiJson(`/candidates/${cid}/events`),
+    apiJson(`/candidates/${cid}/assessments`),
+    apiJson(`/candidates/${cid}/family`),
+    apiJson(`/candidates/${cid}/contacts`),
+    apiJson(`/candidates/${cid}/admin-cases`),
+    apiJson(`/candidates/${cid}/history`),
+    apiJson(`/candidates/${cid}/ai-analyses`),
+    apiJson(`/candidates/${cid}/descendant-contacts`).catch(() => ({ contacts: [] })),
+    apiJson(`/candidates/${cid}/practices`).catch(() => ({ practices: [] })),
+    apiJson(`/candidates/${cid}/practice-documents`).catch(() => ({ documents: [] })),
+  ]);
+  state.selectedCandidate = { ...cand, sources: sources.sources, events: events.events,
+    assessments: assessments.assessments, family: family.persons,
+    contacts: contacts.contacts, adminCases: adminCases.cases, history: history.transitions,
+    aiAnalyses: aiAnalyses.analyses,
+    descContacts: descContacts.contacts || [],
+    extPractices: extPractices.practices || [],
+    practiceDocs: practiceDocs.documents || [] };
+  state.view = 'candidate-detail';
+  render();
+}
+
+async function loadRecognitionTypes() {
+  const data = await apiJson('/recognition-types');
+  state.recognitionTypes = data.types;
+  render();
+}
+
+async function loadAudit() {
+  const data = await apiJson('/audit?limit=200');
+  state.auditEntries = data.entries;
+  render();
+}
+
+// ─── Actions ─────────────────────────────────────────────────────────────────
+
+async function doLogin(e) {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  try {
+    await apiLogin(form.get('username'), form.get('password'));
+    await checkAuth();
+    await loadDashboard();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+async function doLogout() {
+  await apiLogout();
+  state.user = null;
+  state.view = 'login';
+  render();
+}
+
+async function createCandidate(e) {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const data = Object.fromEntries(form);
+  try {
+    const r = await apiJson('/candidates', { method: 'POST', body: JSON.stringify(data) });
+    toast(`Candidato creato (id: ${r.id})`, 'success');
+    state.modal = null;
+    await loadCandidate(r.id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function doTransition(cid, newState) {
+  const motivazione = prompt('Motivazione della transazione:');
+  if (!motivazione) return;
+  try {
+    await apiJson(`/candidates/${cid}/transition`, {
+      method: 'POST', body: JSON.stringify({ new_state: newState, motivazione }),
+    });
+    toast('Stato aggiornato', 'success');
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function generateDossier(cid) {
+  try {
+    const r = await fetch(`${API}/candidates/${cid}/dossier`, { method: 'POST' });
+    if (!r.ok) throw new Error('Errore generazione');
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `fascicolo_${cid}.pdf`; a.click();
+    URL.revokeObjectURL(url);
+    toast('Fascicolo generato', 'success');
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function createSource(cid, e) {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const data = Object.fromEntries(form);
+  try {
+    await apiJson(`/candidates/${cid}/sources`, { method: 'POST', body: JSON.stringify(data) });
+    toast('Fonte aggiunta', 'success');
+    state.modal = null;
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function runAiAnalysis(cid) {
+  try {
+    toast('Analisi AI in corso...', 'info');
+    const r = await fetch(`${API}/candidates/${cid}/ai-analysis`, { method: 'POST' });
+    if (!r.ok) { const e = await r.json().catch(()=>({detail:'Errore'})); throw new Error(e.detail); }
+    const data = await r.json();
+    toast(`Analisi completata: ${data.onorificenze_analizzate?.length||0} onorificenze valutate`, 'success');
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function createAssessment(cid, e) {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const data = Object.fromEntries(form);
+  try {
+    await apiJson(`/candidates/${cid}/assessments`, { method: 'POST', body: JSON.stringify(data) });
+    toast('Valutazione creata', 'success');
+    state.modal = null;
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function createFamilyPerson(cid, e) {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const data = Object.fromEntries(form);
+  try {
+    await apiJson(`/candidates/${cid}/family`, { method: 'POST', body: JSON.stringify(data) });
+    toast('Persona aggiunta', 'success');
+    state.modal = null;
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+// ─── Render ──────────────────────────────────────────────────────────────────
+
+function render() {
+  const app = document.getElementById('app');
+  if (state.view === 'login' && !state.user) {
+    app.innerHTML = renderLogin();
+    return;
+  }
+  if (!state.user) { checkAuth(); return; }
+  app.innerHTML = renderLayout() + renderContent() + renderModal() + renderToast();
+  attachHandlers();
+}
+
+function renderLogin() {
+  return `<div class="login-container">
+    <div class="login-box">
+      <h1>Percorso Riconoscimenti</h1>
+      <p class="text-muted text-sm mb-2" style="text-align:center">Lettere dal Fronte</p>
+      <div class="disclaimer">
+        <strong>Avvertenza:</strong> Questo sistema identifica potenziali candidati a riconoscimenti.
+        Nessuna garanzia di concessione. Verifica amministrativa necessaria.
+      </div>
+      <form onsubmit="doLogin(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input class="input" name="username" required autofocus>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input class="input" name="password" type="password" required>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%">Accedi</button>
+      </form>
+      <p class="text-xs text-muted mt-2" style="text-align:center">
+        Credenziali di default: admin / admin
+      </p>
+    </div>
+  </div>`;
+}
+
+function renderLayout() {
+  const u = state.user;
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'discover', label: 'Scopri' },
+    { id: 'red-cross', label: 'Croce Rossa' },
+    { id: 'external-sources', label: 'Fonti Esterne' },
+    { id: 'candidates', label: 'Candidati' },
+    { id: 'recognition-types', label: 'Catalogo' },
+    { id: 'compliance', label: 'Conformità' },
+    { id: 'audit', label: 'Audit' },
+  ];
+  if (u.role === 'admin') navItems.push({ id: 'users', label: 'Utenti' });
+  return `<header>
+    <div class="header-inner">
+      <span class="font-heading font-bold" style="font-size:16px">Percorso Riconoscimenti</span>
+      <nav>
+        ${navItems.map(n => `<a class="${state.view === n.id || state.view === 'candidate-detail' && n.id === 'candidates' ? 'active' : ''}" onclick="setView('${n.id}')">${n.label}</a>`).join('')}
+      </nav>
+      <div class="user-area">
+        <span class="text-sm">${esc(u.full_name || u.username)}</span>
+        ${roleBadge(u.role)}
+        <button class="btn btn-secondary btn-sm" onclick="doLogout()">Esci</button>
+      </div>
+    </div>
+  </header>`;
+}
+
+function setView(v) {
+  state.view = v;
+  if (v === 'dashboard') loadDashboard();
+  else if (v === 'candidates') loadCandidates();
+  else if (v === 'external-sources') loadExternalSources(1);
+  else if (v === 'recognition-types') loadRecognitionTypes();
+  else if (v === 'audit') loadAudit();
+  else if (v === 'red-cross') render();
+  else if (v === 'compliance') loadCompliance();
+  else if (v === 'users') loadUsers();
+  else render();
+}
+
+function renderContent() {
+  switch (state.view) {
+    case 'dashboard': return renderDashboard();
+    case 'discover': return renderDiscover();
+    case 'red-cross': return renderRedCross();
+    case 'external-sources': return renderExternalSources();
+    case 'external-record-detail': return renderExternalRecordDetail();
+    case 'candidates': return renderCandidates();
+    case 'candidate-detail': return renderCandidateDetail();
+    case 'recognition-types': return renderRecognitionTypes();
+    case 'compliance': return renderCompliance();
+    case 'audit': return renderAudit();
+    case 'users': return renderUsers();
+    default: return '<main><p>Sezione non disponibile</p></main>';
+  }
+}
+
+function renderDiscover() {
+  const results = state.discoverResults || [];
+  const total = state.discoverTotal || 0;
+  const loading = state.discoverLoading;
+  const sourceColors = {
+    'internati': 'tag tag-accent',
+    'caduti_albooro': 'tag tag-accent-2',
+    'decorati_nastroazzurro': 'tag tag-success',
+    'decorati': 'tag tag-success',
+    'caduti_ministero': 'tag tag-warning',
+    'caduti_cwgc': 'tag tag-neutral',
+    'fonti_indice': 'tag tag-neutral',
+    'fondi_archivistici': 'tag tag-neutral',
+    'documenti_nara_t315': 'tag tag-neutral',
+  };
+  return `<main>
+    <h1>Scopri Candidati</h1>
+    <p class="text-muted text-sm mb-2">Cerca in tutti i database storici: IMI (20K), Albo d'Oro (342K), Nastro Azzurro (280K), Caduti Ministero (162K), CWGC (506K), decorati ISTORECO, fonti d'archivio, fondi archivistici, NARA T315.</p>
+    <div class="card mb-2">
+      <div class="flex gap-sm" style="align-items:center;flex-wrap:wrap">
+        <input class="input" style="flex:1;min-width:200px" placeholder="Cerca per cognome, nome, grado, luogo..." value="${esc(state.discoverQuery)}" oninput="setDiscoverQuery(this.value)" onkeydown="discoverKeyDown(event)">
+        <select class="input" style="width:auto" onchange="state.discoverFilterSource=this.value">
+          <option value="">Tutte le fonti</option>
+          <option value="internati" ${state.discoverFilterSource==='internati'?'selected':''}>IMI</option>
+          <option value="caduti_albooro" ${state.discoverFilterSource==='caduti_albooro'?'selected':''}>Albo d'Oro</option>
+          <option value="decorati_nastroazzurro" ${state.discoverFilterSource==='decorati_nastroazzurro'?'selected':''}>Nastro Azzurro</option>
+          <option value="decorati" ${state.discoverFilterSource==='decorati'?'selected':''}>Decorati ISTORECO</option>
+          <option value="caduti_ministero" ${state.discoverFilterSource==='caduti_ministero'?'selected':''}>Caduti Ministero</option>
+          <option value="caduti_cwgc" ${state.discoverFilterSource==='caduti_cwgc'?'selected':''}>CWGC</option>
+          <option value="fonti_indice" ${state.discoverFilterSource==='fonti_indice'?'selected':''}>Fonti indice</option>
+          <option value="fondi_archivistici" ${state.discoverFilterSource==='fondi_archivistici'?'selected':''}>Fondi archivistici</option>
+          <option value="documenti_nara_t315" ${state.discoverFilterSource==='documenti_nara_t315'?'selected':''}>NARA T315</option>
+        </select>
+        <select class="input" style="width:auto" onchange="state.discoverFilterConflict=this.value">
+          <option value="">Tutti i conflitti</option>
+          <option value="ww1" ${state.discoverFilterConflict==='ww1'?'selected':''}>1ª GM</option>
+          <option value="ww2" ${state.discoverFilterConflict==='ww2'?'selected':''}>2ª GM</option>
+        </select>
+        <select class="input" style="width:auto" onchange="state.discoverFilterFate=this.value">
+          <option value="">Tutte le sorti</option>
+          <option value="deceduto" ${state.discoverFilterFate==='deceduto'?'selected':''}>Deceduto</option>
+          <option value="disperso" ${state.discoverFilterFate==='disperso'?'selected':''}>Disperso</option>
+          <option value="rimpatriato" ${state.discoverFilterFate==='rimpatriato'?'selected':''}>Rimpatriato</option>
+        </select>
+        <button class="btn btn-primary" onclick="discoverSearch()" ${loading?'disabled':''}>${loading?'Ricerca...':'Cerca'}</button>
+      </div>
+    </div>
+    ${results.length > 0 ? `
+      <p class="text-sm text-muted mb-1">${total} risultati trovati</p>
+      <div class="card">
+        <table>
+          <thead><tr><th>Fonte</th><th>Nominativo</th><th>Dati</th><th>Stato</th><th>Azione</th></tr></thead>
+          <tbody>
+            ${results.map(r => {
+              const d = r.data || {};
+              const nom = d.cognome || d.nominativo || d.name || d.titolo || d.fondo || '';
+              const nome = d.nome || '';
+              const details = [
+                d.grado || d.rank, d.reparto || d.regiment,
+                d.luogo_nascita || d.comune_nascita,
+                d.luogo_internamento, d.luogo_morte || d.luogo_sepoltura || d.cemetery,
+                d.sorte, d.decorazione, d.anno_decorazione || d.anno_morte,
+                d.guerra, d.archivio,
+              ].filter(Boolean).join(', ');
+              const tag = sourceColors[r.source] || 'tag tag-neutral';
+              return `<tr>
+                <td><span class="${tag}">${esc(r.source_label)}</span></td>
+                <td><strong>${esc(nom)}</strong>${nome ? ' ' + esc(nome) : ''}</td>
+                <td class="text-sm text-muted">${esc(details)}</td>
+                <td>${r.already_imported ? `<span class="tag tag-success">Importato (id ${r.rc_candidate_id})</span>` : '<span class="tag tag-warning">Nuovo</span>'}</td>
+                <td>${r.already_imported
+                  ? `<button class="btn btn-secondary btn-sm" onclick="loadCandidate(${r.rc_candidate_id})">Apri</button>`
+                  : `<button class="btn btn-primary btn-sm" onclick="importCandidate('${r.source}', ${r.record_id})">Importa</button>`
+                }</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    ` : (state.discoverQuery && !loading ? '<div class="card"><p class="text-muted">Nessun risultato. Prova un altro termine.</p></div>' : '')}
+  </main>`;
+}
+
+function renderDashboard() {
+  const d = state.dashboard;
+  if (state.dashboardError) return `<main><div class="warning-box">Errore caricamento dashboard: ${esc(state.dashboardError)}</div><button class="btn btn-secondary" onclick="loadDashboard()">Riprova</button></main>`;
+  if (!d) return '<main><p>Caricamento...</p></main>';
+  const states = d.by_state || {};
+  const kpi = (val, label, color) => `<div class="stat-card" style="${color?`border-left:4px solid ${color}`:''}"><div class="stat-value">${val ?? 0}</div><div class="stat-label">${label}</div></div>`;
+  return `<main>
+    <h1>Dashboard</h1>
+    <div class="grid grid-4 mb-2">
+      ${kpi(d.total_candidates, 'Candidati totali')}
+      ${kpi(d.total_sources, 'Fonti')}
+      ${kpi(d.total_recognition_types, 'Tipi riconoscimento')}
+      ${kpi(d.total_practices, 'Pratiche estese')}
+      ${kpi(d.total_practice_docs, 'Documenti pratica')}
+      ${kpi(d.total_descendant_contacts, 'Contatti discendenti')}
+      ${kpi(d.total_institutional_contacts, 'Contatti istituzionali')}
+      ${kpi(d.total_communications, 'Comunicazioni')}
+      ${kpi(d.total_ai_analyses, 'Analisi AI generate')}
+      ${kpi(d.total_admin_cases, 'Pratiche legacy')}
+      ${kpi(d.total_descendant_cases, 'Casi discendenti')}
+      ${kpi(d.riconoscimenti_concessi, 'Riconoscimenti concessi', 'var(--color-success)')}
+    </div>
+
+    <h2>KPI Operativi</h2>
+    <div class="grid grid-4 mb-2">
+      ${kpi(d.candidati_da_verificare, 'Da verificare', 'var(--color-warning)')}
+      ${kpi(d.riconoscimenti_concessi, 'Concessi', 'var(--color-success)')}
+      ${kpi(d.valutazioni_storiche_pendenti, 'Val. storiche pend.', 'var(--color-warning)')}
+      ${kpi(d.valutazioni_ammin_pendenti, 'Val. ammin. pend.', 'var(--color-warning)')}
+      ${kpi(d.discendenti_da_contattare, 'Discendenti da contattare', 'var(--color-accent)')}
+      ${kpi(d.contatti_in_attesa_risposta, 'In attesa risposta', 'var(--color-accent)')}
+      ${kpi(d.documenti_mancanti, 'Documenti mancanti', 'var(--color-danger)')}
+      ${kpi(d.comunicazioni_bozza, 'Comunicazioni bozza', 'var(--color-neutral-400)')}
+    </div>
+
+    <h2>Pratiche</h2>
+    <div class="grid grid-4 mb-2">
+      ${kpi(d.pratiche_da_completare, 'In preparazione', 'var(--color-warning)')}
+      ${kpi(d.pratiche_pronte_revisione, 'Pronte revisione', 'var(--color-accent)')}
+      ${kpi(d.pratiche_trasmesse, 'Trasmesse', 'var(--color-accent)')}
+      ${kpi(d.pratiche_concluse, 'Concluse', 'var(--color-success)')}
+      ${kpi(d.richieste_integrazione_aperte, 'Integrazioni aperte', 'var(--color-danger)')}
+      ${kpi(d.pratiche_respinte, 'Respinte', 'var(--color-danger)')}
+      ${kpi(d.scadenze_imminenti, 'Scadenze <30gg', 'var(--color-danger)')}
+      ${kpi(d.comunicazioni_da_approvare, 'Comm. da approvare', 'var(--color-warning)')}
+    </div>
+
+    <h2>Candidati per stato</h2>
+    <div class="card">
+      ${Object.keys(states).length === 0 ? '<p class="text-muted">Nessun candidato</p>' :
+        `<table><tbody>${Object.entries(states).map(([s, c]) =>
+          `<tr><td>${stateTag(s)}</td><td>${c}</td><td><button class="btn btn-secondary btn-sm" onclick="state.filters.stato='${s}'; setView('candidates')">Vedi</button></td></tr>`
+        ).join('')}</tbody></table>`}
+    </div>
+    <h2>Candidati recenti</h2>
+    <div class="card">
+      ${(d.recent_candidates || []).length === 0 ? '<p class="text-muted">Nessun candidato</p>' :
+        `<table><thead><tr><th>ID</th><th>Nome</th><th>Stato</th><th>Aggiornato</th></tr></thead>
+        <tbody>${d.recent_candidates.map(c => `<tr style="cursor:pointer" onclick="loadCandidate(${c.id})">
+          <td>${c.id}</td><td>${esc(c.cognome)} ${esc(c.nome)}</td><td>${stateTag(c.stato)}</td><td class="text-sm text-muted">${c.updated_at?.slice(0,19)}</td>
+        </tr>`).join('')}</tbody></table>`}
+    </div>
+  </main>`;
+}
+
+function renderCandidates() {
+  if (state.candidatesError) return `<main><div class="warning-box">Errore caricamento candidati: ${esc(state.candidatesError)}</div><button class="btn btn-secondary" onclick="loadCandidates(0)">Riprova</button></main>`;
+  return `<main>
+    <div class="flex justify-between items-center mb-2">
+      <h1>Candidati (${state.candidateTotal})</h1>
+      <button class="btn btn-primary" onclick="state.modal='new-candidate'; render()">+ Nuovo candidato</button>
+    </div>
+    <div class="card mb-2">
+      <div class="flex flex-wrap gap-sm">
+        <input class="input" style="max-width:200px" placeholder="Cerca..." oninput="state.filters.q=this.value" onkeydown="if(event.key==='Enter')loadCandidates(0)">
+        <select class="input" style="max-width:180px" onchange="state.filters.stato=this.value; loadCandidates(0)">
+          <option value="">Tutti gli stati</option>
+          ${['BOZZA','IDENTIFICAZIONE_IN_CORSO','IDENTITA_VERIFICATA','FONTI_IN_VERIFICA','VALUTAZIONE_STORICA','VALUTAZIONE_AMMINISTRATIVA','PROCEDURA_POTENZIALMENTE_PRATICABILE','PROCEDURA_NON_PRATICABILE','RICERCA_DISCENDENTI_AUTORIZZATA','FASCICOLO_IN_PREPARAZIONE','PRATICA_TRASMESSA','RICONOSCIMENTO_CONCESSO','PRATICA_ARCHIVIATA'].map(s => `<option value="${s}">${s.replace(/_/g,' ')}</option>`).join('')}
+        </select>
+        <select class="input" style="max-width:150px" onchange="state.filters.conflitto=this.value; loadCandidates(0)">
+          <option value="">Tutti i conflitti</option>
+          <option value="1GM">1GM</option><option value="2GM">2GM</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      ${state.candidates.length === 0 ? '<p class="text-muted">Nessun candidato. Clicca "Nuovo candidato" per iniziare.</p>' :
+        `<table><thead><tr><th>ID</th><th>Cognome</th><th>Nome</th><th>Grado</th><th>Conflitto</th><th>Stato</th><th>Aggiornato</th></tr></thead>
+        <tbody>${state.candidates.map(c => `<tr style="cursor:pointer" onclick="loadCandidate(${c.id})">
+          <td>${c.id}</td><td>${esc(c.cognome)}</td><td>${esc(c.nome)}</td><td>${esc(c.grado||'—')}</td><td>${esc(c.conflitto||'—')}</td><td>${stateTag(c.stato)}</td><td class="text-sm text-muted">${c.updated_at?.slice(0,19)}</td>
+        </tr>`).join('')}</tbody></table>`}
+      <div class="flex justify-between items-center mt-2" style="padding:8px 16px">
+        <span class="text-sm text-muted">Pagina ${state.candidatePage + 1} di ${Math.ceil(state.candidateTotal / 100)} (${state.candidateTotal} totali)</span>
+        <div class="flex gap-sm">
+          <button class="btn btn-secondary btn-sm" ${state.candidatePage === 0 ? 'disabled' : ''} onclick="loadCandidates(${state.candidatePage - 1})">← Precedente</button>
+          <button class="btn btn-secondary btn-sm" ${(state.candidatePage + 1) * 100 >= state.candidateTotal ? 'disabled' : ''} onclick="loadCandidates(${state.candidatePage + 1})">Successiva →</button>
+        </div>
+      </div>
+    </div>
+  </main>`;
+}
+
+function renderCandidateDetail() {
+  const c = state.selectedCandidate;
+  if (!c) return '<main><p>Caricamento...</p></main>';
+  const tabs = ['dati','fonti','eventi','valutazione','ai','genealogia','contatti','pratiche','cronologia'];
+  return `<main>
+    <div class="flex justify-between items-center mb-2">
+      <div>
+        <h1>${esc(c.cognome)} ${esc(c.nome)}</h1>
+        <p class="text-muted text-sm">${esc(c.grado||'')} ${esc(c.reparto||'')} · ${esc(c.conflitto||'')}</p>
+      </div>
+      <div class="flex gap-sm">
+        ${stateTag(c.stato)}
+        <button class="btn btn-secondary btn-sm" onclick="runAiAnalysis(${c.id})">🤖 Analisi AI</button>
+        <button class="btn btn-secondary btn-sm" onclick="generateDossier(${c.id})">📄 Fascicolo PDF</button>
+      </div>
+    </div>
+    <div class="warning-box"><strong>Riconoscimento ipotizzato.</strong> Nessuna garanzia di concessione. Procedura potenzialmente praticabile, verifica amministrativa necessaria.</div>
+    <div class="tabs">
+      ${tabs.map(t => `<div class="tab ${state.candidateTab===t?'active':''}" onclick="state.candidateTab='${t}'; render()">${t.charAt(0).toUpperCase()+t.slice(1)}</div>`).join('')}
+    </div>
+    ${renderCandidateTab(c)}
+  </main>`;
+}
+
+function renderCandidateTab(c) {
+  switch (state.candidateTab) {
+    case 'dati': return renderCandidateData(c);
+    case 'fonti': return renderCandidateSources(c);
+    case 'eventi': return renderCandidateEvents(c);
+    case 'valutazione': return renderCandidateAssessments(c);
+    case 'ai': return renderCandidateAI(c);
+    case 'genealogia': return renderCandidateFamily(c);
+    case 'contatti': return renderCandidateContacts(c);
+    case 'pratiche': return renderCandidateAdminCases(c);
+    case 'cronologia': return renderCandidateHistory(c);
+    default: return '';
+  }
+}
+
+function renderCandidateData(c) {
+  const fields = [
+    ['Nome','nome'],['Cognome','cognome'],['Varianti','varianti_nominativi'],
+    ['Paternità','paternita'],['Maternità','maternita'],
+    ['Data nascita','data_nascita'],['Luogo nascita','luogo_nascita'],
+    ['Data morte','data_morte'],['Luogo morte','luogo_morte'],
+    ['Comune residenza','comune_residenza'],['Grado','grado'],['Reparto','reparto'],
+    ['Forza armata','forza_armata'],['Matricola','matricola'],['Conflitto','conflitto'],
+    ['Livello certezza','livello_certezza'],
+  ];
+  const transitions = c.valid_transitions || [];
+  return `<div class="card">
+    <h3>Dati anagrafici</h3>
+    <div class="grid grid-2">
+      ${fields.map(([l,f]) => `<div><label>${l}</label><div>${esc(c[f]||'—')}</div></div>`).join('')}
+    </div>
+    ${c.note_interne ? `<div class="mt-2"><label>Note interne</label><div>${esc(c.note_interne)}</div></div>` : ''}
+  </div>
+  ${transitions.length > 0 ? `<div class="card">
+    <h3>Cambio stato</h3>
+    <p class="text-sm text-muted mb-1">Stato attuale: ${stateTag(c.stato)}</p>
+    <div class="flex flex-wrap gap-sm">
+      ${transitions.map(t => `<button class="btn btn-secondary btn-sm" onclick="doTransition(${c.id},'${t}')">${t.replace(/_/g,' ')}</button>`).join('')}
+    </div>
+  </div>` : '<div class="card"><p class="text-muted">Stato terminale. Nessuna transizione disponibile.</p></div>'}`;
+}
+
+function renderCandidateSources(c) {
+  return `<div class="card">
+    <div class="flex justify-between items-center mb-1">
+      <h3>Fonti (${c.sources.length})</h3>
+      <button class="btn btn-primary btn-sm" onclick="state.modal='new-source'; render()">+ Aggiungi fonte</button>
+    </div>
+    ${c.sources.length === 0 ? '<p class="text-muted">Nessuna fonte registrata</p>' :
+      `<table><thead><tr><th>Titolo</th><th>Tipo</th><th>Ente</th><th>Attendibilità</th><th>Verifica</th></tr></thead>
+      <tbody>${c.sources.map(s => `<tr>
+        <td>${esc(s.titolo)}</td><td>${esc(s.tipologia||'—')}</td><td>${esc(s.ente_conservatore||'—')}</td>
+        <td>${esc(s.livello_attendibilita||'—')}</td><td>${esc(s.stato_verifica||'—')}</td>
+      </tr>`).join('')}</tbody></table>`}
+  </div>`;
+}
+
+function renderCandidateEvents(c) {
+  return `<div class="card">
+    <h3>Eventi storici (${c.events.length})</h3>
+    ${c.events.length === 0 ? '<p class="text-muted">Nessun evento registrato</p>' :
+      c.events.map(e => `<div class="card" style="background:var(--color-neutral-100)">
+        <h3>${esc(e.tipo_evento||'Evento')}</h3>
+        <p class="text-sm"><strong>Periodo:</strong> ${esc(e.data_inizio||'')} — ${esc(e.data_fine||'')}</p>
+        <p class="text-sm"><strong>Luogo:</strong> ${esc(e.luogo||'—')}</p>
+        ${e.descrizione_verificata ? `<p class="mt-1">${esc(e.descrizione_verificata)}</p>` : ''}
+        ${e.condotta_individuale ? `<p class="text-sm mt-1"><strong>Condotta:</strong> ${esc(e.condotta_individuale)}</p>` : ''}
+        <p class="text-xs text-muted mt-1">Attendibilità: ${esc(e.grado_attendibilita||'—')}</p>
+      </div>`).join('')}
+  </div>`;
+}
+
+function renderCandidateAI(c) {
+  const analyses = c.aiAnalyses || [];
+  if (analyses.length === 0) {
+    return `<div class="card">
+      <div class="flex justify-between items-center mb-1">
+        <h3>Analisi AI</h3>
+        <button class="btn btn-primary btn-sm" onclick="runAiAnalysis(${c.id})">🤖 Genera analisi AI</button>
+      </div>
+      <p class="text-muted">Nessuna analisi AI generata. Clicca "Genera analisi AI" per ottenere:</p>
+      <ul class="text-sm mt-1" style="list-style:disc;padding-left:20px">
+        <li>Processo logico di identificazione del candidato</li>
+        <li>Fonti consultate con livello di attendibilita'</li>
+        <li>Onorificenze ipotizzabili con % stimata di concessione</li>
+        <li>Precedenti storici (attribuzioni simili nel DB)</li>
+        <li>Fattori favorevoli e sfavorevoli</li>
+        <li>Raccomandazioni operative</li>
+      </ul>
+    </div>`;
+  }
+  const latest = analyses[0];
+  let honorsHtml = '';
+  try {
+    const honors = JSON.parse(latest.onorificenze_ipotizzabili_json || '[]');
+    const pcts = JSON.parse(latest.percentuali_stimate_json || '[]');
+    const precedenti = JSON.parse(latest.precedenti_attribuzioni_json || '[]');
+    honorsHtml = honors.map((h, i) => {
+      const pct = pcts[i] || {};
+      const prec = precedenti[i] || {};
+      const pctVal = pct.percentuale || 0;
+      const confClass = pct.confidenza === 'alto' ? 'text-success' : pct.confidenza === 'medio' ? 'text-warning' : 'text-danger';
+      const precData = prec.precedenti || {};
+      return `<div class="card" style="background:var(--color-neutral-100)">
+        <div class="flex justify-between items-center">
+          <h3>${esc(h.onorificenza)}</h3>
+          <div style="text-align:right">
+            <span class="font-bold ${confClass}" style="font-size:20px">${pctVal}%</span>
+            <p class="text-xs text-muted">confidenza: ${esc(pct.confidenza||'basso')}</p>
+          </div>
+        </div>
+        <p class="text-sm"><strong>Autorita':</strong> ${esc(h.autorita||'—')}</p>
+        <p class="text-sm"><strong>Base normativa:</strong> ${esc(h.base_normativa||'—')}</p>
+        <div class="grid grid-2 mt-1">
+          <div>
+            <p class="text-xs font-bold">Precedenti storici</p>
+            <p class="text-xs">Albo d'Oro: ${precData.albo_oro||0} | Nastro Azzurro: ${precData.nastro_azzurro||0}</p>
+            <p class="text-xs">Totale decorati: ${precData.total_decorati||0}</p>
+          </div>
+          <div>
+            <p class="text-xs font-bold">Confidenza: ${esc(pct.confidenza||'basso')}</p>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { honorsHtml = '<p class="text-muted">Errore parsing dati</p>'; }
+
+  let fontiHtml = '';
+  try {
+    const fonti = JSON.parse(latest.fonti_consultate_json || '[]');
+    fontiHtml = fonti.map(f => `<tr>
+      <td>${esc(f.titolo||'')}</td><td>${esc(f.tipologia||'')}</td><td>${esc(f.ente||'')}</td>
+      <td>${esc(f.attendibilita||'')}</td><td>${esc(f.stato_verifica||'')}</td>
+    </tr>`).join('');
+  } catch(e) {}
+
+  return `<div class="card">
+    <div class="flex justify-between items-center mb-1">
+      <h3>Analisi AI — ${analyses.length} analisi${analyses.length>1?' salvate':''}</h3>
+      <button class="btn btn-primary btn-sm" onclick="runAiAnalysis(${c.id})">🤖 Rigenera analisi</button>
+    </div>
+    <p class="text-xs text-muted">Modello: ${esc(latest.modello_ai||'')} v${esc(latest.versione_modello||'')} | Generata: ${esc(latest.created_at?.slice(0,19)||'')}</p>
+  </div>
+
+  <div class="card">
+    <h3>Riepilogo esecutivo</h3>
+    <div style="white-space:pre-wrap;font-size:13px;line-height:1.6">${esc(latest.riepilogo_esecutivo||'')}</div>
+  </div>
+
+  <div class="card">
+    <h3>Onorificenze ipotizzabili con % stimata di concessione</h3>
+    <div class="warning-box"><strong>AVVERTENZA:</strong> Le percentuali sono stime basate su criteri oggettivi e precedenti storici. Non costituiscono garanzia di concessione.</div>
+    ${honorsHtml || '<p class="text-muted">Nessuna onorificenza ipotizzabile</p>'}
+  </div>
+
+  <div class="card">
+    <h3>Processo logico dettagliato</h3>
+    <div style="white-space:pre-wrap;font-size:12px;line-height:1.6;font-family:monospace;background:var(--color-neutral-100);padding:16px;border-radius:6px;max-height:500px;overflow-y:auto">${esc(latest.processo_logico_dettagliato||'')}</div>
+  </div>
+
+  ${fontiHtml ? `<div class="card">
+    <h3>Fonti consultate</h3>
+    <table><thead><tr><th>Titolo</th><th>Tipo</th><th>Ente</th><th>Attendibilita'</th><th>Verifica</th></tr></thead>
+    <tbody>${fontiHtml}</tbody></table>
+  </div>` : ''}
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Fattori favorevoli</h3>
+      <div style="white-space:pre-wrap;font-size:12px;color:var(--color-success)">${esc(latest.fattori_favorevoli||'Nessuno')}</div>
+    </div>
+    <div class="card">
+      <h3>Fattori sfavorevoli</h3>
+      <div style="white-space:pre-wrap;font-size:12px;color:var(--color-danger)">${esc(latest.fattori_sfavorevoli||'Nessuno')}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Raccomandazioni operative</h3>
+    <div style="white-space:pre-wrap;font-size:13px;line-height:1.6">${esc(latest.raccomandazioni||'')}</div>
+  </div>`;
+}
+
+function renderCandidateAssessments(c) {
+  return `<div class="card">
+    <div class="flex justify-between items-center mb-1">
+      <h3>Valutazioni (${c.assessments.length})</h3>
+      <button class="btn btn-primary btn-sm" onclick="state.modal='new-assessment'; render()">+ Nuova valutazione</button>
+    </div>
+    ${c.assessments.length === 0 ? '<p class="text-muted">Nessuna valutazione</p>' :
+      c.assessments.map(a => `<div class="card" style="background:var(--color-neutral-100)">
+        <h3>${esc(a.recognition_name||'Riconoscimento')}</h3>
+        <p class="text-sm"><strong>Riconoscimento ipotizzato:</strong> ${esc(a.riconoscimento_ipotizzato||'—')}</p>
+        <p class="text-sm"><strong>Procedura:</strong> ${esc(a.procedura||'—')}</p>
+        ${a.requisiti_presenti ? `<p class="text-sm"><strong>Requisiti presenti:</strong> ${esc(a.requisiti_presenti)}</p>` : ''}
+        ${a.requisiti_mancanti ? `<p class="text-sm"><strong>Requisiti mancanti:</strong> ${esc(a.requisiti_mancanti)}</p>` : ''}
+        ${a.motivazione ? `<p class="text-sm mt-1">${esc(a.motivazione)}</p>` : ''}
+        <p class="text-xs text-muted mt-1">Valutatore: ${esc(a.valutatore||'—')} | Storica: ${a.validazione_storica?'✓':'✗'} | Amm.va: ${a.validazione_amministrativa?'✓':'✗'}</p>
+      </div>`).join('')}
+  </div>`;
+}
+
+function renderCandidateFamily(c) {
+  return `<div class="card">
+    <div class="flex justify-between items-center mb-1">
+      <h3>Genealogia (${c.family.length})</h3>
+      <button class="btn btn-primary btn-sm" onclick="state.modal='new-family'; render()">+ Aggiungi persona</button>
+    </div>
+    <div class="disclaimer">I dati delle persone viventi sono limitati per privacy. Date e luoghi di nascita non esposti per persone viventi o non accertate.</div>
+    ${c.family.length === 0 ? '<p class="text-muted">Nessuna persona registrata</p>' :
+      `<table><thead><tr><th>Nome</th><th>Cognome</th><th>Rapporto</th><th>Stato vita</th><th>Certezza</th></tr></thead>
+      <tbody>${c.family.map(f => `<tr>
+        <td>${esc(f.nome||'—')}</td><td>${esc(f.cognome||'—')}</td><td>${esc(f.rapporto_candidato||'—')}</td>
+        <td>${esc(f.stato_vita||'—')}</td><td>${esc(f.livello_certezza||'—')}</td>
+      </tr>`).join('')}</tbody></table>`}
+  </div>`;
+}
+
+function renderCandidateContacts(c) {
+  const dc = c.descContacts || [];
+  let html = `<div class="card mb-2">
+    <div class="flex justify-between items-center mb-1">
+      <h3>Contatti discendenti (${dc.length})</h3>
+      <button class="btn btn-primary btn-sm" onclick="state.modal='add-desc-contact'; render()">+ Aggiungi contatto</button>
+    </div>`;
+  if (dc.length === 0) {
+    html += '<p class="text-muted">Nessun contatto discendente registrato</p>';
+  } else {
+    html += `<table><thead><tr><th>Nome</th><th>Parentela</th><th>Email</th><th>Telefono</th><th>Verifica</th><th>Consenso</th><th>Fonte</th><th>Azioni</th></tr></thead>
+    <tbody>${dc.map(ct => `<tr>
+      <td>${esc(ct.cognome||'')} ${esc(ct.nome||'')}</td>
+      <td>${esc(ct.rapporto_parentela_presunto||'—')}</td>
+      <td>${esc(ct.email||'—')}</td>
+      <td>${esc(ct.telefono||'—')}</td>
+      <td>${esc(ct.stato_verifica||'—')}</td>
+      <td>${ct.consenso_acquisito ? '✓' : '✗'}</td>
+      <td class="text-sm">${esc(ct.fonte_contatto||'—')}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="editDescContact(${ct.id})">✎</button>
+          <button class="btn btn-secondary btn-sm" onclick="deleteDescContact(${ct.id},${c.id})">🗑</button></td>
+    </tr>`).join('')}</tbody></table>`;
+  }
+  html += `</div>
+  <div class="card">
+    <h3>Tentativi di contatto (${c.contacts.length})</h3>
+    ${c.contacts.length === 0 ? '<p class="text-muted">Nessun tentativo registrato</p>' :
+      `<table><thead><tr><th>Canale</th><th>Intermediario</th><th>Esito</th><th>Approvato</th><th>Data</th></tr></thead>
+      <tbody>${c.contacts.map(ct => `<tr>
+        <td>${esc(ct.canale||'—')}</td><td>${esc(ct.intermediario||'—')}</td><td>${esc(ct.esito||'—')}</td>
+        <td>${ct.approvato?'✓':'✗'}</td><td class="text-sm">${esc(ct.created_at?.slice(0,19)||'')}</td>
+      </tr>`).join('')}</tbody></table>`}
+  </div>`;
+  return html;
+}
+
+function renderCandidateAdminCases(c) {
+  const ep = c.extPractices || [];
+  const docs = c.practiceDocs || [];
+  let html = `<div class="card mb-2">
+    <div class="flex justify-between items-center mb-1">
+      <h3>Pratiche estese (${ep.length})</h3>
+      <button class="btn btn-primary btn-sm" onclick="state.modal='add-practice'; render()">+ Nuova pratica</button>
+    </div>`;
+  if (ep.length === 0) {
+    html += '<p class="text-muted">Nessuna pratica estesa registrata</p>';
+  } else {
+    html += ep.map(p => `<div class="card" style="background:var(--color-neutral-100);margin-bottom:8px">
+      <h3>${esc(p.recognition_name||'Pratica')} — ${esc(p.stato||'')}</h3>
+      <p class="text-sm"><strong>Protocollo:</strong> ${esc(p.protocollo||'—')} | <strong>Ente:</strong> ${esc(p.institutional_ente||'—')}</p>
+      <p class="text-sm"><strong>Data apertura:</strong> ${esc(p.data_apertura||'—')} | <strong>Termine:</strong> ${esc(p.termine_previsto||'—')}</p>
+      ${p.esito ? `<p class="text-sm"><strong>Esito:</strong> ${esc(p.esito)}</p>` : ''}
+    </div>`).join('');
+  }
+  html += `</div>`;
+  html += `<div class="card mb-2">
+    <div class="flex justify-between items-center mb-1">
+      <h3>Documenti di pratica (${docs.length})</h3>
+      <button class="btn btn-primary btn-sm" onclick="state.modal='upload-doc'; render()">+ Carica documento</button>
+    </div>`;
+  if (docs.length === 0) {
+    html += '<p class="text-muted">Nessun documento caricato</p>';
+  } else {
+    html += `<table><thead><tr><th>Titolo</th><th>Categoria</th><th>OCR</th><th>Verifica</th><th>Caricato il</th><th>Azioni</th></tr></thead>
+    <tbody>${docs.map(d => {
+      const ocrBadge = d.ocr_status === 'done' ? '<span class="tag tag-success">OCR</span>' : d.ocr_status === 'error' ? '<span class="tag tag-error">Err</span>' : '<span class="tag tag-neutral">—</span>';
+      return `<tr>
+      <td>${esc(d.titolo||'')}</td>
+      <td>${esc(d.categoria_documentale||'—')}</td>
+      <td>${ocrBadge}</td>
+      <td>${esc(d.stato_verifica||'—')}</td>
+      <td class="text-sm">${esc(d.data_caricamento?.slice(0,19)||'—')}</td>
+      <td>
+          <button class="btn btn-secondary btn-sm" onclick="ocrDoc(${d.id},${c.id})" title="Esegui OCR Mistral">🔍</button>
+          ${d.ocr_status === 'done' ? `<button class="btn btn-secondary btn-sm" onclick="viewOcr(${d.id})" title="Visualizza testo OCR">📄</button>` : ''}
+          <button class="btn btn-secondary btn-sm" onclick="verifyDoc(${d.id})" title="Verifica">✓</button>
+          <button class="btn btn-secondary btn-sm" onclick="archiveDoc(${d.id})" title="Archivia">📦</button>
+          <button class="btn btn-secondary btn-sm" onclick="deleteDoc(${d.id},${c.id})" title="Elimina">🗑</button></td>
+    </tr>`;
+    }).join('')}</tbody></table>`;
+  }
+  html += `</div>`;
+  html += `<div class="card">
+    <h3>Pratiche amministrative legacy (${c.adminCases.length})</h3>
+    ${c.adminCases.length === 0 ? '<p class="text-muted">Nessuna pratica legacy</p>' :
+      c.adminCases.map(ac => `<div class="card" style="background:var(--color-neutral-100)">
+        <h3>${esc(ac.recognition_name||'Pratica')}</h3>
+        <p class="text-sm"><strong>Ente:</strong> ${esc(ac.ente_destinatario||'—')} — ${esc(ac.ufficio||'')}</p>
+        <p class="text-sm"><strong>Protocollo:</strong> ${esc(ac.protocollo||'—')}</p>
+        <p class="text-sm"><strong>Stato:</strong> ${esc(ac.stato||'—')}</p>
+        ${ac.esito ? `<p class="text-sm"><strong>Esito:</strong> ${esc(ac.esito)}</p>` : ''}
+      </div>`).join('')}
+  </div>`;
+  return html;
+}
+
+function renderCandidateHistory(c) {
+  return `<div class="card">
+    <h3>Cronologia transizioni (${c.history.length})</h3>
+    ${c.history.length === 0 ? '<p class="text-muted">Nessuna transizione</p>' :
+      `<table><thead><tr><th>Data</th><th>Da</th><th>A</th><th>Autore</th><th>Motivazione</th></tr></thead>
+      <tbody>${c.history.map(h => `<tr>
+        <td class="text-sm">${esc(h.data_ora?.slice(0,19)||'')}</td><td>${stateTag(h.stato_precedente)}</td><td>${stateTag(h.stato_successivo)}</td>
+        <td>${esc(h.autore||'')}</td><td class="text-sm">${esc(h.motivazione||'')}</td>
+      </tr>`).join('')}</tbody></table>`}
+  </div>`;
+}
+
+function renderRecognitionTypes() {
+  return `<main>
+    <h1>Catalogo Riconoscimenti</h1>
+    <div class="card">
+      ${state.recognitionTypes.length === 0 ? '<p class="text-muted">Nessun tipo</p>' :
+        `<table><thead><tr><th>Denominazione</th><th>Categoria</th><th>Autorità</th><th>Base normativa</th><th>Procedura</th></tr></thead>
+        <tbody>${state.recognitionTypes.map(r => `<tr>
+          <td>${esc(r.denominazione)}</td><td>${esc(r.categoria||'—')}</td><td>${esc(r.autorita_concedente||'—')}</td>
+          <td class="text-sm">${esc(r.base_normativa||'—')}</td><td>${r.procedura_attiva==='da_verificare'?'<span class="text-warning">DA VERIFICARE</span>':esc(r.procedura_attiva)}</td>
+        </tr>`).join('')}</tbody></table>`}
+    </div>
+  </main>`;
+}
+
+function renderAudit() {
+  return `<main>
+    <h1>Registro Audit</h1>
+    <div class="card">
+      ${state.auditEntries.length === 0 ? '<p class="text-muted">Nessun evento</p>' :
+        `<table><thead><tr><th>Data</th><th>Utente</th><th>Azione</th><th>Entità</th><th>ID</th><th>Motivazione</th></tr></thead>
+        <tbody>${state.auditEntries.map(a => `<tr>
+          <td class="text-sm">${esc(a.created_at?.slice(0,19)||'')}</td><td>${esc(a.username||'')}</td><td>${esc(a.azione)}</td>
+          <td>${esc(a.entita)}</td><td>${a.entita_id||'—'}</td><td class="text-sm">${esc(a.motivazione||'')}</td>
+        </tr>`).join('')}</tbody></table>`}
+    </div>
+  </main>`;
+}
+
+// ─── Users (admin) ───────────────────────────────────────────────────────────
+
+async function loadUsers() {
+  state.userLoading = true;
+  state.userError = null;
+  render();
+  try {
+    const data = await apiJson('/auth/users');
+    state.users = data.users || [];
+  } catch (err) {
+    state.userError = err.message;
+  }
+  state.userLoading = false;
+  render();
+}
+
+async function createUser(e) {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const data = Object.fromEntries(form);
+  try {
+    const r = await apiJson('/auth/users', { method: 'POST', body: JSON.stringify(data) });
+    toast(`Utente creato (id: ${r.user.id})`, 'success');
+    state.modal = null;
+    await loadUsers();
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function updateUserRole(uid, newRole) {
+  try {
+    await api(`/auth/users/${uid}`, { method: 'PUT', body: JSON.stringify({ role: newRole }) });
+    toast('Ruolo aggiornato', 'success');
+    await loadUsers();
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function toggleUserActive(uid, currentActive) {
+  try {
+    await api(`/auth/users/${uid}`, { method: 'PUT', body: JSON.stringify({ is_active: currentActive ? 0 : 1 }) });
+    toast(currentActive ? 'Utente disattivato' : 'Utente attivato', 'success');
+    await loadUsers();
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function deleteUserAccount(uid) {
+  if (!confirm('Eliminare definitivamente questo utente?')) return;
+  try {
+    await api(`/auth/users/${uid}`, { method: 'DELETE' });
+    toast('Utente eliminato', 'success');
+    await loadUsers();
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+function renderUsers() {
+  const users = state.users || [];
+  const loading = state.userLoading;
+  const error = state.userError;
+  if (loading) return '<main><p>Caricamento...</p></main>';
+  if (error) return `<main><div class="warning-box">Errore: ${esc(error)}</div><button class="btn btn-secondary" onclick="loadUsers()">Riprova</button></main>`;
+  return `<main>
+    <div class="flex justify-between items-center mb-2">
+      <h1>Utenti (${users.length})</h1>
+      <button class="btn btn-primary" onclick="state.modal='new-user'; render()">+ Nuovo utente</button>
+    </div>
+    <div class="card">
+      ${users.length === 0 ? '<p class="text-muted">Nessun utente registrato</p>' : `
+        <table><thead><tr><th>ID</th><th>Username</th><th>Nome</th><th>Ruolo</th><th>Email</th><th>Attivo</th><th>Creato</th><th>Azioni</th></tr></thead>
+        <tbody>${users.map(u => `<tr>
+          <td>${u.id}</td>
+          <td><strong>${esc(u.username)}</strong></td>
+          <td>${esc(u.full_name || '—')}</td>
+          <td>${roleBadge(u.role)}</td>
+          <td class="text-sm">${esc(u.email || '—')}</td>
+          <td>${u.is_active ? '<span class="tag tag-success">Sì</span>' : '<span class="tag tag-error">No</span>'}</td>
+          <td class="text-sm text-muted">${esc(u.created_at?.slice(0,19) || '—')}</td>
+          <td>
+            <select class="input" style="width:auto;display:inline-block" onchange="updateUserRole(${u.id},this.value)">
+              ${['admin','ricercatore','revisore','genealogista','operatore','discendente'].map(r => `<option value="${r}" ${u.role===r?'selected':''}>${r}</option>`).join('')}
+            </select>
+            <button class="btn btn-secondary btn-sm" onclick="toggleUserActive(${u.id},${u.is_active?1:0})">${u.is_active?'Disattiva':'Attiva'}</button>
+            ${u.id !== state.user.id ? `<button class="btn btn-danger btn-sm" onclick="deleteUserAccount(${u.id})">Elimina</button>` : ''}
+          </td>
+        </tr>`).join('')}</tbody></table>
+      `}
+    </div>
+  </main>`;
+}
+
+// ─── Modals ──────────────────────────────────────────────────────────────────
+
+function renderModal() {
+  if (!state.modal) return '';
+  const c = state.selectedCandidate;
+  switch (state.modal) {
+    case 'new-candidate': return renderModalForm('Nuovo candidato', createCandidate, [
+      ['nome','Nome',true],['cognome','Cognome',true],['grado','Grado'],['reparto','Reparto'],
+      ['conflitto','Conflitto'],['forza_armata','Forza armata'],['matricola','Matricola'],
+      ['data_nascita','Data nascita'],['luogo_nascita','Luogo nascita'],
+      ['data_morte','Data morte'],['luogo_morte','Luogo morte'],
+      ['paternita','Paternità'],['maternita','Maternita'],
+      ['comune_residenza','Comune residenza'],['varianti_nominativi','Varianti nominativi'],
+      ['note_interne','Note interne'],
+    ]);
+    case 'new-source': return renderModalForm('Nuova fonte', (e) => createSource(c.id, e), [
+      ['titolo','Titolo',true],['tipologia','Tipologia'],['ente_conservatore','Ente conservatore'],
+      ['fondo','Fondo'],['busta','Busta'],['fascicolo','Fascicolo'],
+      ['segnatura_completa','Segnatura completa'],['url_istituzionale','URL istituzionale'],
+      ['data_documento','Data documento'],['trascrizione','Trascrizione'],
+    ]);
+    case 'new-assessment': return renderModalForm('Nuova valutazione', (e) => createAssessment(c.id, e), [
+      ['riconoscimento_ipotizzato','Riconoscimento ipotizzato',true],
+      ['recognition_type_id','ID tipo riconoscimento'],
+      ['procedura','Procedura (praticabile/sospesa/non_praticabile/da_verificare)'],
+      ['requisiti_presenti','Requisiti presenti'],['requisiti_mancanti','Requisiti mancanti'],
+      ['elementi_contrari','Elementi contrari'],['motivazione','Motivazione'],
+    ]);
+    case 'new-family': return renderModalForm('Nuova persona famiglia', (e) => createFamilyPerson(c.id, e), [
+      ['nome','Nome'],['cognome','Cognome'],['rapporto_candidato','Rapporto con candidato'],
+      ['stato_vita','Stato vita (vivente/non_accertato/deceduto)'],
+      ['data_nascita','Data nascita'],['luogo_nascita','Luogo nascita'],['data_morte','Data morte'],
+      ['fonte_genealogica','Fonte genealogica'],['livello_certezza','Certezza (alto/medio/basso)'],
+    ]);
+    case 'add-desc-contact': return renderModalForm('Aggiungi contatto discendente', (e) => createDescContact(c.id, e), [
+      ['nome','Nome',true],['cognome','Cognome',true],['nome_precedente','Nome precedente'],
+      ['rapporto_parentela_presunto','Rapporto parentela (presunto)'],['rapporto_parentela_verificato','Rapporto parentela (verificato)'],
+      ['ramo_familiare','Ramo familiare'],['comune_residenza','Comune residenza'],
+      ['indirizzo_postale','Indirizzo postale'],['email','Email'],['pec','PEC'],['telefono','Telefono'],
+      ['altro_canale','Altro canale'],['profilo_pubblico_url','URL profilo pubblico'],
+      ['preferenza_contatto','Preferenza contatto'],['lingua','Lingua (default: it)'],
+      ['stato_verifica','Stato verifica (NON_VERIFICATO/DA_VERIFICARE/VERIFICATO)'],
+      ['fonte_contatto','Fonte contatto'],['url_fonte','URL fonte'],['titolo_pagina_fonte','Titolo pagina fonte'],
+      ['data_consultazione_fonte','Data consultazione fonte (YYYY-MM-DD)'],
+      ['data_reperimento','Data reperimento (YYYY-MM-DD)'],
+      ['livello_attendibilita','Attendibilità (da_verificare/buona/elevata)'],
+      ['consenso_acquisito','Consenso acquisito (1/0)'],['data_consenso','Data consenso'],['modalita_consenso','Modalità consenso'],
+      ['note','Note'],
+    ]);
+    case 'add-practice': return renderModalForm('Nuova pratica estesa', (e) => createExtPractice(c.id, e), [
+      ['recognition_type_id','ID tipo riconoscimento'],['descendant_contact_id','ID contatto discendente'],
+      ['institutional_contact_id','ID contatto istituzionale'],['protocollo','Protocollo'],
+      ['data_invio','Data invio (YYYY-MM-DD)'],['modalita_trasmissione','Modalità trasmissione'],
+      ['ufficio_assegnatario','Ufficio assegnatario'],['responsabile_procedimento','Responsabile procedimento'],
+      ['data_apertura','Data apertura (YYYY-MM-DD)'],['termine_previsto','Termine previsto (YYYY-MM-DD)'],
+      ['stato','Stato (in_preparazione/inviata/in_istruttoria/integrazione/conclusa/archiviata)'],
+      ['note_cerimonia','Note cerimonia'],
+    ]);
+    case 'upload-doc': return renderUploadDocForm(c.id);
+    case 'new-user': return renderModalForm('Nuovo utente', createUser, [
+      ['username','Username',true],['password','Password',true],
+      ['role','Ruolo (admin/ricercatore/revisore/genealogista/operatore/discendente)',true],
+      ['email','Email'],['full_name','Nome completo'],
+    ]);
+    default: return '';
+  }
+}
+
+function renderModalForm(title, onSubmit, fields) {
+  return `<div class="modal-overlay" onclick="if(event.target===this){state.modal=null;render()}">
+    <div class="modal">
+      <h2>${title}</h2>
+      <form onsubmit="${onSubmit.name}(event)">
+        ${fields.map(([name, label, req]) => `<div class="form-group">
+          <label>${label}${req?' *':''}</label>
+          <input class="input" name="${name}" ${req?'required':''}>
+        </div>`).join('')}
+        <div class="flex gap-sm mt-2">
+          <button class="btn btn-primary" type="submit">Salva</button>
+          <button class="btn btn-secondary" type="button" onclick="state.modal=null;render()">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
+}
+
+function renderToast() {
+  if (!state.toast) return '';
+  const color = state.toast.type === 'error' ? 'var(--color-danger)' :
+    state.toast.type === 'success' ? 'var(--color-success)' : 'var(--color-accent)';
+  return `<div style="position:fixed;bottom:20px;right:20px;background:${color};color:#fff;padding:12px 20px;border-radius:var(--radius-sm);z-index:200;font-size:14px">${esc(state.toast.msg)}</div>`;
+}
+
+function renderUploadDocForm(cid) {
+  const cats = ['FOGLIO_MATRICOLARE','RUOLO_ORGANICO','STATO_SERVIZIO','DECORAZIONI_PRECEDENTI','DOCUMENTO_IDENTITA','ATTO_NASCITA','ATTO_MORTE','CERTIFICATO_MORTE','SENTENZA','ALTRO'];
+  return `<div class="modal-overlay" onclick="if(event.target===this){state.modal=null;render()}">
+    <div class="modal">
+      <h2>Carica documento di pratica</h2>
+      <form onsubmit="uploadPracticeDoc(event, ${cid})" enctype="multipart/form-data">
+        <div class="form-group"><label>File *</label><input class="input" type="file" name="file" required></div>
+        <div class="form-group"><label>Titolo *</label><input class="input" name="titolo" required></div>
+        <div class="form-group"><label>Descrizione</label><input class="input" name="descrizione"></div>
+        <div class="form-group"><label>Categoria documentale *</label>
+          <select class="input" name="categoria_documentale" required>
+            ${cats.map(c => `<option value="${c}">${c}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label>ID pratica (opzionale)</label><input class="input" type="number" name="practice_id"></div>
+        <div class="form-group"><label>ID contatto discendente (opzionale)</label><input class="input" type="number" name="descendant_contact_id"></div>
+        <div class="form-group"><label>Data documento</label><input class="input" name="data_documento" placeholder="YYYY-MM-DD"></div>
+        <div class="form-group"><label>Ente produttore</label><input class="input" name="ente_produttore"></div>
+        <div class="form-group"><label>Fonte</label><input class="input" name="fonte"></div>
+        <div class="form-group"><label>Segnatura</label><input class="input" name="segnatura"></div>
+        <div class="form-group"><label>Protocollo</label><input class="input" name="protocollo"></div>
+        <div class="form-group"><label>Livello riservatezza</label>
+          <select class="input" name="livello_riservatezza">
+            <option value="operatore">Operatore</option>
+            <option value="discendente">Discendente</option>
+            <option value="pubblico">Pubblico</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Note</label><input class="input" name="note"></div>
+        <div class="flex gap-sm mt-2">
+          <button class="btn btn-primary" type="submit">Carica</button>
+          <button class="btn btn-secondary" type="button" onclick="state.modal=null;render()">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
+}
+
+// ─── Action functions: contacts, practices, documents ────────────────────────
+
+async function createDescContact(cid, e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const obj = {};
+  fd.forEach((v, k) => { if (v) obj[k] = v; });
+  if (obj.consenso_acquisito) obj.consenso_acquisito = parseInt(obj.consenso_acquisito);
+  try {
+    const r = await fetch(`${API}/candidates/${cid}/descendant-contacts`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      credentials: 'include', body: JSON.stringify(obj),
+    });
+    if (!r.ok) { const err = await r.json().catch(()=>({detail:'Errore'})); throw new Error(err.detail); }
+    toast('Contatto discendente aggiunto', 'success');
+    state.modal = null;
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function deleteDescContact(id, cid) {
+  if (!confirm('Eliminare questo contatto discendente?')) return;
+  try {
+    const r = await fetch(`${API}/descendant-contacts/${id}`, { method: 'DELETE', credentials: 'include' });
+    if (!r.ok) throw new Error('Errore eliminazione');
+    toast('Contatto eliminato', 'success');
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function editDescContact(id) {
+  const nuovoStato = prompt('Nuovo stato verifica (NON_VERIFICATO/DA_VERIFICARE/VERIFICATO):');
+  if (!nuovoStato) return;
+  try {
+    const r = await fetch(`${API}/descendant-contacts/${id}`, {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
+      credentials: 'include', body: JSON.stringify({ stato_verifica: nuovoStato }),
+    });
+    if (!r.ok) throw new Error('Errore aggiornamento');
+    toast('Contatto aggiornato', 'success');
+    const c = state.selectedCandidate;
+    if (c) await loadCandidate(c.id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function createExtPractice(cid, e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const obj = {};
+  fd.forEach((v, k) => { if (v) obj[k] = v; });
+  if (obj.recognition_type_id) obj.recognition_type_id = parseInt(obj.recognition_type_id);
+  if (obj.descendant_contact_id) obj.descendant_contact_id = parseInt(obj.descendant_contact_id);
+  if (obj.institutional_contact_id) obj.institutional_contact_id = parseInt(obj.institutional_contact_id);
+  try {
+    const r = await fetch(`${API}/candidates/${cid}/practices`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      credentials: 'include', body: JSON.stringify(obj),
+    });
+    if (!r.ok) { const err = await r.json().catch(()=>({detail:'Errore'})); throw new Error(err.detail); }
+    toast('Pratica creata', 'success');
+    state.modal = null;
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function uploadPracticeDoc(e, cid) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  try {
+    const r = await fetch(`${API}/candidates/${cid}/practice-documents`, {
+      method: 'POST', credentials: 'include', body: fd,
+    });
+    if (!r.ok) { const err = await r.json().catch(()=>({detail:'Errore'})); throw new Error(err.detail); }
+    toast('Documento caricato', 'success');
+    state.modal = null;
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function verifyDoc(id) {
+  const stato = prompt('Stato verifica (non_verificata/verificata/rifiutata):', 'verificata');
+  if (!stato) return;
+  try {
+    const r = await fetch(`${API}/practice-documents/${id}/verify`, {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
+      credentials: 'include', body: JSON.stringify({ stato_verifica: stato }),
+    });
+    if (!r.ok) throw new Error('Errore verifica');
+    toast('Documento verificato', 'success');
+    const c = state.selectedCandidate;
+    if (c) await loadCandidate(c.id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function archiveDoc(id) {
+  if (!confirm('Archiviare questo documento?')) return;
+  try {
+    const r = await fetch(`${API}/practice-documents/${id}/archive`, { method: 'PUT', credentials: 'include' });
+    if (!r.ok) throw new Error('Errore archiviazione');
+    toast('Documento archiviato', 'success');
+    const c = state.selectedCandidate;
+    if (c) await loadCandidate(c.id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function deleteDoc(id, cid) {
+  if (!confirm('Eliminare definitivamente questo documento?')) return;
+  try {
+    const r = await fetch(`${API}/practice-documents/${id}`, { method: 'DELETE', credentials: 'include' });
+    if (!r.ok) throw new Error('Errore eliminazione');
+    toast('Documento eliminato', 'success');
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function ocrDoc(id, cid) {
+  toast('OCR in corso...', 'info');
+  try {
+    const r = await fetch(`${API}/practice-documents/${id}/ocr`, { method: 'POST', credentials: 'include' });
+    if (!r.ok) {
+      const err = await r.text();
+      throw new Error(err || 'Errore OCR');
+    }
+    const data = await r.json();
+    toast(`OCR completato: ${data.pages} pagine, ${data.chars} caratteri`, 'success');
+    await loadCandidate(cid);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function viewOcr(id) {
+  try {
+    const r = await fetch(`${API}/practice-documents/${id}/ocr`, { credentials: 'include' });
+    if (!r.ok) throw new Error('Errore');
+    const data = await r.json();
+    if (!data.ocr_text) {
+      toast('Nessun testo OCR disponibile. Esegui prima OCR.', 'info');
+      return;
+    }
+    state.modal = { title: `OCR Documento #${id}`, body: `<pre style="white-space:pre-wrap;max-height:60vh;overflow:auto;font-size:13px;line-height:1.5">${esc(data.ocr_text)}</pre>` };
+    render();
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+// ─── Event handlers ──────────────────────────────────────────────────────────
+
+function attachHandlers() {
+  // Form handlers are inline via onsubmit attributes
+}
+
+// ─── Fonti Esterne CRI ────────────────────────────────────────────────────────
+
+async function loadExternalSources(page = 1) {
+  state.externalSources = state.externalSources || {};
+  state.externalSources.loading = true;
+  render();
+  try {
+    const params = new URLSearchParams({ page, page_size: 25 });
+    if (state.externalSourcesFilter) {
+      Object.entries(state.externalSourcesFilter).forEach(([k,v]) => { if (v) params.append(k, v); });
+    }
+    const res = await fetch(`/api/external-sources/records?${params}`, { headers: getAuthHeaders() });
+    if (!res.ok) throw new Error('Errore caricamento fonti esterne');
+    const data = await res.json();
+    state.externalSources = { ...data, loading: false };
+    render();
+  } catch (err) { toast(err.message, 'error'); state.externalSources.loading = false; render(); }
+}
+
+async function loadExternalRecordDetail(id) {
+  state.externalRecordDetail = { loading: true };
+  render();
+  try {
+    const res = await fetch(`/api/external-sources/records/${id}`, { headers: getAuthHeaders() });
+    if (!res.ok) throw new Error('Record non trovato');
+    const data = await res.json();
+    state.externalRecordDetail = data;
+
+    // Load children and parents
+    const [childrenRes, parentsRes] = await Promise.all([
+      fetch(`/api/external-sources/records/${id}/children`, { headers: getAuthHeaders() }),
+      fetch(`/api/external-sources/records/${id}/parents`, { headers: getAuthHeaders() }),
+    ]);
+    state.externalRecordChildren = childrenRes.ok ? await childrenRes.json() : [];
+    state.externalRecordParents = parentsRes.ok ? await parentsRes.json() : [];
+    render();
+  } catch (err) { toast(err.message, 'error'); state.externalRecordDetail = { loading: false }; render(); }
+}
+
+async function startExternalImport(provider) {
+  try {
+    const res = await fetch('/api/external-sources/import', {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: provider || 'cri_milano' }),
+    });
+    if (!res.ok) throw new Error('Errore avvio import');
+    toast('Import avviato in background', 'success');
+    setTimeout(() => pollImportStatus(provider || 'cri_milano'), 2000);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function pollImportStatus(provider) {
+  try {
+    const res = await fetch(`/api/external-sources/import/status?provider=${provider}`, { headers: getAuthHeaders() });
+    if (!res.ok) return;
+    const data = await res.json();
+    state.importStatus = data;
+    if (data.status === 'running' || data.status === 'discovering') {
+      setTimeout(() => pollImportStatus(provider), 3000);
+    }
+    render();
+  } catch (err) {}
+}
+
+async function generateMatches(recordId) {
+  try {
+    toast('Generazione candidati in corso...', 'info');
+    const res = await fetch(`/api/external-sources/records/${recordId}/generate-matches`, { method: 'POST', headers: getAuthHeaders() });
+    if (!res.ok) throw new Error('Errore generazione candidati');
+    const data = await res.json();
+    toast(`${data.generated} candidati generati`, 'success');
+    loadExternalRecordDetail(recordId);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function reviewExternalLink(linkId, reviewStatus, matchStatus) {
+  try {
+    const res = await fetch(`/api/external-sources/links/${linkId}/review`, {
+      method: 'PUT',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ review_status: reviewStatus, match_status: matchStatus }),
+    });
+    if (!res.ok) throw new Error('Errore revisione');
+    toast('Collegamento aggiornato', 'success');
+    if (state.externalRecordDetail) loadExternalRecordDetail(state.externalRecordDetail.id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function verifyExternalUrl(recordId) {
+  try {
+    const res = await fetch(`/api/external-sources/records/${recordId}/verify-url`, { method: 'POST', headers: getAuthHeaders() });
+    if (!res.ok) throw new Error('Errore verifica URL');
+    const data = await res.json();
+    toast(`URL ${data.reachable ? 'raggiungibile' : 'irraggiungibile'} (HTTP ${data.http_status})`, data.reachable ? 'success' : 'warning');
+    if (state.externalRecordDetail) loadExternalRecordDetail(state.externalRecordDetail.id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+function renderExternalSources() {
+  const data = state.externalSources || {};
+  const loading = data.loading;
+  const items = data.items || [];
+  const total = data.total || 0;
+  const importStatus = state.importStatus || {};
+
+  const levelColors = {
+    'fonds': 'tag tag-accent', 'subfonds': 'tag tag-accent-2',
+    'series': 'tag tag-success', 'subseries': 'tag tag-success',
+    'archival_unit': 'tag tag-warning', 'item': 'tag tag-neutral',
+  };
+
+  return `<main>
+    <div class="page-header">
+      <h1>Fonti Esterne — Croce Rossa Italiana</h1>
+      <p class="text-muted">Indice federato di metadati archivistici. I record rimangono risorse esterne.</p>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h3>Provider</h3>
+        <div class="flex gap-2 items-center mt-2">
+          <span class="tag tag-accent">CRI Milano (Archimista)</span>
+          <button class="btn btn-primary btn-sm" onclick="startExternalImport('cri_milano')">Avvia Import</button>
+          ${importStatus.status === 'running' || importStatus.status === 'discovering' ? `
+            <span class="text-sm text-muted">Stato: ${importStatus.status} — ${importStatus.processed || 0}/${importStatus.total || 0} (${importStatus.errors || 0} errori)</span>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-2 mb-4">
+      <input class="input flex-1" placeholder="Cerca per titolo, descrizione, segnatura..." id="extSearch" value="${state.externalSourcesFilter?.search || ''}" onkeyup="if(event.key==='Enter'){state.externalSourcesFilter={search:document.getElementById('extSearch').value};loadExternalSources(1);}">
+      <select class="input" onchange="state.externalSourcesFilter={...state.externalSourcesFilter,record_level:this.value};loadExternalSources(1)">
+        <option value="">Tutti i livelli</option>
+        <option value="fonds">Fondo</option>
+        <option value="series">Serie</option>
+        <option value="subseries">Sottoserie</option>
+        <option value="archival_unit">Unità archivistica</option>
+      </select>
+      <button class="btn btn-secondary" onclick="state.externalSourcesFilter={};loadExternalSources(1)">Reset</button>
+    </div>
+
+    ${loading ? '<p class="text-muted">Caricamento...</p>' : `
+    <p class="text-sm text-muted mb-2">${total} record trovati</p>
+    <table class="table">
+      <thead><tr>
+        <th>Livello</th><th>Titolo</th><th>Periodo</th><th>Segnatura</th>
+        <th>Dig.</th><th>Stato</th><th>Ultima verifica</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${items.map(r => `
+          <tr>
+            <td><span class="${levelColors[r.record_level] || 'tag tag-neutral'}">${r.record_level}</span></td>
+            <td>${esc(r.title || '(senza titolo)')}</td>
+            <td class="text-sm">${esc(r.date_text || '—')}</td>
+            <td class="text-sm">${esc(r.reference_code || '—')}</td>
+            <td>${r.digital_object_available ? '<span class="tag tag-success">Sì</span>' : '<span class="text-muted">—</span>'}</td>
+            <td><span class="tag ${r.access_status === 'active' ? 'tag-success' : r.access_status === 'unreachable' ? 'tag-warning' : 'tag-neutral'}">${r.access_status}</span></td>
+            <td class="text-sm text-muted">${esc(r.last_verified_at?.split('T')[0] || '—')}</td>
+            <td><button class="btn btn-secondary btn-sm" onclick="state.view='external-record-detail';state.externalRecordId=${r.id};loadExternalRecordDetail(${r.id})">Apri</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    ${data.has_next ? `<button class="btn btn-secondary mt-2" onclick="loadExternalSources(${(data.page||1)+1})">Pagina successiva</button>` : ''}
+    `}
+  </main>`;
+}
+
+function renderExternalRecordDetail() {
+  const r = state.externalRecordDetail;
+  if (!r || r.loading) return '<main><p class="text-muted">Caricamento...</p></main>';
+  const children = state.externalRecordChildren || [];
+  const parents = state.externalRecordParents || [];
+  const mentions = r.person_mentions || [];
+  const facts = r.facts || [];
+  const digitalObjects = r.digital_objects || [];
+  const links = r.record_links || [];
+
+  const matchStatusColors = {
+    'confirmed': 'tag tag-success', 'probable': 'tag tag-accent',
+    'candidate': 'tag tag-warning', 'ambiguous': 'tag tag-neutral',
+    'rejected': 'tag tag-error',
+  };
+  const reviewColors = {
+    'pending': 'tag tag-warning', 'accepted': 'tag tag-success',
+    'rejected': 'tag tag-error', 'needs_more_evidence': 'tag tag-neutral',
+  };
+
+  return `<main>
+    <div class="page-header">
+      <button class="btn btn-secondary btn-sm" onclick="state.view='external-sources';loadExternalSources()">← Indietro</button>
+      <h1>${esc(r.title || '(senza titolo)')}</h1>
+      <div class="flex gap-2 items-center mt-2">
+        <span class="tag tag-accent">${r.record_level}</span>
+        <span class="tag tag-neutral">${esc(r.provider)}</span>
+        ${r.digital_object_available ? '<span class="tag tag-success">Oggetto digitale</span>' : ''}
+        <span class="tag ${r.access_status === 'active' ? 'tag-success' : 'tag-warning'}">${r.access_status}</span>
+      </div>
+    </div>
+
+    ${parents.length > 0 ? `
+      <div class="card mb-3"><div class="card-body">
+        <h4>Gerarchia</h4>
+        <div class="flex gap-1 items-center flex-wrap mt-1">
+          ${parents.reverse().map(p => `<a class="text-sm" style="cursor:pointer;color:var(--accent)" onclick="state.externalRecordId=${p.id};loadExternalRecordDetail(${p.id})">${esc(p.title)}</a> <span class="text-muted">›</span>`).join('')}
+          <span class="text-sm font-bold">${esc(r.title)}</span>
+        </div>
+      </div></div>
+    ` : ''}
+
+    <div class="grid grid-2 gap-4">
+      <div class="card"><div class="card-body">
+        <h3>Metadati</h3>
+        <table class="table table-compact mt-2">
+          <tr><td class="text-muted">Archivio</td><td>${esc(r.archive_name || '—')}</td></tr>
+          <tr><td class="text-muted">Fondo</td><td>${esc(r.fonds_title || r.fonds_external_id || '—')}</td></tr>
+          <tr><td class="text-muted">Serie</td><td>${esc(r.series_title || r.series_external_id || '—')}</td></tr>
+          <tr><td class="text-muted">Segnatura</td><td>${esc(r.reference_code || '—')}</td></tr>
+          <tr><td class="text-muted">Busta</td><td>${esc(r.box_number || '—')}</td></tr>
+          <tr><td class="text-muted">Fascicolo</td><td>${esc(r.file_number || '—')}</td></tr>
+          <tr><td class="text-muted">Periodo</td><td>${esc(r.date_text || '—')}</td></tr>
+          <tr><td class="text-muted">Protocollo</td><td>${esc(r.protocol_number || '—')}</td></tr>
+          <tr><td class="text-muted">Lingua</td><td>${esc(r.language || '—')}</td></tr>
+        </table>
+        ${r.description ? `<p class="mt-3 text-sm">${esc(r.description)}</p>` : ''}
+      </div></div>
+
+      <div class="card"><div class="card-body">
+        <h3>Fonte originale</h3>
+        <p class="text-sm mt-2">URL canonico:</p>
+        <p class="text-sm"><a href="${esc(r.canonical_record_url)}" target="_blank" rel="noopener" style="color:var(--accent);word-break:break-all">${esc(r.canonical_record_url)}</a></p>
+        <div class="flex gap-2 mt-3">
+          <a class="btn btn-primary btn-sm" href="${esc(r.canonical_record_url)}" target="_blank" rel="noopener">Apri fonte originale</a>
+          <button class="btn btn-secondary btn-sm" onclick="verifyExternalUrl(${r.id})">Verifica URL</button>
+          <button class="btn btn-secondary btn-sm" onclick="refreshSingleRecord(${r.id})">Aggiorna</button>
+        </div>
+        <p class="text-sm text-muted mt-2">Ultima verifica: ${esc(r.last_verified_at?.split('T')[0] || '—')} (HTTP ${r.http_status || '—'})</p>
+      </div></div>
+    </div>
+
+    ${children.length > 0 ? `
+      <div class="card mt-4"><div class="card-body">
+        <h3>Unità figlie (${children.length})</h3>
+        <table class="table table-compact mt-2">
+          <thead><tr><th>Titolo</th><th>Livello</th><th>Periodo</th><th>Segnatura</th><th></th></tr></thead>
+          <tbody>
+            ${children.map(c => `<tr>
+              <td>${esc(c.title || '—')}</td>
+              <td><span class="tag tag-neutral">${c.record_level}</span></td>
+              <td class="text-sm">${esc(c.date_text || '—')}</td>
+              <td class="text-sm">${esc(c.reference_code || '—')}</td>
+              <td><button class="btn btn-secondary btn-sm" onclick="state.externalRecordId=${c.id};loadExternalRecordDetail(${c.id})">Apri</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div></div>
+    ` : ''}
+
+    ${mentions.length > 0 ? `
+      <div class="card mt-4"><div class="card-body">
+        <h3>Nominativi menzionati (${mentions.length})</h3>
+        <table class="table table-compact mt-2">
+          <thead><tr><th>Nominativo</th><th>Ruolo</th><th>Confidenza</th><th>Verificato</th></tr></thead>
+          <tbody>
+            ${mentions.map(m => `<tr>
+              <td>${esc(m.full_name_raw || `${m.surname_raw||''} ${m.name_raw||''}`.trim())}</td>
+              <td class="text-sm">${esc(m.role_in_metadata || '—')}</td>
+              <td class="text-sm">${(m.extraction_confidence * 100).toFixed(0)}%</td>
+              <td>${m.human_verified ? '<span class="tag tag-success">Sì</span>' : '<span class="tag tag-warning">No</span>'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div></div>
+    ` : ''}
+
+    ${facts.length > 0 ? `
+      <div class="card mt-4"><div class="card-body">
+        <h3>Fatti descritti (${facts.length})</h3>
+        <table class="table table-compact mt-2">
+          <thead><tr><th>Tipo</th><th>Valore</th><th>Descrizione</th><th>Confidenza</th></tr></thead>
+          <tbody>
+            ${facts.map(f => `<tr>
+              <td><span class="tag tag-accent-2">${esc(f.fact_type)}</span></td>
+              <td class="text-sm">${esc(f.fact_value || '—')}</td>
+              <td class="text-sm">${esc(f.description || '—')}</td>
+              <td class="text-sm">${(f.confidence * 100).toFixed(0)}%</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div></div>
+    ` : ''}
+
+    ${digitalObjects.length > 0 ? `
+      <div class="card mt-4"><div class="card-body">
+        <h3>Oggetti digitali (${digitalObjects.length})</h3>
+        ${digitalObjects.map(d => `
+          <div class="flex gap-2 items-center mb-2">
+            <span class="tag ${d.digital_object_available ? 'tag-success' : 'tag-neutral'}">${d.object_type || 'oggetto'}</span>
+            <span class="text-sm">${esc(d.label || '—')}</span>
+            ${d.public_download_allowed ? '<span class="tag tag-success">Scaricabile</span>' : '<span class="tag tag-warning">Non scaricabile</span>'}
+            ${d.authorization_required ? '<span class="tag tag-error">Autorizzazione richiesta</span>' : ''}
+            ${d.viewer_url ? `<a class="btn btn-secondary btn-sm" href="${esc(d.viewer_url)}" target="_blank">Viewer</a>` : ''}
+          </div>
+        `).join('')}
+      </div></div>
+    ` : ''}
+
+    <div class="card mt-4"><div class="card-body">
+      <div class="flex items-center justify-between">
+        <h3>Collegamenti incrociati (${links.length})</h3>
+        <button class="btn btn-primary btn-sm" onclick="generateMatches(${r.id})">Genera candidati</button>
+      </div>
+      ${links.length === 0 ? '<p class="text-muted mt-2">Nessun collegamento. Clicca "Genera candidati" per avviare il matching.</p>' : `
+        <table class="table table-compact mt-2">
+          <thead><tr>
+            <th>Tabella</th><th>Record ID</th><th>Score</th><th>Stato</th>
+            <th>Revisione</th><th>Spiegazione</th><th>Azioni</th>
+          </tr></thead>
+          <tbody>
+            ${links.map(l => `<tr>
+              <td><span class="tag tag-neutral">${esc(l.target_table)}</span></td>
+              <td>${l.target_record_id}</td>
+              <td><strong>${(l.match_score * 100).toFixed(0)}%</strong></td>
+              <td><span class="${matchStatusColors[l.match_status] || 'tag tag-neutral'}">${l.match_status}</span></td>
+              <td><span class="${reviewColors[l.review_status] || 'tag tag-neutral'}">${l.review_status}</span></td>
+              <td class="text-sm" style="max-width:300px">${esc(l.explanation || '—')}</td>
+              <td>
+                <button class="btn btn-success btn-sm" onclick="reviewExternalLink(${l.id},'accepted','confirmed')">✓</button>
+                <button class="btn btn-error btn-sm" onclick="reviewExternalLink(${l.id},'rejected','rejected')">✗</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      `}
+    </div></div>
+  </main>`;
+}
+
+async function refreshSingleRecord(id) {
+  try {
+    toast('Aggiornamento in corso...', 'info');
+    const res = await fetch(`/api/external-sources/records/${id}/refresh`, { method: 'POST', headers: getAuthHeaders() });
+    if (!res.ok) throw new Error('Errore aggiornamento');
+    toast('Record aggiornato', 'success');
+    loadExternalRecordDetail(id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+// ─── Croce Rossa ─────────────────────────────────────────────────────────────
+
+async function loadRedCross() {
+  if (state.redCrossResults.length === 0 && !state.redCrossQuery) render();
+}
+
+async function redCrossSearch() {
+  const q = state.redCrossQuery.trim();
+  if (q.length < 2) { toast('Inserire almeno 2 caratteri', 'error'); return; }
+  state.redCrossLoading = true;
+  state.redCrossDetail = null;
+  render();
+  try {
+    const data = await apiJson(`/red-cross/search?q=${encodeURIComponent(q)}&source=${state.redCrossSource}`);
+    state.redCrossResults = data.results || [];
+    state.redCrossLoading = false;
+    render();
+  } catch (err) {
+    state.redCrossLoading = false;
+    toast(err.message, 'error');
+    render();
+  }
+}
+
+async function redCrossDetail(provider, recordId) {
+  try {
+    const data = await apiJson(`/red-cross/${provider}/${encodeURIComponent(recordId)}`);
+    state.redCrossDetail = data;
+    render();
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+function redCrossKeyDown(e) {
+  if (e.key === 'Enter') redCrossSearch();
+}
+
+function setRedCrossSource(val) {
+  state.redCrossSource = val;
+}
+
+function complianceBadge(classification) {
+  const map = {
+    'METADATA_ONLY': { cls: 'tag tag-warning', label: 'Solo metadati' },
+    'PUBLIC_VIEW': { cls: 'tag tag-success', label: 'Visibile' },
+    'PUBLIC_DOWNLOAD': { cls: 'tag tag-success', label: 'Scaricabile' },
+    'REQUEST_REQUIRED': { cls: 'tag tag-warning', label: 'Su richiesta' },
+    'AUTHORIZATION_REQUIRED': { cls: 'tag tag-error', label: 'Autorizzazione necessaria' },
+    'RESTRICTED': { cls: 'tag tag-error', label: 'Riservato' },
+    'RIGHTS_UNKNOWN': { cls: 'tag tag-warning', label: 'Diritti ignoti' },
+    'UNREACHABLE': { cls: 'tag tag-neutral', label: 'Non raggiungibile' },
+  };
+  const m = map[classification] || { cls: 'tag tag-neutral', label: classification || 'N/D' };
+  return `<span class="${m.cls}">${m.label}</span>`;
+}
+
+function renderRedCross() {
+  const results = state.redCrossResults || [];
+  const loading = state.redCrossLoading;
+  const detail = state.redCrossDetail;
+  const providerLabels = {
+    'icrc_ww1': 'ICRC WW1',
+    'cri_milano': 'CRI Milano',
+  };
+  const providerColors = {
+    'icrc_ww1': 'tag tag-accent',
+    'cri_milano': 'tag tag-accent-2',
+  };
+  return `<main>
+    <h1>Croce Rossa</h1>
+    <p class="text-muted text-sm mb-2">Ricerca nelle fonti della Croce Rossa: ICRC Prisoners of WW1 (5M+ schede) e Archivio Storico CRI Milano (dispersi 2GM).</p>
+    <div class="card mb-2">
+      <div class="flex gap-sm" style="align-items:center;flex-wrap:wrap">
+        <input class="input" style="flex:1;min-width:200px" placeholder="Cerca per cognome, nome..." value="${esc(state.redCrossQuery)}" oninput="state.redCrossQuery=this.value" onkeydown="redCrossKeyDown(event)">
+        <select class="input" style="width:auto" onchange="setRedCrossSource(this.value)">
+          <option value="all" ${state.redCrossSource==='all'?'selected':''}>Tutte le fonti</option>
+          <option value="icrc_ww1" ${state.redCrossSource==='icrc_ww1'?'selected':''}>ICRC WW1</option>
+          <option value="cri_milano" ${state.redCrossSource==='cri_milano'?'selected':''}>CRI Milano</option>
+        </select>
+        <button class="btn btn-primary" onclick="redCrossSearch()" ${loading?'disabled':''}>${loading?'Ricerca...':'Cerca'}</button>
+      </div>
+    </div>
+
+    ${detail ? `
+      <div class="card mb-2">
+        <div class="flex items-center justify-between mb-1">
+          <h3>Dettaglio record</h3>
+          <button class="btn btn-secondary btn-sm" onclick="state.redCrossDetail=null;render()">Chiudi</button>
+        </div>
+        <table class="table table-compact">
+          ${Object.entries(detail).map(([k,v]) => `<tr><td class="text-sm text-muted" style="width:180px">${esc(k)}</td><td class="text-sm">${esc(String(v))}</td></tr>`).join('')}
+        </table>
+      </div>
+    ` : ''}
+
+    ${results.length > 0 ? `
+      <p class="text-sm text-muted mb-1">${results.length} risultati</p>
+      <div class="card">
+        <table>
+          <thead><tr><th>Fonte</th><th>Titolo</th><th>Descrizione</th><th>Accesso</th><th>Azioni</th></tr></thead>
+          <tbody>
+            ${results.map(r => {
+              const pLabel = providerLabels[r.provider] || r.provider || '';
+              const pTag = providerColors[r.provider] || 'tag tag-neutral';
+              const accessType = r.access_type || (r.error ? 'error' : 'online');
+              const accessBadge = r.error
+                ? '<span class="tag tag-error">Errore</span>'
+                : accessType === 'login' ? '<span class="tag tag-warning">Login richiesto</span>'
+                : accessType === 'METADATA_ONLY' ? '<span class="tag tag-warning">Solo metadati</span>'
+                : accessType === 'REQUEST_REQUIRED' ? '<span class="tag tag-warning">Su richiesta</span>'
+                : '<span class="tag tag-success">Online</span>';
+              const hasDetail = r.provider_record_id && !r.error;
+              return `<tr>
+                <td><span class="${pTag}">${esc(pLabel)}</span></td>
+                <td><strong>${esc(r.titolo || r.error || '—')}</strong></td>
+                <td class="text-sm text-muted" style="max-width:300px">${esc(r.description || '')}</td>
+                <td>${accessBadge}</td>
+                <td>
+                  ${r.catalog_url ? `<a class="btn btn-secondary btn-sm" href="${esc(r.catalog_url)}" target="_blank">Apri ↗</a>` : ''}
+                  ${hasDetail ? `<button class="btn btn-secondary btn-sm" onclick="redCrossDetail('${esc(r.provider)}','${esc(r.provider_record_id)}')">Dettaglio</button>` : ''}
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    ` : (state.redCrossQuery && !loading ? '<div class="card"><p class="text-muted">Nessun risultato.</p></div>' : '')}
+  </main>`;
+}
+
+// ─── Compliance Gate ─────────────────────────────────────────────────────────
+
+async function loadCompliance() {
+  try {
+    const [policies, decisions, queue] = await Promise.all([
+      apiJson('/compliance/policies').catch(() => []),
+      apiJson('/compliance/decisions?limit=50').catch(() => []),
+      apiJson('/compliance/review-queue?status=pending').catch(() => []),
+    ]);
+    state.compliancePolicies = Array.isArray(policies) ? policies : [];
+    state.complianceDecisions = Array.isArray(decisions) ? decisions : [];
+    state.complianceReviewQueue = Array.isArray(queue) ? queue : [];
+    render();
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function resolveReviewItem(itemId, decision) {
+  const motivation = prompt('Motivazione (opzionale):') || '';
+  try {
+    await api(`/compliance/review-queue/${itemId}/resolve`, {
+      method: 'POST',
+      body: JSON.stringify({ decision, motivation }),
+    });
+    toast('Item risolto', 'success');
+    await loadCompliance();
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function updatePolicy(policyId, field, value) {
+  try {
+    await api(`/compliance/policies/${policyId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ [field]: value }),
+    });
+    toast('Policy aggiornata', 'success');
+    await loadCompliance();
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+function renderCompliance() {
+  const tab = state.complianceTab || 'policies';
+  const policies = state.compliancePolicies || [];
+  const decisions = state.complianceDecisions || [];
+  const queue = state.complianceReviewQueue || [];
+
+  const policyStatusColors = {
+    'verified': 'tag tag-success',
+    'pending': 'tag tag-warning',
+    'needs_review': 'tag tag-warning',
+    'unknown': 'tag tag-neutral',
+  };
+
+  const decisionColors = {
+    'ALLOW': 'tag tag-success',
+    'ALLOW_WITH_LIMITATIONS': 'tag tag-warning',
+    'REQUIRE_REVIEW': 'tag tag-warning',
+    'REQUIRE_AUTHORIZATION': 'tag tag-error',
+    'DENY': 'tag tag-error',
+  };
+
+  const reviewPriorityColors = {
+    'high': 'tag tag-error',
+    'medium': 'tag tag-warning',
+    'low': 'tag tag-neutral',
+  };
+
+  const tabs = [
+    { id: 'policies', label: `Policy (${policies.length})` },
+    { id: 'review', label: `Coda revisione (${queue.length})` },
+    { id: 'decisions', label: `Log decisioni (${decisions.length})` },
+  ];
+
+  return `<main>
+    <h1>Conformità</h1>
+    <p class="text-muted text-sm mb-2">Sistema centralizzato di valutazione conformità (GDPR / D.lgs 196/2003 / D.lgs 42/2004). Controlla ogni operazione su fonti esterne: download, OCR, pubblicazione, export.</p>
+
+    <div class="flex gap-sm mb-2">
+      ${tabs.map(t => `<button class="btn ${tab===t.id?'btn-primary':'btn-secondary'} btn-sm" onclick="state.complianceTab='${t.id}';render()">${esc(t.label)}</button>`).join('')}
+    </div>
+
+    ${tab === 'policies' ? `
+      <div class="card">
+        ${policies.length === 0 ? '<p class="text-muted">Nessuna policy registrata.</p>' : `
+          <table class="table table-compact">
+            <thead><tr><th>Provider</th><th>Dominio</th><th>Classificazione</th><th>Licenza metadati</th><th>Download</th><th>Stato</th><th>Credit line</th></tr></thead>
+            <tbody>
+              ${policies.map(p => `<tr>
+                <td><strong>${esc(p.provider || '—')}</strong></td>
+                <td class="text-sm">${esc(p.domain || '—')}</td>
+                <td>${complianceBadge(p.classification)}</td>
+                <td class="text-sm">${esc(p.metadata_license || '—')}</td>
+                <td>${p.document_download_allowed ? '<span class="tag tag-success">Sì</span>' : '<span class="tag tag-error">No</span>'}</td>
+                <td><span class="${policyStatusColors[p.policy_status] || 'tag tag-neutral'}">${esc(p.policy_status || 'unknown')}</span></td>
+                <td class="text-sm" style="max-width:200px">${esc(p.required_credit_line || '—')}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        `}
+      </div>
+    ` : ''}
+
+    ${tab === 'review' ? `
+      <div class="card">
+        ${queue.length === 0 ? '<p class="text-muted">Nessun item in coda di revisione.</p>' : `
+          <table class="table table-compact">
+            <thead><tr><th>Priorità</th><th>Azione</th><th>Risorsa</th><th>Motivo</th><th>Creato</th><th>Azioni</th></tr></thead>
+            <tbody>
+              ${queue.map(q => `<tr>
+                <td><span class="${reviewPriorityColors[q.priority] || 'tag tag-neutral'}">${esc(q.priority || 'low')}</span></td>
+                <td class="text-sm"><strong>${esc(q.requested_action || '—')}</strong></td>
+                <td class="text-sm">${esc(q.resource_label || q.source_record_id || '—')}</td>
+                <td class="text-sm" style="max-width:250px">${esc(q.reason || '—')}</td>
+                <td class="text-sm text-muted">${esc(q.created_at?.slice(0,19) || '')}</td>
+                <td>
+                  <button class="btn btn-success btn-sm" onclick="resolveReviewItem(${q.id},'approve')">✓ Approva</button>
+                  <button class="btn btn-error btn-sm" onclick="resolveReviewItem(${q.id},'reject')">✗ Rifiuta</button>
+                  <button class="btn btn-secondary btn-sm" onclick="resolveReviewItem(${q.id},'suspend')">⏸ Sospendi</button>
+                </td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        `}
+      </div>
+    ` : ''}
+
+    ${tab === 'decisions' ? `
+      <div class="card">
+        ${decisions.length === 0 ? '<p class="text-muted">Nessuna decisione registrata.</p>' : `
+          <table class="table table-compact">
+            <thead><tr><th>Data</th><th>Azione</th><th>Decisione</th><th>Regola</th><th>Motivazione</th><th>Da</th></tr></thead>
+            <tbody>
+              ${decisions.map(d => `<tr>
+                <td class="text-sm text-muted">${esc(d.created_at?.slice(0,19) || '')}</td>
+                <td class="text-sm"><strong>${esc(d.requested_action || '—')}</strong></td>
+                <td><span class="${decisionColors[d.decision] || 'tag tag-neutral'}">${esc(d.decision || '—')}</span></td>
+                <td class="text-sm">${esc(d.rule_code || '—')}</td>
+                <td class="text-sm" style="max-width:300px">${esc(d.reason || '—')}</td>
+                <td class="text-sm">${esc(d.decided_by || 'system')}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        `}
+      </div>
+    ` : ''}
+  </main>`;
+}
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+
+(async function init() {
+  await checkAuth();
+  if (state.user) await loadDashboard();
+  render();
+})();
+</script>
+<script src="/shared/components.js"></script>
+<script src="/shared/router.js"></script>
+</body>
+</html>

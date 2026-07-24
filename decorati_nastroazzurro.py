@@ -15,6 +15,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
 from database import get_conn
+from indexing_rules import titlecase_name, is_empty_value
 
 BASE_URL = "http://decoratialvalormilitare.istitutonastroazzurro.org"
 SEARCH_URL = f"{BASE_URL}/XMLHttp/getDatas.php"
@@ -86,8 +87,10 @@ def _parse_results(html: str, id_arma: int, arma_name: str) -> list:
             anno_dec = parts[0]
             tipo_dec = parts[1] if len(parts) > 1 else decorazione_info
         
-        if nome in ('nd', 'ND'):
+        if is_empty_value(nome):
             nome = None
+        else:
+            nome = titlecase_name(nome)
         
         records.append({
             "source_id": source_id,

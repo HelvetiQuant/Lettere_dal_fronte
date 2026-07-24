@@ -15,6 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from database import get_conn
+from indexing_rules import clean_toponym
 
 URLS = {
     "base": "https://www.data.gouv.fr/api/1/datasets/r/7fb4e959-df14-4a28-b7fc-f7b6c9cae93b",
@@ -123,16 +124,16 @@ def _import_csv(filepath: str, source_label: str):
                 row.get('naissance', ''),
                 row.get('Grade', ''),
                 row.get('Unité', row.get('Unit\u00e9', '')),
-                row.get('Lieu de naissance', ''),
+                clean_toponym(row.get('Lieu de naissance', '')),
                 row.get('Bureau de recrutement', ''),
                 row.get('Classe', ''),
                 row.get('Matricule au recrutement', ''),
                 row.get('Date de d\u00e9c\u00e8s', row.get('Date de décès', '')),
-                row.get('Lieu de d\u00e9c\u00e8s', row.get('Lieu de décès', '')),
-                row.get('Lieu de d\u00e9c\u00e8s (suite)', row.get('Lieu de décès (suite)', '')),
+                clean_toponym(row.get('Lieu de d\u00e9c\u00e8s', row.get('Lieu de décès', ''))),
+                clean_toponym(row.get('Lieu de d\u00e9c\u00e8s (suite)', row.get('Lieu de décès (suite)', ''))),
                 row.get('D\u00e9partement de d\u00e9c\u00e8s', row.get('Département de décès', '')),
                 row.get('Pays de d\u00e9c\u00e8s', row.get('Pays de décès', '')),
-                row.get('Lieu de transcription du d\u00e9c\u00e8s', row.get('Lieu de transcription du décès', '')),
+                clean_toponym(row.get('Lieu de transcription du d\u00e9c\u00e8s', row.get('Lieu de transcription du décès', ''))),
                 row.get('D\u00e9partement de transcription du d\u00e9c\u00e8s', row.get('Département de transcription du décès', '')),
                 row.get('Pays de transcription du d\u00e9c\u00e8s', row.get('Pays de transcription du décès', '')),
                 source_label,

@@ -10,6 +10,7 @@ import requests
 import urllib3
 
 from database import save_decorato, decorato_exists, count_decorati
+from indexing_rules import titlecase_name, clean_toponym
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -86,10 +87,10 @@ def _map_detail(d: dict, albo_id: str) -> dict:
         "source_id": sid,
         "albo_id": albo_id,
         "albo_nome": (d.get("albiNomeImmagineUrl") or {}).get("nomeAlbo"),
-        "cognome": d.get("cognome"),
-        "nome": d.get("nome"),
-        "comune_nascita": d.get("comuneNascita"),
-        "comune_residenza": d.get("comuneResidenza"),
+        "cognome": titlecase_name(d.get("cognome")) if d.get("cognome") else None,
+        "nome": titlecase_name(d.get("nome")) if d.get("nome") else None,
+        "comune_nascita": clean_toponym(d.get("comuneNascita")) if d.get("comuneNascita") else None,
+        "comune_residenza": clean_toponym(d.get("comuneResidenza")) if d.get("comuneResidenza") else None,
         "data_nascita": d.get("dataNascita"),
         "data_morte": d.get("dataMorte"),
         "anno_nascita": d.get("annoNascita") or _year(d.get("dataNascita")),
@@ -101,9 +102,9 @@ def _map_detail(d: dict, albo_id: str) -> dict:
         "decorazione": d.get("decorazione"),
         "motivazione": d.get("motivazione"),
         "causa_morte": d.get("causaMorte"),
-        "luogo_morte": d.get("luogoMorte"),
-        "luogo_cattura": d.get("luogoCattura"),
-        "luogo_internamento": d.get("luogoInternamento"),
+        "luogo_morte": clean_toponym(d.get("luogoMorte")) if d.get("luogoMorte") else None,
+        "luogo_cattura": clean_toponym(d.get("luogoCattura")) if d.get("luogoCattura") else None,
+        "luogo_internamento": clean_toponym(d.get("luogoInternamento")) if d.get("luogoInternamento") else None,
         "matricola": d.get("matricola"),
         "professione": d.get("professione"),
         "note": d.get("note"),

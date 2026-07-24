@@ -9,6 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 from database import get_conn
+from indexing_rules import titlecase_name, clean_toponym
 
 BASE = "http://badigit.comune.bologna.it/csg"
 PAGE_SIZE = 10
@@ -160,9 +161,15 @@ def _save_record(rec: dict):
                 luogo_dimora, causa_morte, luogo_morte, data_morte,
                 professione, stato_civile, decorazioni, scheda_completa, elaborato_il)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (rec["nome"], rec["paternita"], rec["grado"], rec["reparto"],
-             rec["luogo_nascita"], rec["anno_nascita"], rec["luogo_dimora"],
-             rec["causa_morte"], rec["luogo_morte"], rec["data_morte"],
+            (titlecase_name(rec["nome"]) if rec["nome"] else "",
+             titlecase_name(rec["paternita"]) if rec["paternita"] else "",
+             rec["grado"], rec["reparto"],
+             clean_toponym(rec["luogo_nascita"]) if rec["luogo_nascita"] else "",
+             rec["anno_nascita"],
+             clean_toponym(rec["luogo_dimora"]) if rec["luogo_dimora"] else "",
+             rec["causa_morte"],
+             clean_toponym(rec["luogo_morte"]) if rec["luogo_morte"] else "",
+             rec["data_morte"],
              rec["professione"], rec["stato_civile"], rec["decorazioni"],
              rec["scheda_completa"], rec["elaborato_il"]),
         )

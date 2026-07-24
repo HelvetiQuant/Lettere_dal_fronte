@@ -434,7 +434,8 @@ export async function loadSoldierDossier(soldierId) {
       const a = (s.archive||'').toLowerCase();
       return a.includes('difesa') || a.includes('onorcaduti') || a.includes('nastro') ||
              a.includes('ussme') || a.includes('stato') || a.includes('antenati') ||
-             a.includes('cadutigrandeguerra') || a.includes('internetculturale');
+             a.includes('cadutigrandeguerra') || a.includes('internetculturale') ||
+             a.includes('anrp') || a.includes('lebi') || a.includes('lessicobiografico');
     });
     const deSources  = sources.filter(s => {
       const a = (s.archive||'').toLowerCase();
@@ -467,6 +468,47 @@ export async function loadSoldierDossier(soldierId) {
   } catch(e) {
     console.warn('loadSoldierDossier error:', e);
     return { timeline:[], sources:[], perspectives:[] };
+  }
+}
+
+// ── Confronto LeBI per soldato IMI ──────────────────────────────────────────
+export async function loadLeBIComparison(soldierId) {
+  try {
+    const res = await fetch(`/api/lebi/compare/${soldierId}`).then(r => r.json());
+    if (!res.ok) return { matches: [], soldier: null };
+    return {
+      soldier: res.soldier,
+      matches: (res.lebi_matches || []).map(m => ({
+        recordId: m.lebi_record_id,
+        url: m.lebi_url,
+        pdfUrl: m.lebi_pdf_url,
+        title: m.lebi_title,
+        matchScore: Math.round(m.match_score * 100),
+        matchFields: m.match_fields,
+        diffFields: m.diff_fields,
+        detail: m.detail,
+      })),
+      total: res.total_matches || 0,
+    };
+  } catch(e) {
+    console.warn('loadLeBIComparison error:', e);
+    return { matches: [], soldier: null, total: 0 };
+  }
+}
+
+// ── Ricerca LeBI standalone ─────────────────────────────────────────────────
+export async function loadLeBISearch(query, filters = {}) {
+  try {
+    const params = new URLSearchParams({ q: query });
+    if (filters.name) params.set('n', filters.name);
+    if (filters.birthPlace) params.set('l', filters.birthPlace);
+    if (filters.birthYear) params.set('y', filters.birthYear);
+    const res = await fetch(`/api/lebi/search?${params}`).then(r => r.json());
+    if (!res.ok) return { results: [], count: 0 };
+    return { results: res.results, count: res.count };
+  } catch(e) {
+    console.warn('loadLeBISearch error:', e);
+    return { results: [], count: 0 };
   }
 }
 
@@ -561,7 +603,7 @@ export const SUBJECTS = {
   gaiaschi: {
     id:"gaiaschi", type:"persona", name:"Luigi Gaiaschi", _cognome:"Gaiaschi", _nome:"Luigi",
     subtitle:"Soldato, Internato Militare Italiano (IMI) — 2ª Guerra Mondiale",
-    tags:["IMI · 2GM","Nibbiano (Piacenza)","Sorte: rimpatriato"], status:"partial", confidence:0.72,
+    tags:["IMI · 2GM","Nibbiano (Piacenza)","Sorte: altro"], status:"partial", confidence:0.72,
     timeline:[
       { date:"1912-01-09", label:"Nascita a Nibbiano (Piacenza)", pov:"it", sourceId:"g1" },
       { date:"1943-09-12", label:"Catturato in Grecia dopo l'armistizio dell'8 settembre 1943", pov:"it", sourceId:"g1" },
@@ -817,11 +859,11 @@ export const EVENTS = {
 export const EXPLORE_TABLES = {
   internati: { labelKey:"dbInternati", cols:["Cognome","Nome","Nascita","Luogo nascita","Internamento","Sorte"],
     rows:[
-      ["Gaiaschi","Luigi","14/03/1917","Bergamo","Norimberga (Kdo. 1054)","Rimpatriato"],
-      ["Rossi","Mario","02/06/1920","Bergamo","—","Disperso"],
-      ["Colombo","Aldo","09/11/1918","Milano","Stalag VII A","Rimpatriato"],
-      ["Ferrari","Bruno","22/05/1921","Torino","Arbeitskommando 771","Deceduto"],
-      ["Marino","Salvatore","03/01/1919","Palermo","—","Rimpatriato"],
+      ["Gaiaschi","Luigi","09/01/1912","Nibbiano (Piacenza)","—","altro"],
+      ["Abbate","Pietro","—","—","Pallung","altro"],
+      ["Acquati","Ferruccio","—","—","Ragusi","deceduto"],
+      ["Adami","Giuseppe","—","—","Watten","deceduto"],
+      ["Agostini","Carlo","—","—","—","deceduto"],
     ]},
   caduti: { labelKey:"dbCaduti", cols:["Cognome","Nome","Guerra","Luogo morte","Data morte","Fonte"],
     rows:[

@@ -13,15 +13,15 @@ Sistema di ricerca storica su Internati Militari Italiani (IMI) e caduti delle g
                │ HTTP API
 ┌──────────────▼──────────────────────────────────────────────────┐
 │                        app.py (FastAPI)                          │
-│  85 endpoint: search, biography, research, sources, gaps        │
+│  312 endpoint: search, biography, research, sources, LeBI, gaps  │
 └──────┬──────────────┬──────────────┬────────────────────────────┘
        │              │              │
 ┌──────▼──────┐ ┌─────▼──────┐ ┌────▼──────────────────────┐
-│ database.py │ │ biography  │ │ source_providers/         │
-│ SQLite star │ │ GPT/Claude │ │ 16 provider reali         │
-│ schema      │ │ Mistral    │ │ Arolsen, Bundesarchiv,    │
-│             │ │ Perplexity │ │ TNA, Europeana, Gallica,  │
-│ 688k entità │ │            │ │ DDB, SHD, LAC, ABMC,      │
+│ database.py │ │ OpenAI→Claude│ │ 27 provider reali         │
+│ SQLite star │ │ →Mistral→   │ │ Arolsen, Bundesarchiv,    │
+│ schema      │ │ Perplexity  │ │ TNA, Europeana, Gallica,  │
+│             │ │ →Gemini     │ │ DDB, SHD, LAC, ABMC,      │
+│ 688k entità │ │            │ │ LeBI/ANRP, ICRC, CRI,     │
 │ 4.8M link   │ │            │ │ Internet Archive, ecc.    │
 └─────────────┘ └────────────┘ └───────────────────────────┘
        │
@@ -51,7 +51,7 @@ Query utente (es. "Gaiaschi Giuseppe")
         │
         ▼
 ┌───────────────────┐
-│ AI Biography      │  GPT-4o → Claude → Mistral → Perplexity (fallback)
+│ AI Biography      │  OpenAI → Claude → Mistral → Perplexity → Gemini
 │ biography.py      │  Genera biografia narrativa con fonti verificate
 └───────┬───────────┘
         │
@@ -73,7 +73,7 @@ Query utente (es. "Gaiaschi Giuseppe")
 
 | File | Descrizione |
 |------|-------------|
-| `app.py` | Server FastAPI, 85 endpoint REST |
+| `app.py` | Server FastAPI, 312 endpoint REST |
 | `database.py` | Accesso DB SQLite, search_all(), star schema |
 | `biography.py` | Generazione biografie AI multi-provider con fallback |
 | `research_to_index.py` | Indicizzazione semantica, gap identification, confidence scoring |
@@ -81,7 +81,10 @@ Query utente (es. "Gaiaschi Giuseppe")
 | `import_fonti_personali.py` | Import unificato lettere + fonti narrative → DB |
 | `source_providers/base.py` | Classe base SourceProvider, cache, scoring |
 | `source_providers/providers.py` | 16 provider: Arolsen, Bundesarchiv, TNA, Europeana, Gallica, DDB, SHD, LAC, ABMC, AWM, Internet Archive, Google Books, HathiTrust, Internet Culturale, USSME, Archivi di Stato |
-| `templates/index.html` | UI completa con tabs investigativi |
+| `source_providers/lebi.py` | Provider LeBI/ANRP — 305K+ nominativi IMI |
+| `sources_external_lebi.py` | Adapter LeBI con parsing HTML strutturato |
+| `templates/index.html` | UI completa con tabs investigativi + LeBI comparison |
+| `templates/voci-data.js` | Modulo dati frontend: dossier, LeBI, eventi |
 
 ## Database
 
@@ -104,7 +107,7 @@ Query utente (es. "Gaiaschi Giuseppe")
 - `fonti_indice` — Fonti indicizzate remote
 - `source_fetch_cache` — Cache download documenti
 
-## Provider Federation
+## Provider Federation (27 provider)
 
 | Provider | Paese | API | Autenticazione |
 |----------|-------|-----|----------------|
@@ -124,6 +127,17 @@ Query utente (es. "Gaiaschi Giuseppe")
 | Internet Culturale (OPAC SBN) | IT | OPAC SBN JSON | Pubblica |
 | USSME | IT | DB locale (fondi_archivistici) | Locale |
 | Archivi di Stato | IT | DB locale (menzioni) | Locale |
+| **LeBI/ANRP** | IT | HTML scraping (lessicobiograficoimi.it) | Pubblica |
+| **ICRC WW1** | CH | HTML parsing (grandeguerre.icrc.org) | Pubblica |
+| **CRI Milano** | IT | Archimista REST | Pubblica (metadati) |
+| **Teca Digitale ACS** | IT | HTML scraping | Pubblica |
+| **NARA T315** | US | OCR locale | Locale |
+| **NARA Catalog** | US | Catalog API | Pubblica |
+| **WikiTree** | US | API REST | Pubblica |
+| **FamilySearch** | US | API REST | API key |
+| **Antenati/SAN** | IT | HTML scraping | Pubblica |
+| **Onorcaduti** | IT | HTML scraping | Pubblica |
+| **Caduti Grande Guerra** | IT | HTML scraping | Pubblica |
 
 ## Avvio
 
@@ -158,14 +172,18 @@ DDB_API_KEY=...  (opzionale, per Archivportal-D)
 | `/api/research/subjects` | GET | Lista soggetti di ricerca |
 | `/api/research/gaps` | GET | Gap identificati (campi mancanti) |
 | `/api/research/auto-index` | POST | Auto-indicizzazione batch |
-| `/api/sources/search` | GET | Ricerca federata su 16 provider |
+| `/api/sources/search` | GET | Ricerca federata su 27 provider |
+| `/api/lebi/search` | GET | Ricerca LeBI per cognome/nome/luogo/anno |
+| `/api/lebi/record/{id}` | GET | Scheda biografica LeBI dettagliata |
+| `/api/lebi/compare/{soldier_id}` | GET | Confronto IMI locale vs LeBI con match score |
 | `/api/cwgc/search` | GET | Ricerca CWGC |
 
 ## AI nel frontend
 
 - **Pulsanti AI sui risultati di ricerca**: ogni card persona nella home ha i bottoni `Dossier AI` (biografia verificata) e `Immagini AI` (ricostruzione visiva), che aprono il dossier e avviano la generazione.
 - **Report AI con progress bar**: nella scheda evento, i bottoni `Genera Report Convergenze Fonti AI` e `Genera Report Cronologico AI` mostrano una barra di avanzamento percentuale durante la generazione.
-- **Fallback multi-provider**: le chiamate AI usano la catena OpenAI → Anthropic → Mistral → Perplexity per garantire risposta anche in caso di indisponibilità o esaurimento crediti.
+- **Fallback multi-provider**: le chiamate AI usano la catena OpenAI → Anthropic → Mistral → Perplexity → Gemini per garantire risposta anche in caso di indisponibilità o esaurimento crediti.
+- **Tab LeBI nel dossier**: per ogni soldato IMI, il tab "LeBI" confronta il record locale con il Lessico Biografico degli IMI (ANRP, 305K+ nominativi), mostrando campi corrispondenti e divergenti con match score percentuale.
 
 ## Testing
 

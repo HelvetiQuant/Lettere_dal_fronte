@@ -22,6 +22,7 @@ from typing import List, Tuple
 
 from database import get_conn
 from extractor import _get_mistral_client
+from indexing_rules import normalize_match_key
 
 
 DESKTOP = Path.home() / "Desktop"
@@ -179,7 +180,8 @@ def _classify(path: Path) -> Tuple[str, str]:
 
 
 def _normalize_name(s: str) -> str:
-    return re.sub(r"\s+", " ", s).strip().lower()
+    """Delega a indexing_rules.normalize_match_key (sez. 1.3.1.1)."""
+    return normalize_match_key(s)
 
 
 def _upsert_entities(conn, people: List[dict], fonte_id: int):

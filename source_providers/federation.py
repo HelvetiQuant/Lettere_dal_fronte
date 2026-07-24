@@ -26,6 +26,9 @@ from .providers import (
     ProviderArchivportalD, ProviderInternetCulturale,
     ProviderHathiTrust, ProviderUSSME, ProviderArchivioDiStato,
 )
+from .icrc_ww1 import ProviderICRCWW1
+from .cri_milano import ProviderCRIMilano
+from .lebi import ProviderLeBI
 
 # ─── Registry ──────────────────────────────────────────────────────────────────
 
@@ -62,6 +65,9 @@ def get_registry() -> Dict[str, SourceProvider]:
         _register(ProviderDDB())
         _register(ProviderIWMLives())
         _register(ProviderGrandMemorial())
+        _register(ProviderICRCWW1())
+        _register(ProviderCRIMilano())
+        _register(ProviderLeBI())
     return _REGISTRY
 
 
@@ -190,6 +196,9 @@ def _match_provider(archivio: str) -> Optional[SourceProvider]:
         "lives of the first world war": "iwm_lives",
         "grand memorial": "grand_memorial",
         "donnees.culture.gouv.fr": "grand_memorial",
+        "lebi": "lebi",
+        "lessico biografico": "lebi",
+        "anrp": "lebi",
     }
     for key, pname in mapping.items():
         if key in archivio:

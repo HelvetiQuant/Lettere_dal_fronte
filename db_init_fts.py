@@ -3,11 +3,16 @@ e popola l'indice dai 42.806 record esistenti in `entita`.
 
 Idempotente: sicuro da eseguire piu' volte. Non cancella dati esistenti.
 Usa tokenizer unicode61 con remove_diacritics=2 per gestire accenti italiani.
+
+Su PostgreSQL (Supabase): crea colonna tsvector + GIN index + trigger.
 """
+import os
 import sqlite3
 import time
 from pathlib import Path
 from database import get_conn, DB_PATH
+
+_USE_POSTGRES = bool(os.environ.get("DATABASE_URL", "").startswith("postgresql"))
 
 
 def check_fts5_available(conn: sqlite3.Connection) -> bool:
@@ -123,9 +128,91 @@ def verify_sync(conn: sqlite3.Connection) -> bool:
 
 def run_migration():
     print("=" * 60)
-    print("MIGRAZIONE FTS5 - IR Layer")
+    print("MIGRAZIONE FTS - IR Layer")
     print("=" * 60)
 
+    if _USE_POSTGRES:
+        print("Backend: PostgreSQL (tsvector + GIN)")
+        conn = get_conn()
+        cur = conn.cursor()
+
+        # Add tsvector column
+        try:
+            cur.execute("ALTER TABLE entita ADD COLUMN IF NOT EXISTS search_vector tsvector")
+            conn.commit()
+            print("1. Colonna search_vector creata")
+        except Exception as e:
+            print(f"1. Colonna search_vector: {e}")
+            conn.rollback()
+
+        # Create GIN index
+        try:
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_entita_search_vector
+                ON entita USING GIN(search_vector)
+            """)
+            conn.commit()
+            print("2. Indice GIN creato")
+        except Exception as e:
+            print(f"2. Indice GIN: {e}")
+            conn.rollback()
+
+        # Create trigger function
+        try:
+            cur.execute("""
+                CREATE OR REPLACE FUNCTION entita_search_vector_update() RETURNS trigger AS $$
+                BEGIN
+                    NEW.search_vector := to_tsvector('simple',
+                        coalesce(NEW.valore, '') || ' ' ||
+                        coalesce(NEW.cognome, '') || ' ' ||
+                        coalesce(NEW.nome, '') || ' ' ||
+                        coalesce(NEW.luogo, '') || ' ' ||
+                        coalesce(NEW.contesto, '')
+                    );
+                    RETURN NEW;
+                END;
+                $$ LANGUAGE plpgsql
+            """)
+            cur.execute("""
+                DROP TRIGGER IF EXISTS trg_entita_search_vector ON entita;
+                CREATE TRIGGER trg_entita_search_vector
+                BEFORE INSERT OR UPDATE ON entita
+                FOR EACH ROW EXECUTE FUNCTION entita_search_vector_update()
+            """)
+            conn.commit()
+            print("3. Trigger tsvector creato")
+        except Exception as e:
+            print(f"3. Trigger: {e}")
+            conn.rollback()
+
+        # Populate
+        print("4. Popolamento tsvector...")
+        try:
+            cur.execute("""
+                UPDATE entita
+                SET search_vector = to_tsvector('simple',
+                    coalesce(valore, '') || ' ' ||
+                    coalesce(cognome, '') || ' ' ||
+                    coalesce(nome, '') || ' ' ||
+                    coalesce(luogo, '') || ' ' ||
+                    coalesce(contesto, '')
+                )
+            """)
+            conn.commit()
+            count = cur.execute("SELECT COUNT(*) FROM entita WHERE search_vector IS NOT NULL").fetchone()[0]
+            print(f"   Indicizzati {count:,} record")
+        except Exception as e:
+            print(f"   Errore: {e}")
+            conn.rollback()
+
+        conn.close()
+        print("=" * 60)
+        print("MIGRAZIONE COMPLETATA (PostgreSQL)")
+        print("=" * 60)
+        return True
+
+    # SQLite path (original)
+    print("Backend: SQLite (FTS5)")
     conn = get_conn()
 
     if not check_fts5_available(conn):

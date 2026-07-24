@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from pathlib import Path
 from database import get_conn
+from indexing_rules import normalize_age, clean_toponym, titlecase_name
 import csv
 import io
 
@@ -154,10 +155,11 @@ def _parse_html_row(cells: list) -> dict:
     paese_cimitero = paese_m.group(1) if paese_m else ""
     cimitero = col3.replace(paese_cimitero, "").strip() if paese_cimitero else col3
 
+    eta_norm = normalize_age(eta) if eta else None
     return {
         "cwgc_id": cwgc_id,
-        "nome": nome,
-        "cognome": cognome,
+        "nome": titlecase_name(nome) if nome else "",
+        "cognome": titlecase_name(cognome) if cognome else "",
         "initials": "",
         "rank": rank,
         "service_number": service_number,
@@ -165,9 +167,9 @@ def _parse_html_row(cells: list) -> dict:
         "regiment": regiment,
         "nationality": nationality,
         "data_morte": data_morte,
-        "eta": eta,
-        "cimitero": cimitero,
-        "paese_cimitero": paese_cimitero,
+        "eta": str(eta_norm) if eta_norm is not None else "",
+        "cimitero": clean_toponym(cimitero) if cimitero else "",
+        "paese_cimitero": clean_toponym(paese_cimitero) if paese_cimitero else "",
         "guerra": "World War 2",
         "data_nascita": "",
         "elaborato_il": datetime.now().isoformat(),

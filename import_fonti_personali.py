@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 from database import get_conn
+from indexing_rules import normalize_match_key, titlecase_name
 
 
 # ─── Config ───────────────────────────────────────────────────────────────────
@@ -87,9 +88,8 @@ def _sha256(path: Path) -> str:
 
 
 def _normalizza_nome(valore: str) -> str:
-    v = re.sub(r"\s+", " ", valore.lower().strip())
-    v = re.sub(r"[^a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ\s'-]", "", v)
-    return v
+    """Delega a indexing_rules.normalize_match_key (sez. 1.3.1.1)."""
+    return normalize_match_key(valore)
 
 
 def _estrai_cognome_nome(valore: str):

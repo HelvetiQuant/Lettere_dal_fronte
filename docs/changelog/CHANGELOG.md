@@ -1,5 +1,546 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-24 (notte) — Research Engine Fase C: Fact Extraction + Timeline Automatica
+
+### Nuovo modulo: Fact Extractor (`fact_extractor.py`)
+- **Estrazione claim strutturati da record DB** — mapping deterministico campi → predicati
+  - `internati`: 12 predicati (born_at, resident_at, held_rank, captured_at, interned_at, worked_at, has_service_number, had_role, had_fate, event_date)
+  - `caduti_albooro`: 7 predicati (has_name, held_rank, served_in, died_in, died_at, from_municipality, born_in_year)
+  - `decorati`: 12 predicati (born_at, died_at, cause_of_death, held_rank, served_in, decorated_with, captured_at, interned_at, has_service_number)
+- **Estrazione claim da testo non strutturato via AI** (`extract_claims_from_text_ai`)
+  - Prompt specializzato per estrazione fatti storici (16 predicati standard)
+  - JSON mode con parsing e creazione claim idempotenti
+  - Evidenza con quote originale e confidence
+- **Estrazione claim da frammenti di ricerca** (`extract_claims_from_fragments`)
+  - `entity_match` → claim `identified_as` con evidenza FTS
+  - `external_source` → claim `mentioned_in` con evidenza federata
+  - `person_record` → delega a `extract_claims_from_record`
+- **Pipeline completa** (`extract_facts_for_entity`)
+  - Cerca record in internati/decorati/caduti_albooro
+  - Estrae claim strutturati + AI su raw_text
+  - Rileva conflitti + costruisce timeline
+- **Date parsing** (`_parse_date`): ISO, DD-MM-YYYY, "9 gennaio 1912", solo anno
+- **Timeline automatica** (`auto_build_timeline`): ordinamento per data con None in fondo
+
+### Orchestrator — Integrazione Fact Extraction (`research_orchestrator.py`)
+- `run_research()` ora esegue fact extraction dopo i cicli di ricerca
+  - Estrae claim da record DB + frammenti di ricerca
+  - Timeline popolata automaticamente dai claim
+  - Campo `facts` nel risultato con claims_created, claims_existing, conflicts, timeline
+- La narrative synthesis ora riceve timeline popolata → sintesi più ricca
+
+### Fix — Conflitti falsi positivi (`claim_service.py`)
+- `detect_conflicts()` ora raggruppa per `object_type` prima di confrontare
+- Claim con stesso predicate ma object_type diverso (es. `born_at` date vs place) non sono più conflitto
+
+### Schema migration (`research_engine_schema.py`)
+- Aggiunta colonna `updated_at` a `research_sessions` (idempotente)
+
+### Test (`test_research_engine_master.py`)
+- **137 test, 0 falliti** (97 Fase A + 16 Fase B + 24 Fase C)
+- Nuovi test Fase C: `test_parse_date`, `test_extract_claims_from_record`, `test_extract_claims_from_text_ai`, `test_extract_facts_for_entity`, `test_extract_claims_from_fragments`, `test_conflict_detection_same_type`, `test_timeline_auto_build`, `test_run_research_with_facts`
+
+## 2026-07-23 (notte) — Research Engine Fase B: AI Provider Integration + Frontend Research View
+
+### Nuovo modulo: AI Client unificato (`ai_client.py`)
+- **Client AI unificato** — ponte tra `ai_router` (selezione modello) e provider AI reali
+- **5 provider supportati**: OpenAI (GPT-4o-mini), Anthropic (Claude), Mistral, Perplexity (Sonar/web search), Google Gemini
+- `call_ai()` — routing automatico via `select_model()`, fallback tra provider, tracking costi/latenza tramite `record_task_run()`
+- `call_ai_json()` — JSON mode con parsing automatico e fallback text-extraction
+- Supporto vision (immagini base64) per OCR ed estrazione documenti
+- Supporto web search (Perplexity) con citations
+- `get_available_providers()` / `is_any_provider_available()` — verifica disponibilità chiavi API
+- Circuit breaker integrato: provider degradati esclusi automaticamente
+- Budget check pre-task con quota di riserva
+- Client singleton per provider (riuso connessione)
+
+### Orchestrator — Integrazione AI (`research_orchestrator.py`)
+- **`_generate_followup_queries_ai()`** — AI genera query di follow-up intelligenti basate su frammenti trovati e lacune aperte (task type: `generate_followup_queries`)
+- **`_decide_continue_or_stop_ai()`** — AI valuta se continuare o fermare la ricerca basandosi su frammenti, query generate e lacune (task type: `decide_continue_or_stop`)
+- **`_generate_narrative_synthesis()`** — AI produce sintesi narrativa finale strutturata (SINTESI, PERSONE, LUOGHI, EVENTI, FONTI CONSULTATE, LACUNE, APPROFONDIMENTI CONSIGLIATI) basata esclusivamente su frammenti e timeline reali (task type: `generate_biography`)
+- `run_research()` ora ritorna campo `narrative` con testo, provider, modello, costo, token
+- Fallback automatico: se AI non disponibile, regole euristiche originali preservate
+
+### Frontend — Research Engine View (`templates/index.html`)
+- **Nuova vista "Ricerca AI"** — accessibile via nav bar con link "Ricerca AI"
+- Route SPA `/research` registrata nel router
+- UI: input query, loading indicator, error display, risultati strutturati
+- Sezioni risultati: Summary (entity_type, cycles, status, plan_id), Cicli (decision, fragments, new queries), Timeline (date, predicate, epistemic_status, evidence_count), **Sintesi Narrativa AI** (text, provider, model, cost), Provider IA (budget, spent, credit_status), Archive Connectors
+- Bindings: `researchQuery`, `researchLoading`, `researchError`, `researchResult`, `researchHasNarrative`, `researchNarrativeText/Provider/Model/Cost`, `researchCycles`, `researchTimeline`, `researchProviders`, `researchConnectors`
+- Metodi SPA: `goResearch()`, `onResearchInput()`, `onResearchKeyDown()`, `onResearchSubmit()`, `loadResearchProviders()`, `loadResearchConnectors()`
+- Title dinamico: "Ricerca AI — Voci dal Fronte"
+
+### Fix — Router SPA (`templates/shared/router.js`)
+- **Fix stack overflow**: re-entrancy guard `_handling` in `navigate()` e `handleRoute()` per prevenire ricorsione infinita (`goHome()` → `navigate('/')` → `handleRoute()` → handler → `goHome()` → ...)
+- Fix `cadutiCurrentPage`: `Math.max(1, Math.min(...))` per validità input number
+
+### Test (`test_research_engine_master.py`)
+- **113 test, 0 falliti** (97 Fase A + 16 Fase B)
+- Nuovi test Fase B:
+  - `test_ai_client_providers_available` — verifica provider configurati
+  - `test_ai_client_call_real` — chiamata AI reale (provider, text, cost, latency, task_run_id)
+  - `test_ai_client_json_mode` — JSON mode con parsing
+  - `test_ai_client_fallback` — fallback con circuit breaker forzato
+  - `test_orchestrator_narrative_synthesis` — narrative synthesis end-to-end
+
+### Provider AI status
+- **OpenAI** ✅ attivo (primario)
+- **Anthropic** ⚠️ credit balance esaurito
+- **Mistral** ⚠️ import issue SDK
+- **Perplexity** ⚠️ 401 unauthorized
+- **Gemini** ⚠️ modello non trovato (gemini-1.5-flash deprecato)
+- Il sistema funziona con fallback automatico: OpenAI come provider attivo
+
+## 2026-07-23 (sera) — Research Engine Fase A: Fondamenta
+
+### Nuovo modulo: Research Engine (motore agentico di ricerca multi-fonte)
+
+**Schema migrazioni** (`research_engine_schema.py`):
+- 18 nuove tabelle idempotenti: `archive_connectors`, `research_plans`, `research_sessions`, `research_queries`, `research_results`, `research_cycles`, `entity_variants`, `entity_match_candidates`, `document_extractions`, `claims`, `claim_evidence`, `claim_relations`, `generated_narratives`, `ai_providers`, `ai_models`, `ai_routing_policies`, `ai_task_runs`, `ai_usage_ledger`
+- Estensione `record_links` con campi: `algorithm_version`, `score_breakdown_json`, `contrary_signals_json`, `explanation`
+- Seed 6 provider IA: OpenAI, Anthropic, Mistral, Perplexity, Gemini, LM Studio
+- 35 indici per performance su entita', fonte, stato, timestamp, fingerprint
+
+**Claim Service** (`claim_service.py`):
+- Affermazioni atomiche con `stable_id` deterministico (idempotente)
+- Evidenze con ruolo (supports/contradicts/contextualizes), gruppo indipendenza, forza
+- Rilevamento conflitti deterministico: stesso predicate, object_value diverso → contradiction o possible_sequence (se date sequenziali)
+- Timeline da claim documentati
+- Narrazioni versionate con claim_ids, gaps, deductions
+- Revisione umana: confirmed/rejected/under_review con motivazione
+
+**Entity Resolution** (`entity_resolution.py`):
+- Generazione varianti: name_swap, initial, ocr_error, transliteration, accent_variant, title_strip
+- Scoring composto con breakdown: name_similarity (Jaro-Winkler), birth_date, birth_place, service_number, military_unit, camp, temporal_coherence
+- Segnali contrari e dati mancanti esplicitati
+- Match candidate con review: confirmed/rejected/open/omonymy
+- Normalizzazione nomi (NFKD, lowercase, no accenti/apostrofi)
+
+**Archive Registry** (`archive_registry.py`):
+- Import automatico dei 27 provider esistenti da `federation.py` in `archive_connectors`
+- Selezione dinamica fonti per entity_type, periodo, geografia, nazionalita', gaps, clues
+- Health check per connector
+- Authority score e access mode (auto/assisted)
+
+**AI Router** (`ai_router.py`):
+- 21 task types con capabilities e min_quality
+- Routing per capacita': text, vision, ocr, web_search, structured_output, embeddings
+- 3 strategie: quality_max, balanced, economic
+- Circuit breaker (3 fallimenti → 5 min cooldown)
+- Budget check pre-task con quota di riserva
+- Ledger consumi per provider/modello/periodo
+- Crediti: real (API header), estimated, unknown
+
+**Orchestrator** (`research_orchestrator.py`):
+- Ciclo Plan-Retrieve-Extract-Resolve-Validate-Expand-Stop
+- `resolve_input()`: identifica tipo entita', cerca match interni (DB + FTS + graph)
+- `run_cycle()`: ricerca interna + federata, estrazione frammenti, generazione query followup
+- `run_research()`: end-to-end con budget cycles
+- Registrazione query/results con fingerprint e stato (new/linked/excluded/duplicate)
+- Traccia completa sessione (queries, results, cycles)
+- Criteri di arresto: budget exhausted, no new fragments, no external results
+
+**API Router** (`research_engine_api.py`):
+- 35 endpoint sotto `/api/research-engine/`
+- Input resolution, plans, sessions, cycles, queries, results
+- Claims CRUD + evidence + review + conflicts
+- Timeline, narratives
+- Entity variants, match candidates, review
+- Archive connectors: list, capabilities, health, recommendations
+- AI providers, models, credits, usage, routing policies, health check
+
+**Test** (`test_research_engine_master.py`):
+- 97 test, 0 falliti
+- Copertura: schema idempotenza, claim CRUD/evidence/conflicts/review/timeline/narrative, entity resolution (variants/scoring/match/normalize/jaro-winkler), archive registry (listing/recommendations/health), AI router (selection/credits/circuit-breaker/budget/task-run), orchestrator (resolve_input/run_research/session_trace/query_recording), anti-allucinazione (no source/no data/search-vs-document)
+
+**Integrazione in `app.py`**:
+- Schema init in lifespan
+- `seed_from_federation()` in lifespan
+- Router registrato: `app.include_router(research_engine_router)`
+
+## 2026-07-23 (notte) — Integrazione LeBI/ANRP + Aggiornamento architettura
+
+### Backend — Provider LeBI (`source_providers/lebi.py`)
+- **Nuovo provider**: `ProviderLeBI` — Lessico Biografico degli Internati Militari Italiani (ANRP)
+- **Portale**: `https://www.lessicobiograficoimi.it/` — 305.827 nominativi IMI (1943-1945)
+- **Ricerca**: `GET /frontend_prodimi.php/caduti/search?q=&n=&l=&y=&d=0` — parametri verificati da form HTML reale
+- **Scheda**: `GET /frontend_prodimi.php/caduti/show/{ID}` — parsing HTML con BeautifulSoup
+- **PDF**: `GET /frontend_prodimi.php/caduti/showpdf/{ID}` — disponibile pubblicamente (HTTP 200, `application/pdf`)
+- **Parser HTML**: estrae 6 sezioni (ANAGRAFICA, POSIZIONE MILITARE, CATTURA, DECESSO, INTERNAMENTO, FONTI) da classi CSS `fallen-box-title`, `fallen-field-margins`, `col-xs-5`
+- **Campi estratti**: cognome, nome, data/comune/provincia/regione nascita, grado, reparto, arma, fronte, luogo/data cattura, matricola (da note), data/luogo decesso, causa morte, sepoltura, lista campi internamento, fonti
+- **Metodi**: `search()`, `get_metadata()`, `get_document()`, `build_search_url()`
+
+### Backend — Adapter LeBI (`sources_external_lebi.py`)
+- **Nuovo adapter**: `LeBIAdapter` implementa `SourceAdapter` per modulo Fonti Esterne Federate
+- `discover_resources()` — ricerca per cognome con paginazione
+- `parse_record()` — parsing completo scheda + `compute_metadata_hash`
+- `extract_person_mentions()` — 1 menzione per scheda (persona principale)
+- `extract_facts()` — fatti strutturati: birth, capture, internment, death, burial
+- `detect_digital_objects()` — PDF scheda con metadati rights/credit
+- JSON metadata: people, places, military_units, camps, subjects
+
+### Backend — Federation e Compliance
+- **`federation.py`**: registrato `ProviderLeBI` (27 provider totali)
+- **`federation.py`**: aggiunto mapping `_match_provider`: lebi, lessico biografico, anrp → lebi
+- **`compliance_gate.py`**: nuova policy `lebi` / dominio `lessicobiograficoimi.it`
+  - `METADATA_ONLY` con `document_download_allowed=1` (PDF pubblico)
+  - Attribution: "ANRP — LeBI, Lessico Biografico degli IMI"
+  - `policy_status`: partially_verified
+- **`external_metadata_service.py`**: registrato `LeBIAdapter` nel registry adapter
+
+### Backend — Ricerca federata (`search_validator.py`)
+- LeBI interrogato per ogni nome archivio (max 5) alongside ICRC
+- Priorità risultati: ICRC per-nome → LeBI per-nome → ICRC query → LeBI query → altri
+- Limite esterno aumentato da 20 a 25 risultati
+
+### Frontend (`templates/index.html`)
+- Pannello fonti esterne: link dinamici per provider (ICRC/LeBI/altro)
+- Aggiunto link "Scarica PDF" per risultati LeBI
+- Label provider dinamica: `providerLabel` calcolato da `es.provider`
+- Descrizione footer aggiornata: "ICRC + LeBI/ANRP"
+
+### Documentazione
+- **`docs/architecture/ARCHITECTURE.md`**: aggiornato a 27 provider, aggiunta sezione 4.7 LeBI con tutti i dettagli tecnici
+- **`docs/changelog/CHANGELOG.md`**: questa voce
+
+## 2026-07-23 (notte 2) — LeBI F3 Linking + F6 Import incrementale
+
+### F3 — Linking (`external_link_service.py`)
+- **Matching esteso**: aggiunto confronto camp/luogo internamento (peso 1.0) e data decesso (peso 1.5)
+- **grave_conflicts**: fix bug — inizializzato a lista vuota, merge da date nascita + date decesso
+- **Batch linking**: `generate_links_for_provider(provider, limit)` — genera collegamenti per tutte le menzioni di un provider
+- **Omonimie**: `detect_omonimie(provider, min_score)` — rileva menzioni con 2+ candidati con score gap < 0.15
+- **Review con type**: `review_link_with_type(link_id, ..., link_type='lebi_match')` — link_type personalizzato per record_links bidirezionali
+
+### F6 — Import incrementale (`external_metadata_service.py`)
+- **Checkpoint/Resume**: `run_import(provider, ..., resume=True)` riprende dall'ultimo job incompleto, skippa URL già processati
+- **Batch size**: update DB ogni `batch_size` record (default 50) per ridurre I/O
+- **Helper LeBI**: `import_single_lebi_record(lebi_id)` — import singola scheda per ID
+- **Helper LeBI**: `import_lebi_by_surname(surname, max_records)` — import batch per cognome
+- **Statistiche**: ritornato anche `skipped` (record saltati in resume)
+
+### Documentazione
+- **`docs/architecture/ARCHITECTURE.md`**: aggiunte sezioni 4.7.1 (Linking) e 4.7.2 (Import incrementale)
+
+## 2026-07-23 (sera) — Frontend Croce Rossa + Conformità + Filtri Scopri + Architettura + Docs
+
+### Frontend `renderRedCross()` — UI completa sezione Croce Rossa
+
+- **`templates/rc.html`**: implementata funzione `renderRedCross()` con:
+  - Campo ricerca con filtro fonte (Tutte / ICRC WW1 / CRI Milano)
+  - Tabella risultati con badge colorati per provider, indicatori accesso (Online / Solo metadati / Su richiesta / Login richiesto / Errore)
+  - Pannello dettaglio record espandibile con tutti i metadati
+  - Link diretto al catalogo esterno + bottone dettaglio per record con ID
+  - Loading state e gestione errori
+- **State**: aggiunti `redCrossQuery`, `redCrossSource`, `redCrossResults`, `redCrossLoading`, `redCrossDetail`
+- **Funzioni**: `redCrossSearch()`, `redCrossDetail()`, `redCrossKeyDown()`, `setRedCrossSource()`, `complianceBadge()`
+
+### Frontend `renderCompliance()` — UI completa sezione Conformità
+
+- **`templates/rc.html`**: implementata funzione `renderCompliance()` con 3 tab:
+  - **Policy**: tabella con provider, dominio, classificazione (badge colorato), licenza metadati, download permesso, stato verifica, credit line
+  - **Coda revisione**: tabella con priorità (badge), azione, risorsa, motivo, data, bottoni Approva/Rifiuta/Sospendi
+  - **Log decisioni**: tabella con data, azione, decisione (badge colorato), regola, motivazione, decisore
+- **State**: aggiunti `compliancePolicies`, `complianceDecisions`, `complianceReviewQueue`, `complianceTab`
+- **Funzioni**: `loadCompliance()` (3 API parallele), `resolveReviewItem()`, `updatePolicy()`
+- **`setView()`**: caricamento automatico compliance data al click nav
+
+### Filtri avanzati pagina Scopri
+
+- **Frontend `renderDiscover()`**: aggiunti 3 dropdown filtri:
+  - Filtro per fonte (9 opzioni: IMI, Albo d'Oro, Nastro Azzurro, Decorati ISTORECO, Caduti Ministero, CWGC, Fonti indice, Fondi archivistici, NARA T315)
+  - Filtro per conflitto (Tutti / 1ª GM / 2ª GM)
+  - Filtro per sorte (Tutte / Deceduto / Disperso / Rimpatriato)
+- **Backend `rc_api_ext.py`**: endpoint `GET /discover-candidates` esteso con parametri `source`, `conflict`, `fate`
+  - Filtro source: skip provider non selezionato
+  - Filtro conflict: WHERE su colonne grado/reparto/guerra con keyword match
+  - Filtro fate: WHERE su colonna sorte
+- **State**: aggiunti `discoverFilterSource`, `discoverFilterConflict`, `discoverFilterFate`
+
+### Documentazione
+
+- **`docs/architecture/ARCHITECTURE.md`**: documento architetturale completo (spostato da root)
+  - 8 sezioni: visione, architettura, frontend dettagliato, backend dettagliato, AI integration, memory router, cross-DB linking, federation layer
+  - 26 provider federati mappati
+  - Flussi end-to-end documentati
+  - Mappa endpoint → file
+- **Riorganizzazione docs**: tutti i file .md spostati in `docs/` con sottocartelle:
+  - `docs/architecture/` — ARCHITECTURE.md, ARCHITETTURA_DB.md
+  - `docs/manuals/` — PERCORSO_RICONOSCIMENTI.md, MANUALE_USO.md (nuovo)
+  - `docs/changelog/` — CHANGELOG.md
+  - `docs/todo/` — TODO.md, TODO_2026-07-10.md, TODO_2026-07-15.md
+  - `docs/analysis/` — ANALISI_DB_FRONTEND.md, REPORT_ANALISI_E_FIX.md, ANALISI_117DIV_MARZO1943.md, CONCORSI_EUROPEI.md
+- **`README.md`**: aggiornato con architettura corrente (26 provider, 80+ endpoint, AI multi-provider)
+- **`docs/manuals/MANUALE_USO.md`** (nuovo): manuale d'uso completo per operatori e ricercatori
+- **`docs/todo/TODO.md`**: aggiornato con task completati e nuovi pending
+
+---
+
+## 2026-07-23 — Compliance Gate + Fonti Croce Rossa + Migrazione PostgreSQL
+
+### Compliance Gate — sistema di conformità normativo (GDPR/D.lgs 196/2003/D.lgs 42/2004)
+
+- **`compliance_gate.py`** (nuovo): motore centralizzato `evaluate(resource, action, user_role)` che controlla ogni operazione su fonti esterne:
+  - 8 classificazioni risorsa: `METADATA_ONLY`, `PUBLIC_VIEW`, `PUBLIC_DOWNLOAD`, `REQUEST_REQUIRED`, `AUTHORIZATION_REQUIRED`, `RESTRICTED`, `RIGHTS_UNKNOWN`, `UNREACHABLE`.
+  - 11 azioni controllate: `INDEX_METADATA`, `GENERATE_LINKS`, `DOWNLOAD_FILE`, `RUN_OCR`, `EXTRACT_PERSONAL_DATA`, `SHOW_TO_AUTHENTICATED_USER`, `SHOW_PUBLICLY`, `INCLUDE_IN_DOSSIER`, `EXPORT`, `DELETE`, `REFRESH_SOURCE`.
+  - 5 decisioni: `ALLOW`, `ALLOW_WITH_LIMITATIONS`, `REQUIRE_REVIEW`, `REQUIRE_AUTHORIZATION`, `DENY`.
+  - Regole: UNREACHABLE/RESTRICTED → DENY; RIGHTS_UNKNOWN → metadati minimi + link; dati sanitari → blocco pubblicazione/export + autorizzazione per OCR; persona potenzialmente vivente → revisione obbligatoria; AUTHORIZATION_REQUIRED → verifica autorizzazione registrata.
+  - Logging automatico ogni decisione in `compliance_decisions` con regola, motivazione, policy applicata.
+  - Coda `compliance_review_queue` per revisione umana.
+  - `seed_source_policies()`: pre-popolazione policy per ICRC, CRI Milano, CRI Trieste con condizioni reali (diritti, licenze, contatti, credit line).
+- **Schema DB** (`rc_schema.py`): 4 nuove tabelle:
+  - `source_policies`: registro fonti con diritti, licenze, condizioni accesso, stato verifica, scadenza review.
+  - `compliance_decisions`: log ogni valutazione (azione, decisione, regola, motivazione, policy, autorizzazione).
+  - `compliance_authorizations`: autorizzazioni registrate con scope, finalità, protocollo, validità, revoca.
+  - `compliance_review_queue`: coda "Da verificare" con priorità, stato, decisione, motivazione.
+  - Migration: `life_status` column su `rc_candidates` (deceased/possibly_living/unknown).
+- **Integrazione OCR**: endpoint `POST /practice-documents/{did}/ocr` passa dal Compliance Gate prima di elaborare. Documenti sanitari (certificati morte, referti, cartelle cliniche) richiedono autorizzazione.
+- **API endpoints** (`rc_api_ext.py`):
+  - `GET /compliance/policies` — lista tutte le policy fonti.
+  - `GET /compliance/policies/{id}` — dettaglio policy.
+  - `PUT /compliance/policies/{id}` — aggiorna policy (admin only).
+  - `GET /compliance/decisions` — log decisioni (ultime 100).
+  - `GET /compliance/review-queue` — coda revisione (pending/resolved).
+  - `POST /compliance/review-queue/{id}/resolve` — risolvi item (approve/reject/suspend/request_consultation).
+  - `POST /compliance/authorize` — crea autorizzazione (admin only).
+  - `DELETE /compliance/authorizations/{id}` — revoca autorizzazione (admin only).
+  - `POST /compliance/evaluate` — valuta risorsa + azione → decisione.
+- **Frontend** (`templates/rc.html`): nav items "Croce Rossa" e "Conformità" aggiunti. Routing `renderRedCross()` e `renderCompliance()`.
+
+### Provider ICRC WW1 — Prisoners of the First World War
+
+- **`source_providers/icrc_ww1.py`** (nuovo): `ProviderICRCWW1` per `grandeguerre.icrc.org`:
+  - 5M+ schede prigionieri 1GM, italiani inclusi.
+  - `search()`: scraping HTML rispettoso, parsing link `/en/File/Details/{id}`, metadati minimi.
+  - `get_metadata()`: estrae nome e metadati strutturati da pagina dettaglio.
+  - `get_document()`: bloccato — `METADATA_ONLY`, no download automatico.
+  - Classificazione: `METADATA_ONLY` (diritti non chiari, principio prudenziale).
+  - Credit line: "© ICRC Archives — Prisoners of the First World War".
+  - Registrato in `source_providers/federation.py`.
+
+### Provider CRI Milano — Archivio Storico Croce Rossa Italiana
+
+- **`source_providers/cri_milano.py`** (nuovo): `ProviderCRIMilano` per `cri-mi.archimista.com`:
+  - Catalogo su piattaforma archimista. Corrispondenza dispersi/scomparsi 2GM.
+  - `search()`: parsing risultati archimista (fonds/units/items).
+  - `get_metadata()`: estrae titolo, segnatura, metadati strutturati.
+  - `get_document()`: bloccato — `REQUEST_REQUIRED`, contattare archivio.
+  - Classificazione: `REQUEST_REQUIRED` (documento su richiesta).
+  - Contatto: archivio@crimi.it.
+  - Registrato in `source_providers/federation.py`.
+
+### API Croce Rossa
+
+- **`GET /api/rc/red-cross/search?q=...&source=all|icrc_ww1|cri_milano`**: ricerca simultanea nei provider Croce Rossa.
+- **`GET /api/rc/red-cross/{provider}/{record_id}`**: dettaglio record da fonte Croce Rossa (solo metadati).
+
+### Migrazione SQLite → PostgreSQL (Supabase)
+
+- **`db_adapter.py`** (nuovo): adapter layer trasparente SQLite/PostgreSQL:
+  - Rileva `DATABASE_URL` da env. Se `postgresql://` → PostgreSQL, altrimenti SQLite (retrocompatibile).
+  - `PostgresConnection`: wrapper psycopg2 con `RealDictCursor` per compatibilità `sqlite3.Row`.
+  - Conversione automatica: `?` → `%s`, `INTEGER PRIMARY KEY AUTOINCREMENT` → `SERIAL PRIMARY KEY`, `PRAGMA` → no-op.
+  - `executescript()` con split statement + conversione AUTOINCREMENT.
+- **`migrate_to_pg.py`** (nuovo): script migrazione completo:
+  - `--dry-run`: solo schema, no dati.
+  - `--schema-only`: creazione tabelle (69 tabelle, conversione tipi).
+  - `--data-only`: migrazione dati in batch (`--batch-size=5000`, `ON CONFLICT DO NOTHING`).
+  - `--full`: schema + dati + indici + FTS + verifica conteggi.
+  - `--table=nome`: singola tabella.
+  - FTS5 virtual tables skipate, ricreate con tsvector + GIN + trigger.
+  - Verifica conteggi SQLite vs PostgreSQL alla fine.
+- **`database.py`**: `get_conn()` supporta entrambi i backend.
+- **`search_service.py`**: `search_entities()` supporta FTS5 (SQLite, `bm25()`) e tsvector (PostgreSQL, `ts_rank()` + `plainto_tsquery()`). `get_fts_stats()` adattato.
+- **`db_init_fts.py`**: `run_migration()` crea FTS5 su SQLite o tsvector+GIN+trigger su PostgreSQL.
+- **`.env.example`** (nuovo): template configurazione con istruzioni Supabase.
+- **`requirements.txt`**: aggiunto `psycopg2-binary>=2.9.0`.
+- **App startup** (`app.py`): `seed_source_policies()` eseguito al boot.
+
+### Architettura compliance
+
+```
+Fonte esterna → Provider (search/get_metadata) → ComplianceGate.evaluate()
+  → ALLOW / ALLOW_WITH_LIMITATIONS / REQUIRE_REVIEW / REQUIRE_AUTHORIZATION / DENY
+  → Log in compliance_decisions
+  → Review queue se necessario
+  → Autorizzazione registrata se richiesta
+```
+
+### Principi applicati
+
+- **Privacy by design**: metadati minimi, no copia documenti senza titolo legittimo.
+- **Minimizzazione dati**: no indirizzi moderni, recapiti familiari, codici fiscali, dati sanitari dettagliati.
+- **Separazione consultazione/acquisizione/riproduzione**: link diretto ≠ download autorizzato.
+- **Supervisione umana**: AI propone, non decide. Revisione obbligatoria per omonimie, conflitti, dati sanitari, pubblicazione.
+- **Trasparenza matching**: ogni punteggio spiegabile con campi, valori, pesi, conflitti.
+- **Tracciabilità**: ogni decisione registrata con regola, motivo, policy, utente, data.
+- **Principio prudenziale**: `RIGHTS_UNKNOWN` → metadato minimo + link diretto + nessuna copia.
+
+---
+
+## 2026-07-22 (notte 2) — Scopri Candidati: ricerca in tutti i DB storici + import
+
+### Backend: scoperta e importazione candidati (`rc_api_ext.py`)
+- **`GET /api/rc/discover-candidates?q=...`**: ricerca simultanea in 9 fonti storiche del DB:
+  - `internati` (20K IMI), `caduti_albooro` (342K), `decorati_nastroazzurro` (280K), `decorati` (1.3K), `caduti_ministero` (162K), `caduti_cwgc` (506K), `fonti_indice` (35K), `fondi_archivistici` (4.8K), `documenti_nara_t315`.
+  - Ricerca multi-token (AND tra token, OR tra colonne) su tutti i campi rilevanti di ogni tabella.
+  - Per ogni risultato: fonte, record_id, dati completi, flag `already_imported` con `rc_candidate_id` se gia' presente.
+  - Risultati ordinati: non importati prima, poi per fonte.
+- **`POST /api/rc/discover-candidates/{source}/{record_id}/import`**: crea candidato RC da record storico:
+  - Mappa automaticamente i campi (cognome, nome, grado, luogo nascita, residenza, reparto, matricola, luogo morte, conflitto).
+  - Crea anche record in `rc_sources` collegato al candidato con riferimento alla fonte originale.
+  - Note interne con provenienza, sorte, decorazione, URL.
+  - Se candidato gia' esistente (match cognome+nome), restituisce `already_exists: true` con l'ID esistente.
+  - Audit log automatico.
+- **`DELETE /api/rc/practices/{pid}`**: nuovo endpoint con cascade su documenti, versioni, checklist, scadenze, comunicazioni, pacchetti.
+
+### Frontend: pagina Scopri Candidati (`templates/rc.html`)
+- **Nav item "Scopri"** aggiunto nella navbar tra Dashboard e Candidati.
+- **`renderDiscover()`**: pagina con:
+  - Campo ricerca + bottone "Cerca" con loading state.
+  - Descrizione fonti cercate (IMI 20K, Albo d'Oro 342K, Nastro Azzurro 280K, ecc.).
+  - Tabella risultati con: fonte (tag colorato per tipo), nominativo, dati (grado, reparto, luogo, sorte, decorazione), stato (Importato/Nuovo), azione (Apri/Importa).
+  - Bottoni colorati per fonte: IMI=accent, Albo d'Oro=accent-2, Nastro Azzurro/decorati=success, Ministero=warning, altri=neutral.
+- **`importCandidate(source, recordId)`**: chiama API import, mostra toast, apre il dettaglio candidato.
+- **`discoverSearch()`**: chiama API con debounce, gestisce loading state.
+
+### Frontend: dashboard estesa con conteggi reali (`rc_api.py`, `templates/rc.html`)
+- **`/dashboard` API**: aggiunti 6 conteggi reali da DB: `total_practices`, `total_practice_docs`, `total_descendant_contacts`, `total_institutional_contacts`, `total_communications`, `total_ai_analyses`.
+- **`renderDashboard()`**: sezione generale espansa da 4 a 12 KPI con dati reali.
+- **`loadDashboard()`**: chiama `/dashboard` + `/dashboard-ext` in parallelo.
+
+### Frontend: link nella pagina principale (`templates/index.html`)
+- Sostituito link `/1gm` (rimosso) con `/riconoscimenti` nella navbar del sito principale.
+
+### Test: cleanup automatico (`_test_ext.py`)
+- Aggiunta sezione **14. Cleanup** che elimina tutti i record creati dal test dopo l'esecuzione.
+- 28/28 test passati con DB pulito.
+
+### Verifica
+- Ricerca "ALMONTI": 4 risultati (3 Albo d'Oro + 1 IMI deceduto).
+- Import ALMONTI Giuseppe (Albo d'Oro id=192): candidato 102 creato con grado, note, URL.
+- AI analysis su candidato importato: 9 onorificenze, top Croce al Merito di Guerra 51%.
+- Ricerca "Rossi": 15 risultati da Albo d'Oro con nominativi reali (ROSSI ETTORE, ALBANESE SCRIBANI ROSSI UMBERTO, ecc.).
+
+## 2026-07-22 (notte) — Percorso Riconoscimenti: contatti, documenti, AI cross-check, dashboard estesa
+
+### Frontend: tab Contatti con aggiunta manuale contatti discendenti
+- **`templates/rc.html`**: Riscritto `renderCandidateContacts` con sezione **Contatti discendenti** (tabella con nome, parentela, email, PEC, telefono, stato verifica, consenso, fonte) + bottone **"+ Aggiungi contatto"** che apre modal con tutti i campi (nome, cognome, rapporto parentela, email, PEC, telefono, fonte, stato verifica, consenso, ecc.).
+- Funzioni JS: `createDescContact`, `deleteDescContact`, `editDescContact` per CRUD completo via API.
+- Sezione **Tentativi di contatto** mantenuta con tabella esistente.
+
+### Frontend: tab Pratiche con upload documenti + pratiche estese
+- **`templates/rc.html`**: Riscritto `renderCandidateAdminCases` con tre sezioni:
+  - **Pratiche estese**: lista con stato, protocollo, ente, date + bottone **"+ Nuova pratica"** (modal con 11 campi).
+  - **Documenti di pratica**: tabella con titolo, categoria, versione, stato verifica, **data caricamento**, **data aggiornamento** + bottoni verifica/archivia/elimina + **"+ Carica documento"** (modal con upload file, categoria, metadati, livello riservatezza).
+  - **Pratiche legacy**: existing admin cases mantenute.
+- Funzioni JS: `createExtPractice`, `uploadPracticeDoc`, `verifyDoc`, `archiveDoc`, `deleteDoc`.
+- `loadCandidate` estesa per fetch parallela di `descContacts`, `extPractices`, `practiceDocs`.
+
+### Frontend: dashboard estesa con KPI operativi
+- **`templates/rc.html`**: `loadDashboard` ora chiama in parallelo `/dashboard` + `/dashboard-ext` e mergea i risultati.
+- `renderDashboard` riscritta con 3 sezioni KPI:
+  - **Generale**: candidati totali, fonti, tipi riconoscimento, pratiche.
+  - **KPI Operativi**: da verificare, concessi, valutazioni pendenti, discendenti da contattare, documenti mancanti, comunicazioni bozza.
+  - **Pratiche**: in preparazione, pronte revisione, trasmesse, concluse, integrazioni aperte, respinte, scadenze <30gg, comunicazioni da approvare.
+  - KPI con border-left colorato per priorità (rosso=urgente, giallo=attenzione, verde=ok, blu=info).
+
+### AI Analysis: cross-check su 9 fonti storiche del DB
+- **`rc_ai_analysis.py`**: Nuova funzione `_cross_check_sources()` cerca cognome+nome in 9 tabelle:
+  - `caduti_albooro` (342K), `internati` (20K), `decorati_nastroazzurro` (280K), `decorati` (1.3K), `caduti_ministero` (162K), `caduti_cwgc` (506K), `fonti_indice` (35K), `fondi_archivistici` (4.8K), `documenti_nara_t315`.
+- **Processo logico**: sezione **3d. CROSS-CHECK SU FONTI STORICHE DEL DATABASE** con dettaglio match per ogni fonte.
+- **% di concessione**: boost/penalty basati sui match (IMI +10%, Albo d'Oro/Nastro Azzurro +8%, Caduti Ministero +5%, NARA T315 +5%, fonti archivio +3%, nessun match -5%).
+- **Fattori favorevoli/sfavorevoli**: ogni match diventa fattore esplicito.
+- **Raccomandazioni**: sezione **6. Verifiche su fonti storiche** con suggerimenti specifici.
+
+### AI Analysis: documenti di pratica nella valutazione
+- **`rc_ai_analysis.py`**: `_get_candidate_full` recupera anche `practice_documents`, `ext_practices`, `descendant_contacts`.
+- **Processo logico**: sezioni **3b. Documenti di pratica** e **3c. Pratiche estese**.
+- **% di concessione**: boost per documenti verificati (+10 se 3+, +5 se 1+), boost per foglio matricolare (+5), penalty per non verificati (-5).
+- **Fattori**: stato documenti in favorevoli/sfavorevoli.
+- **Raccomandazioni**: sezione **5. Documenti di pratica** con suggerimenti specifici.
+
+### Backend: fix minori
+- **`rc_api_ext.py`**: `archive_practice_document` accetta body vuoto (`Body(default={})` invece di `Body(...)`).
+
+### Test
+- 27/27 test passati (`_test_ext.py`).
+- AI analysis verificata su candidati reali: AGOSTI VASCO (5 match Nastro Azzurro, 45 fondi archivistici, 1 NARA T315), BLUM GIULIO (2 Nastro Azzurro, 1 caduti Ministero), BONDI DOMENICO (1 Nastro Azzurro, 4 caduti Ministero, 2 NARA T315).
+
+## 2026-07-22 (sera) — Nuovo modulo: Percorso Riconoscimenti
+
+### Modulo completo per identificazione candidati a riconoscimenti storici
+
+**File nuovi:**
+- **`auth.py`**: Autenticazione session-based (bcrypt + sessioni SQLite), 6 ruoli con permessi differenziati (admin, ricercatore, revisore, genealogista, operatore, discendente), middleware FastAPI (`require_auth`, `require_role`, `require_permission`), endpoint login/logout/me, creazione utente default admin/admin.
+- **`rc_schema.py`**: 14 tabelle DB con prefisso `rc_` (candidates, historical_events, sources, recognition_types, recognition_assessments, family_persons, kinship_links, contact_attempts, descendant_cases, administrative_cases, audit_log, state_transitions, invitations, documents). Seed catalogo iniziale con 12 tipi di riconoscimento (Medaglia d'Oro/Argento/Bronzo Valor Militare, Valor Civile, Croce di Guerra, Merito di Guerra, OMRI, ecc.). Tutte con `procedura_attiva='da_verificare'`.
+- **`rc_state_machine.py`**: State machine con 25 stati (BOZZA → ... → PRATICA_ARCHIVIATA), transizioni validate, permessi per transizione, audit log automatico, storico transizioni.
+- **`rc_api.py`**: Router FastAPI con ~40 endpoint: auth, candidati CRUD, fonti CRUD + upload, eventi storici, valutazioni, genealogia, contatti con approvazione, casi discendenti, pratiche amministrative, catalogo riconoscimenti, dashboard, audit log, portale discendente pubblico (via token invito), modulo pubblico "Riconosci questo nominativo?", generazione fascicolo PDF.
+- **`rc_dossier.py`**: Generazione fascicolo PDF con reportlab (16 sezioni: copertina, indice, dati identificativi, cronologia, relazione storico-documentale, riconoscimento ipotizzato, inquadramento normativo, genealogia, elenco fonti, pratiche). Ogni affermazione collegabile a fonte.
+- **`templates/rc.html`**: Frontend SPA con login, dashboard (KPI, candidati per stato), elenco candidati con filtri, dettaglio candidato con 8 tab (dati, fonti, eventi, valutazione, genealogia, contatti, pratiche, cronologia), catalogo riconoscimenti, audit log. Design system coerente con sito esistente.
+- **`tests/test_rc_master.py`**: 25 test (auth, state machine, schema, privacy, dossier, workflow completo). Nessun mock, DB temporaneo isolato.
+- **`docs/PERCORSO_RICONOSCIMENTI.md`**: Documentazione tecnica e operativa completa.
+
+**File modificati:**
+- **`app.py`**: Import auth/rc_schema/rc_api, init tabelle in lifespan, route `/riconoscimenti`, mount router.
+- **`requirements.txt`**: Aggiunto `bcrypt>=4.0.0`, `reportlab>=4.0.0`.
+- **`tests/_helpers.py`**: Registrati `auth` e `rc_schema` in `MODULES_WITH_SCHEMA_INIT`.
+
+**Privacy by design:**
+- Dati persone viventi non esposti (data_nascita, luogo_nascita oscurati quando visibilita_limitata=1)
+- Contatto mediato con approvazione umana obbligatoria
+- Portale discendente accessibile solo via token invito
+- Audit log completo per ogni azione
+- Il sistema non attribuisce mai riconoscimenti (espressioni: "potenziale candidato", "riconoscimento ipotizzato", "procedura potenzialmente praticabile")
+
+**Test:** 277 passed, 1 skipped, 0 failed (intera suite progetto).
+
+## 2026-07-22 (pomeriggio) — Integrazione indexing_rules in tutti gli import
+
+### Script di import nominativi (10 moduli)
+- **`caduti_ministero.py`**: `titlecase_name` su cognome/nome/paternita/maternita, `clean_toponym` su comune_nascita/luogo_sepoltura, `is_empty_value` su nazione_decesso.
+- **`caduti_cwgc.py`**: `normalize_age` su campo eta (sez. 1.4.11), `titlecase_name` su nome/cognome, `clean_toponym` su cimitero/paese_cimitero.
+- **`caduti_albooro.py`**: `titlecase_name` su nominativo/paternita, `clean_toponym` su comune_attuale/luogo_morte.
+- **`caduti_bologna.py`**: `titlecase_name` su nome/paternita, `clean_toponym` su luogo_nascita/luogo_dimora/luogo_morte.
+- **`caduti_sardi.py`**: `titlecase_name` su cognome/nome/paternita, `clean_toponym` su luogo_nascita/comune_residenza/luogo_morte.
+- **`caduti_francia_ww1.py`**: `clean_toponym` su lieu_naissance/lieu_deces/lieu_deces_suite/lieu_transcription.
+- **`decorati.py`** (ISTORECO): `titlecase_name` su cognome/nome, `clean_toponym` su comune_nascita/comune_residenza/luogo_morte/luogo_cattura/luogo_internamento.
+- **`decorati_nastroazzurro.py`**: `is_empty_value` sostituisce check manuale 'nd'/'ND', `titlecase_name` su nome.
+- **`import_fonti_personali.py`**: `_normalizza_nome` delega a `normalize_match_key` (prima regex autonoma).
+- **`import_personal_sources.py`**: `_normalize_name` delega a `normalize_match_key` (prima `.strip().lower()`).
+
+### Moduli di analisi
+- **`audit_cross_db.py`**: `normalize_text`/`normalize_name`/`is_empty` delegano a `indexing_rules` (prima implementazione autonoma con regex e set placeholder duplicato).
+- **`events.py`**: `match_eventi_per_internato` applica `clean_toponym` al testo prima del keyword matching, migliorando recall su toponimi qualificati.
+
+### Indicizzazione varianti "O" (sez. 1.4.5)
+- **`linker.py`**: nuovo helper `_save_persona_with_variants` che espande i nomi con varianti "O" (es. "Giuseppe O Pino") in entità separate, tutte collegate allo stesso record. Sostituite tutte le chiamate `save_entita("persona", ...)` in `build_links` con il nuovo helper.
+
+### Fix grafi SVG (event delegation)
+- **`templates/index.html`**: sostituito `onClick="${() => ...}"` (stringa letterale stringificata nell'SVG, click non funzionante) con attributi `data-graph-idx` sui cerchi + handler delegato `onGraphSVGClick` sui container div. Fix applicato a tutti e 4 i grafi: eventi (`buildGraphSVG`), luoghi (`buildGraphLuoghiSVG`), paesi (`buildGraphPaesiSVG`), soldati (`buildGraphSoldatiSVG`).
+
+### Migrazione in-place dataset esistenti
+- Script temporaneo `_migrate_normalize.py` (eseguito e rimosso): applicato `titlecase_name` e `clean_toponym` ai record esistenti di 7 tabelle (caduti_ministero, caduti_cwgc, caduti_albooro, caduti_bologna, caduti_sardi, decorati, decorati_nastroazzurro). **6.381 record aggiornati su 1.347.135 totali, 0 errori, 0 record cancellati**. Nessun dato archiviato perso.
+
+## 2026-07-22 — Regole di indicizzazione Antenati/FamilySearch
+
+### Nuovo modulo (`indexing_rules.py`)
+- Implementate le **"Linee guida per l'indicizzazione"** (portale Antenati — Direzione Generale Archivi / FamilySearch, ed. 9 luglio 2024) come **single source of truth** per la normalizzazione anagrafica. Ogni funzione cita la sezione del manuale:
+  - `normalize_match_key` (sez. 1.3.1.1/1.3.2): chiave di matching minuscola, spazi collassati, punteggiatura rimossa tranne apostrofi/trattini interni; accenti preservati (2.4.2); placeholder → vuoto (1.3.1.1.4).
+  - `is_empty_value` (1.3.1.1.4/1.3.8.2): riconosce "N.N.", "Enne", "sconosciuto"...
+  - `strip_titles` (1.4.6): rimuove titoli iniziali ("signor", "don"...).
+  - `expand_or_variants` / `fold_variants` (1.4.5): gestione varianti separate da "O" (oppure).
+  - `titlecase_name` (1.3.7): casing con preposizioni del cognome e apostrofi/Mc (D'Amico, McGregor, Da Vinci).
+  - `clean_toponym` (1.4.9.1): rimuove qualificatori ("frazione di", "comune di"...) mantenendo eccezioni ("Città di Castello"); non modernizza (1.3.1.2.1).
+  - `normalize_age` (1.4.11): arrotonda per difetto, <1 anno → 0, "nato morto" → 0, intervalli → prima età, età assente → None.
+
+### Integrazione pipeline (rimozione doppioni)
+- `database._normalize_name`, `linker._norm`, `research_to_index._normalize_name` ora **delegano** a `indexing_rules.normalize_match_key` (prima tre implementazioni duplicate).
+- `search_service._normalize_query`: rimuove titoli e placeholder dai termini prima della query FTS5, migliorando il recall.
+
+### Test
+- `tests/test_indexing_rules.py`: 40 nuovi test sugli esempi del manuale. Suite: **251 passed, 1 skipped** (l'unico fallimento in run completa è un problema di isolamento del test `test_source_locator`, che passa isolato — non correlato).
+
 ## 2026-07-21 (sera) — Fix crash frontend, provider AI per-tab e modalità parallela
 
 ### Frontend (`templates/index.html`)
@@ -1303,3 +1844,65 @@ Collegamenti per tabella: `caduti_ministero` 355.966 · `internati` 280.896 · `
 | Caduti CWGC | `caduti_cwgc` | 0 (richiede Selenium) | cwgc.org |
 | Entità estratte | `entita` | 42.806 | Estrazione automatica cross-dataset |
 | Collegamenti | `collegamenti` | 75.771 | Link entità ↔ record |
+
+---
+
+## 2026-07-24 — AI Provider Consolidation + LeBI Fase 4
+
+### AI Provider Consolidation
+- **`ai_router.py`**: OpenAI impostato come provider primario per tutti i task type (text, web_search, vision+ocr, embeddings). Altri provider (Anthropic, Mistral, Perplexity, Gemini) solo come fallback.
+- **`ai_client.py`**: Modelli default aggiornati — Anthropic `claude-sonnet-4-5-20250929`, Gemini `gemini-2.0-flash` (sostituisce deprecato `gemini-1.5-flash`).
+- **`event_research_engine.py`**: TAB_PROVIDER usa `gpt` (OpenAI) per tutti i 4 tab (panoramica, fonti, punti_di_vista, cronologia). EVENT_RESEARCH_FALLBACK: gpt → perplexity → claude → mistral.
+- **`ai_research.py`**: Modello Anthropic allineato a `claude-sonnet-4-5-20250929` nel dizionario PROVIDERS.
+- **`biography.py`**: Verificato `_FALLBACK_ORDER` già prioritizza `gpt`.
+- **`research_engine_schema.py`**: Verificato seed ai_providers ha OpenAI con `priority=1`.
+
+### LeBI Fase 4 — Frontend, API, Parser Fix
+- **3 nuovi endpoint API** in `app.py`:
+  - `GET /api/lebi/search` — ricerca per cognome/nome/luogo/anno
+  - `GET /api/lebi/record/{record_id}` — scheda biografica dettagliata
+  - `GET /api/lebi/compare/{soldier_id}` — confronto IMI locale vs LeBI con match score
+- **Frontend `voci-data.js`**:
+  - `loadLeBIComparison(soldierId)` — chiama API comparison, restituisce match con score
+  - `loadLeBISearch(query, filters)` — ricerca standalone LeBI
+  - LeBI aggiunto ai filtri fonti italiane (ANRP, lessicobiografico)
+- **Frontend `index.html`**:
+  - Tab "LeBI" nel dossier soldato (visibile solo per IMI)
+  - Vista comparison con campi corrispondenti (verde, =) e divergenti (rosso, ≠)
+  - Detail espandibile con scheda completa LeBI
+  - Link scheda LeBI + PDF download
+  - Loading state e error handling
+  - `loadLeBIComparison()` method nel controller
+- **Bug fix parser HTML LeBI**:
+  - `source_providers/lebi.py` `_parse_record_html`: il parser usava `col-xs-5` per le label, ma l'HTML reale usa class `fallen-label`. Fix: label identificate da `fallen-label`, valori da sibling senza `fallen-label`.
+  - Pass separato per sezione INTERNAMENTO: campi usano `col-xs-5` con `fallen-field-margins` senza `fallen-label`.
+  - Supporto sezione RIENTRO (IMI sopravvissuti) oltre a DECESSO.
+  - `sources_external_lebi.py` `_parse_sections`: stesso fix applicato all'adapter.
+- **Verifica reale**: ricerca "Rossi Mario" → 10 risultati reali. Record #78247 (MARIO DE ROSSI) parsato correttamente: cognome, nome, data nascita (07-06-1923), comune (San Severo), grado (S. Ten.), 7 campi internamento (Stalag VI C, Oflag VI C/Z, Stalag VI G, Stalag X B/Z, Stalag XIII D, Stalag III D, Stalag XI A).
+
+### Documentazione
+- **`docs/architecture/PIPELINE.md`**: nuovo documento con 11 sezioni — pipeline ricerca, AI, research-to-index, LeBI, compliance, OCR, biografia, event research, import fonti, mappa endpoint, schema DB.
+- **`docs/architecture/ARCHITECTURE.md`**: aggiornata versione, stack AI (5 provider con Gemini), endpoint count (312).
+- **`README.md`**: aggiornato diagramma architettura (27 provider, 5 AI provider), tabella provider federation (27), API principali (LeBI endpoints), moduli principali (lebi.py, sources_external_lebi.py, voci-data.js).
+- **`docs/todo/TODO.md`**: aggiornato con sezione 2026-07-24.
+
+### File modificati
+- `ai_router.py` — `_default_policy`: OpenAI primario per tutti i task type
+- `ai_client.py` — `_DEFAULT_MODELS`: Anthropic e Gemini aggiornati; `_get_gemini_model`: gemini-2.0-flash
+- `event_research_engine.py` — `TAB_PROVIDER` e `EVENT_RESEARCH_FALLBACK`: OpenAI primario
+- `ai_research.py` — `PROVIDERS`: modello Anthropic allineato
+- `app.py` — 3 nuovi endpoint LeBI (search, record, compare)
+- `source_providers/lebi.py` — `_parse_record_html`: fix parser HTML, supporto RIENTRO
+- `sources_external_lebi.py` — `_parse_sections`: fix parser HTML, supporto RIENTRO
+- `templates/voci-data.js` — `loadLeBIComparison`, `loadLeBISearch`, filtro fonti italiane
+- `templates/index.html` — Tab LeBI, vista comparison, method `loadLeBIComparison`
+- `docs/architecture/PIPELINE.md` — nuovo file pipeline completo
+- `docs/architecture/ARCHITECTURE.md` — aggiornamento versione e stack
+- `README.md` — aggiornamento completo
+- `docs/changelog/CHANGELOG.md` — questa sezione
+- `docs/todo/TODO.md` — aggiornamento task
+
+### Stato API
+- Endpoint totali: 312
+- Provider federation: 27
+- AI provider attivi: 5 (OpenAI primario, 4 fallback)

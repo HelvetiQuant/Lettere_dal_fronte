@@ -65,6 +65,14 @@ from file_importer import (
 )
 from geocoder import validate_place, validate_record_locations
 from credits import get_usage_summary, init_usage_table
+import auth
+import rc_schema
+from rc_api import router as rc_router
+from rc_api_ext import router as rc_ext_router
+from external_sources_schema import init_external_sources_schema
+from external_sources_api import router as external_sources_router
+from research_engine_schema import init_research_engine_schema
+from research_engine_api import router as research_engine_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -73,6 +81,16 @@ async def lifespan(_app):
     init_db()
     init_usage_table()
     rti._init_tables()
+    auth.init_auth_tables()
+    rc_schema.init_rc_schema()
+    rc_schema.seed_recognition_types()
+    auth.ensure_default_admin()
+    from compliance_gate import seed_source_policies
+    seed_source_policies()
+    init_external_sources_schema()
+    init_research_engine_schema()
+    from archive_registry import seed_from_federation
+    seed_from_federation()
     yield
 
 
@@ -91,6 +109,13 @@ app.add_middleware(
 
 _TEMPLATES = Path(__file__).parent / "templates"
 app.mount("/static", StaticFiles(directory=str(_TEMPLATES)), name="static")
+_SHARED_DIR = _TEMPLATES / "shared"
+if _SHARED_DIR.exists():
+    app.mount("/shared", StaticFiles(directory=str(_SHARED_DIR)), name="shared")
+app.include_router(rc_router)
+app.include_router(rc_ext_router)
+app.include_router(external_sources_router)
+app.include_router(research_engine_router)
 _DS_DIR = _TEMPLATES / "Voci dal Fronte - Redesign" / "_ds"
 if _DS_DIR.exists():
     app.mount("/_ds", StaticFiles(directory=str(_DS_DIR)), name="ds")
@@ -112,6 +137,11 @@ _nara_lock = threading.Lock()
 @app.get("/", response_class=FileResponse)
 def index():
     return FileResponse(str(_TEMPLATES / "index.html"), media_type="text/html")
+
+
+@app.get("/riconoscimenti", response_class=FileResponse)
+def rc_index():
+    return FileResponse(str(_TEMPLATES / "rc.html"), media_type="text/html")
 
 
 @app.get("/support.js")
@@ -406,6 +436,52 @@ def api_search_confirm(confirmation: dict = Body(...)):
     if not result.get("ok"):
         raise HTTPException(status_code=400, detail=result.get("error", "Errore applicazione conferma"))
     return result
+
+
+@app.get("/api/icrc/search")
+def api_icrc_search(q: str, nationality: str = "italy", status: str = "", files: str = ""):
+    """Ricerca pubblica su ICRC WW1 Prisoners con filtri auto-compilabili.
+    
+    Campi del form ICRC:
+    - q: nome del prigioniero (campo principale)
+    - nationality: italy, france, germany, united_kingdom, austria_hungary, russia, romania, serbia, belgium, ottoman_empire, bulgaria, portugal, united_states
+    - status: military, civilian (vuoto = tutti)
+    - files: index_cards, family_requests, all (vuoto = tutti)
+    """
+    if not q or len(q.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Termine di ricerca troppo corto")
+    from source_providers.federation import get_provider
+    provider = get_provider("icrc_ww1")
+    if not provider:
+        raise HTTPException(status_code=503, detail="Provider ICRC non disponibile")
+    filters = {}
+    if nationality:
+        filters["nationality"] = nationality
+    if status:
+        filters["status"] = status
+    if files:
+        filters["files"] = files
+    results = provider.search(q.strip(), filters)
+    return {
+        "query": q.strip(),
+        "filters": filters,
+        "results": results,
+        "count": len(results),
+        "search_url": provider.build_search_url(q.strip(), filters),
+    }
+
+
+@app.get("/api/icrc/filters")
+def api_icrc_filters():
+    """Restituisce i metadati per i filtri del form ICRC (nazionalità, status, files)."""
+    from source_providers.icrc_ww1 import ProviderICRCWW1
+    return {
+        "nationalities": ProviderICRCWW1.NATIONALITIES,
+        "statuses": ProviderICRCWW1.STATUSES,
+        "file_types": ProviderICRCWW1.FILE_TYPES,
+        "base_url": ProviderICRCWW1.base_url,
+        "search_url": f"{ProviderICRCWW1.base_url}/en/File/Search",
+    }
 
 
 # ─── Decorati (Albi della Memoria - ISTORECO) ───
@@ -1457,6 +1533,133 @@ def api_internato_opengraph(rid: int):
     return result
 
 
+# ═══ LeBI API ═════════════════════════════════════════════════════════════
+
+@app.get("/api/lebi/search")
+def api_lebi_search(q: str, n: str = "", l: str = "", y: str = "", limit: int = 20):
+    """Cerca nel portale LeBI (Lessico Biografico degli IMI — ANRP).
+
+    Parametri form LeBI:
+    - q: cognome (obbligatorio)
+    - n: nome
+    - l: luogo di nascita
+    - y: anno di nascita
+    """
+    provider = get_provider("lebi")
+    if not provider:
+        raise HTTPException(status_code=503, detail="Provider LeBI non disponibile")
+    filters = {}
+    if n:
+        filters["name"] = n
+    if l:
+        filters["birth_place"] = l
+    if y:
+        filters["birth_year"] = y
+    results = provider.search(q, filters=filters)[:limit]
+    return {"ok": True, "query": q, "count": len(results), "results": results}
+
+
+@app.get("/api/lebi/record/{record_id}")
+def api_lebi_record(record_id: str):
+    """Recupera la scheda biografica dettagliata di un record LeBI."""
+    provider = get_provider("lebi")
+    if not provider:
+        raise HTTPException(status_code=503, detail="Provider LeBI non disponibile")
+    meta = provider.get_metadata(record_id)
+    if not meta:
+        raise HTTPException(status_code=404, detail=f"Record LeBI #{record_id} non trovato")
+    return {"ok": True, "record": meta}
+
+
+@app.get("/api/lebi/compare/{soldier_id}")
+def api_lebi_compare(soldier_id: int):
+    """Confronta un record IMI locale con i risultati LeBI per lo stesso nominativo.
+
+    Restituisce il record locale + tutti i match LeBI trovati con grado di sovrapposizione.
+    """
+    from database import get_conn
+    conn = get_conn()
+    conn.row_factory = lambda cur, row: {col[0]: row[i] for i, col in enumerate(cur.description)}
+    soldier = conn.execute("SELECT * FROM internati WHERE id=?", (soldier_id,)).fetchone()
+    conn.close()
+    if not soldier:
+        raise HTTPException(status_code=404, detail=f"soldato id={soldier_id} non trovato")
+
+    cognome = (soldier.get("cognome") or "").strip()
+    nome = (soldier.get("nome") or "").strip()
+
+    provider = get_provider("lebi")
+    if not provider:
+        raise HTTPException(status_code=503, detail="Provider LeBI non disponibile")
+
+    filters = {}
+    if nome:
+        filters["name"] = nome
+    lebi_results = provider.search(cognome, filters=filters)
+
+    # Calcola campi comuni e differenze
+    comparisons = []
+    for lr in lebi_results:
+        rid = lr.get("provider_record_id", "")
+        if not rid:
+            continue
+        match_fields = []
+        diff_fields = []
+        # Recupera metadata dettagliata se disponibile
+        try:
+            detail = provider.get_metadata(rid)
+        except Exception:
+            detail = lr
+
+        # Confronta campi chiave
+        field_map = [
+            ("cognome", "cognome"),
+            ("nome", "nome"),
+            ("data_nascita", "data_nascita"),
+            ("comune_nascita", "luogo_nascita"),
+            ("grado", "grado"),
+            ("luogo_internamento", "campi_internamento"),
+        ]
+        for local_key, lebi_key in field_map:
+            local_val = (soldier.get(local_key) or "").strip().lower()
+            lebi_val = str(detail.get(lebi_key, "")).strip().lower()
+            if not local_val and not lebi_val:
+                continue
+            if local_val and lebi_val and (local_val in lebi_val or lebi_val in local_val):
+                match_fields.append({"field": local_key, "local": soldier.get(local_key), "lebi": detail.get(lebi_key)})
+            elif local_val or lebi_val:
+                diff_fields.append({"field": local_key, "local": soldier.get(local_key), "lebi": detail.get(lebi_key)})
+
+        comparisons.append({
+            "lebi_record_id": rid,
+            "lebi_url": lr.get("direct_url") or lr.get("catalog_url", ""),
+            "lebi_pdf_url": detail.get("pdf_url", ""),
+            "lebi_title": detail.get("titolo", lr.get("titolo", "")),
+            "match_fields": match_fields,
+            "diff_fields": diff_fields,
+            "match_score": len(match_fields) / max(1, len(match_fields) + len(diff_fields)),
+            "detail": detail,
+        })
+
+    comparisons.sort(key=lambda c: c["match_score"], reverse=True)
+
+    return {
+        "ok": True,
+        "soldier": {
+            "id": soldier_id,
+            "cognome": cognome,
+            "nome": nome,
+            "data_nascita": soldier.get("data_nascita"),
+            "luogo_nascita": soldier.get("luogo_nascita"),
+            "grado": soldier.get("grado"),
+            "luogo_internamento": soldier.get("luogo_internamento"),
+            "sorte": soldier.get("sorte"),
+        },
+        "lebi_matches": comparisons,
+        "total_matches": len(comparisons),
+    }
+
+
 @app.get("/api/acs/registri")
 def api_acs_registri():
     """Lista tutti i 79 registri IMI ONORCADUTI (Teca Digitale ACS)."""
@@ -2281,6 +2484,106 @@ def api_research_stats():
         return rti.get_research_stats()
     except Exception as e:
         return {"initialized": False, "error": str(e)}
+
+
+# ─── V2 Research Orchestrator endpoints ─────────────────────────────────────
+
+@app.post("/api/research/v2/create")
+def api_research_v2_create(body: dict = Body(...)):
+    """Avvia una ricerca federata V2 con orchestrator state machine."""
+    query = body.get("query", "").strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="query vuota")
+    entity_type = body.get("entity_type")
+    entity_id = body.get("entity_id")
+    budget_cycles = body.get("budget_cycles", 5)
+    budget_cost_usd = body.get("budget_cost_usd", 1.0)
+    try:
+        from research_orchestrator import run_research
+        result = run_research(
+            query, max_cycles=budget_cycles, strategy="balanced"
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Research error: {str(e)}")
+
+
+@app.get("/api/research/v2/plan/{plan_id}")
+def api_research_v2_plan(plan_id: int):
+    """Recupera piano di ricerca con cicli e tracce."""
+    from research_orchestrator import get_session_trace, get_plan_cycles
+    from database import get_conn
+    conn = get_conn()
+    plan = conn.execute("SELECT * FROM research_plans WHERE id=?", (plan_id,)).fetchone()
+    if not plan:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Piano non trovato")
+    plan = dict(plan)
+    sessions = conn.execute(
+        "SELECT * FROM research_sessions WHERE plan_id=? ORDER BY started_at", (plan_id,)
+    ).fetchall()
+    conn.close()
+
+    cycles = get_plan_cycles(plan_id)
+    traces = []
+    for s in sessions:
+        traces.append(get_session_trace(s["id"]))
+
+    return {"plan": plan, "sessions": [dict(s) for s in sessions],
+            "cycles": cycles, "traces": traces}
+
+
+@app.get("/api/research/v2/plans")
+def api_research_v2_plans(status: str = None, limit: int = 20):
+    """Lista piani di ricerca V2."""
+    from database import get_conn
+    conn = get_conn()
+    if status:
+        rows = conn.execute(
+            "SELECT * FROM research_plans WHERE status=? ORDER BY created_at DESC LIMIT ?",
+            (status, limit)
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT * FROM research_plans ORDER BY created_at DESC LIMIT ?",
+            (limit,)
+        ).fetchall()
+    conn.close()
+    return {"plans": [dict(r) for r in rows]}
+
+
+@app.post("/api/research/v2/locator/validate")
+def api_locator_validate(body: dict = Body(...)):
+    """Valida un URL come locator diretto vs search page."""
+    from research_orchestrator import validate_locator
+    url = body.get("url", "")
+    domain = body.get("domain")
+    if not url:
+        raise HTTPException(status_code=400, detail="url vuoto")
+    return validate_locator(url, domain)
+
+
+@app.post("/api/research/v2/preflight")
+def api_research_v2_preflight(body: dict = Body(...)):
+    """Preflight compliance per operazione su fonte esterna."""
+    from research_orchestrator import preflight_compliance
+    connector_code = body.get("connector_code", "")
+    operation = body.get("operation", "")
+    target_url = body.get("target_url")
+    user_role = body.get("user_role", "operator")
+    if not connector_code or not operation:
+        raise HTTPException(status_code=400, detail="connector_code e operation obbligatori")
+    return preflight_compliance(connector_code, operation, target_url, user_role)
+
+
+@app.get("/api/research/v2/prompt/{prompt_name}")
+def api_research_v2_prompt(prompt_name: str):
+    """Recupera la versione attiva di un prompt."""
+    from research_orchestrator import get_active_prompt
+    prompt = get_active_prompt(prompt_name)
+    if not prompt:
+        raise HTTPException(status_code=404, detail="Prompt non trovato")
+    return prompt
 
 
 @app.get("/api/source/file")
