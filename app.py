@@ -77,6 +77,7 @@ from graph_api import router as graph_router
 from graph_schema import init_graph_schema
 from event_schema import init_event_schema
 from event_canonical_api import router as event_canonical_router
+from rag_api import router as rag_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -120,6 +121,7 @@ app.include_router(research_engine_router)
 app.include_router(viewpoints_router)
 app.include_router(graph_router)
 app.include_router(event_canonical_router)
+app.include_router(rag_router)
 
 _extraction_lock = threading.Lock()
 _running_letter = None
