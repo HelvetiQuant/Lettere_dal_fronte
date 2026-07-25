@@ -1,5 +1,95 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-25 — AI Historical Integration: Phases A–K (branch `devin/ai-storica-eventi-mappe`)
+
+### Riepilogo
+Integrazione completa di sistema AI storico specializzato per WWI/WII nel repository principale. 11 fasi, ~20 nuovi file backend, ~10 nuovi file frontend. Schema additive, nessuna cancellazione dati.
+
+### Phase A — Audit baseline
+- `_audit_baseline.py`: ispezione tabelle, conteggi, integrità FK, indici
+- `docs/AI_HISTORICAL_INTEGRATION_BASELINE.md`: documentazione completa (312 righe)
+- `docs/adr/ADR-AI-HISTORICAL-RAG-EVENT-MAPS.md`: ADR architetturale
+- `.gitignore`: regole per modelli, dati, cache, refactor, handoff
+
+### Phase B — Sicurezza e contratti
+- `_check_keys.py`: verifica chiavi API senza esporre valori
+- `canonical_models.py`: modelli Pydantic canonici (Event, Claim, Map, Graph, ResearchJob, Report, StructuredError)
+- `frontend/src/api/canonical-types.ts`: equivalenti TypeScript
+- `ai_runtime.py`: interfaccia InferenceAdapter con LMStudio, Remote, Test adapter
+- `config/ai_runtime.yaml`: configurazione runtime (no segreti)
+- `research_orchestrator.py`: `classify_url` espansa con 10 tipi (document, record, catalog_entry, search_page, homepage, download, viewer, broken, unknown)
+
+### Phase C — Provenance e claims
+- `graph_schema.py`: migrazione additiva (6 tabelle, 8 indici) con `--dry-run` e `--rollback`
+- `graph_models.py`: modelli Pydantic per GraphNode, GraphEdge, GraphEvidence, GraphReview, etc.
+- `graph_service.py`: adapter read-through per record_links, event_links, collegamenti, external_record_links, claims — preserva provenance legacy, mai promuove candidati a confirmed senza review
+- `graph_api.py`: router FastAPI `/api/graph/entity/{table}/{id}` e edge review
+- `database_registry.py`: registry tabelle canonico con TableSpec, connessioni read-only, estrazione label/descrizione/URL
+
+### Phase D — Evento canonico
+- `event_schema.py`: migrazione additiva su `eventi_1gm` (12 nuove colonne: stable_id, conflict, event_type, parent_event_id, review_status, etc.) + tabella `event_aliases` (90 alias importati)
+- `event_canonical_api.py`: API REST `/api/canonical-events` con list, get, children, update
+- Classificazione conflict: 7 eventi WWII riclassificati (Operazione Achse, Cefalonia, Russia, Tobruk, Mauthausen, Lavoro forzato, Cassino)
+- Gerarchia parent_event_id: Isonzo→Carso/SanMichele/Nero/Tolmino/Caporetto, etc.
+
+### Phase E — RAG pipeline
+- `rag_pipeline.py`: pipeline completa
+  - `retrieve()`: retrieval ibrido FTS5 + filtri metadata su tabelle multiple
+  - `rerank()`: boost qualità fonte, compatibilità temporale/geografica, indipendenza
+  - `build_context()`: contesto strutturato con citazioni `[fonte: table#id]`, budget token, warning troncamento
+  - `validate_ai_output()`: check claim non citati, pattern allucinazione, dichiarazione "evidenze insufficienti"
+- `rag_api.py`: API REST `/api/rag/retrieve` e `/api/rag/validate`
+
+### Phase F — Frontend
+- `types.ts`: CanonicalEvent, GraphEntityResponse, GraphEdgeDTO, GraphEvidenceDTO, RAGContextResponse, RAGValidationResponse
+- `client.ts`: graphEntity(), graphEdgeReview(), canonicalEvents(), canonicalEvent(), ragRetrieve(), ragValidate()
+- `EventsPage.tsx`: tag conflict (WWI/WWII) e event_type su card eventi, caricamento parallelo eventi canonici
+- `EventDossierPage`: pulsante "Grafo canonico" → `/grafo/eventi_1gm/:id`
+- `GraphEntityPage.tsx`: nuova pagina con filtri stato epistemico, evidenze, segnali contrari, review status
+- `router.tsx`: route `/grafo/:sourceTable/:sourceId`
+
+### Phase G — Mappa
+- `map_schema.py`: tabella `map_features` con provenance (source_table, source_id, source_url), certainty, review_status, phase
+- `map_features_api.py`: API REST `/api/map-features` con list, create/update (upsert), review
+- Frontend: MapFeatureRecord, MapFeatureListResponse types + API client methods
+
+### Phase H — Grafo
+- `GraphEntityPage.tsx`: integrazione ForceGraph con filtri status applicati a visualizzazione e lista archi
+- ForceGraph esistente (582 righe): anti-collision, zoom/pan, fullscreen, export SVG/PNG, touch support
+
+### Phase I — Runtime locale
+- `ai_runtime_api.py`: API REST `/api/ai-runtime` con health, config, benchmark, reset
+- Frontend: AIRuntimeHealth, AIRuntimeConfig, AIRuntimeBenchmark types + API client methods
+
+### Endpoint API nuovi
+| Endpoint | Metodo | Descrizione |
+|---|---|---|
+| `/api/graph/entity/{table}/{id}` | GET | Grafo canonico per entità |
+| `/api/graph/edges/{edge_id}/review` | POST | Review arco grafo |
+| `/api/canonical-events` | GET | Lista eventi canonici |
+| `/api/canonical-events/{stable_id}` | GET/PUT | Evento canonico singolo |
+| `/api/canonical-events/{stable_id}/children` | GET | Eventi figlio |
+| `/api/rag/retrieve` | GET | RAG retrieval + reranking + context |
+| `/api/rag/validate` | POST | Validazione output AI |
+| `/api/map-features/event/{event_id}` | GET | Feature mappa per evento |
+| `/api/map-features/` | POST | Crea/aggiorna feature |
+| `/api/map-features/{id}/review` | PUT | Review feature |
+| `/api/ai-runtime/health` | GET | Stato adapter AI |
+| `/api/ai-runtime/config` | GET | Configurazione (no segreti) |
+| `/api/ai-runtime/benchmark` | POST | Benchmark latenza |
+| `/api/ai-runtime/reset` | POST | Reset adapter singleton |
+
+### Schema migrazioni (tutte additive, reversibili)
+- `imi_internati.db`: graph_nodes, graph_edges, graph_edge_reviews, graph_pipeline_runs, graph_integrity_issues, archival_metadata (6 tabelle, 8 indici)
+- `eventi_1gm.db`: 12 colonne aggiuntive su eventi_1gm + event_aliases table (2 indici) + map_features table (3 indici)
+
+### Test
+- Schema deployment verificato con `--dry-run` e esecuzione reale
+- Graph service testato con record reale (internati/22808, Gaiaschi Luigi)
+- RAG pipeline testato con query "Caporetto" (3 chunks, citazioni corrette)
+- Event canonical API testato (22 eventi, 90 alias, gerarchia corretta)
+- TypeScript compila senza errori (`tsc --noEmit`)
+
 ## 2026-07-24 (sera) — Refactor grafo canonico, identity resolution e fonti (branch `codex/refactor-grafo-fonti-20260724`)
 
 ### Riepilogo
