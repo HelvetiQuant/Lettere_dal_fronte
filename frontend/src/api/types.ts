@@ -615,3 +615,136 @@ export interface EntitaDetailResponse {
     confidence: number;
   }[];
 }
+
+// ── Canonical Event ──
+
+export interface CanonicalEvent {
+  stable_id: string;
+  id: number;
+  preferred_name: string;
+  aliases: { name: string; type: string }[];
+  conflict: string;
+  event_type: string;
+  parent_event_id: string | null;
+  child_event_ids: string[];
+  date_start: string | null;
+  date_end: string | null;
+  temporal_precision: string;
+  general_location: string | null;
+  localities: string[];
+  subjects: string[];
+  units: string[];
+  description: string | null;
+  review_status: string;
+  narrative_version: string | null;
+  narrative_updated_at: string | null;
+}
+
+export interface CanonicalEventListResponse {
+  events: CanonicalEvent[];
+  total: number;
+}
+
+export interface CanonicalEventChildrenResponse {
+  parent: CanonicalEvent;
+  children: CanonicalEvent[];
+}
+
+// ── Graph Entity (canonical graph) ──
+
+export interface GraphNodeDTO {
+  id: string;
+  namespace: string;
+  type: string;
+  label: string;
+  source_table: string;
+  source_id: number;
+  external_id: string | null;
+  attributes: Record<string, unknown>;
+  status: string;
+}
+
+export interface GraphEvidenceDTO {
+  type: string;
+  label: string;
+  value: string | null;
+  source_table: string | null;
+  source_id: number | null;
+  source_url: string | null;
+  role: 'supports' | 'contradicts' | 'context';
+  strength: number | null;
+}
+
+export interface GraphEdgeDTO {
+  id: string;
+  source: GraphNodeDTO;
+  target: GraphNodeDTO;
+  relation: { type: string; label: string; direction: string };
+  status: string;
+  confidence: number | null;
+  confidence_label: string | null;
+  confidence_meaning: string;
+  explanation: string;
+  evidence: GraphEvidenceDTO[];
+  contrary_signals: GraphEvidenceDTO[];
+  algorithm: string;
+  algorithm_version: string;
+  source_system: string;
+  source_edge_id: string | null;
+  review: {
+    required: boolean;
+    decision: string | null;
+    reviewed_by: string | null;
+    reviewed_at: string | null;
+    note: string | null;
+  };
+  created_at: string | null;
+  last_verified_at: string | null;
+}
+
+export interface GraphIntegrityIssueDTO {
+  code: string;
+  severity: 'info' | 'warning' | 'error';
+  message: string;
+  source_system: string | null;
+  source_edge_id: string | null;
+}
+
+export interface GraphEntityResponse {
+  root: GraphNodeDTO;
+  nodes: GraphNodeDTO[];
+  edges: GraphEdgeDTO[];
+  issues: GraphIntegrityIssueDTO[];
+  truncated: boolean;
+  generated_at: string;
+}
+
+// ── RAG Pipeline ──
+
+export interface RAGChunkDTO {
+  chunk_id: string;
+  source_table: string;
+  source_id: number;
+  title: string;
+  text: string;
+  score: number;
+  retrieval_method: string;
+  metadata: Record<string, unknown>;
+  reranked_score: number;
+  rerank_reasons: string[];
+}
+
+export interface RAGContextResponse {
+  system_prompt: string;
+  user_context: string;
+  chunks: RAGChunkDTO[];
+  citations: { index: number; source_table: string; source_id: number; title: string; score: number; reasons: string[] }[];
+  token_estimate: number;
+  truncated: boolean;
+  warnings: string[];
+}
+
+export interface RAGValidationResponse {
+  valid: boolean;
+  issues: string[];
+}

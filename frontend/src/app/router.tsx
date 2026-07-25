@@ -11,6 +11,7 @@ import { ResearchSubjectsPage } from '@/pages/ResearchSubjectsPage';
 import { ResearchGapsPage } from '@/pages/ResearchGapsPage';
 import { ViewpointsPage } from '@/pages/ViewpointsPage';
 import { HeuristicLinksPage } from '@/pages/HeuristicLinksPage';
+import { GraphEntityPage } from '@/pages/GraphEntityPage';
 import { RecognitionsPage } from '@/pages/RecognitionsPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { SoldierDossierPage } from '@/pages/SoldierDossierPage';
@@ -34,6 +35,7 @@ export function AppRouter() {
           <Route path="/ricerca/lacune" element={<ResearchGapsPage />} />
           <Route path="/punti-di-vista" element={<ViewpointsPage />} />
           <Route path="/collegamenti" element={<HeuristicLinksPage />} />
+          <Route path="/grafo/:sourceTable/:sourceId" element={<GraphEntityPage />} />
           <Route path="/riconoscimenti" element={<RecognitionsPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/soldato/:type/:id" element={<SoldierDossierPage />} />

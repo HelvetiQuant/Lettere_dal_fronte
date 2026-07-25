@@ -13,6 +13,8 @@ import type {
   GraphLuoghiResponse, GraphMesiResponse, GraphPaesiResponse,
   EventResolution, EvidencePackage, NarrativeReport, AuditSummary, LinkAuditEntry,
   HistoricalMap,
+  CanonicalEvent, CanonicalEventListResponse, CanonicalEventChildrenResponse,
+  GraphEntityResponse, RAGContextResponse, RAGValidationResponse,
 } from './types';
 
 export const api = {
@@ -74,13 +76,35 @@ export const api = {
   eventMapSvgUrl: (q: string) =>
     `/api/event-research/map/svg?q=${encodeURIComponent(q)}`,
 
-  // ── Graph ──
+  // ── Graph (legacy stats) ──
   graphLuoghi: (limit = 50) => get<GraphLuoghiResponse>('/api/graph/luoghi', { limit }),
   graphMesi: () => get<GraphMesiResponse>('/api/graph/mesi'),
   graphPaesi: () => get<GraphPaesiResponse>('/api/graph/paesi'),
   graphSoldatiArch: () => get<Record<string, unknown>>('/api/graph/soldati/architecture'),
   graphSoldatiClusters: (field = 'luogo_morte', limit = 50) =>
     get<Record<string, unknown>>('/api/graph/soldati/clusters', { field, limit }),
+
+  // ── Graph (canonical) ──
+  graphEntity: (sourceTable: string, sourceId: number, opts?: { max_nodes?: number; max_edges?: number; include_candidates?: boolean; include_rejected?: boolean }) =>
+    get<GraphEntityResponse>(`/api/graph/entity/${sourceTable}/${sourceId}`, opts),
+  graphEdgeReview: (edgeId: string, body: { decision: string; status?: string; note?: string }) =>
+    post<Record<string, unknown>>(`/api/graph/edges/${encodeURIComponent(edgeId)}/review`, body),
+
+  // ── Canonical Events ──
+  canonicalEvents: (opts?: { conflict?: string; event_type?: string; limit?: number }) =>
+    get<CanonicalEventListResponse>('/api/canonical-events', opts),
+  canonicalEvent: (stableId: string) =>
+    get<CanonicalEvent>(`/api/canonical-events/${stableId}`),
+  canonicalEventChildren: (stableId: string) =>
+    get<CanonicalEventChildrenResponse>(`/api/canonical-events/${stableId}/children`),
+  canonicalEventUpdate: (stableId: string, body: Record<string, unknown>) =>
+    post<CanonicalEvent>(`/api/canonical-events/${stableId}`, body),
+
+  // ── RAG Pipeline ──
+  ragRetrieve: (q: string, opts?: { entity_type?: string; date_start?: string; date_end?: string; place?: string; max_chunks?: number; max_tokens?: number }) =>
+    get<RAGContextResponse>('/api/rag/retrieve', { q, ...opts }),
+  ragValidate: (body: { text: string; citations?: unknown[] }) =>
+    post<RAGValidationResponse>('/api/rag/validate', body),
 
   // ── External Sources ──
   icrcSearch: (q: string, nationality = 'italy', status = '', files = '') =>

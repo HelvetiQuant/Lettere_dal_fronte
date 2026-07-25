@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '@/api/client';
 import { ApiError } from '@/api/errors';
-import type { EventRecord, EventDossierResponse, CadutoRecord, DecoratoRecord, InternatoRecord, DocumentoRecord, FonteIndiceRecord } from '@/api/types';
+import type { EventRecord, EventDossierResponse, CadutoRecord, DecoratoRecord, InternatoRecord, DocumentoRecord, FonteIndiceRecord, CanonicalEvent } from '@/api/types';
 import { Card, Tag, LoadingState, EmptyState, ErrorState, Button } from '@/components/feedback/States';
 import { PageIntro, Section } from '@/components/layout/PageIntro';
 import { ResultGroup } from '@/components/dossier/DossierParts';
@@ -10,12 +10,23 @@ import { ResultGroup } from '@/components/dossier/DossierParts';
 export function EventsPage() {
   const navigate = useNavigate();
   const [events, setEvents] = useState<EventRecord[]>([]);
+  const [canonicalEvents, setCanonicalEvents] = useState<Map<string, CanonicalEvent>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ApiError | null>(null);
 
   useEffect(() => {
-    api.events1gm()
-      .then((d) => setEvents(d.eventi || []))
+    Promise.all([
+      api.events1gm(),
+      api.canonicalEvents(),
+    ])
+      .then(([d, ce]) => {
+        setEvents(d.eventi || []);
+        const map = new Map<string, CanonicalEvent>();
+        for (const e of ce.events) {
+          map.set(e.preferred_name, e);
+        }
+        setCanonicalEvents(map);
+      })
       .catch((e) => setError(e instanceof ApiError ? e : new ApiError(0, String(e))))
       .finally(() => setLoading(false));
   }, []);
@@ -33,13 +44,17 @@ export function EventsPage() {
       {!loading && !error && events.length === 0 && <EmptyState message="Nessun evento disponibile nel database." />}
       {!loading && !error && events.length > 0 && (
         <div className="grid grid--auto">
-          {events.map((ev) => (
+          {events.map((ev) => {
+            const canonical = canonicalEvents.get(ev.nome);
+            return (
             <Card key={ev.nome}>
               <div onClick={() => navigate(`/eventi/${encodeURIComponent(ev.nome)}`)} style={{ cursor: 'pointer' }} role="button" tabIndex={0}>
                 <div style={{ fontFamily: 'var(--f-heading)', fontWeight: 600, fontSize: 18 }}>{ev.nome}</div>
                 {ev.data_inizio && <span className="text-sm text-muted">{ev.data_inizio}{ev.data_fine ? ` — ${ev.data_fine}` : ''}</span>}
                 {ev.luogo && <div className="text-sm text-muted">{ev.luogo}</div>}
                 <div className="flex flex--wrap mt-2" style={{ gap: 'var(--s-1)' }}>
+                  {canonical && <Tag variant={canonical.conflict === 'WWII' ? 'accent' : 'neutral'}>{canonical.conflict}</Tag>}
+                  {canonical && canonical.event_type !== 'battaglia' && <Tag variant="neutral">{canonical.event_type}</Tag>}
                   {ev.caduti ? <Tag variant="neutral">Caduti: {ev.caduti}</Tag> : null}
                   {ev.decorati ? <Tag variant="warning">Decorati: {ev.decorati}</Tag> : null}
                   {ev.internati ? <Tag variant="accent">Internati: {ev.internati}</Tag> : null}
@@ -47,7 +62,8 @@ export function EventsPage() {
                 </div>
               </div>
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
     </>
@@ -111,6 +127,11 @@ export function EventDossierPage() {
             <Button variant="secondary" size="sm" onClick={() => navigate(`/collegamenti?q=${encodeURIComponent(ev.nome)}`)}>
               Genera collegamenti euristici
             </Button>
+            {ev.id && (
+              <Button variant="secondary" size="sm" onClick={() => navigate(`/grafo/eventi_1gm/${ev.id}`)}>
+                Grafo canonico
+              </Button>
+            )}
           </div>
 
           <ResultGroup<CadutoRecord>
