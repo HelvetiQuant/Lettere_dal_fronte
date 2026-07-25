@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Settings } from 'lucide-react';
 import { AudienceSwitch } from '@/components/navigation/AudienceSwitch';
 import { PrimaryNavigation } from '@/components/navigation/PrimaryNavigation';
-import { GlobalErrorBoundary } from '@/utils/errorLogger';
+import { GlobalErrorBoundary } from '@/components/debug/GlobalErrorBoundary';
 import { ErrorLogPanel } from '@/components/debug/ErrorLogPanel';
 import type { Audience } from '@/hooks/useAudience';
 
