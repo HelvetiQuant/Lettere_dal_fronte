@@ -776,3 +776,33 @@ export interface MapFeatureListResponse {
   features: MapFeatureRecord[];
   total: number;
 }
+
+// ── AI Runtime ──
+
+export interface AIRuntimeHealth {
+  healthy: boolean;
+  provider: string;
+  model: string;
+  detail: string;
+  local: boolean;
+}
+
+export interface AIRuntimeConfig {
+  provider: string;
+  local_only: boolean;
+  lm_studio_configured: boolean;
+  generation: Record<string, unknown>;
+  embedding: Record<string, unknown>;
+  remote_fallback_order: string[];
+}
+
+export interface AIRuntimeBenchmark {
+  ok: boolean;
+  provider: string;
+  model: string;
+  latency_ms: number;
+  input_tokens: number;
+  output_tokens: number;
+  text_preview: string;
+  error: string;
+}

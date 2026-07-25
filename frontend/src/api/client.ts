@@ -16,6 +16,7 @@ import type {
   CanonicalEvent, CanonicalEventListResponse, CanonicalEventChildrenResponse,
   GraphEntityResponse, RAGContextResponse, RAGValidationResponse,
   MapFeatureRecord, MapFeatureListResponse,
+  AIRuntimeHealth, AIRuntimeConfig, AIRuntimeBenchmark,
 } from './types';
 
 export const api = {
@@ -114,6 +115,12 @@ export const api = {
     post<MapFeatureRecord>('/api/map-features/', body),
   mapFeatureReview: (featureId: string, body: { review_status: string; reviewed_by?: string }) =>
     post<MapFeatureRecord>(`/api/map-features/${featureId}/review`, body),
+
+  // ── AI Runtime ──
+  aiRuntimeHealth: () => get<AIRuntimeHealth>('/api/ai-runtime/health'),
+  aiRuntimeConfig: () => get<AIRuntimeConfig>('/api/ai-runtime/config'),
+  aiRuntimeBenchmark: () => post<AIRuntimeBenchmark>('/api/ai-runtime/benchmark', {}),
+  aiRuntimeReset: () => post<Record<string, unknown>>('/api/ai-runtime/reset', {}),
 
   // ── External Sources ──
   icrcSearch: (q: string, nationality = 'italy', status = '', files = '') =>
