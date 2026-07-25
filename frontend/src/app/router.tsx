@@ -12,6 +12,7 @@ import { ResearchGapsPage } from '@/pages/ResearchGapsPage';
 import { ViewpointsPage } from '@/pages/ViewpointsPage';
 import { HeuristicLinksPage } from '@/pages/HeuristicLinksPage';
 import { GraphEntityPage } from '@/pages/GraphEntityPage';
+import { ChatPage } from '@/pages/ChatPage';
 import { RecognitionsPage } from '@/pages/RecognitionsPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { SoldierDossierPage } from '@/pages/SoldierDossierPage';
@@ -36,6 +37,7 @@ export function AppRouter() {
           <Route path="/punti-di-vista" element={<ViewpointsPage />} />
           <Route path="/collegamenti" element={<HeuristicLinksPage />} />
           <Route path="/grafo/:sourceTable/:sourceId" element={<GraphEntityPage />} />
+          <Route path="/chat" element={<ChatPage />} />
           <Route path="/riconoscimenti" element={<RecognitionsPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/soldato/:type/:id" element={<SoldierDossierPage />} />

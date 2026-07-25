@@ -806,3 +806,28 @@ export interface AIRuntimeBenchmark {
   text_preview: string;
   error: string;
 }
+
+// ── Chat ──
+
+export interface ChatMessageDTO {
+  role: string;
+  content: string;
+}
+
+export interface ChatResponseDTO {
+  risposta: string;
+  provider: string;
+  model: string;
+  latency_ms: number;
+  input_tokens: number;
+  output_tokens: number;
+  local: boolean;
+}
+
+export interface ChatHealthDTO {
+  available: boolean;
+  provider: string;
+  model: string;
+  local: boolean;
+  detail: string;
+}

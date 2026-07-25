@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Calendar, Brain, Eye, Network, Award, LayoutDashboard, FileSearch, Users, AlertCircle, Database, Link2, ScrollText, Settings } from 'lucide-react';
+import { Home, Compass, Calendar, Brain, Eye, Network, Award, LayoutDashboard, FileSearch, Users, AlertCircle, Database, Link2, ScrollText, Settings, MessageSquare } from 'lucide-react';
 import type { Audience } from '@/hooks/useAudience';
 
 const PUBLIC_NAV = [
@@ -7,6 +7,7 @@ const PUBLIC_NAV = [
   { to: '/esplora', label: 'Esplora', icon: Compass },
   { to: '/eventi', label: 'Eventi', icon: Calendar },
   { to: '/ricerca', label: 'Ricerca AI', icon: Brain, highlight: true },
+  { to: '/chat', label: 'Chat AI', icon: MessageSquare, highlight: true },
   { to: '/punti-di-vista', label: 'Punti di vista', icon: Eye, highlight: true },
   { to: '/collegamenti', label: 'Collegamenti', icon: Network, highlight: true },
   { to: '/riconoscimenti', label: 'Riconoscimenti', icon: Award, highlight: true },

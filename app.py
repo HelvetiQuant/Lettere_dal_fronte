@@ -81,6 +81,7 @@ from rag_api import router as rag_router
 from map_schema import init_map_schema
 from map_features_api import router as map_features_router
 from ai_runtime_api import router as ai_runtime_router
+from chat_api import router as chat_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -128,6 +129,7 @@ app.include_router(event_canonical_router)
 app.include_router(rag_router)
 app.include_router(map_features_router)
 app.include_router(ai_runtime_router)
+app.include_router(chat_router)
 
 _extraction_lock = threading.Lock()
 _running_letter = None

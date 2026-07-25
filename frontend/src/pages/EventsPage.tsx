@@ -6,6 +6,7 @@ import type { EventRecord, EventDossierResponse, CadutoRecord, DecoratoRecord, I
 import { Card, Tag, LoadingState, EmptyState, ErrorState, Button } from '@/components/feedback/States';
 import { PageIntro, Section } from '@/components/layout/PageIntro';
 import { ResultGroup } from '@/components/dossier/DossierParts';
+import { ChatPanel } from '@/components/chat/ChatPanel';
 
 export function EventsPage() {
   const navigate = useNavigate();
@@ -197,6 +198,15 @@ export function EventDossierPage() {
               </Card>
             )}
           />
+
+          <Section title="Chiedi all'AI">
+            <ChatPanel
+              context={`Evento: ${ev.nome}\nData: ${ev.data_inizio || ''} - ${ev.data_fine || ''}\nLuogo: ${ev.luogo || ''}\nDescrizione: ${ev.descrizione || ''}`}
+              contextLabel={`Dossier evento: ${ev.nome}`}
+              title="Chat storica AI"
+              placeholder={`Fai una domanda su ${ev.nome}…`}
+            />
+          </Section>
         </>
       )}
     </>
