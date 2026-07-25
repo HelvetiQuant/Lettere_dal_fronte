@@ -1,5 +1,52 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-25 (sera) — Internet Archive Integration (in progress)
+
+### Riepilogo
+Integrazione di Internet Archive come fonte esterna strutturata per ricerca storica eventi. Pipeline completa: discovery, valutazione storica, asset selection, locator pagina/passaggio, ingestion preview, conferma archiviazione, ricostruzione eventi. Moduli nuovi riusano componenti esistenti (fonti_indice, archivio_documenti, event_links, claim_service, event_resolver).
+
+### Nuovi moduli backend
+- **`ia_evaluation.py`** — Valutazione storica candidati IA: rilevamento conflitto (WWI/WW2/interwar), compatibilità temporale, geografica, pertinenza storiografica, qualità documento (OCR/DjVu/PDF). Score 0.0–1.0, stati accepted/candidate/rejected. Filtra search page URL generiche.
+- **`ia_locator.py`** — Asset selection (priorità hOCR > DjVu > PDF > text) e locator pagina/passaggio. Parser hOCR (microformat HTML con bbox), parser DjVu text layer, page count da metadata. `locate_passage()` pipeline completa con fallback.
+- **`ia_pipeline.py`** — Pipeline end-to-end: `discover()` (advancedsearch + evaluation), `analyze_item()` (metadata + asset + locator), `build_ingestion_preview()` (form precompilato), `confirm_ingestion()` (upsert fonti_indice + archivio_documenti + event_links + claim), `reconstruct_from_ia()` (ricostruzione da fonti IA accettate).
+
+### Componenti riusati
+- `source_providers/providers.py:ProviderInternetArchive` — search/metadata base (esteso con query dinamiche in ia_pipeline)
+- `event_resolver.py` — risoluzione evento, get_event_by_id, get_related_events
+- `archivio_documenti.py` — upsert_documenti, create_schema
+- `claim_service.py` — create_claim, add_evidence
+- `event_evidence_pipeline.py` — Source, Claim, EvidencePackage, _temporal_overlap, _geographic_overlap
+- `mass_index.py:_is_search_page_url` — modello per filtro URL search page
+- `_clean_bad_links.py` — modello per audit non distruttivo
+- `event_link_audit.py` — modello per audit event_links
+
+### Endpoint API pianificati
+| Endpoint | Metodo | Descrizione |
+|---|---|---|
+| `/api/ia/discover` | GET | Discovery item IA per evento |
+| `/api/ia/item/{identifier}` | GET | Metadati + asset + locator item IA |
+| `/api/ia/analyze` | GET | Analisi completa item (evaluation + locator) |
+| `/api/ia/ingestion-preview` | GET | Form precompilato per conferma |
+| `/api/ia/confirm` | POST | Conferma ingestion (archivia + collega) |
+| `/api/ia/reconstruct` | GET | Ricostruzione evento da fonti IA |
+| `/api/ia/audit` | GET | Audit non distruttivo vecchi link IA |
+
+### Stato implementazione
+- [x] `ia_evaluation.py` — completato, compila OK
+- [x] `ia_locator.py` — completato, compila OK
+- [x] `ia_pipeline.py` — completato, compila OK
+- [ ] API endpoints in `app.py` — da implementare
+- [ ] Frontend (tab IA in EventResearchPage) — da implementare
+- [ ] Audit non distruttivo vecchi link IA — da implementare
+- [ ] Test master — da implementare
+
+### Regole rispettate
+- No dati mock o simulati: tutti i metadati provengono da API IA reali
+- No download forzato di asset: solo metadati + link diretto
+- Filtro search page URL: niente pagine di ricerca generiche salvate
+- War mismatch: item IA con conflitto diverso dall'evento vengono rifiutati
+- Non distruttivo: audit vecchi link marca, non cancella
+
 ## 2026-07-25 — AI Historical Integration: Phases A–K (branch `devin/ai-storica-eventi-mappe`)
 
 ### Riepilogo

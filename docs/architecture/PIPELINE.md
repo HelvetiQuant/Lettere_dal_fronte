@@ -1,7 +1,7 @@
 # IMI Extractor — Pipeline Complete
 
 > Documento di riferimento per il flusso dati end-to-end.
-> Versione: 2026-07-24 — AI Provider Consolidation + LeBI Fase 4
+> Versione: 2026-07-25 — Internet Archive Integration + AI Provider Consolidation + LeBI Fase 4
 
 ---
 
@@ -408,6 +408,111 @@ Provider esterno (LeBI, ICRC, CRI, ecc.)
 │     review_link_with_type (lebi_match bidirezionale)     │
 └──────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 9.5. Pipeline Internet Archive (ia_pipeline)
+
+```
+Evento (nome) — resolve_event()
+    │
+    ▼
+┌──────────────────────────────────────────────────────────┐
+│  1. DISCOVERY — ia_pipeline.discover()                   │
+│     Query: advancedsearch.php con filtri:                 │
+│       - date:[conflict_range] (WWI: 1914-1918, WW2: 1939) │
+│       - mediatype:(texts)                                │
+│       - Termini: nome evento + keywords + aliases         │
+│     Fallback: query più larga se <5 risultati             │
+│     Output: lista item IA (identifier, title, date, ...)  │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  2. EVALUATION — ia_evaluation.evaluate_candidates()     │
+│     Per ogni item:                                       │
+│       - Rileva conflitto (WWI/WW2/interwar/unknown)       │
+│       - Compatibilità temporale (range evento vs item)    │
+│       - Compatibilità geografica (token luogo vs metadata)│
+│       - Pertinenza storiografica (keywords in title/desc) │
+│       - Qualità documento (OCR, mediatype, downloads)     │
+│       - Filtro search page URL (rifiuta URL generici)     │
+│     Score 0.0–1.0, stato: accepted/candidate/rejected     │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  3. ITEM ANALYSIS — ia_pipeline.analyze_item()           │
+│     a) Metadata API: GET /metadata/{identifier}          │
+│     b) Asset selection: hOCR > DjVu > PDF > text          │
+│        (ia_locator.select_best_asset)                    │
+│     c) Locator: locate_passage()                          │
+│        - Fetch hOCR → parse_hocr_pages()                 │
+│        - Fallback: DjVu text → parse_djvu_text()         │
+│        - Fallback: page count only                       │
+│        - Search: termini evento nelle pagine              │
+│        - Output: PageLocator (page, snippet, bbox, conf)  │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  4. INGESTION PREVIEW — ia_pipeline.build_ingestion()    │
+│     Precompila form con metadati reali:                  │
+│       - title, description, creator, date, place         │
+│       - source_url (deep link), thumbnail                │
+│       - page_start, page_end, snippet (da locator)       │
+│       - detected_conflict, overall_score, status         │
+│       - suggested_link_type, suggested_war               │
+│     Utente può modificare prima di confermare             │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  5. CONFIRM — ia_pipeline.confirm_ingestion()            │
+│     a) Upsert fonti_indice (metadati + URL + locator)     │
+│     b) Upsert archivio_documenti (provider=InternetArchive)│
+│     c) Create event_links (evento → fonte/documento)     │
+│     d) Create claim (claim_service.create_claim +         │
+│        add_evidence con page_start/page_end)              │
+│     Output: fonte_id, documento_id, event_link_id, claims  │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  6. RECONSTRUCT — ia_pipeline.reconstruct_from_ia()      │
+│     Per ogni item accepted/candidate:                    │
+│       - Analysis completa (metadata + asset + locator)   │
+│       - Estrazione claim da snippet (date, places, units) │
+│     Output: sources[], claims[], locators[]               │
+│     Integrabile in event_evidence_pipeline.collect_evidence│
+└──────────────────────────────────────────────────────────┘
+```
+
+### 9.5.1 Moduli IA
+| File | Funzione | Descrizione |
+|------|----------|-------------|
+| `ia_evaluation.py` | `evaluate_candidate()` | Valuta singolo item (war, tempo, geo, relevance, quality) |
+| `ia_evaluation.py` | `evaluate_candidates()` | Valuta lista item, ordina per score |
+| `ia_locator.py` | `select_best_asset()` | Seleziona miglior file (hOCR > DjVu > PDF) |
+| `ia_locator.py` | `parse_hocr_pages()` | Parser hOCR HTML → testo per pagina + bbox |
+| `ia_locator.py` | `parse_djvu_text()` | Parser DjVu text layer → testo per pagina |
+| `ia_locator.py` | `locate_passage()` | Pipeline locator completa con fallback |
+| `ia_pipeline.py` | `discover()` | Discovery + evaluation per evento |
+| `ia_pipeline.py` | `analyze_item()` | Metadata + asset + locator per item |
+| `ia_pipeline.py` | `build_ingestion_preview()` | Form precompilato per conferma |
+| `ia_pipeline.py` | `confirm_ingestion()` | Archivia in DB + crea link + claim |
+| `ia_pipeline.py` | `reconstruct_from_ia()` | Ricostruzione evento da fonti IA |
+
+### 9.5.2 Endpoint API IA (pianificati)
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/ia/discover` | GET | Discovery item IA per evento |
+| `/api/ia/item/{identifier}` | GET | Metadati + asset + locator |
+| `/api/ia/analyze` | GET | Analisi completa (evaluation + locator) |
+| `/api/ia/ingestion-preview` | GET | Form precompilato |
+| `/api/ia/confirm` | POST | Conferma ingestion |
+| `/api/ia/reconstruct` | GET | Ricostruzione evento |
+| `/api/ia/audit` | GET | Audit non distruttivo vecchi link IA |
 
 ---
 

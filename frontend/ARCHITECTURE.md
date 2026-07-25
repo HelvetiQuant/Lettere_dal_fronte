@@ -116,6 +116,41 @@ Esistono `/api/internati/:id/links` e `/api/entita/:id` ma mancano endpoint per 
 - `POST /api/links/:id/reject` — respingi collegamento
 - `GET /api/graph/entity/:type/:id` — grafo completo per entità
 
+## Integrazione Internet Archive (in progress)
+
+### Moduli backend nuovi
+- `ia_evaluation.py` — Valutazione storica candidati IA (war/period/place compatibility, relevance + quality scoring)
+- `ia_locator.py` — Asset selection (hOCR > DjVu > PDF) + parser hOCR/DjVu + locator pagina/passaggio
+- `ia_pipeline.py` — Pipeline end-to-end: discover → analyze → ingestion-preview → confirm → reconstruct
+
+### Endpoint API pianificati
+| Endpoint | Metodo | Descrizione |
+|---|---|---|
+| `/api/ia/discover` | GET | Discovery item IA per evento |
+| `/api/ia/item/{identifier}` | GET | Metadati + asset + locator |
+| `/api/ia/analyze` | GET | Analisi completa (evaluation + locator) |
+| `/api/ia/ingestion-preview` | GET | Form precompilato per conferma |
+| `/api/ia/confirm` | POST | Conferma ingestion (archivia + collega) |
+| `/api/ia/reconstruct` | GET | Ricostruzione evento da fonti IA |
+| `/api/ia/audit` | GET | Audit non distruttivo vecchi link IA |
+
+### Frontend pianificato
+- Nuovo tab "Internet Archive" in `EventResearchPage.tsx` con flusso:
+  1. Discovery: lista item IA con badge evaluation (accepted/candidate/rejected)
+  2. Analysis: detail item con asset info + locator snippet
+  3. Ingestion preview: form precompilato modificabile
+  4. Confirm: pulsante conferma → archiviazione + collegamento evento
+- Tipi TypeScript: `IADiscoveryResult`, `IAItemAnalysis`, `IAIngestionPreview`, `IAConfirmResult`
+- API client: `iaDiscover()`, `iaItem()`, `iaAnalyze()`, `iaIngestionPreview()`, `iaConfirm()`, `iaReconstruct()`, `iaAudit()`
+
+### Componenti riusati
+- `event_resolver.resolve_event()` — risoluzione evento canonico
+- `archivio_documenti.upsert_documenti()` — archiviazione metadati documento
+- `claim_service.create_claim()` / `add_evidence()` — claim atomici con provenance
+- `fonti_indice` table — registrazione metadati fonte con locator
+- `event_links` table — collegamento evento ↔ fonte/documento
+- `event_evidence_pipeline.Source/Claim/EvidencePackage` — modelli dati compatibili
+
 ## Funzioni legacy conservate
 
 - Ricerca validata con conferme (`/api/search-validated`, `/api/search/confirm`)
@@ -125,6 +160,7 @@ Esistono `/api/internati/:id/links` e `/api/entita/:id` ma mancano endpoint per 
 - Research Orchestrator V2 (create, plan, plans, locator validate, preflight, prompt)
 - AI Research multi-provider (`/api/ai-research`)
 - Graph endpoints (luoghi, mesi, paesi, soldati clusters)
+- Internet Archive pipeline (discover, analyze, ingestion, reconstruct) — *in progress*
 - Admin batch operations (entita build, decorati scrape, fondi extract, stop)
 - Fonti-risorse (list, stats, detail, scrape)
 - Source file serving (`/api/source/file`)
