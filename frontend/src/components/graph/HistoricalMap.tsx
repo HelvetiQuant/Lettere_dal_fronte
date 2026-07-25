@@ -101,9 +101,15 @@ export function HistoricalMap({
 
   useEffect(() => {
     if (!mapRef.current) return;
+
+    // Clean up any existing Leaflet instance on this container (HMR/StrictMode safe)
     if (mapInstance.current) {
       mapInstance.current.remove();
       mapInstance.current = null;
+    }
+    // Also clear any leftover _leaflet_id from a previous mount
+    if (mapRef.current._leaflet_id) {
+      delete mapRef.current._leaflet_id;
     }
 
     const map = L.map(mapRef.current, {
@@ -120,8 +126,11 @@ export function HistoricalMap({
 
     // Draw lines (front lines)
     for (const line of lines) {
-      if (line.points.length < 2) continue;
-      const latlngs = line.points.map(p => [p.lat, p.lon] as [number, number]);
+      if (!line.points || line.points.length < 2) continue;
+      const latlngs = line.points
+        .filter(p => p && typeof p.lat === 'number' && typeof p.lon === 'number')
+        .map(p => [p.lat, p.lon] as [number, number]);
+      if (latlngs.length < 2) continue;
       const dashArray = line.style === 'dashed' ? '8,4' : line.style === 'dotted' ? '2,4' : undefined;
       L.polyline(latlngs, {
         color: line.color || '#333',
@@ -133,6 +142,8 @@ export function HistoricalMap({
 
     // Draw movements (arrows)
     for (const mov of movements) {
+      if (typeof mov.from_lat !== 'number' || typeof mov.from_lon !== 'number' ||
+          typeof mov.to_lat !== 'number' || typeof mov.to_lon !== 'number') continue;
       const from: [number, number] = [mov.from_lat, mov.from_lon];
       const to: [number, number] = [mov.to_lat, mov.to_lon];
       const color = mov.movement_type === 'advance' ? '#2196F3' : mov.movement_type === 'retreat' ? '#F44336' : '#FF9800';
@@ -159,6 +170,7 @@ export function HistoricalMap({
     // Draw location markers
     const bounds = L.latLngBounds([]);
     for (const loc of locations) {
+      if (typeof loc.lat !== 'number' || typeof loc.lon !== 'number') continue;
       const color = VERIFICATION_COLORS[loc.verification] || '#999';
       const icon = createLabelIcon(loc.label_number, color, loc.role);
       const marker = L.marker([loc.lat, loc.lon], { icon }).addTo(map);
