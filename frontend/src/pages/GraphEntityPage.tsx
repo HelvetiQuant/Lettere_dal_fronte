@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '@/api/client';
 import { ApiError } from '@/api/errors';
 import type { GraphEntityResponse, GraphEdgeDTO } from '@/api/types';
 import { Card, Tag, LoadingState, ErrorState, Button } from '@/components/feedback/States';
 import { PageIntro, Section } from '@/components/layout/PageIntro';
+import { ForceGraph } from '@/components/graph/ForceGraph';
+import type { GraphNodeData, GraphEdgeData } from '@/components/graph/ForceGraph';
 
 export function GraphEntityPage() {
   const { sourceTable, sourceId } = useParams<{ sourceTable: string; sourceId: string }>();
@@ -26,6 +28,29 @@ export function GraphEntityPage() {
   const filteredEdges = filterStatus === 'all'
     ? edges
     : edges.filter((e) => e.status === filterStatus);
+
+  // Build ForceGraph data from canonical graph response
+  const graphNodes: GraphNodeData[] = useMemo(() => {
+    if (!data) return [];
+    return data.nodes.map((n) => ({
+      id: n.id,
+      type: n.type,
+      label: n.label,
+    }));
+  }, [data]);
+
+  const graphEdges: GraphEdgeData[] = useMemo(() => {
+    if (!data) return [];
+    return data.edges
+      .filter((e) => filterStatus === 'all' || e.status === filterStatus)
+      .map((e) => ({
+        source: e.source.id,
+        target: e.target.id,
+        relation: e.relation.label,
+        confidence: e.confidence ?? 0,
+        status: e.status,
+      }));
+  }, [data, filterStatus]);
 
   const statusColors: Record<string, 'neutral' | 'warning' | 'accent' | 'success' | 'danger'> = {
     confirmed: 'success',
@@ -52,6 +77,12 @@ export function GraphEntityPage() {
 
       {!loading && !error && data && (
         <>
+          {graphNodes.length > 0 && (
+            <Section title="Visualizzazione grafo">
+              <ForceGraph nodes={graphNodes} edges={graphEdges} minHeight={500} />
+            </Section>
+          )}
+
           <Section title="Nodo radice">
             <Card>
               <div className="grid grid--2">
