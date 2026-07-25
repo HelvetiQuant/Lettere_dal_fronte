@@ -69,13 +69,13 @@ export const api = {
   eventEvidence: (q: string) =>
     get<EvidencePackage>('/api/event-research/evidence', { q }),
   eventNarrative: (q: string, ai = true, provider = 'mistral') =>
-    get<NarrativeReport>('/api/event-research/narrative', { q, ai, provider }),
+    get<NarrativeReport>('/api/event-research/narrative', { q, ai, provider }, undefined, 120_000),
   eventAudit: () =>
     get<AuditSummary>('/api/event-research/audit'),
   eventAuditByEvent: (eventId: number) =>
     get<LinkAuditEntry[]>(`/api/event-research/audit/${eventId}`),
   eventMap: (q: string) =>
-    get<HistoricalMap>('/api/event-research/map', { q }),
+    get<HistoricalMap>('/api/event-research/map', { q }, undefined, 60_000),
   eventMapSvgUrl: (q: string) =>
     `/api/event-research/map/svg?q=${encodeURIComponent(q)}`,
 
@@ -155,7 +155,7 @@ export const api = {
   researchV2Create: (query: string, entityType?: string, entityId?: number,
                      budgetCycles = 5, budgetCostUsd = 1.0) =>
     post<ResearchV2Result>('/api/research/v2/create',
-      { query, entity_type: entityType, entity_id: entityId, budget_cycles: budgetCycles, budget_cost_usd: budgetCostUsd }),
+      { query, entity_type: entityType, entity_id: entityId, budget_cycles: budgetCycles, budget_cost_usd: budgetCostUsd }, undefined, 120_000),
   researchV2Plan: (planId: number) => get<ResearchV2PlanResponse>(`/api/research/v2/plan/${planId}`),
   researchV2Plans: (status?: string, limit = 20) =>
     get<ResearchV2PlansResponse>('/api/research/v2/plans', { ...(status ? { status } : {}), limit }),
@@ -169,13 +169,13 @@ export const api = {
 
   // ── AI Research ──
   aiResearch: (data: { query: string; provider?: string; limit?: number }) =>
-    post<AIResearchResponse>('/api/ai-research', data),
+    post<AIResearchResponse>('/api/ai-research', data, undefined, 120_000),
   aiResearchHistory: (limit = 20) =>
     get<AIResearchHistoryResponse>('/api/ai-research/history', { limit }),
 
   // ── Viewpoints (Punti di vista) ──
   viewpointsCreate: (query: string, useAi = false) =>
-    post<Record<string, unknown>>('/api/viewpoints/create', { query, use_ai: useAi }),
+    post<Record<string, unknown>>('/api/viewpoints/create', { query, use_ai: useAi }, undefined, 120_000),
 
   // ── Entita ──
   entitaSearch: (q: string, limit = 50) =>

@@ -70,12 +70,12 @@ async function request<T>(
   }
 }
 
-export function get<T>(path: string, params?: Record<string, string | number | boolean | undefined>, signal?: AbortSignal): Promise<T> {
-  return request<T>('GET', path, { params, signal, retry: true });
+export function get<T>(path: string, params?: Record<string, string | number | boolean | undefined>, signal?: AbortSignal, timeout?: number): Promise<T> {
+  return request<T>('GET', path, { params, signal, retry: true, timeout });
 }
 
-export function post<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
-  return request<T>('POST', path, { body, signal });
+export function post<T>(path: string, body?: unknown, signal?: AbortSignal, timeout?: number): Promise<T> {
+  return request<T>('POST', path, { body, signal, timeout });
 }
 
 export function patch<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
