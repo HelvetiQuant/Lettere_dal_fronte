@@ -15,6 +15,7 @@ import type {
   HistoricalMap,
   CanonicalEvent, CanonicalEventListResponse, CanonicalEventChildrenResponse,
   GraphEntityResponse, RAGContextResponse, RAGValidationResponse,
+  MapFeatureRecord, MapFeatureListResponse,
 } from './types';
 
 export const api = {
@@ -105,6 +106,14 @@ export const api = {
     get<RAGContextResponse>('/api/rag/retrieve', { q, ...opts }),
   ragValidate: (body: { text: string; citations?: unknown[] }) =>
     post<RAGValidationResponse>('/api/rag/validate', body),
+
+  // ── Map Features ──
+  mapFeatures: (eventId: string) =>
+    get<MapFeatureListResponse>(`/api/map-features/event/${eventId}`),
+  mapFeatureCreate: (body: Record<string, unknown>) =>
+    post<MapFeatureRecord>('/api/map-features/', body),
+  mapFeatureReview: (featureId: string, body: { review_status: string; reviewed_by?: string }) =>
+    post<MapFeatureRecord>(`/api/map-features/${featureId}/review`, body),
 
   // ── External Sources ──
   icrcSearch: (q: string, nationality = 'italy', status = '', files = '') =>

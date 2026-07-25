@@ -78,6 +78,8 @@ from graph_schema import init_graph_schema
 from event_schema import init_event_schema
 from event_canonical_api import router as event_canonical_router
 from rag_api import router as rag_router
+from map_schema import init_map_schema
+from map_features_api import router as map_features_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -96,6 +98,7 @@ async def lifespan(_app):
     init_research_engine_schema()
     init_graph_schema()
     init_event_schema()
+    init_map_schema()
     from archive_registry import seed_from_federation
     seed_from_federation()
     yield
@@ -122,6 +125,7 @@ app.include_router(viewpoints_router)
 app.include_router(graph_router)
 app.include_router(event_canonical_router)
 app.include_router(rag_router)
+app.include_router(map_features_router)
 
 _extraction_lock = threading.Lock()
 _running_letter = None

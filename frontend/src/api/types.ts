@@ -748,3 +748,31 @@ export interface RAGValidationResponse {
   valid: boolean;
   issues: string[];
 }
+
+// ── Map Features ──
+
+export interface MapFeatureRecord {
+  id: string;
+  event_id: string;
+  phase: string;
+  feature_type: string;
+  geojson: Record<string, unknown>;
+  date_start: string | null;
+  date_end: string | null;
+  label: string;
+  description: string | null;
+  certainty: string;
+  source_table: string | null;
+  source_id: number | null;
+  source_url: string | null;
+  review_status: string;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MapFeatureListResponse {
+  features: MapFeatureRecord[];
+  total: number;
+}
