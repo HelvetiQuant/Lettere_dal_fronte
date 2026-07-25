@@ -7,11 +7,14 @@ import { Card, Tag, Input, Button, LoadingState, ErrorState, EmptyState, Partial
 import { PageIntro, Section } from '@/components/layout/PageIntro';
 
 interface ViewpointResult {
+  ok?: boolean;
   synthesis?: string;
-  shared_facts?: { fact: string; sources: string[] }[];
-  divergences?: { fact: string; versions: { source: string; value: string }[] }[];
+  shared_facts?: { fact: string; sources: string[]; category?: string }[];
+  divergences?: { fact: string; versions: { source: string; value: string; role?: string }[] }[];
   uncertainties?: { topic: string; reason: string }[];
-  sources_used?: { name: string; url?: string }[];
+  sources_used?: { name: string; url?: string; provider?: string; model?: string }[];
+  providers_used?: string[];
+  ai?: { used: boolean; provider?: string; text?: string; error?: string };
   error?: string;
 }
 
@@ -36,19 +39,18 @@ export function ViewpointsPage() {
     setResult(null);
     setBackendSupported(null);
     try {
-      const data = await api.aiResearch({ query: searchTerm, provider: 'all', limit: 20 });
-      if (data.error) {
+      const data = await api.viewpointsCreate(searchTerm, true) as ViewpointResult & { ok?: boolean };
+      if (data.ok === false) {
         setBackendSupported(false);
-        setError(new ApiError(501, 'Il backend non supporta ancora il task "viewpoints". Contratto backend necessario.'));
+        setError(new ApiError(501, data.error || 'Il backend non supporta ancora il task "viewpoints".'));
       } else {
         setBackendSupported(true);
-        const analysis = data.analysis || data.sintesi || '';
         setResult({
-          synthesis: analysis,
-          sources_used: (data.fonti || []).map((f: string) => ({ name: f })),
-          shared_facts: [],
-          divergences: [],
-          uncertainties: [],
+          synthesis: data.synthesis || '',
+          shared_facts: data.shared_facts || [],
+          divergences: data.divergences || [],
+          uncertainties: data.uncertainties || [],
+          sources_used: data.sources_used || [],
         });
       }
     } catch (e) {
@@ -75,16 +77,10 @@ export function ViewpointsPage() {
 
       {backendSupported === false && (
         <Card variant="info">
-          <strong>Contratto backend mancante</strong>
+          <strong>Backend non disponibile</strong>
           <p className="text-sm mt-2">
-            Il backend non supporta ancora un task strutturato <code>viewpoints</code>.
-            Per implementare questa funzione correttamente, è necessario aggiungere
-            un endpoint <code>/api/viewpoints/create</code> nel backend che accetti
-            una query, raccolga le fonti pertinenti, estragga affermazioni per ciascuna
-            fonte e produca una sintesi strutturata con fatti condivisi, divergenze e lacune.
-          </p>
-          <p className="text-sm mt-2">
-            Al momento viene usato <code>/api/ai-research</code> come fallback generico.
+            Il backend non risponde o l'endpoint <code>/api/viewpoints/create</code> non è accessibile.
+            Verificare che il backend sia attivo sulla porta 8001.
           </p>
         </Card>
       )}

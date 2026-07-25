@@ -70,7 +70,7 @@ export function EventDossierPage() {
       .finally(() => setLoading(false));
   }, [eventName]);
 
-  const ev = data?.event;
+  const ev = data?.event || data?.evento;
   const caduti = data?.caduti?.items || [];
   const decorati = data?.decorati?.items || [];
   const internati = data?.internati?.items || [];
@@ -102,6 +102,9 @@ export function EventDossierPage() {
           </Section>
 
           <div className="flex flex--wrap mb-4" style={{ gap: 'var(--s-2)' }}>
+            <Button variant="primary" size="sm" onClick={() => navigate(`/ricerca-evento/${encodeURIComponent(ev.nome)}`)}>
+              Dossier narrativo (nuova pipeline)
+            </Button>
             <Button variant="secondary" size="sm" onClick={() => navigate(`/punti-di-vista?q=${encodeURIComponent(ev.nome)}`)}>
               Confronta fonti (Punti di vista)
             </Button>

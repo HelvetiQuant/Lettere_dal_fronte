@@ -1,5 +1,79 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-24 (sera) — Refactor grafo canonico, identity resolution e fonti (branch `codex/refactor-grafo-fonti-20260724`)
+
+### Riepilogo
+Refactor completo del sistema di collegamenti (grafo), risoluzione identità e gestione fonti. 62 file modificati, +7.568 / -2.147 righe. Branch `codex/refactor-grafo-fonti-20260724` su commit `a7e6231`. PR aperta, non mergiata.
+
+### Nuovi moduli backend
+- **`identity_resolution.py`** (475 righe) — Algoritmo di risoluzione identità con gradi di confidenza (candidate → probable → confirmed). Rifiuta cognome-only come prova. Corroborazioni: data nascita, luogo, matricola, reparto, campo, periodo. Gestione omonimi con marcatura ambiguous.
+- **`identity_link_pipeline.py`** (248 righe) — Pipeline dry-run/execute per generare collegamenti identity-resolved. Algorithm version `identity-resolution-2.0.0`. Checkpoint/resume.
+- **`graph_schema.py`** (153 righe) — Schema canonico grafo: nodi, archi, review, pipeline runs, integrity issues.
+- **`graph_service.py`** (152 righe) — Servizio grafo: lettura coordinata di `collegamenti`, `record_links`, `event_links`, `external_record_links`, claims.
+- **`graph_models.py`** (93 righe) — Modelli Pydantic per API grafo.
+- **`graph_visualization.py`** (139 righe) — Generazione grafo SVG selezionabile e scaricabile nei report.
+- **`archival_metadata_service.py`** (154 righe) — Metadati archivistici stabili con marcatura URL mancanti.
+- **`validate_graph.py`** (208 righe) — Validatore read-only su 4 sistemi di collegamento.
+- **`database_registry.py`** (265 righe) — Registry centralizzato per path DB main ed eventi.
+
+### Migrazioni additive e reversibili
+- **`20260724_001_graph_core.sql`** (129 righe) — 6 nuove tabelle in `imi_internati.db`: `graph_nodes`, `graph_edges`, `graph_edge_reviews`, `graph_pipeline_runs`, `graph_integrity_issues`, `archival_metadata`.
+- **`20260724_001_graph_core_rollback.sql`** (22 righe) — Rollback completo.
+- **`20260724_002_event_link_metadata.sql`** (24 righe) — Tabella `event_link_metadata` in `eventi_1gm.db`.
+- **`20260724_002_event_link_metadata_rollback.sql`** (3 righe) — Rollback.
+- **`apply_graph_migrations.py`** (80 righe) — Runner con dry-run, execute, rollback. Backup automatici con SHA-256.
+
+### Modifiche backend
+- **`app.py`** (+234/-234) — API canoniche: `/api/graph/search`, `/api/graph/entity/{table}/{id}`, `/api/graph/expand`, `/api/graph/metadata`, `/api/graph/review`. Endpoint `/api/internati/{id}/links` deprecato come alias con `is_graph: false`. Endpoint `/api/internati/{id}/fonti` ora esclude surname-only e homepage. Report con `visualization.nodes` e `visualization.edges`.
+- **`report_engine.py`** (+560/-) — Generazione grafo SVG nel report, narrative con grafo grounded, no dangling edges.
+- **`unified_search.py`** (+107) — Ricerca unificata con ritorno identità reale del record.
+- **`external_link_service.py`** (+314/-) — Matching con data nascita, luogo, campo. Batch linking. Detection omonimie. `review_link_with_type` per link bidirezionali.
+- **`link_pipeline.py`** (+445/-) — Audit read-only su 4 sistemi. Pipeline dry-run.
+- **`soldier_dashboard.py`** (+160/-) — Dashboard con fonti dossier filtrate, external sources con `live_search_performed: false` di default.
+- **`viewpoints_api.py`** (+174) — API per punti di vista con grafo.
+- **`search_service.py`** (+93) — Servizio ricerca con identity resolution.
+
+### Modifiche frontend
+- **`ReportGraph.tsx`** (+315) — Grafo SVG interattivo, selezione nodi, download.
+- **`PrimaryNavigation.tsx`** (nuovo, 300 righe) — Navigazione primaria refactor.
+- **`HomePage.tsx`** (+414/-) — Home page con grafo e report integrati.
+- **`HeuristicLinksPage.tsx`** (+83/-) — Pagina collegamenti euristici con nuovi contratti.
+- **`SoldierDossierPage.tsx`** (+53/-) — Dossier con fonti filtrate, external sources.
+- **`ViewpointsPage.tsx`** (+144/-) — Punti di vista con grafo.
+- **`ResearchPage.tsx`** (+199/-) — Ricerca AI con identity resolution.
+- **`AdminPage.tsx`** (+17/-) — Admin con stato migrazioni.
+- **`client.ts`** (+78/-) — Client API con tipi grafo.
+- **`types.ts`** (+36/-) — Tipi TypeScript per grafo, identity, metadata.
+
+### Test
+- **`tests/test_identity_resolution.py`** (107 righe) — 6 test: birth data corrobora, conflitto data non compensato, anno in contesto migliora match, omonimi marked ambiguous, full name non auto-confirmato, surname-only rejected.
+- **`tests/test_graph_refactor.py`** (425 righe) — 10 test: nodi/archi/legacy validi, migrazioni apply/rollback, validator 4 sistemi, fonti dossier escludono surname-only, external mentions usano birth data, archival metadata stabile, report grafo grounded no dangling, review persistita senza cambiare legacy, unified search ritorna identità reale.
+- **Totale: 16 test, 0 falliti** (0.651s).
+
+### Documentazione
+- `docs/graph-architecture-audit.md` (115 righe) — Audit architettura grafo.
+- `docs/graph-data-model.md` (137 righe) — Modello dati canonico.
+- `docs/graph-validation-report.md` (179 righe) — Report validazione.
+- `docs/external-sources-status.md` (85 righe) — Stato fonti esterne.
+- `docs/analysis/REPORT_ANALISI_E_FIX.md` (27 righe) — Analisi e fix.
+- `frontend/ARCHITECTURE.md` (+276 righe) — Architettura frontend refactor.
+
+### Verifiche eseguite
+- `compileall`: PASS
+- `unittest` (16 test): PASS
+- `npm run lint` (oxlint): 0 warnings, 0 errors
+- `npm run build` (tsc + vite): PASS (588ms, 1603 moduli)
+- Migrazioni: dry-run → execute → rollback → re-execute. Tutti i conteggi legacy invariati. Integrity check OK.
+- Caso regressione Luigi Gaiaschi (id=22808): fonti dossier corrette (no Mario/Camilla/Rosa), external sources senza live search, grafo senza undefined nodes, report con 26 nodes / 22 edges.
+- AI Mistral: `mistral-small-latest` risponde correttamente (3.739 caratteri generati).
+- `.env` e DB: gitignored, non tracciati.
+
+### Anomalie residue (preesistenti, non introdotte dalla patch)
+- `validate_graph.py` crash su `archivio_documenti` (chiave composta `provider+external_id`, no colonna `id`).
+- Conflitto `httpx<0.28` vs `mistralai>=2.0.0` in `requirements.txt` — risolto localmente aggiornando httpx a 0.28.1.
+- 589 FK violations preesistenti in `imi_internati.db` (foreign keys non abilitate in `get_conn()`).
+- OpenAI 401 (chiave scaduta), Anthropic 400 (credito insufficiente), Gemini 429 (quota superata), Perplexity 401.
+
 ## 2026-07-24 (notte) — Research Engine Fase C: Fact Extraction + Timeline Automatica
 
 ### Nuovo modulo: Fact Extractor (`fact_extractor.py`)

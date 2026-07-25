@@ -1040,18 +1040,82 @@ _SEARCH_PAGE_PATTERNS = [
 ]
 _ALLOWED_SCHEMES = {"http", "https"}
 
+_VIEWER_PATTERNS = [
+    "/viewer", "/view", "/read", "/browse", "/leggi",
+    "/showpdf", "/show_pdf", "/document/view", "/reader",
+]
+
+_DOWNLOAD_PATTERNS = [
+    "/download", "/dl/", "/get/", "/fetch/", "/export/",
+    ".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png", ".tif",
+    ".tiff", ".gif", ".webp",
+]
+
+_CATALOG_PATTERNS = [
+    "/catalog", "/catalogo", "/inventario", "/inventory",
+    "/collection", "/collezione", "/fondo/", "/series/",
+    "/archiv/", "/bestand/",
+]
+
+_DOCUMENT_INDICATORS = [
+    "/document/", "/documento/", "/lettera/", "/carta/",
+    "/foto/", "/image/", "/scan/", "/page/", "/pag/",
+    "/atto/", "/verbale/", "/scheda/",
+]
+
 
 def classify_url(url: str) -> str:
-    """Classifica URL: source | search_page | homepage | empty."""
+    """Classifica URL secondo la tassonomia canonica.
+
+    Returns: document | record | catalog_entry | search_page |
+             homepage | download | viewer | broken | unknown | empty
+    """
     if not url:
         return "empty"
     url_lower = url.lower().strip()
+
+    if url_lower in ("none", "null", "n/a", "-"):
+        return "broken"
+    if not (url_lower.startswith("http://") or url_lower.startswith("https://")):
+        return "broken"
+
     for pattern in _SEARCH_PAGE_PATTERNS:
         if pattern in url_lower:
             return "search_page"
-    if url_lower.endswith("/") and url_lower.count("/") <= 3:
-        return "homepage"
-    return "source"
+
+    for pattern in _DOWNLOAD_PATTERNS:
+        if pattern in url_lower:
+            return "download"
+
+    for pattern in _VIEWER_PATTERNS:
+        if pattern in url_lower:
+            return "viewer"
+
+    for pattern in _CATALOG_PATTERNS:
+        if pattern in url_lower:
+            return "catalog_entry"
+
+    from urllib.parse import urlparse
+    try:
+        parsed = urlparse(url_lower)
+        if parsed.path in ("", "/") and not parsed.query and not parsed.fragment:
+            return "homepage"
+    except Exception:
+        pass
+
+    path = parsed.path if parsed else ""
+    if path:
+        segments = [s for s in path.split("/") if s]
+        if segments:
+            last = segments[-1].split("?")[0].split("#")[0]
+            if last.isdigit() or (len(last) > 4 and any(c.isdigit() for c in last) and any(c.isalpha() for c in last)):
+                return "record"
+
+    for ind in _DOCUMENT_INDICATORS:
+        if ind in url_lower:
+            return "document"
+
+    return "unknown"
 
 
 def is_valid_locator(url: str) -> bool:
@@ -1061,13 +1125,15 @@ def is_valid_locator(url: str) -> bool:
     scheme = url.split("://")[0].lower() if "://" in url else ""
     if scheme not in _ALLOWED_SCHEMES:
         return False
-    return classify_url(url) == "source"
+    kind = classify_url(url)
+    return kind in ("record", "document", "catalog_entry", "download", "viewer")
 
 
 def validate_locator(url: str, domain: str = None) -> Dict:
     """Valida un URL come locator e ritorna diagnosi completa."""
     kind = classify_url(url)
-    is_valid = kind == "source"
+    valid_kinds = {"record", "document", "catalog_entry", "download", "viewer"}
+    is_valid = kind in valid_kinds
     scheme = url.split("://")[0].lower() if "://" in url else ""
     scheme_ok = scheme in _ALLOWED_SCHEMES
     extracted_domain = ""

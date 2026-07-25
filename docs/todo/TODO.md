@@ -1,10 +1,54 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 24 luglio 2026 — AI Provider Consolidation + LeBI Fase 4 + Docs.
+Aggiornato: 24 luglio 2026 — Refactor grafo canonico, identity resolution, fonti. Branch `codex/refactor-grafo-fonti-20260724`.
 
 ---
 
-## Giornata 2026-07-24 — AI Consolidation + LeBI Fase 4 + Docs
+## Refactor grafo e fonti — stato 2026-07-24
+
+### Completato nel codice (branch `codex/refactor-grafo-fonti-20260724`)
+
+- [x] Contratto canonico unico per nodi, archi, evidenze, divergenze, provenienza, stato e review.
+- [x] Lettura coordinata di `collegamenti`, `record_links`, `event_links` nel database eventi, `external_record_links`, claim ed evidenze.
+- [x] Separazione tra fonti esterne, locator di ricerca e relazioni interne.
+- [x] Pipeline generalizzata contro le omonimie: nome completo minimo, data e luogo di nascita, matricola, reparto, campo e periodo come corroborazioni.
+- [x] Rifiuto del solo cognome come prova di identità.
+- [x] Correzione fonti dossier e regressione reale su Luigi Gaiaschi (`internati#22808`): 2 fonti pertinenti conservate, 13 risultati impropri esclusi.
+- [x] API canoniche di ricerca, espansione grafo, metadati e review.
+- [x] Frontend Collegamenti, Dossier, Esplora, Ricerca AI e Punti di vista aggiornati ai nuovi contratti.
+- [x] Grafo SVG selezionabile e scaricabile alla fine dei report.
+- [x] Migrazioni additive e reversibili con backup e controllo integrità.
+- [x] Validazione read-only, pipeline dry-run e rigenerazione incrementale.
+- [x] Documentazione di architettura, modello dati, validazione e fonti esterne.
+- [x] Verifiche locali: compileall, 16 unittest, lint e build frontend.
+- [x] Migrazioni testate su copie: dry-run → execute → rollback → re-execute. Conteggi legacy invariati.
+- [x] Caso regressione Gaiaschi verificato via API runtime.
+- [x] AI Mistral collegata e funzionante (`mistral-small-latest`).
+
+### Prima del merge su main
+
+- [ ] **Fix `validate_graph.py`**: gestire `archivio_documenti` (chiave composta `provider+external_id`, no colonna `id`).
+- [ ] **Fix `requirements.txt`**: aggiornare `httpx>=0.28.1` per compatibilità con `mistralai>=2.0.0`.
+- [ ] **Eseguire `validate_graph.py` sui due snapshot SQLite completi** e conservare il report prima/dopo.
+- [ ] **Costruire un gold set stratificato e revisionato** per misurare precisione, richiamo e F1.
+- [ ] **Revisionare campioni per ogni `link_type`**, inclusi omonimi e relazioni tra guerre differenti.
+- [ ] **Decidere il contenitore definitivo** per gli eventi posteriori al 1918 oggi presenti nel database denominato `eventi_1gm`.
+- [ ] **Definire responsabilità e soglia documentale** per promuovere un candidato da `probable` a `confirmed`.
+- [ ] **Verificare termini d'uso, rate limit e identificatori stabili** di ogni provider prima di importazioni massive.
+- [ ] **Aggiornare chiavi AI**: OpenAI (scaduta), Anthropic (credito insufficiente), Gemini (quota superata), Perplexity (non autorizzata).
+- [ ] **Push branch + apertura PR** su GitHub con descrizione dettagliata.
+
+### Post-merge
+
+- [ ] Popolare `graph_nodes` e `graph_edges` dalla pipeline identity-resolved su tutti i 20.465 internati.
+- [ ] Eseguire `identity_link_pipeline.py internati --execute` su dataset completo.
+- [ ] Valutare performance grafo con 688K entità e 2.3M collegamenti.
+- [ ] Frontend: test visuale grafo SVG su browser con dataset reale.
+- [ ] Frontend: mappa geospaziale movimentazioni (Leaflet + dati luogo_internamento).
+
+---
+
+## Archivio: giornata 2026-07-24 — AI Consolidation + LeBI Fase 4 + Docs
 
 ### Completato
 - [x] **AI Provider Consolidation**: OpenAI primario per tutti i task type in `ai_router.py`, `ai_client.py`, `event_research_engine.py`, `ai_research.py`, `biography.py`. Fallback chain: OpenAI → Anthropic → Mistral → Perplexity → Gemini.

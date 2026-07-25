@@ -1,0 +1,41 @@
+# AI Runtime Configuration
+# Secrets must stay in environment (.env), not in this file.
+
+# Primary provider: lm_studio | remote | test
+provider: lm_studio
+
+# If true, blocks all remote providers at application level
+local_only: true
+
+# LM Studio settings
+lm_studio:
+  base_url: ""  # Set via LM_STUDIO_API_URL env var
+  model_id: ""  # Auto-detected from /v1/models
+
+# Remote provider settings (used only when local_only=false)
+remote:
+  fallback_order: ["openai", "anthropic", "mistral", "perplexity", "gemini"]
+  timeout: 120
+
+# Generation defaults
+generation:
+  max_context_tokens: 8192
+  max_output_tokens: 4096
+  temperature: 0.3
+  structured_output: true
+
+# Embedding settings
+embedding:
+  provider: local  # local | remote | none
+  model: ""  # Auto-detected from LM Studio
+  dimension: 0  # Auto-detected; 0 = validate at runtime
+  batch_size: 32
+
+# Logging (never log sensitive content)
+logging:
+  log_provider: true
+  log_model: true
+  log_tokens: true
+  log_latency: true
+  log_content: false
+  log_errors: true

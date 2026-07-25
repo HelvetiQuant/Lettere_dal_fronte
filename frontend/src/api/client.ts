@@ -11,6 +11,8 @@ import type {
   ResearchSubject, ResearchSubjectDetail, ResearchGap, ResearchStats,
   AIResearchResponse, AIResearchHistoryResponse,
   GraphLuoghiResponse, GraphMesiResponse, GraphPaesiResponse,
+  EventResolution, EvidencePackage, NarrativeReport, AuditSummary, LinkAuditEntry,
+  HistoricalMap,
 } from './types';
 
 export const api = {
@@ -55,6 +57,22 @@ export const api = {
     get<{ decorati: DecoratoRecord[]; total: number }>(`/api/events/1gm/${encodeURIComponent(eventName)}/decorati`, { limit }),
   eventInternati: (eventName: string, limit = 50) =>
     get<{ internati: InternatoRecord[]; total: number }>(`/api/events/${encodeURIComponent(eventName)}/internati`, { limit }),
+
+  // ── Event Research Pipeline (nuova architettura) ──
+  eventResolve: (q: string) =>
+    get<EventResolution>('/api/event-research/resolve', { q }),
+  eventEvidence: (q: string) =>
+    get<EvidencePackage>('/api/event-research/evidence', { q }),
+  eventNarrative: (q: string, ai = true, provider = 'mistral') =>
+    get<NarrativeReport>('/api/event-research/narrative', { q, ai, provider }),
+  eventAudit: () =>
+    get<AuditSummary>('/api/event-research/audit'),
+  eventAuditByEvent: (eventId: number) =>
+    get<LinkAuditEntry[]>(`/api/event-research/audit/${eventId}`),
+  eventMap: (q: string) =>
+    get<HistoricalMap>('/api/event-research/map', { q }),
+  eventMapSvgUrl: (q: string) =>
+    `/api/event-research/map/svg?q=${encodeURIComponent(q)}`,
 
   // ── Graph ──
   graphLuoghi: (limit = 50) => get<GraphLuoghiResponse>('/api/graph/luoghi', { limit }),
@@ -108,6 +126,10 @@ export const api = {
     post<AIResearchResponse>('/api/ai-research', data),
   aiResearchHistory: (limit = 20) =>
     get<AIResearchHistoryResponse>('/api/ai-research/history', { limit }),
+
+  // ── Viewpoints (Punti di vista) ──
+  viewpointsCreate: (query: string, useAi = false) =>
+    post<Record<string, unknown>>('/api/viewpoints/create', { query, use_ai: useAi }),
 
   // ── Entita ──
   entitaSearch: (q: string, limit = 50) =>

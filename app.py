@@ -8,8 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Body, UploadFile, File, Form, BackgroundTasks
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse
 
 from config import IMI_PDFS, COLUMNS
 from database import (
@@ -73,6 +72,7 @@ from external_sources_schema import init_external_sources_schema
 from external_sources_api import router as external_sources_router
 from research_engine_schema import init_research_engine_schema
 from research_engine_api import router as research_engine_router
+from viewpoints_api import router as viewpoints_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -107,18 +107,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_TEMPLATES = Path(__file__).parent / "templates"
-app.mount("/static", StaticFiles(directory=str(_TEMPLATES)), name="static")
-_SHARED_DIR = _TEMPLATES / "shared"
-if _SHARED_DIR.exists():
-    app.mount("/shared", StaticFiles(directory=str(_SHARED_DIR)), name="shared")
 app.include_router(rc_router)
 app.include_router(rc_ext_router)
 app.include_router(external_sources_router)
 app.include_router(research_engine_router)
-_DS_DIR = _TEMPLATES / "Voci dal Fronte - Redesign" / "_ds"
-if _DS_DIR.exists():
-    app.mount("/_ds", StaticFiles(directory=str(_DS_DIR)), name="ds")
+app.include_router(viewpoints_router)
 
 _extraction_lock = threading.Lock()
 _running_letter = None
@@ -132,26 +125,6 @@ _cwgc_lock = threading.Lock()
 _ministero_lock = threading.Lock()
 _sardi_lock = threading.Lock()
 _nara_lock = threading.Lock()
-
-
-@app.get("/", response_class=FileResponse)
-def index():
-    return FileResponse(str(_TEMPLATES / "index.html"), media_type="text/html")
-
-
-@app.get("/riconoscimenti", response_class=FileResponse)
-def rc_index():
-    return FileResponse(str(_TEMPLATES / "rc.html"), media_type="text/html")
-
-
-@app.get("/support.js")
-def static_support():
-    return FileResponse(str(_TEMPLATES / "support.js"), media_type="application/javascript")
-
-
-@app.get("/voci-data.js")
-def static_voci_data():
-    return FileResponse(str(_TEMPLATES / "voci-data.js"), media_type="application/javascript")
 
 
 @app.get("/api/search/ww1")
@@ -2205,6 +2178,63 @@ def api_event_dossier_unified(event_name: str):
             "total_fonti": fonti.get("total", 0),
         }
     raise HTTPException(status_code=404, detail=f"Evento '{nome_decoded}' non trovato")
+
+
+# ─── Event Research Pipeline (nuova architettura) ───────────────────────────
+
+@app.get("/api/event-research/resolve")
+def api_event_resolve(q: str):
+    """Risolve un nome evento con disambiguazione e classificazione."""
+    from event_resolver import resolve
+    return resolve(q)
+
+
+@app.get("/api/event-research/evidence")
+def api_event_evidence(q: str):
+    """Raccoglie il pacchetto di evidenze per un evento (4 livelli fonti)."""
+    from event_evidence_pipeline import collect_evidence
+    pkg = collect_evidence(q)
+    return pkg.to_dict()
+
+
+@app.get("/api/event-research/narrative")
+def api_event_narrative(q: str, ai: bool = True, provider: str = "mistral"):
+    """Genera il dossier narrativo completo da evidenze raccoltate."""
+    from event_narrative_builder import build_narrative
+    return build_narrative(q, use_ai=ai, provider=provider)
+
+
+@app.get("/api/event-research/audit")
+def api_event_audit():
+    """Audit completo degli event_links esistenti."""
+    from event_link_audit import get_audit_summary
+    return get_audit_summary()
+
+
+@app.get("/api/event-research/audit/{event_id}")
+def api_event_audit_by_event(event_id: int):
+    """Audit dei link di un singolo evento."""
+    from event_link_audit import audit_event
+    audits = audit_event(event_id)
+    return [a.to_dict() for a in audits]
+
+
+@app.get("/api/event-research/map")
+def api_event_map(q: str):
+    """Genera mappa storico-operativa verificabile per un evento."""
+    from event_map_builder import build_map_from_query
+    return build_map_from_query(q)
+
+
+@app.get("/api/event-research/map/svg")
+def api_event_map_svg(q: str):
+    """Restituisce direttamente l'SVG della mappa per download."""
+    from event_map_builder import build_map_from_query
+    from fastapi import Response
+    m = build_map_from_query(q)
+    return Response(content=m["svg"], media_type="image/svg+xml", headers={
+        "Content-Disposition": f'attachment; filename="mappa_{q.replace(" ", "_")}.svg"'
+    })
 
 
 # ─── CimeTrincee (storie e soldati + foto d'epoca) ────────────────────────────

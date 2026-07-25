@@ -396,12 +396,211 @@ export interface EventDossierResponse {
   ok?: boolean;
   source?: string;
   event?: EventRecord;
+  evento?: EventRecord;
   caduti?: { items: CadutoRecord[]; total: number };
   decorati?: { items: DecoratoRecord[]; total: number };
   internati?: { items: InternatoRecord[]; total: number };
   documenti?: { items: DocumentoRecord[]; total: number };
   fonti?: { items: FonteIndiceRecord[]; total: number };
   total_fonti?: number;
+}
+
+// ── Event Research Pipeline (nuova architettura) ──
+
+export interface EventMatch {
+  id: number;
+  nome: string;
+  aliases: string[];
+  keywords: string[];
+  data_inizio: string;
+  data_fine: string;
+  luogo: string;
+  descrizione: string;
+  score: number;
+  match_source: string;
+  event_type: string;
+  parent_events: string[];
+  child_events: string[];
+  is_collection: boolean;
+}
+
+export interface EventResolution {
+  query: string;
+  is_event: boolean;
+  canonical: string | null;
+  canonical_id: number | null;
+  matches: EventMatch[];
+  ambiguity_warning: string | null;
+  proposed_distinctions: { type: string; nome: string; periodo: string; luogo: string; descrizione: string }[];
+  conflict: string;
+  confidence: number;
+}
+
+export interface EventSource {
+  source_id: string;
+  title: string;
+  source_type: string;
+  authority: string;
+  url: string;
+  archive_reference: string;
+  author_or_institution: string;
+  date: string;
+  excerpt: string;
+  availability: string;
+  relevance_score: number;
+  temporal_compatible: boolean;
+  geographic_compatible: boolean;
+  verification_status: string;
+  verification_note: string;
+}
+
+export interface EventClaim {
+  claim_id: string;
+  text: string;
+  claim_type: string;
+  value: string;
+  sources: string[];
+  confidence: string;
+  concordance: string;
+  conflicting_claims: string[];
+}
+
+export interface EvidencePackage {
+  event_name: string;
+  event_id: number | null;
+  resolution: EventResolution;
+  sources: EventSource[];
+  claims: EventClaim[];
+  concordant_facts: EventClaim[];
+  divergent_versions: EventClaim[];
+  uncertain_elements: EventClaim[];
+  archival_sources: EventSource[];
+  bibliographic_sources: EventSource[];
+  web_sources: EventSource[];
+  related_people: Record<string, unknown>[];
+  related_documents: Record<string, unknown>[];
+  graph_data: { nodes: Record<string, unknown>[]; edges: Record<string, unknown>[] };
+  collection_date: string;
+}
+
+export interface NarrativeParagraph {
+  section: string;
+  text: string;
+  source_ids: string[];
+  source_labels: string[];
+}
+
+export interface NarrativeReport {
+  event_name: string;
+  event_id: number | null;
+  resolution: EventResolution;
+  sections: NarrativeParagraph[];
+  inquadramento: string;
+  narrazione: string;
+  cronologia: { data: string; fase: string; descrizione: string; fonti: string[] }[];
+  luoghi: { nome: string; ruolo: string; fonti: string[] }[];
+  reparti: { nome: string; ruolo: string; fonti: string[] }[];
+  cause_conseguenze: string;
+  fatti_concordanti: { fatto: string; fonti: string[] }[];
+  versioni_divergenti: { fatto: string; versione_a: string; fonte_a: string; versione_b: string; fonte_b: string }[];
+  elementi_incerti: { elemento: string; motivo: string; fonti: string[] }[];
+  fonti_archivistiche: EventSource[];
+  fonti_bibliografiche: EventSource[];
+  grafo: { nodes: Record<string, unknown>[]; edges: Record<string, unknown>[] };
+  persone_collegate: Record<string, unknown>[];
+  evidence_package: EvidencePackage;
+  ai_used: boolean;
+  ai_model: string | null;
+}
+
+export interface LinkAuditEntry {
+  link_id: number;
+  evento_id: number;
+  evento_nome: string;
+  target_table: string;
+  target_id: number;
+  link_type: string;
+  match_field: string;
+  match_value: string;
+  original_confidence: number;
+  match_method: string;
+  temporal_compatible: boolean;
+  geographic_compatible: boolean;
+  military_context: boolean;
+  review_status: string;
+  review_reason: string;
+  audit_date: string;
+}
+
+export interface AuditSummary {
+  total_links: number;
+  candidates: number;
+  probable: number;
+  confirmed: number;
+  rejected: number;
+  by_link_type: Record<string, Record<string, number>>;
+  by_event: Record<string, Record<string, number>>;
+  issues: string[];
+}
+
+// ── Historical Map ──
+
+export interface MapLocation {
+  name: string;
+  lat: number;
+  lon: number;
+  role: string;
+  phase: string | null;
+  source_ids: string[];
+  verification: string;
+  label_number: number;
+}
+
+export interface MapLine {
+  name: string;
+  points: { lat: number; lon: number }[];
+  line_type: string;
+  style: string;
+  color: string;
+  phase: string | null;
+  source_ids: string[];
+  verification: string;
+}
+
+export interface MapMovement {
+  name: string;
+  from: { lat: number; lon: number };
+  to: { lat: number; lon: number };
+  movement_type: string;
+  date: string;
+  phase: string | null;
+  source_ids: string[];
+  verification: string;
+  label_number: number;
+}
+
+export interface MapPhase {
+  name: string;
+  start_date: string;
+  end_date: string;
+  color: string;
+  description: string;
+}
+
+export interface HistoricalMap {
+  event_name: string;
+  title: string;
+  is_partial: boolean;
+  partial_note: string;
+  locations: MapLocation[];
+  lines: MapLine[];
+  movements: MapMovement[];
+  phases: MapPhase[];
+  bounding_box: { min_lat: number; min_lon: number; max_lat: number; max_lon: number };
+  svg: string;
+  legend: { symbol: string; meaning: string }[];
+  source_references: Record<string, string>;
+  sub_maps: HistoricalMap[];
 }
 
 export interface EntitaDetailResponse {

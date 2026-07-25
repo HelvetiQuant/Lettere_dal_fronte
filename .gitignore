@@ -49,3 +49,48 @@ local_*/
 outputs/
 audit_*.html
 audit_*.json
+
+# AI models (local runtime)
+*.safetensors
+*.gguf
+*.bin
+*.pt
+*.onnx
+models/
+model_cache/
+
+# Data runtime (corpus, embeddings, snapshots)
+data/
+source_cache/
+snapshots/
+
+# Uploads
+uploads/
+
+# Vector indices
+*.faiss
+*.index
+vector_store/
+
+# Large data exports
+*.xlsx
+*.csv
+*.ods
+imi.csv
+imi.ods
+export_*
+
+# Refactor and handoff archives (not part of production)
+Lettere_dal_fronte-refactor-completo-a7e6231/
+Lettere_dal_fronte-refactor-completo-a7e6231.zip
+codex_handoff/
+codex_handoff_archives_summary.txt
+*.patch
+
+# Fuse hidden files (WSL/Docker artifacts)
+.fuse_hidden*
+
+# Progress/state files
+*_state.json
+*_progress.json
+*.done.txt

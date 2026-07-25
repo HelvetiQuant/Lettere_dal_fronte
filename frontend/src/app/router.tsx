@@ -4,6 +4,7 @@ import { useAudience } from '@/hooks/useAudience';
 import { HomePage } from '@/pages/HomePage';
 import { ExplorePage } from '@/pages/ExplorePage';
 import { EventsPage, EventDossierPage } from '@/pages/EventsPage';
+import { EventResearchPage } from '@/pages/EventResearchPage';
 import { ResearchPage } from '@/pages/ResearchPage';
 import { ResearchPlansPage } from '@/pages/ResearchPlansPage';
 import { ResearchSubjectsPage } from '@/pages/ResearchSubjectsPage';
@@ -26,6 +27,7 @@ export function AppRouter() {
           <Route path="/esplora" element={<ExplorePage />} />
           <Route path="/eventi" element={<EventsPage />} />
           <Route path="/eventi/:eventName" element={<EventDossierPage />} />
+          <Route path="/ricerca-evento/:eventName" element={<EventResearchPage />} />
           <Route path="/ricerca" element={<ResearchPage />} />
           <Route path="/ricerca/piani" element={<ResearchPlansPage />} />
           <Route path="/ricerca/soggetti" element={<ResearchSubjectsPage />} />
