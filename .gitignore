@@ -81,10 +81,9 @@ imi.ods
 export_*
 
 # Refactor and handoff archives (not part of production)
-# TEMPORARILY DISABLED to read graph_schema.py — re-enable after Phase C/D
-# Lettere_dal_fronte-refactor-completo-a7e6231/
-# Lettere_dal_fronte-refactor-completo-a7e6231.zip
-# codex_handoff/
+Lettere_dal_fronte-refactor-completo-a7e6231/
+Lettere_dal_fronte-refactor-completo-a7e6231.zip
+codex_handoff/
 codex_handoff_archives_summary.txt
 *.patch
 
