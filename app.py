@@ -119,6 +119,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.staticfiles import StaticFiles
+import os as _os
+_static_dir = _os.path.join(_os.path.dirname(__file__), "static")
+if _os.path.isdir(_static_dir):
+    app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+
 app.include_router(rc_router)
 app.include_router(rc_ext_router)
 app.include_router(external_sources_router)
@@ -2828,3 +2834,41 @@ def api_mass_index_status():
             "top_archivi": top,
         },
     }
+
+
+# ─── Frontend Error Log Receiver ───
+
+@app.post("/api/log/frontend")
+def api_log_frontend(data: dict = Body(...)):
+    """Riceve log errori dal frontend e li salva su file."""
+    import datetime as _dt
+    logs = data.get("logs", [])
+    log_dir = Path(__file__).parent / "logs"
+    log_dir.mkdir(exist_ok=True)
+    log_file = log_dir / f"frontend_{_dt.datetime.now():%Y%m%d}.log"
+    with open(log_file, "a", encoding="utf-8") as f:
+        for entry in logs:
+            ts = entry.get("timestamp", "")
+            level = entry.get("level", "?")
+            source = entry.get("source", "?")
+            msg = entry.get("message", "")
+            url = entry.get("url", "")
+            status = entry.get("status", "")
+            route = entry.get("route", "")
+            detail = entry.get("detail", "")
+            comp_stack = entry.get("componentStack", "")
+            ctx = entry.get("context", {})
+            f.write(f"[{ts}] [{level.upper()}] [{source}] {msg}\n")
+            if url:
+                f.write(f"  URL: {url} (status={status})\n")
+            if route:
+                f.write(f"  Route: {route}\n")
+            if detail:
+                f.write(f"  Detail: {detail}\n")
+            if comp_stack:
+                f.write(f"  ComponentStack: {comp_stack}\n")
+            if ctx:
+                import json as _json
+                f.write(f"  Context: {_json.dumps(ctx, ensure_ascii=False)}\n")
+            f.write("\n")
+    return {"ok": True, "received": len(logs)}

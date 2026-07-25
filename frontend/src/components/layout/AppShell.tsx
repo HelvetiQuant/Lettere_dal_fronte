@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Settings } from 'lucide-react';
 import { AudienceSwitch } from '@/components/navigation/AudienceSwitch';
 import { PrimaryNavigation } from '@/components/navigation/PrimaryNavigation';
+import { GlobalErrorBoundary } from '@/utils/errorLogger';
+import { ErrorLogPanel } from '@/components/debug/ErrorLogPanel';
 import type { Audience } from '@/hooks/useAudience';
 
 export function AppShell({ children, audience, onAudienceChange }: {
@@ -35,13 +37,17 @@ export function AppShell({ children, audience, onAudienceChange }: {
 
       <main className="app-main" id="main-content">
         <div className="app-main__inner">
-          {children}
+          <GlobalErrorBoundary>
+            {children}
+          </GlobalErrorBoundary>
         </div>
       </main>
 
       <footer className="app-footer">
         Voci dal Fronte — IMI Extractor v2.0 · Motore AI-native di ricerca storica federata
       </footer>
+
+      <ErrorLogPanel />
     </div>
   );
 }
