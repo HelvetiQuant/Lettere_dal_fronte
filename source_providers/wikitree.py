@@ -26,7 +26,7 @@ class ProviderWikiTree(SourceProvider):
     authorized_domains = {"api.wikitree.com", "www.wikitree.com"}
     cache_ttl_days = 120
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         """Cerca profili WikiTree per nome.
 
         Estrae nome/cognome dalla query e usa searchPerson API.

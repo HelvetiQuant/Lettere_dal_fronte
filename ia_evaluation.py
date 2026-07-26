@@ -406,3 +406,185 @@ def evaluate_candidates(
         evaluations.append(ev)
     evaluations.sort(key=lambda e: e.overall_score, reverse=True)
     return evaluations
+
+
+# ─── Query Planner ────────────────────────────────────────────────────────────
+
+IA_QUERY_PLAN_VERSION = "ia_query_plan_v2"
+IA_RELEVANCE_VERSION = "ia_relevance_v2"
+
+_CONTEMPORARY_MARGIN_YEARS = 3
+
+
+@dataclass
+class IAQueryPlanEntry:
+    """Singola strategia di query per Internet Archive."""
+    query: str
+    strategy: str  # exact_event | alias | contemporary | place_subevent | contextual
+    priority: int
+    reason: str
+    event_scope: str  # event | subevent | place | context
+    publication_date_filter: Optional[str] = None  # Solr date filter, None = no filter
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "query": self.query,
+            "strategy": self.strategy,
+            "priority": self.priority,
+            "reason": self.reason,
+            "event_scope": self.event_scope,
+            "publication_date_filter": self.publication_date_filter,
+        }
+
+
+def build_internet_archive_query_plan(
+    query: str,
+    context: Any = None,
+) -> List[IAQueryPlanEntry]:
+    """Costruisce un piano di query Internet Archive sensibile al contesto.
+
+    Genera strategie multiple:
+    1. exact_event: nome canonico in title/description, senza filtro editoriale rigido
+    2. alias: varianti e traduzioni del nome evento
+    3. contemporary: fonti coeve con intervallo derivato dalle date evento
+    4. place_subevent: luogo + keyword specifiche
+    5. contextual: ricerca ampia con keyword evento
+
+    Non usa MAI filtri hardcoded come date:[1940 TO 1946].
+    Non attiva _IT_MILITARY per eventi.
+    """
+    entries: List[IAQueryPlanEntry] = []
+
+    if context is None:
+        # Fallback: solo query nuda, senza filtri
+        entries.append(IAQueryPlanEntry(
+            query=f'({query}) AND mediatype:(texts)',
+            strategy="contextual",
+            priority=10,
+            reason="Nessun contesto disponibile — query generica senza filtro temporale",
+            event_scope="context",
+        ))
+        return entries
+
+    canonical = context.canonical_name or query
+    aliases = context.aliases
+    places = context.places
+    keywords = context.keywords
+    start_year = context.start_year
+    end_year = context.end_year
+    conflict = context.conflict
+
+    # 1. exact_event — nome canonico, nessun filtro editoriale
+    entries.append(IAQueryPlanEntry(
+        query=f'title:("{canonical}") OR description:("{canonical}")',
+        strategy="exact_event",
+        priority=1,
+        reason=f"Ricerca esatta nome evento '{canonical}' senza filtro editoriale",
+        event_scope="event",
+    ))
+
+    # 2. alias — varianti e traduzioni
+    for alias in aliases:
+        if len(alias) < 4:
+            continue
+        entries.append(IAQueryPlanEntry(
+            query=f'title:("{alias}") OR description:("{alias}")',
+            strategy="alias",
+            priority=2,
+            reason=f"Ricerca alias/traduzione '{alias}'",
+            event_scope="event",
+        ))
+
+    # 3. contemporary — fonti coeve con intervallo derivato
+    if start_year and end_year:
+        margin = _CONTEMPORARY_MARGIN_YEARS
+        date_filter = f"date:[{start_year - margin} TO {end_year + margin}]"
+        entries.append(IAQueryPlanEntry(
+            query=f'("{canonical}") AND mediatype:(texts) AND {date_filter}',
+            strategy="contemporary",
+            priority=3,
+            reason=f"Fonti coeve {start_year - margin}-{end_year + margin} (margine ±{margin} anni)",
+            event_scope="event",
+            publication_date_filter=date_filter,
+        ))
+    elif start_year:
+        margin = _CONTEMPORARY_MARGIN_YEARS
+        date_filter = f"date:[{start_year - margin} TO {start_year + margin}]"
+        entries.append(IAQueryPlanEntry(
+            query=f'("{canonical}") AND mediatype:(texts) AND {date_filter}',
+            strategy="contemporary",
+            priority=3,
+            reason=f"Fonti coeve {start_year - margin}-{start_year + margin} (solo start_date, margine ±{margin})",
+            event_scope="event",
+            publication_date_filter=date_filter,
+        ))
+
+    # 4. place_subevent — luogo + keyword
+    if places and keywords:
+        place_str = " OR ".join(f'"{p}"' for p in places[:3])
+        kw_str = " OR ".join(f'"{k}"' for k in keywords[:5])
+        entries.append(IAQueryPlanEntry(
+            query=f'({place_str}) AND ({kw_str}) AND mediatype:(texts)',
+            strategy="place_subevent",
+            priority=4,
+            reason=f"Luogo ({place_str}) + keyword evento ({kw_str})",
+            event_scope="place",
+        ))
+    elif places:
+        place_str = " OR ".join(f'"{p}"' for p in places[:3])
+        entries.append(IAQueryPlanEntry(
+            query=f'({place_str}) AND ("{canonical}") AND mediatype:(texts)',
+            strategy="place_subevent",
+            priority=4,
+            reason=f"Luogo ({place_str}) + nome evento",
+            event_scope="place",
+        ))
+
+    # 5. contextual — keyword ampie senza filtro editoriale
+    if keywords:
+        kw_query = " AND ".join(f'"{k}"' for k in keywords[:5])
+        entries.append(IAQueryPlanEntry(
+            query=f'({kw_query}) AND mediatype:(texts)',
+            strategy="contextual",
+            priority=5,
+            reason="Ricerca contestuale con keyword evento, senza filtro editoriale",
+            event_scope="context",
+        ))
+
+    # Se contesto incompleto, aggiungi entry di avviso
+    if conflict == "unknown" and not start_year:
+        entries.append(IAQueryPlanEntry(
+            query=f'("{canonical}") AND mediatype:(texts)',
+            strategy="contextual",
+            priority=99,
+            reason="Contesto incompleto (conflict=unknown, no dates) — query generica",
+            event_scope="context",
+        ))
+
+    return entries
+
+
+def evaluate_candidates_from_context(
+    items: List[Dict[str, Any]],
+    context: Any,
+    files_map: Optional[Dict[str, List[Dict[str, Any]]]] = None,
+) -> List[CandidateEvaluation]:
+    """Valuta candidati IA usando FederatedSearchContext invece di event_data dict.
+
+    Converte FederatedSearchContext nel formato event_data atteso da evaluate_candidate,
+    mappando i campi normalizzati.
+    """
+    files_map = files_map or {}
+
+    # Mappa FederatedSearchContext → event_data dict (compatibilità evaluate_candidate)
+    event_data: Dict[str, Any] = {
+        "nome": context.canonical_name,
+        "data_inizio": context.start_date.isoformat() if context.start_date else "",
+        "data_fine": context.end_date.isoformat() if context.end_date else "",
+        "luogo": ", ".join(context.places) if context.places else "",
+        "keywords": list(context.keywords),
+        "aliases": list(context.aliases),
+        "conflict": {"ww1": "WWI", "ww2": "WW2"}.get(context.conflict, ""),
+    }
+
+    return evaluate_candidates(items, event_data, files_map)

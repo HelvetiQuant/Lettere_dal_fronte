@@ -414,7 +414,13 @@ def _web_sources(event_name: str, event_data: Dict[str, Any]) -> List[Source]:
 
     Fonti con URL diretto e snippet pertinente sono classificate come 'probabile'.
     Fonti senza URL o con corrispondenza debole rimangono 'candidata'.
+
+    Per Internet Archive: integra ia_evaluation.evaluate_candidates_from_context()
+    per filtrare risultati non pertinenti (war mismatch, search page, score basso).
     """
+    from source_providers.base import build_federated_search_context, FederatedSearchContext
+    from ia_evaluation import evaluate_candidates_from_context, IA_RELEVANCE_VERSION
+
     sources: List[Source] = []
     ev_luogo = event_data.get("luogo", "")
     ev_start = event_data.get("data_inizio", "")
@@ -427,13 +433,57 @@ def _web_sources(event_name: str, event_data: Dict[str, Any]) -> List[Source]:
         "archivio_stato", "memoiredeshommes", "iwm_lives",
     ]
 
+    # Costruisce contesto tipizzato
+    context = build_federated_search_context(
+        subject_type="event",
+        canonical_name=event_name,
+        event_data=event_data,
+    )
+
     try:
         from source_providers.federation import federated_search
-        rows = federated_search(event_name, cues=event_data, providers=web_providers)
+        rows = federated_search(
+            event_name,
+            cues=event_data,
+            providers=web_providers,
+            context=context,
+        )
     except Exception:
         return sources
 
-    for r in rows:
+    # Separa risultati IA per valutazione storica
+    ia_rows = [r for r in rows if r.get("provider") == "internetarchive" and not r.get("error")]
+    other_rows = [r for r in rows if r.get("provider") != "internetarchive" and not r.get("error")]
+
+    # Valuta candidati IA con ia_evaluation
+    ia_evaluations = []
+    ia_rejected_ids: Set[str] = set()
+    if ia_rows:
+        ia_items = []
+        for r in ia_rows:
+            item = {
+                "identifier": r.get("provider_record_id", ""),
+                "title": r.get("titolo", ""),
+                "description": r.get("description", ""),
+                "date": r.get("date_start", ""),
+                "mediatype": "texts",
+                "catalog_url": r.get("catalog_url", ""),
+            }
+            ia_items.append(item)
+
+        try:
+            ia_evaluations = evaluate_candidates_from_context(ia_items, context)
+        except Exception:
+            # Se il valutatore fallisce, tutti i candidati IA restano pending
+            ia_evaluations = []
+
+        # Raccogli identifier respinti
+        for ev in ia_evaluations:
+            if ev.status == "rejected":
+                ia_rejected_ids.add(ev.identifier)
+
+    # Processa risultati non IA (altri provider) — flusso originale
+    for r in other_rows:
         if r.get("error"):
             continue
         url = r.get("url") or r.get("direct_url") or r.get("catalog_url") or ""
@@ -474,6 +524,70 @@ def _web_sources(event_name: str, event_data: Dict[str, Any]) -> List[Source]:
 
         sources.append(Source(
             source_id=f"WEB-{provider_name}-{r.get('id', '')}",
+            title=title,
+            source_type="web",
+            authority="pagina_web",
+            url=url,
+            archive_reference="",
+            author_or_institution=provider_name,
+            date=date_str,
+            excerpt=snippet[:800],
+            availability="online" if url else "da_richiedere",
+            relevance_score=relevance,
+            temporal_compatible=temp_ok,
+            geographic_compatible=geo_ok,
+            verification_status=verification,
+            verification_note=note,
+        ))
+
+    # Processa risultati IA — solo non respinti
+    ia_eval_map = {ev.identifier: ev for ev in ia_evaluations} if ia_evaluations else {}
+    for r in ia_rows:
+        identifier = r.get("provider_record_id", "")
+
+        # Salta candidati respinti dal valutatore
+        if identifier in ia_rejected_ids:
+            continue
+
+        url = r.get("url") or r.get("direct_url") or r.get("catalog_url") or ""
+        raw_snippet = r.get("snippet") or r.get("description") or ""
+        if isinstance(raw_snippet, list):
+            snippet = " ".join(str(s) for s in raw_snippet)
+        else:
+            snippet = str(raw_snippet)
+        title = r.get("title") or r.get("label") or r.get("titolo") or event_name
+        if isinstance(title, list):
+            title = " ".join(str(t) for t in title)
+        else:
+            title = str(title)
+        provider_name = r.get("provider", "WEB")
+        date_str = r.get("date", "") or r.get("date_start", "")
+
+        if not title and not url and not snippet:
+            continue
+
+        # Usa valutazione storica se disponibile
+        ev = ia_eval_map.get(identifier)
+        if ev:
+            temp_ok = ev.temporal_compatible
+            geo_ok = ev.geographic_compatible
+            relevance = ev.overall_score
+            if ev.status == "accepted":
+                verification = "probabile"
+                note = f"IA valutato: {'; '.join(ev.reasons[:3])}"
+            else:
+                verification = "candidata"
+                note = f"IA candidate: {'; '.join(ev.reasons[:3])}"
+        else:
+            # Valutatore non disponibile — pending_evaluation
+            temp_ok = _temporal_overlap(ev_start, ev_end, date_str, date_str) if date_str else True
+            geo_ok = _geographic_overlap(ev_luogo, snippet + " " + title)
+            relevance = 0.35
+            verification = "candidata"
+            note = f"IA senza valutazione storica (evaluator indisponibile) — pending"
+
+        sources.append(Source(
+            source_id=f"WEB-{provider_name}-{identifier}",
             title=title,
             source_type="web",
             authority="pagina_web",

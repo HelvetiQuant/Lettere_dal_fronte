@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from database import get_conn
-from .base import SourceProvider, score_source, _dict_factory
+from .base import SourceProvider, score_source, _dict_factory, FederatedSearchContext
 from .nara import ProviderNARA
 from .antenati import ProviderAntenati
 from .cwgc import ProviderCWGC
@@ -93,17 +93,23 @@ def list_providers() -> List[dict]:
 
 # ─── Federation search ─────────────────────────────────────────────────────────
 
-def federated_search(query: str, cues: dict = None,
-                     providers: List[str] = None,
-                     filters: dict = None) -> List[dict]:
+def federated_search(
+    query: str,
+    cues: dict = None,
+    providers: List[str] = None,
+    filters: dict = None,
+    *,
+    context: Optional[FederatedSearchContext] = None,
+) -> List[dict]:
     """Cerca across provider. Non scarica documenti.
     Ritorna metadati con score.
 
     Args:
         query: testo query
-        cues: cue estratti (persona, reparto, luogo, data)
+        cues: cue legacy (dict piatto, deprecato — usare context)
         providers: lista nomi provider da interrogare (None = tutti)
-        filters: filtri aggiuntivi (comune, anno, tipologia, etc.)
+        filters: filtri aggiuntivi
+        context: contesto tipizzato evento/soggetto (raccomandato)
     """
     reg = get_registry()
     if providers:
@@ -114,7 +120,7 @@ def federated_search(query: str, cues: dict = None,
     all_results = []
     for pname, provider in targets.items():
         try:
-            results = provider.search(query, filters or {})
+            results = provider.search(query, filters or {}, context=context)
             for r in results:
                 r["provider"] = pname
                 r["score"] = score_source(r, cues or {})

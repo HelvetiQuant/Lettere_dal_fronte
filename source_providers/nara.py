@@ -23,7 +23,7 @@ class ProviderNARA(SourceProvider):
                           "nara-media-001.s3.amazonaws.com", "archive.org"}
     cache_ttl_days = 60
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         results = []
 
         # 1) Cerca nel DB locale (documenti_nara_catalog)

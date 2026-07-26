@@ -15,7 +15,7 @@ from typing import Dict, List, Optional
 import requests
 
 from database import get_conn
-from .base import SourceProvider, _dict_factory
+from .base import SourceProvider, _dict_factory, FederatedSearchContext
 
 logger = logging.getLogger("tna_provider")
 
@@ -52,7 +52,7 @@ class ProviderArolsen(SourceProvider):
         resp.raise_for_status()
         return resp.json().get("d", {})
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         import uuid as _uuid
         unique_id = str(_uuid.uuid4())
         session_cookie = None
@@ -244,7 +244,7 @@ class ProviderBundesarchiv(SourceProvider):
     authorized_domains = {"www.bundesarchiv.de", "invenio.bundesarchiv.de", "open-data.bundesarchiv.de"}
     cache_ttl_days = 90
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         headers = {
             "Accept": "application/json",
             "User-Agent": "Mozilla/5.0 (ricerca-storica-IMI/1.0)",
@@ -352,7 +352,7 @@ class ProviderSHD(SourceProvider):
     authorized_domains = {"www.servicehistorique.sga.defense.gouv.fr", "www.memoiredeshommes.sga.defense.gouv.fr"}
     cache_ttl_days = 90
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         q = query.replace(" ", "+")
         results = []
 
@@ -623,7 +623,7 @@ class ProviderNationalArchivesUK(SourceProvider):
                 if cls._waf is None:
                     cls._waf = _WafSession(headless=True)
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         filters = filters or {}
         params: Dict[str, any] = {
             "sps.searchQuery": query or "*",
@@ -698,7 +698,7 @@ class ProviderEuropeana(SourceProvider):
     authorized_domains = {"www.europeana.eu", "api.europeana.eu"}
     cache_ttl_days = 60
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         # Europeana Search API (key pubblica demo)
         try:
             url = "https://api.europeana.eu/record/v2/search.json"
@@ -749,7 +749,7 @@ class ProviderGallica(SourceProvider):
     authorized_domains = {"gallica.bnf.fr"}
     cache_ttl_days = 90
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         try:
             url = "https://gallica.bnf.fr/SRU"
             params = {
@@ -793,12 +793,12 @@ class ProviderGallica(SourceProvider):
 
 
 class ProviderInternetArchive(SourceProvider):
-    """Internet Archive — advanced search con filtri temporali WW2.
+    """Internet Archive — advanced search con query planner sensibile al contesto.
 
-    Usa la advancedsearch.php con sintassi Solr:
-    - date:[1940 TO 1946] per filtro temporale
-    - mediatype:(texts) per documenti testuali
-    - Termini inglesi + italiani combinati
+    Usa la advancedsearch.php con sintassi Solr.
+    Il query planner (ia_evaluation.build_internet_archive_query_plan) genera
+    strategie multiple basate sul contesto evento (nome, alias, date, luogo, keywords).
+    Non usa filtri hardcoded come date:[1940 TO 1946].
     """
     name = "internetarchive"
     display_name = "Internet Archive"
@@ -808,7 +808,7 @@ class ProviderInternetArchive(SourceProvider):
     authorized_domains = {"archive.org"}
     cache_ttl_days = 120
 
-    # Italian military terms for broader search
+    # Italian military terms for broader search — SOLO per subject_type person/unit WW2
     _IT_MILITARY = [
         "internati militari italiani",
         "prigionieri di guerra italiani",
@@ -819,28 +819,27 @@ class ProviderInternetArchive(SourceProvider):
         "campo prigionieri italia",
     ]
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(
+        self,
+        query: str,
+        filters: dict = None,
+        *,
+        context: Optional[FederatedSearchContext] = None,
+    ) -> List[dict]:
+        from ia_evaluation import build_internet_archive_query_plan, IA_QUERY_PLAN_VERSION
+
         results = []
         seen_ids = set()
+        plan = build_internet_archive_query_plan(query, context)
 
-        # Strategy 1: Direct query with WW2 date filter
-        queries = [
-            f'({query}) AND date:[1940 TO 1946]',
-            f'({query}) AND mediatype:(texts) AND date:[1940 TO 1946]',
-        ]
-
-        # Add Italian military terms if query looks like a name
-        if len(query.split()) <= 3:
-            queries.append(f'("{query}" AND (Italian OR Italy OR prisoner OR internato)) AND date:[1940 TO 1946]')
-
-        for q in queries:
-            if len(results) >= 10:
+        for entry in plan:
+            if len(results) >= 15:
                 break
             try:
                 url = "https://archive.org/advancedsearch.php"
                 params = {
-                    "q": q,
-                    "fl[]": ["identifier", "title", "description", "date", "mediatype", "collection", "language"],
+                    "q": entry.query,
+                    "fl[]": ["identifier", "title", "description", "date", "mediatype", "collection", "language", "downloads"],
                     "rows": 15,
                     "output": "json",
                     "sort": "downloads desc",
@@ -851,33 +850,47 @@ class ProviderInternetArchive(SourceProvider):
                     docs = data.get("response", {}).get("docs", [])
                     for doc in docs:
                         did = doc.get("identifier", "")
-                        if did in seen_ids:
+                        if not did or did in seen_ids:
                             continue
                         seen_ids.add(did)
+                        desc = doc.get("description", "")
+                        if isinstance(desc, list):
+                            desc = " ".join(str(d) for d in desc)[:200]
+                        else:
+                            desc = str(desc)[:200]
                         results.append({
                             "provider": self.name,
                             "provider_record_id": did,
                             "archivio": "Internet Archive",
                             "titolo": doc.get("title", ""),
-                            "description": (doc.get("description") or "")[:200],
+                            "description": desc,
                             "source_type": "digitized_document",
                             "date_start": doc.get("date", ""),
                             "catalog_url": f"https://archive.org/details/{did}",
                             "direct_url": f"https://archive.org/details/{did}",
                             "access_type": "online",
                             "downloadable": True,
-                            "confidence": 0.6,
+                            "discovery_score": 0.5,
+                            "discovery_strategy": entry.strategy,
+                            "discovery_query": entry.query,
+                            "query_plan_version": IA_QUERY_PLAN_VERSION,
+                            "confidence": 0.5,  # legacy field — actual relevance from evaluate_candidates
                         })
             except Exception:
                 continue
 
-        # Strategy 2: Broad Italian military search if not enough results
-        if len(results) < 5:
+        # Fallback _IT_MILITARY — SOLO per person/unit WW2, non per eventi
+        if (
+            len(results) < 5
+            and context
+            and context.subject_type in ("person", "unit", "document")
+            and context.conflict == "ww2"
+        ):
             for term in self._IT_MILITARY:
                 if len(results) >= 10:
                     break
                 try:
-                    q2 = f'({term}) AND date:[1940 TO 1946] AND mediatype:(texts)'
+                    q2 = f'({term}) AND mediatype:(texts)'
                     resp2 = requests.get(
                         "https://archive.org/advancedsearch.php",
                         params={
@@ -894,7 +907,7 @@ class ProviderInternetArchive(SourceProvider):
                         docs2 = data2.get("response", {}).get("docs", [])
                         for doc in docs2:
                             did = doc.get("identifier", "")
-                            if did in seen_ids:
+                            if not did or did in seen_ids:
                                 continue
                             seen_ids.add(did)
                             results.append({
@@ -909,12 +922,16 @@ class ProviderInternetArchive(SourceProvider):
                                 "direct_url": f"https://archive.org/details/{did}",
                                 "access_type": "online",
                                 "downloadable": True,
-                                "confidence": 0.5,
+                                "discovery_score": 0.3,
+                                "discovery_strategy": "it_military_fallback",
+                                "discovery_query": q2,
+                                "query_plan_version": IA_QUERY_PLAN_VERSION,
+                                "confidence": 0.3,
                             })
                 except Exception:
                     continue
 
-        return results[:10]
+        return results[:15]
 
     def get_metadata(self, record_id: str) -> dict:
         try:
@@ -937,7 +954,7 @@ class ProviderGoogleBooks(SourceProvider):
     authorized_domains = {"books.google.com"}
     cache_ttl_days = 60
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         try:
             url = "https://www.googleapis.com/books/v1/volumes"
             params = {"q": query, "maxResults": 10}
@@ -981,7 +998,7 @@ class ProviderABMC(SourceProvider):
     authorized_domains = {"www.abmc.gov"}
     cache_ttl_days = 120
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         try:
             url = f"{self.base_url}/database/api/search"
             params = {"name": query, "limit": 10}
@@ -1025,7 +1042,7 @@ class ProviderLibraryCanada(SourceProvider):
     authorized_domains = {"www.bac-lac.gc.ca", "recherche-collection-search.bac-lac.gc.ca", "search.canadiana.ca"}
     cache_ttl_days = 90
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         results = []
 
         # Endpoint 1: Canadiana API (JSON pubblico)
@@ -1118,7 +1135,7 @@ class ProviderAustralianWarMemorial(SourceProvider):
     authorized_domains = {"www.awm.gov.au", "collection.awm.gov.au"}
     cache_ttl_days = 90
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         try:
             url = "https://api.awm.gov.au/search/collection-items"
             params = {"q": query, "limit": 10}
@@ -1175,7 +1192,7 @@ class ProviderArchivportalD(SourceProvider):
         except Exception:
             return ""
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         api_key = self._get_api_key()
         headers = {
             "Accept": "application/json",
@@ -1266,7 +1283,7 @@ class ProviderInternetCulturale(SourceProvider):
     authorized_domains = {"www.internetculturale.it", "opac.sbn.it"}
     cache_ttl_days = 90
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         # Endpoint 1: OPAC SBN JSON
         try:
             url = f"{self.opac_url}/opacmobilegw/search.json"
@@ -1368,7 +1385,7 @@ class ProviderHathiTrust(SourceProvider):
     authorized_domains = {"www.hathitrust.org", "babel.hathitrust.org"}
     cache_ttl_days = 90
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         try:
             url = "https://catalog.hathitrust.org/api/v1/brief/search"
             params = {"q": query, "rows": 10}
@@ -1407,7 +1424,7 @@ class ProviderUSSME(SourceProvider):
     authorized_domains = {"www.esercito.difesa.it"}
     cache_ttl_days = 120
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         # Cerca nei fondi_archivistici locali
         conn = get_conn()
         conn.row_factory = _dict_factory
@@ -1465,7 +1482,7 @@ class ProviderArchivioDiStato(SourceProvider):
     authorized_domains = set()
     cache_ttl_days = 120
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         # Cerca nelle menzioni locali
         conn = get_conn()
         conn.row_factory = _dict_factory
@@ -1632,7 +1649,7 @@ class ProviderTecaDigitaleACS(SourceProvider):
     authorized_domains = {"tecadigitaleacs.cultura.gov.it"}
     cache_ttl_days = 365
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         """
         Cerca il registro IMI per provincia.
         query: cognome (eventualmente con nome) del soldato

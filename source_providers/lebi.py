@@ -7,6 +7,7 @@ Classificazione: METADATA_ONLY (dati biografici pubblici, PDF scaricabile pubbli
 """
 import re
 import logging
+from typing import List
 from urllib.parse import quote, urljoin
 
 import requests
@@ -28,7 +29,7 @@ class ProviderLeBI(SourceProvider):
     cache_ttl_days = 90
 
     # ─── Ricerca ──────────────────────────────────────────────────────
-    def search(self, query: str, filters: dict = None) -> list:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         """Cerca nell'archivio LeBI per cognome/nome.
 
         Parametri form verificati:

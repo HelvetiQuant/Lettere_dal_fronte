@@ -21,7 +21,7 @@ class ProviderGrandMemorial(SourceProvider):
 
     DATASET_URL = "https://donnees.culture.gouv.fr/explore/dataset/grand-memorial/"
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         return []
 
     def get_metadata(self, record_id: str) -> dict:

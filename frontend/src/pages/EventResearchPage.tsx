@@ -20,8 +20,8 @@ const TABS: { id: TabId; label: string }[] = [
 ];
 
 function VerificationBadge({ status }: { status: string }) {
-  const variant = status === 'verificata' ? 'success' : status === 'candidata' ? 'warning' : 'neutral';
-  const label = status === 'verificata' ? 'Verificata' : status === 'candidata' ? 'Candidata' : 'Non verificata';
+  const variant = status === 'verificata' ? 'success' : status === 'probabile' ? 'success' : status === 'candidata' ? 'warning' : 'neutral';
+  const label = status === 'verificata' ? 'Verificata' : status === 'probabile' ? 'Probabile' : status === 'candidata' ? 'Candidata' : 'Non verificata';
   return <Tag variant={variant as 'success' | 'warning' | 'neutral'}>{label}</Tag>;
 }
 
@@ -271,6 +271,7 @@ export function EventResearchPage() {
                 <Card>
                   <div className="grid grid--2">
                     <div><strong>Verificate:</strong> {sources.filter(s => s.verification_status === 'verificata').length}</div>
+                    <div><strong>Probabili:</strong> {sources.filter(s => s.verification_status === 'probabile').length}</div>
                     <div><strong>Candidate:</strong> {sources.filter(s => s.verification_status === 'candidata').length}</div>
                     <div><strong>Compatibilità temporale:</strong> {sources.filter(s => s.temporal_compatible).length}/{sources.length}</div>
                     <div><strong>Compatibilità geografica:</strong> {sources.filter(s => s.geographic_compatible).length}/{sources.length}</div>

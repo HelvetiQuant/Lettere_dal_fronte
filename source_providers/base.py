@@ -16,14 +16,173 @@ import abc
 import hashlib
 import json
 import re
-from datetime import datetime
+from dataclasses import dataclass, field
+from datetime import date, datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional, Tuple
 from urllib.parse import urlparse
 
 import requests
 
 from database import get_conn
+
+# ─── FederatedSearchContext ───────────────────────────────────────────────────
+
+ConflictCode = Literal["ww1", "ww2", "other", "unknown"]
+SubjectType = Literal[
+    "event", "person", "unit", "place", "document", "organization", "unknown",
+]
+
+
+@dataclass(frozen=True)
+class FederatedSearchContext:
+    """Contesto tipizzato per la ricerca federata provider.
+
+    Propaga dati evento/soggetto ai provider in modo strutturato,
+    sostituendo il dict cues non tipizzato.
+    """
+    subject_type: SubjectType
+    canonical_name: str
+    aliases: Tuple[str, ...] = ()
+    conflict: ConflictCode = "unknown"
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    places: Tuple[str, ...] = ()
+    keywords: Tuple[str, ...] = ()
+    units: Tuple[str, ...] = ()
+    parent_events: Tuple[str, ...] = ()
+    subevents: Tuple[str, ...] = ()
+    languages: Tuple[str, ...] = ()
+
+    @property
+    def start_year(self) -> Optional[int]:
+        return self.start_date.year if self.start_date else None
+
+    @property
+    def end_year(self) -> Optional[int]:
+        return self.end_date.year if self.end_date else None
+
+    @property
+    def context_fingerprint(self) -> str:
+        """Hash stabile per cache key."""
+        import hashlib as _hl
+        raw = f"{self.subject_type}|{self.canonical_name}|{self.conflict}|{self.start_year}|{self.end_year}|{','.join(self.places)}|{','.join(self.aliases)}|{','.join(self.keywords)}"
+        return _hl.sha256(raw.encode()).hexdigest()[:16]
+
+    def to_dict(self) -> Dict[str, any]:
+        return {
+            "subject_type": self.subject_type,
+            "canonical_name": self.canonical_name,
+            "aliases": list(self.aliases),
+            "conflict": self.conflict,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "end_date": self.end_date.isoformat() if self.end_date else None,
+            "places": list(self.places),
+            "keywords": list(self.keywords),
+            "units": list(self.units),
+            "parent_events": list(self.parent_events),
+            "subevents": list(self.subevents),
+            "languages": list(self.languages),
+        }
+
+
+_CONFLICT_NORMALIZE = {
+    "wwi": "ww1", "ww1": "ww1", "world war i": "ww1", "first world war": "ww1",
+    "1gm": "ww1", "prima guerra mondiale": "ww1", "grande guerra": "ww1",
+    "1914-1918": "ww1",
+    "wwii": "ww2", "ww2": "ww2", "world war ii": "ww2", "second world war": "ww2",
+    "2gm": "ww2", "seconda guerra mondiale": "ww2", "1939-1945": "ww2",
+    "1939-1946": "ww2",
+    "interwar": "other", "post-ww2": "other", "other": "other",
+}
+
+
+def _normalize_conflict(raw: str) -> ConflictCode:
+    """Normalizza varianti di conflitto in enum standard."""
+    if not raw:
+        return "unknown"
+    key = raw.strip().lower()
+    return _CONFLICT_NORMALIZE.get(key, "unknown" if key else "unknown")
+
+
+def _parse_event_date(date_str: str) -> Optional[date]:
+    """Parse date string (ISO, year-only, Italian formats) → date object."""
+    if not date_str:
+        return None
+    s = date_str.strip()
+    # ISO format
+    m = re.match(r"^(\d{4})-(\d{2})-(\d{2})", s)
+    if m:
+        try:
+            return date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            pass
+    # Year only
+    m = re.match(r"^(\d{4})", s)
+    if m:
+        try:
+            return date(int(m.group(1)), 1, 1)
+        except ValueError:
+            pass
+    return None
+
+
+def build_federated_search_context(
+    subject_type: SubjectType = "unknown",
+    canonical_name: str = "",
+    event_data: Optional[Dict[str, any]] = None,
+) -> FederatedSearchContext:
+    """Costruisce FederatedSearchContext da event_data del DB.
+
+    Normalizza conflitto, date, luoghi, keywords, aliases.
+    Non inferisce WWII quando il conflitto è sconosciuto.
+    """
+    event_data = event_data or {}
+
+    raw_conflict = str(event_data.get("conflict", "") or "")
+    conflict = _normalize_conflict(raw_conflict)
+
+    start_date = _parse_event_date(str(event_data.get("data_inizio", "") or ""))
+    end_date = _parse_event_date(str(event_data.get("data_fine", "") or ""))
+
+    # Date-based conflict inference fallback (only when conflict is unknown)
+    if conflict == "unknown" and start_date:
+        sy = start_date.year
+        ey = end_date.year if end_date else sy
+        if 1914 <= sy <= 1918 and 1914 <= ey <= 1919:
+            conflict = "ww1"
+        elif 1939 <= sy <= 1945 or (1939 <= ey <= 1946):
+            conflict = "ww2"
+
+    luogo = str(event_data.get("luogo", "") or "")
+    places = tuple(p.strip() for p in re.split(r"[,;]", luogo) if p.strip()) if luogo else ()
+
+    keywords_raw = event_data.get("keywords", [])
+    if isinstance(keywords_raw, str):
+        keywords = tuple(k.strip() for k in json.loads(keywords_raw) if k.strip()) if keywords_raw else ()
+    elif isinstance(keywords_raw, list):
+        keywords = tuple(str(k).strip() for k in keywords_raw if str(k).strip())
+    else:
+        keywords = ()
+
+    aliases_raw = event_data.get("aliases", [])
+    if isinstance(aliases_raw, str):
+        aliases = tuple(a.strip() for a in json.loads(aliases_raw) if a.strip()) if aliases_raw else ()
+    elif isinstance(aliases_raw, list):
+        aliases = tuple(str(a).strip() for a in aliases_raw if str(a).strip())
+    else:
+        aliases = ()
+
+    return FederatedSearchContext(
+        subject_type=subject_type,
+        canonical_name=canonical_name or str(event_data.get("nome", "") or ""),
+        aliases=aliases,
+        conflict=conflict,
+        start_date=start_date,
+        end_date=end_date,
+        places=places,
+        keywords=keywords,
+    )
 
 # ─── Config ────────────────────────────────────────────────────────────────────
 
@@ -49,9 +208,21 @@ class SourceProvider(abc.ABC):
     cache_ttl_days: int = CACHE_TTL_DAYS
 
     @abc.abstractmethod
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(
+        self,
+        query: str,
+        filters: dict = None,
+        *,
+        context: Optional[FederatedSearchContext] = None,
+    ) -> List[dict]:
         """Cerca nell'archivio remoto. Ritorna lista di metadati (dict).
-        Non scarica documenti. Solo metadati + URL."""
+        Non scarica documenti. Solo metadati + URL.
+
+        Args:
+            query: testo della query
+            filters: filtri legacy (dict piatto)
+            context: contesto tipizzato evento/soggetto (opzionale ma raccomandato)
+        """
         ...
 
     @abc.abstractmethod

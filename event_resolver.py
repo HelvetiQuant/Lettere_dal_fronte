@@ -434,7 +434,7 @@ def get_event_by_id(event_id: int) -> Optional[Dict[str, Any]]:
     conn.row_factory = sqlite3.Row
     try:
         r = conn.execute(
-            "SELECT id, nome, aliases, keywords, data_inizio, data_fine, luogo, descrizione "
+            "SELECT id, nome, aliases, keywords, data_inizio, data_fine, luogo, descrizione, conflict "
             "FROM eventi_1gm WHERE id = ?",
             (event_id,),
         ).fetchone()
@@ -449,6 +449,7 @@ def get_event_by_id(event_id: int) -> Optional[Dict[str, Any]]:
             "data_fine": r["data_fine"],
             "luogo": r["luogo"],
             "descrizione": r["descrizione"],
+            "conflict": r["conflict"] if "conflict" in r.keys() else "",
         }
     finally:
         conn.close()

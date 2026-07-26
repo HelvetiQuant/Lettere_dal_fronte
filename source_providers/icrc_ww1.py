@@ -9,6 +9,7 @@ Classificazione: METADATA_ONLY (diritti non chiari, principio prudenziale).
 import re
 import time
 import logging
+from typing import List
 from urllib.parse import quote, urljoin
 
 import requests
@@ -72,7 +73,7 @@ class ProviderICRCWW1(SourceProvider):
 
         return f"{self.base_url}/en/File/Search?{'&'.join(params_parts)}"
 
-    def search(self, query: str, filters: dict = None) -> list:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         """Cerca prigionieri per nome con filtri auto-compilati.
         
         Filtri supportati (auto-compilati dal contesto):

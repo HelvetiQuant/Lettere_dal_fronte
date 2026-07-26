@@ -1,5 +1,75 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-25 (sera) — Fix Internet Archive: Context Propagation + Query Planner + Evaluation Integration
+
+### Problema
+`ProviderInternetArchive.search()` usava filtri hardcoded `date:[1940 TO 1946]` e fallback `_IT_MILITARY` generico per qualsiasi query, inclusi eventi WWI. Il contesto evento (conflitto, date, luogo, alias) non veniva propagato dalla pipeline al provider. `ia_evaluation.evaluate_candidates()` esisteva ma non era integrato nel percorso runtime. `get_event_by_id()` non selezionava la colonna `conflict` dal DB.
+
+Risultato: eventi WWI come "Battaglia del Carso" ricevevano risultati WWII irrilevanti (es. `TacticalAndTechnicalTrendsNos1-20`).
+
+### Soluzione
+Pipeline end-to-end con contesto tipizzato propagato da `_web_sources()` → `federated_search()` → `ProviderInternetArchive.search()` → query planner → evaluation.
+
+### Modifiche
+
+#### `source_providers/base.py`
+- Aggiunto `FederatedSearchContext` (dataclass frozen): `subject_type`, `canonical_name`, `aliases`, `conflict` (ww1/ww2/other/unknown), `start_date`, `end_date`, `places`, `keywords`, `context_fingerprint`
+- Aggiunto `build_federated_search_context()`: costruisce context da event_data, normalizza conflitto, inferenza date-based fallback (1914-1918 → ww1, 1939-1946 → ww2) solo quando conflict è unknown
+- Aggiunto `_normalize_conflict()`: mappa varianti (WWI, 1GM, Prima guerra mondiale, WW2, 2GM, ecc.) a codici normalizzati
+- Aggiunto `_parse_event_date()`: parse ISO e year-only
+- Firma `SourceProvider.search()` aggiornata: `context: Optional[FederatedSearchContext] = None`
+
+#### `source_providers/federation.py`
+- `federated_search()` accetta e propaga `context` a ogni provider
+
+#### `source_providers/providers.py`
+- `ProviderInternetArchive.search()` riscritto: usa `build_internet_archive_query_plan()`, nessun filtro hardcoded, campi `discovery_score`/`discovery_strategy`/`query_plan_version`
+- `_IT_MILITARY` fallback gated: solo `subject_type in (person, unit, document) AND conflict == ww2`
+- Tutti gli altri provider (15 classi) aggiornati con nuova firma `search()`
+
+#### `ia_evaluation.py`
+- Aggiunto `build_internet_archive_query_plan()`: genera strategie multiple (exact_event, alias, place, contemporary, contextual) basate su FederatedSearchContext
+- Aggiunto `evaluate_candidates_from_context()`: wrapper che mappa FederatedSearchContext → event_data dict per evaluate_candidates
+- Aggiunto `IAQueryPlanEntry` dataclass: `query`, `strategy`, `reason`, `event_scope`, `publication_date_filter`
+- Versioni cache: `IA_QUERY_PLAN_VERSION = "ia_query_plan_v2"`, `IA_RELEVANCE_VERSION = "ia_relevance_v2"`
+- Fix mapping conflict: `ww1 → WWI`, `ww2 → WW2` (compatibile con _detect_conflict)
+
+#### `event_evidence_pipeline.py`
+- `_web_sources()` riscritto: costruisce `FederatedSearchContext`, passa a `federated_search()`, separa risultati IA, valuta con `evaluate_candidates_from_context()`, filtra rejected, assegna `verification_status` basato su evaluation (accepted → probabile, candidate → candidata)
+
+#### `event_resolver.py`
+- `get_event_by_id()`: aggiunta colonna `conflict` alla SELECT query
+
+#### Provider aggiornati (firma search)
+`antenati.py`, `cri_milano.py`, `cwgc.py`, `deutsche_digitale_bibliothek.py`, `grand_memorial.py`, `icrc_ww1.py`, `iwm_lives.py`, `lebi.py`, `memoire_des_hommes.py`, `nara.py`, `wikitree.py`
+
+#### Frontend
+- `frontend/src/pages/EventResearchPage.tsx`: `VerificationBadge` gestisce `probabile`, summary mostra conteggio Probabili
+
+#### Test
+- `test_event_research_master.py`: 31 test (unitari, integrazione, regressione live). **31/31 PASS**
+  - `TestFederatedSearchContext` (10 test): context building, conflict normalization, date parsing, immutability, fingerprint
+  - `TestIAQueryPlanner` (9 test): strategie, no hardcoded WW2 dates, no IT_MILITARY terms, date derivate dall'evento, versioning
+  - `TestIAEvaluation` (7 test): TacticalAndTechnicalTrends rejected, rejection non basata su identifier, post-war WWI book non rejected, search page rejected, evaluate_candidates_from_context, discovery/relevance separation, versioning
+  - `TestContextPropagation` (2 test): spy provider riceve context, provider senza context funziona
+  - `TestRegressionTacticalTrends` (3 test): no TacticalAndTechnicalTrends in Carso sources, no search page URLs, no WW2 items for WW1 event
+
+### Validazioni chiave
+- `TacticalAndTechnicalTrendsNos1-20` → rejected (war mismatch: WW2 item vs WW1 event)
+- `lalettura170301031917_art_02` → non rejected (WWI, pertinente)
+- Nessun filtro `date:[1940 TO 1946]` nelle query del piano
+- Nessun termine `_IT_MILITARY` per eventi (solo person/unit WW2)
+- Cache versioning: `ia_query_plan_v2`, `ia_relevance_v2`
+- Zero risultati è valido: nessun fallback a contenuto generico per eventi
+- Discovery score separato da historical relevance score
+
+### Regole rispettate
+- No dati mock o simulati: test usano DB reale e API IA live
+- No redesign full pipeline: fix mirato su context propagation
+- No cancellazione dati legacy: audit non distruttivo
+- No hardcoding event-specific identifiers: query planner generico
+- Conflict unknown non inferisce WW2: marcato unknown esplicitamente
+
 ## 2026-07-25 (sera) — Internet Archive Integration (in progress)
 
 ### Riepilogo
