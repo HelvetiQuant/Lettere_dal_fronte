@@ -247,32 +247,43 @@ def health_check() -> dict:
 VALID_SCHEMAS = {"public", "archive", "evidence", "ops", "ai", "api_public", "legacy"}
 
 
-def _qualified_table(schema: str, table: str) -> str:
-    """Return PostgREST-compatible qualified table name."""
+def _validate_schema(schema: str) -> str:
     if schema not in VALID_SCHEMAS:
         raise ValueError(f"Invalid schema '{schema}'. Valid: {VALID_SCHEMAS}")
-    return f"{schema}.{table}"
+    return schema
+
+
+def _schema_headers(schema: str, *, prefer: str = "") -> dict:
+    """Return headers for PostgREST schema switching.
+
+    Uses Accept-Profile for reads and Content-Type-Profile for writes.
+    Sending both keeps reads/writes/PATCH working transparently.
+    """
+    headers = _rest_headers(prefer=prefer)
+    headers["Accept-Profile"] = schema
+    headers["Content-Type-Profile"] = schema
+    return headers
 
 
 def insert_batch_schema(schema: str, table: str, rows: list[dict], *,
                         on_conflict: str = "ignore") -> dict:
-    """Insert batch into a schema-qualified table.
+    """Insert batch into a schema-qualified table via PostgREST schema switching.
 
-    PostgREST supports schema-qualified tables via the URL path
-    e.g. /rest/v1/archive.repositories
+    Uses the unqualified table path (/rest/v1/table) with the
+    Content-Type-Profile header set to the target schema.
     """
     if not rows:
         return {"ok": True, "count": 0}
 
-    qt = _qualified_table(schema, table)
-    url = f"{SUPABASE_URL}/rest/v1/{qt}"
+    _validate_schema(schema)
+    url = f"{SUPABASE_URL}/rest/v1/{table}"
     prefer = "return=minimal"
     if on_conflict == "ignore":
         prefer += ",resolution=ignore-duplicates"
     elif on_conflict == "merge":
         prefer += ",resolution=merge-duplicates"
 
-    headers = _rest_headers(prefer=prefer)
+    headers = _schema_headers(schema, prefer=prefer)
 
     clean_rows = []
     for row in rows:
@@ -315,9 +326,9 @@ def insert_batch_schema(schema: str, table: str, rows: list[dict], *,
 
 def table_count_schema(schema: str, table: str) -> int:
     """Get row count for a schema-qualified table."""
-    qt = _qualified_table(schema, table)
-    url = f"{SUPABASE_URL}/rest/v1/{qt}?select=count"
-    headers = _rest_headers(prefer="count=exact")
+    _validate_schema(schema)
+    url = f"{SUPABASE_URL}/rest/v1/{table}?select=count"
+    headers = _schema_headers(schema, prefer="count=exact")
     r = httpx.head(url, headers=headers, timeout=_TIMEOUT)
     if r.status_code == 200:
         content_range = r.headers.get("content-range", "")
@@ -330,9 +341,9 @@ def table_count_schema(schema: str, table: str) -> int:
 
 def table_exists_schema(schema: str, table: str) -> bool:
     """Check if a schema-qualified table exists and is accessible."""
-    qt = _qualified_table(schema, table)
-    url = f"{SUPABASE_URL}/rest/v1/{qt}?select=count&limit=0"
-    headers = _rest_headers(prefer="count=exact")
+    _validate_schema(schema)
+    url = f"{SUPABASE_URL}/rest/v1/{table}?select=count&limit=0"
+    headers = _schema_headers(schema, prefer="count=exact")
     r = httpx.head(url, headers=headers, timeout=_TIMEOUT)
     return r.status_code == 200
 
@@ -342,7 +353,7 @@ def select_schema(schema: str, table: str, *,
                   filters: str = "",
                   limit: int = 100,
                   order: str = "") -> list[dict]:
-    """SELECT from a schema-qualified table via PostgREST.
+    """SELECT from a schema-qualified table via PostgREST schema switching.
 
     Args:
         schema: schema name (archive, evidence, ops, ai, etc.)
@@ -352,7 +363,7 @@ def select_schema(schema: str, table: str, *,
         limit: max rows
         order: order by (e.g. "created_at.desc")
     """
-    qt = _qualified_table(schema, table)
+    _validate_schema(schema)
     params = f"select={columns}"
     if filters:
         params += f"&{filters}"
@@ -360,8 +371,9 @@ def select_schema(schema: str, table: str, *,
         params += f"&order={order}"
     params += f"&limit={limit}"
 
-    url = f"{SUPABASE_URL}/rest/v1/{qt}?{params}"
-    r = httpx.get(url, headers=_rest_headers(), timeout=_TIMEOUT)
+    url = f"{SUPABASE_URL}/rest/v1/{table}?{params}"
+    headers = _schema_headers(schema)
+    r = httpx.get(url, headers=headers, timeout=_TIMEOUT)
     if r.status_code == 200:
         return r.json()
     return []
