@@ -1,0 +1,613 @@
+# archive_providers.yml — Registry versionato dei provider di fonti storiche
+# Versione: 1.0.0
+# Data: 2026-07-26
+#
+# Ogni provider dichiara:
+# - code: identificatore univoco
+# - display_name: nome visualizzato
+# - base_url: URL principale
+# - api_endpoints: endpoint specifici (search, metadata, download, iiif)
+# - authorized_domains: domini autorizzati per scraping/fetch
+# - capabilities: search, get_metadata, get_document, iiif, full_text
+# - access_mode: auto | assisted | manual
+# - rights_default: METADATA_ONLY | PUBLIC_VIEW | PUBLIC_DOWNLOAD | REQUEST_REQUIRED
+# - authority_score: 0.0–1.0 (affidabilità storica)
+# - historical_periods: WWI, WWII, interwar, postwar
+# - geographic_areas: aree geografiche coperte
+# - entity_types: person, event, place, unit, document
+# - languages: lingue dei contenuti
+# - contract_version: versione del contratto API
+# - config: parametri specifici (api_key_env, rate_limit, etc.)
+
+version: "1.0.0"
+
+providers:
+  # ═══ ITALIA ═══════════════════════════════════════════════════════════════
+  
+  - code: ussme
+    display_name: "Ufficio Storico Stato Maggiore Esercito"
+    base_url: "https://www.esercito.difesa.it/ussme"
+    api_endpoints:
+      search: "https://www.esercito.difesa.it/ussme/Pagine/default.aspx"
+    authorized_domains:
+      - esercito.difesa.it
+    capabilities: [search]
+    access_mode: assisted
+    rights_default: METADATA_ONLY
+    authority_score: 0.95
+    historical_periods: [WWI, WWII, interwar, postwar]
+    geographic_areas: [Italy]
+    entity_types: [event, unit, document, place]
+    languages: [it]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 3
+      notes: "Scraping HTML, no API ufficiale. Contattare per accesso archivio digitale."
+
+  - code: archiviodistato
+    display_name: "Archivio di Stato"
+    base_url: "https://www.archiviodistato.it"
+    api_endpoints:
+      search: "https://www.archiviodistato.it/ricercaArchivi/"
+    authorized_domains:
+      - archiviodistato.it
+      - san.beniculturali.it
+    capabilities: [search]
+    access_mode: assisted
+    rights_default: METADATA_ONLY
+    authority_score: 0.90
+    historical_periods: [WWI, WWII, interwar, postwar]
+    geographic_areas: [Italy]
+    entity_types: [person, event, place, unit, document]
+    languages: [it]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: antenati
+    display_name: "Portale degli Antenati"
+    base_url: "https://www.antenati.san.beniculturali.it"
+    api_endpoints:
+      search: "https://www.antenati.san.beniculturali.it/search"
+    authorized_domains:
+      - antenati.san.beniculturali.it
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.80
+    historical_periods: [WWI, WWII, pre1900, postwar]
+    geographic_areas: [Italy]
+    entity_types: [person]
+    languages: [it]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 1
+
+  - code: internetculturale
+    display_name: "Internet Culturale"
+    base_url: "https://www.internetculturale.it"
+    api_endpoints:
+      search: "https://www.internetculturale.it/it/16/ricerca"
+    authorized_domains:
+      - internetculturale.it
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.75
+    historical_periods: [WWI, WWII, interwar, postwar]
+    geographic_areas: [Italy]
+    entity_types: [document, event, place]
+    languages: [it]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: cri_milano
+    display_name: "Croce Rossa Italiana — Milano"
+    base_url: "https://www.cri.it"
+    api_endpoints:
+      search: "https://www.cri.it/fondi-archivistici"
+    authorized_domains:
+      - cri.it
+    capabilities: [search]
+    access_mode: assisted
+    rights_default: REQUEST_REQUIRED
+    authority_score: 0.90
+    historical_periods: [WWI, WWII, interwar]
+    geographic_areas: [Italy]
+    entity_types: [person, document]
+    languages: [it]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 3
+      notes: "Accesso su richiesta. Archivio storico CRI."
+
+  - code: lebi
+    display_name: "Lessico Biografico degli IMI (ANRP)"
+    base_url: "https://www.lessicobiograficoimi.it"
+    api_endpoints:
+      search: "https://www.lessicobiograficoimi.it/search"
+      record: "https://www.lessicobiograficoimi.it/record/{id}"
+      pdf: "https://www.lessicobiograficoimi.it/showpdf/{id}"
+    authorized_domains:
+      - lessicobiograficoimi.it
+    capabilities: [search, get_metadata, get_document]
+    access_mode: auto
+    rights_default: METADATA_ONLY
+    authority_score: 0.85
+    historical_periods: [WWII, postwar]
+    geographic_areas: [Italy, Germany, Austria]
+    entity_types: [person]
+    languages: [it]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+      pdf_download_allowed: true
+
+  # ═══ ARCHIVI INTERNAZIONALI ═══════════════════════════════════════════════
+
+  - code: nara
+    display_name: "U.S. National Archives"
+    base_url: "https://catalog.archives.gov"
+    api_endpoints:
+      search: "https://catalog.archives.gov/api/v1"
+      metadata: "https://catalog.archives.gov/api/v1/{id}"
+    authorized_domains:
+      - catalog.archives.gov
+      - archives.gov
+    capabilities: [search, get_metadata, get_document]
+    access_mode: auto
+    rights_default: PUBLIC_DOWNLOAD
+    authority_score: 0.95
+    historical_periods: [WWI, WWII, interwar, postwar]
+    geographic_areas: [USA, Europe, Pacific]
+    entity_types: [person, event, unit, document, place]
+    languages: [en]
+    contract_version: "1.0"
+    config:
+      api_key_env: NARA_API_KEY
+      rate_limit_delay: 1
+
+  - code: internetarchive
+    display_name: "Internet Archive"
+    base_url: "https://archive.org"
+    api_endpoints:
+      search: "https://archive.org/advancedsearch.php"
+      metadata: "https://archive.org/metadata/{identifier}"
+      download: "https://archive.org/download/{identifier}/{filename}"
+    authorized_domains:
+      - archive.org
+    capabilities: [search, get_metadata, get_document]
+    access_mode: auto
+    rights_default: PUBLIC_DOWNLOAD
+    authority_score: 0.70
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [global]
+    entity_types: [document, event, place, person]
+    languages: [en, it, fr, de, multi]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 1
+      max_results: 100
+
+  - code: europeana
+    display_name: "Europeana"
+    base_url: "https://api.europeana.eu"
+    api_endpoints:
+      search: "https://api.europeana.eu/record/v2/search.json"
+      metadata: "https://api.europeana.eu/record/v2/{id}.json"
+    authorized_domains:
+      - api.europeana.eu
+      - europeana.eu
+    capabilities: [search, get_metadata]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.75
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [Europe]
+    entity_types: [document, event, place, person]
+    languages: [en, fr, de, it, multi]
+    contract_version: "1.0"
+    config:
+      api_key_env: EUROPEANA_API_KEY
+      rate_limit_delay: 1
+
+  - code: gallica
+    display_name: "Gallica (BnF)"
+    base_url: "https://gallica.bnf.fr"
+    api_endpoints:
+      search: "https://gallica.bnf.fr/SRU"
+      iiif: "https://gallica.bnf.fr/iiif/ark:/12148/{ark}/manifest.json"
+    authorized_domains:
+      - gallica.bnf.fr
+      - api.bnf.fr
+    capabilities: [search, get_metadata, iiif]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.85
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [France, Europe]
+    entity_types: [document, event, place, person]
+    languages: [fr, en]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: googlebooks
+    display_name: "Google Books"
+    base_url: "https://www.googleapis.com/books/v1"
+    api_endpoints:
+      search: "https://www.googleapis.com/books/v1/volumes"
+      metadata: "https://www.googleapis.com/books/v1/volumes/{id}"
+    authorized_domains:
+      - googleapis.com
+      - books.google.com
+    capabilities: [search, get_metadata]
+    access_mode: auto
+    rights_default: METADATA_ONLY
+    authority_score: 0.60
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [global]
+    entity_types: [document]
+    languages: [en, it, fr, de, multi]
+    contract_version: "1.0"
+    config:
+      api_key_env: GOOGLE_BOOKS_API_KEY
+      rate_limit_delay: 1
+
+  - code: hathitrust
+    display_name: "HathiTrust Digital Library"
+    base_url: "https://catalog.hathitrust.org"
+    api_endpoints:
+      search: "https://catalog.hathitrust.org/api/volumes/brief/json"
+      metadata: "https://catalog.hathitrust.org/api/volumes/full/htid/{htid}.json"
+    authorized_domains:
+      - catalog.hathitrust.org
+      - hathitrust.org
+    capabilities: [search, get_metadata]
+    access_mode: auto
+    rights_default: METADATA_ONLY
+    authority_score: 0.80
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [global]
+    entity_types: [document]
+    languages: [en, fr, de, it, multi]
+    contract_version: "1.0"
+    config:
+      api_key_env: HATHITRUST_API_KEY
+      rate_limit_delay: 1
+
+  - code: icrc_ww1
+    display_name: "ICRC WW1 Prisoners"
+    base_url: "https://grandeguerre.icrc.org"
+    api_endpoints:
+      search: "https://grandeguerre.icrc.org/en/File/Search"
+    authorized_domains:
+      - grandeguerre.icrc.org
+      - icrc.org
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.95
+    historical_periods: [WWI]
+    geographic_areas: [Europe, global]
+    entity_types: [person]
+    languages: [en, fr, de]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: cwgc
+    display_name: "Commonwealth War Graves Commission"
+    base_url: "https://www.cwgc.org"
+    api_endpoints:
+      search: "https://www.cwgc.org/find-records/find-war-dead/"
+    authorized_domains:
+      - cwgc.org
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.95
+    historical_periods: [WWI, WWII]
+    geographic_areas: [global, Commonwealth]
+    entity_types: [person, place]
+    languages: [en]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: memoire_des_hommes
+    display_name: "Mémoire des Hommes"
+    base_url: "https://memoiredeshommes.sga.defense.gouv.fr"
+    api_endpoints:
+      search: "https://memoiredeshommes.sga.defense.gouv.fr/fr/bdd.php"
+    authorized_domains:
+      - memoiredeshommes.sga.defense.gouv.fr
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.90
+    historical_periods: [WWI, WWII]
+    geographic_areas: [France, Europe]
+    entity_types: [person, unit]
+    languages: [fr]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: arolsen
+    display_name: "Arolsen Archives"
+    base_url: "https://arolsen-archives.org"
+    api_endpoints:
+      search: "https://arolsen-archives.org/en/search-search/"
+    authorized_domains:
+      - arolsen-archives.org
+    capabilities: [search]
+    access_mode: assisted
+    rights_default: REQUEST_REQUIRED
+    authority_score: 0.95
+    historical_periods: [WWII, postwar]
+    geographic_areas: [Europe, Germany]
+    entity_types: [person, document]
+    languages: [en, de]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 3
+      notes: "Accesso su richiesta per documenti personali."
+
+  - code: bundesarchiv
+    display_name: "Bundesarchiv"
+    base_url: "https://www.bundesarchiv.de"
+    api_endpoints:
+      search: "https://www.bundesarchiv.de/recherche/"
+    authorized_domains:
+      - bundesarchiv.de
+    capabilities: [search]
+    access_mode: assisted
+    rights_default: METADATA_ONLY
+    authority_score: 0.95
+    historical_periods: [WWI, WWII, interwar, postwar]
+    geographic_areas: [Germany, Europe]
+    entity_types: [person, event, unit, document, place]
+    languages: [de]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 3
+
+  - code: shd
+    display_name: "Service Historique de la Défense"
+    base_url: "https://www.defense.gouv.fr"
+    api_endpoints:
+      search: "https://www.defense.gouv.fr/shd"
+    authorized_domains:
+      - defense.gouv.fr
+    capabilities: [search]
+    access_mode: assisted
+    rights_default: REQUEST_REQUIRED
+    authority_score: 0.90
+    historical_periods: [WWI, WWII, interwar, postwar]
+    geographic_areas: [France, Europe]
+    entity_types: [person, event, unit, document]
+    languages: [fr]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 3
+
+  - code: tna_uk
+    display_name: "The National Archives (UK)"
+    base_url: "https://discovery.nationalarchives.gov.uk"
+    api_endpoints:
+      search: "https://discovery.nationalarchives.gov.uk/API/search/records"
+      metadata: "https://discovery.nationalarchives.gov.uk/API/search/records/{id}"
+    authorized_domains:
+      - discovery.nationalarchives.gov.uk
+      - nationalarchives.gov.uk
+    capabilities: [search, get_metadata]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.95
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [UK, global]
+    entity_types: [person, event, unit, document, place]
+    languages: [en]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 1
+
+  - code: abmc
+    display_name: "American Battle Monuments Commission"
+    base_url: "https://www.abmc.gov"
+    api_endpoints:
+      search: "https://www.abmc.gov/database-search"
+    authorized_domains:
+      - abmc.gov
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.90
+    historical_periods: [WWI, WWII]
+    geographic_areas: [USA, Europe, Pacific]
+    entity_types: [person, place]
+    languages: [en]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: iwm_lives
+    display_name: "Imperial War Museum — Lives of the First World War"
+    base_url: "https://www.iwm.org.uk"
+    api_endpoints:
+      search: "https://www.iwm.org.uk/collections/search"
+    authorized_domains:
+      - iwm.org.uk
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.85
+    historical_periods: [WWI, WWII]
+    geographic_areas: [UK, global]
+    entity_types: [person, document, event]
+    languages: [en]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: ddb
+    display_name: "Deutsche Digitale Bibliothek"
+    base_url: "https://www.deutsche-digitale-bibliothek.de"
+    api_endpoints:
+      search: "https://api.deutsche-digitale-bibliothek.de/search"
+    authorized_domains:
+      - deutsche-digitale-bibliothek.de
+      - api.deutsche-digitale-bibliothek.de
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.80
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [Germany, Europe]
+    entity_types: [document, person, event, place]
+    languages: [de, en]
+    contract_version: "1.0"
+    config:
+      api_key_env: DDB_API_KEY
+      rate_limit_delay: 1
+
+  - code: wikitree
+    display_name: "WikiTree"
+    base_url: "https://www.wikitree.com"
+    api_endpoints:
+      search: "https://www.wikitree.com/wiki/Search"
+    authorized_domains:
+      - wikitree.com
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.50
+    historical_periods: [WWI, WWII, pre1900, postwar]
+    geographic_areas: [global]
+    entity_types: [person]
+    languages: [en]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+      notes: "Dati crowdsourced — verificare sempre con fonte primaria."
+
+  - code: grand_memorial
+    display_name: "Grand Memorial Canada"
+    base_url: "https://grandmemorial.gc.ca"
+    api_endpoints:
+      search: "https://grandmemorial.gc.ca/search"
+    authorized_domains:
+      - grandmemorial.gc.ca
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.85
+    historical_periods: [WWI, WWII]
+    geographic_areas: [Canada, Europe]
+    entity_types: [person]
+    languages: [en, fr]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: librarycanada
+    display_name: "Library and Archives Canada"
+    base_url: "https://www.bac-lac.gc.ca"
+    api_endpoints:
+      search: "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx"
+    authorized_domains:
+      - bac-lac.gc.ca
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.85
+    historical_periods: [WWI, WWII]
+    geographic_areas: [Canada, Europe]
+    entity_types: [person, document, event]
+    languages: [en, fr]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: awm
+    display_name: "Australian War Memorial"
+    base_url: "https://www.awm.gov.au"
+    api_endpoints:
+      search: "https://www.awm.gov.au/collection/search"
+    authorized_domains:
+      - awm.gov.au
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.90
+    historical_periods: [WWI, WWII]
+    geographic_areas: [Australia, Pacific, Europe]
+    entity_types: [person, document, event, unit]
+    languages: [en]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+# ═══ Provider non ancora integrati (blueprint) ═══════════════════════════════
+
+pending_providers:
+  - code: open_library
+    display_name: "Open Library"
+    base_url: "https://openlibrary.org"
+    api_endpoints:
+      search: "https://openlibrary.org/search.json"
+      metadata: "https://openlibrary.org/api/books"
+    authorized_domains:
+      - openlibrary.org
+    capabilities: [search, get_metadata]
+    access_mode: auto
+    rights_default: PUBLIC_DOWNLOAD
+    authority_score: 0.60
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [global]
+    entity_types: [document]
+    languages: [en, multi]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 1
+
+  - code: archives_portal_europe
+    display_name: "Archives Portal Europe"
+    base_url: "https://www.archivesportaleurope.net"
+    api_endpoints:
+      search: "https://www.archivesportaleurope.net/api/search"
+    authorized_domains:
+      - archivesportaleurope.net
+    capabilities: [search]
+    access_mode: auto
+    rights_default: METADATA_ONLY
+    authority_score: 0.80
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [Europe]
+    entity_types: [document, person, event, place]
+    languages: [en, multi]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+
+  - code: hathitrust_full
+    display_name: "HathiTrust Full Text Search"
+    base_url: "https://babel.hathitrust.org"
+    api_endpoints:
+      search: "https://babel.hathitrust.org/cgi/ls"
+    authorized_domains:
+      - babel.hathitrust.org
+      - hathitrust.org
+    capabilities: [search, full_text]
+    access_mode: auto
+    rights_default: METADATA_ONLY
+    authority_score: 0.80
+    historical_periods: [WWI, WWII, interwar, postwar, pre1900]
+    geographic_areas: [global]
+    entity_types: [document]
+    languages: [en, fr, de, it, multi]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
