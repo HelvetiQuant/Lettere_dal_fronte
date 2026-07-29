@@ -28,6 +28,12 @@ from database_registry import (
     table_exists,
 )
 
+try:
+    from source_pipeline.consumer_adapter import retrieve_from_supabase as _supabase_retrieve
+    _SUPABASE_AVAILABLE = True
+except Exception:
+    _SUPABASE_AVAILABLE = False
+
 log = logging.getLogger("rag_pipeline")
 
 
@@ -265,6 +271,27 @@ def retrieve(
         if c.chunk_id not in seen:
             seen.add(c.chunk_id)
             unique.append(c)
+
+    # Supabase canonical schema retrieval (additional source)
+    if _SUPABASE_AVAILABLE:
+        try:
+            sb_chunks = _supabase_retrieve(query, limit=limit // 3)
+            for sc in sb_chunks:
+                cid = sc.get("chunk_id", "")
+                if cid and cid not in seen:
+                    seen.add(cid)
+                    unique.append(RetrievedChunk(
+                        chunk_id=cid,
+                        source_table=sc.get("source_table", "supabase"),
+                        source_id=sc.get("source_id", 0),
+                        title=sc.get("title", ""),
+                        text=sc.get("text", ""),
+                        score=sc.get("score", 0.6),
+                        retrieval_method=sc.get("retrieval_method", "supabase"),
+                        metadata=sc.get("metadata", {}),
+                    ))
+        except Exception as e:
+            log.warning("Supabase retrieval failed: %s", e)
 
     return unique[:limit]
 

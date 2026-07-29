@@ -1,0 +1,66 @@
+{
+  "created_at": "2026-07-29T09:08:33.687274+00:00",
+  "cases": [
+    {
+      "case_id": "GD-001",
+      "claim_id": 9,
+      "description": "Pilot A: Battaglia del Carso (evt_0018) — occurred_during WW1, 22 items Europeana",
+      "expected_claim_status": "supported",
+      "min_evidence_count": 3,
+      "required_independent_sources": 1,
+      "expected_editorial_decision": "needs_revision",
+      "notes": "22 items da Europeana confermano l'evento. claim_status 'supported' con singola fonte (Europeana). Upgrade a 'verified' con seconda fonte indipendente."
+    },
+    {
+      "case_id": "GD-002",
+      "claim_id": 10,
+      "description": "Pilot B: Persona WW1 — was_prisoner_in, 5 ICRC items, 3 evidence",
+      "expected_claim_status": "supported",
+      "min_evidence_count": 2,
+      "required_independent_sources": 1,
+      "expected_editorial_decision": "needs_revision",
+      "notes": "5 items ICRC con 3 evidence. Singola fonte istituzionale (ICRC) di alta affidabilità. 'Supported' in attesa di seconda fonte per 'verified'."
+    },
+    {
+      "case_id": "GD-003",
+      "claim_id": 11,
+      "description": "Pilot C: IMI WW2 — was_interned_in, 5 LeBI items, 3 evidence",
+      "expected_claim_status": "supported",
+      "min_evidence_count": 2,
+      "required_independent_sources": 1,
+      "expected_editorial_decision": "needs_revision",
+      "notes": "5 items LeBI con 3 evidence. ANRP è fonte istituzionale italiana. 'Supported' in attesa di cross-check con ICRC o altri."
+    },
+    {
+      "case_id": "GD-004",
+      "claim_id": 12,
+      "description": "Pilot D: Onorificenza Quirinale — received_honor, 0 items",
+      "expected_claim_status": "discovered",
+      "min_evidence_count": 0,
+      "required_independent_sources": 0,
+      "expected_editorial_decision": "deferred",
+      "notes": "Nessun item recuperato. Endpoint Quirinale non ha restituito risultati. Internet Archive senza match. Claim da rivedere con query alternative."
+    },
+    {
+      "case_id": "GD-005-NEG",
+      "claim_id": 0,
+      "description": "Caso negativo: claim senza evidence deve essere 'unverifiable'",
+      "expected_claim_status": "rejected",
+      "min_evidence_count": 0,
+      "required_independent_sources": 0,
+      "expected_editorial_decision": "rejected",
+      "notes": "Caso di controllo: una claim senza evidence deve avere claim_status='rejected' e editorial_decision='rejected'."
+    },
+    {
+      "case_id": "GD-006-NEG",
+      "claim_id": 0,
+      "description": "Caso negativo: claim con evidence da singola fonte DISCOVERY_ONLY deve essere 'candidate'",
+      "expected_claim_status": "candidate",
+      "min_evidence_count": 1,
+      "required_independent_sources": 0,
+      "expected_editorial_decision": "needs_revision",
+      "notes": "Caso di controllo: evidence da provider DISCOVERY_ONLY non basta per 'supported'. Deve restare 'candidate'."
+    }
+  ],
+  "total_cases": 6
+}

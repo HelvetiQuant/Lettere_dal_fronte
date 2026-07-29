@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-07-28T20:18:01.112306+00:00",
+  "pilots": [
+    {
+      "pilot": "A",
+      "status": "completed",
+      "entity_id": 49,
+      "items_discovered": 22,
+      "claim_id": 9,
+      "pipeline_run_id": "pilot_a_carso_20260728_201714"
+    },
+    {
+      "pilot": "B",
+      "status": "completed",
+      "entity_id": 50,
+      "items_discovered": 5,
+      "icrc_results": 5,
+      "europeana_results": 0,
+      "claim_id": 10,
+      "independent_sources": 1,
+      "pipeline_run_id": "pilot_b_ww1_person_20260728_201739"
+    },
+    {
+      "pilot": "C",
+      "status": "completed",
+      "entity_id": 51,
+      "items_discovered": 5,
+      "lebi_results": 5,
+      "ia_results": 0,
+      "claim_id": 11,
+      "pipeline_run_id": "pilot_c_imi_ww2_20260728_201748"
+    },
+    {
+      "pilot": "D",
+      "status": "completed",
+      "entity_id": 52,
+      "items_discovered": 0,
+      "quirinale_results": 0,
+      "ia_results": 0,
+      "claim_id": 12,
+      "pipeline_run_id": "pilot_d_onorificenza_20260728_201756"
+    }
+  ]
+}
