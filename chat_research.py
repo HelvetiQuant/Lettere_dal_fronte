@@ -263,7 +263,7 @@ def _ai_generate_answer(question: str, dossier_dict: dict, conversation: Convers
     """Use OpenAI API to generate a natural language answer from the dossier."""
     history = conversation.history_text(max_turns=4)
 
-    # Prepare dossier summary for AI — rich details for conversational answer
+    # Prepare dossier summary for AI — compact for Qwen 3B context window
     summary = {
         "stato_identificazione": dossier_dict.get("stato_identificazione"),
         "candidati_count": len(dossier_dict.get("candidati", [])),
@@ -276,24 +276,17 @@ def _ai_generate_answer(question: str, dossier_dict: dict, conversation: Convers
                 "luogo_nascita": c.get("luogo_nascita"),
                 "reparto": c.get("reparto"),
                 "grado": c.get("grado"),
-                "morte": c.get("morte"),
-                "compatibilita": c.get("compatibilita", []),
-                "contraddizioni": c.get("contraddizioni", []),
-                "fonti": [{"istituzione": f.get("istituzione"), "url": f.get("url"), "source_level": f.get("source_level")} for f in c.get("fonti", [])[:5]],
+                "fonti": [f.get("istituzione") for f in c.get("fonti", [])[:3]],
             }
-            for c in dossier_dict.get("candidati", [])[:10]
+            for c in dossier_dict.get("candidati", [])[:5]
         ],
         "omonimi_esclusi_count": len(dossier_dict.get("omonimi_esclusi", [])),
-        "omonimi_esclusi": [c.get("nome_originale") for c in dossier_dict.get("omonimi_esclusi", [])[:5]],
         "fonti_count": len(dossier_dict.get("fonti", [])),
-        "fonti_elenche": [f.get("istituzione") for f in dossier_dict.get("fonti", [])[:15]],
-        "contraddizioni": dossier_dict.get("contraddizioni", [])[:5],
+        "fonti_principali": [f.get("istituzione") for f in dossier_dict.get("fonti", [])[:8]],
         "ricerche_negative_count": len(dossier_dict.get("ricerche_negative", [])),
-        "ricerche_negative_archivi": [r.get("motore_o_archivio") for r in dossier_dict.get("ricerche_negative", [])[:10]],
-        "piste": dossier_dict.get("piste", [])[:5],
-        "richieste_archivistiche": dossier_dict.get("richieste", [])[:5],
-        "varianti_generate": [v.get("text") for v in dossier_dict.get("varianti", [])[:8]],
-        "search_log": [{"archivio": s.get("motore_o_archivio"), "risultati": s.get("risultati_trovati"), "esito": s.get("esito")} for s in dossier_dict.get("search_log", [])[:15]],
+        "piste": dossier_dict.get("piste", [])[:3],
+        "richieste_archivistiche": dossier_dict.get("richieste", [])[:3],
+        "varianti_generate": [v.get("text") for v in dossier_dict.get("varianti", [])[:5]],
     }
 
     user_msg = f"Domanda utente: {question}\n\nDossier di ricerca:\n{json.dumps(summary, ensure_ascii=False, indent=2)}"
