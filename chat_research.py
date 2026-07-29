@@ -300,32 +300,28 @@ def _ai_generate_answer(question: str, dossier_dict: dict, conversation: Convers
     if history:
         user_msg = f"Contesto conversazione:\n{history}\n\n{user_msg}"
 
-    # ── Try OpenAI API directly for best conversational quality ──
+    # ── Use ai_client.call_ai with automatic fallback chain ──
+    # OpenAI → Anthropic → Mistral → Perplexity → Gemini
     try:
-        import os
-        from openai import OpenAI
-        api_key = os.environ.get("OPENAI_API_KEY", "")
-        if api_key:
-            client = OpenAI(api_key=api_key)
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[
-                    {"role": "system", "content": ANSWER_SYSTEM},
-                    {"role": "user", "content": user_msg},
-                ],
-                max_tokens=4096,
-                temperature=0.7,
-                timeout=90,
-            )
-            text = response.choices[0].message.content
-            if text and len(text) > 20:
-                log.info("Answer generated with OpenAI gpt-4o (%d chars)", len(text))
-                return text
-            log.warning("OpenAI returned short/empty answer, trying fallback")
+        from ai_client import call_ai
+        result = call_ai(
+            task_type="historical_research_answer",
+            system=ANSWER_SYSTEM,
+            user=user_msg,
+            max_tokens=4096,
+            temperature=0.7,
+        )
+        if result.get("ok") and result.get("text"):
+            text = result["text"]
+            provider = result.get("provider", "unknown")
+            model = result.get("model", "unknown")
+            log.info("Answer generated with %s/%s (%d chars)", provider, model, len(text))
+            return text
+        log.warning("ai_client.call_ai failed: %s", result.get("error", "unknown"))
     except Exception as e:
-        log.warning("OpenAI answer failed: %s, trying Qwen/cloud fallback", e)
+        log.warning("ai_client.call_ai error: %s, trying Qwen fallback", e)
 
-    # ── Fallback: try ai_runtime adapter (Qwen or cloud) ──
+    # ── Fallback: try local Qwen via ai_runtime ──
     try:
         from ai_runtime import get_adapter
         adapter = get_adapter()
