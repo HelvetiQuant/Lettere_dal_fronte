@@ -100,8 +100,9 @@ def federated_search(
     filters: dict = None,
     *,
     context: Optional[FederatedSearchContext] = None,
+    timeout_per_provider: float = 15.0,
 ) -> List[dict]:
-    """Cerca across provider. Non scarica documenti.
+    """Cerca across provider in parallelo. Non scarica documenti.
     Ritorna metadati con score.
 
     Args:
@@ -110,27 +111,42 @@ def federated_search(
         providers: lista nomi provider da interrogare (None = tutti)
         filters: filtri aggiuntivi
         context: contesto tipizzato evento/soggetto (raccomandato)
+        timeout_per_provider: timeout in secondi per ogni provider
     """
+    import concurrent.futures
+
     reg = get_registry()
     if providers:
         targets = {k: v for k, v in reg.items() if k in providers}
     else:
         targets = reg
 
-    all_results = []
-    for pname, provider in targets.items():
+    def _search_one(pname_provider):
+        pname, provider = pname_provider
         try:
             results = provider.search(query, filters or {}, context=context)
+            scored = []
             for r in results:
                 r["provider"] = pname
                 r["score"] = score_source(r, cues or {})
-                all_results.append(r)
+                scored.append(r)
+            return scored
         except Exception as e:
-            all_results.append({
-                "provider": pname,
-                "error": str(e),
-                "score": 0.0,
-            })
+            return [{"provider": pname, "error": str(e), "score": 0.0}]
+
+    all_results = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(targets), 10)) as pool:
+        futures = {pool.submit(_search_one, (pname, prov)): pname for pname, prov in targets.items()}
+        for future in concurrent.futures.as_completed(futures, timeout=timeout_per_provider + 5):
+            try:
+                results = future.result(timeout=timeout_per_provider)
+                all_results.extend(results)
+            except concurrent.futures.TimeoutError:
+                pname = futures[future]
+                all_results.append({"provider": pname, "error": "timeout", "score": 0.0})
+            except Exception as e:
+                pname = futures[future]
+                all_results.append({"provider": pname, "error": str(e), "score": 0.0})
 
     # ordina per score
     all_results.sort(key=lambda x: x.get("score", 0), reverse=True)
