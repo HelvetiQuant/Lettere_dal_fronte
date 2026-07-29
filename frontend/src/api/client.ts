@@ -131,7 +131,7 @@ export const api = {
 
   // ── Chat Research (Person Finder) ──
   chatResearch: (question: string, conversationId?: string) =>
-    post<ResearchChatResponse>('/api/chat/research', { question, conversation_id: conversationId }, undefined, 120_000),
+    post<ResearchChatResponse>('/api/chat/research', { question, conversation_id: conversationId }, undefined, 180_000),
 
   // ── External Sources ──
   icrcSearch: (q: string, nationality = 'italy', status = '', files = '') =>

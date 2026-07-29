@@ -2494,7 +2494,7 @@ def api_research_protocol(body: dict = Body(...)):
 # ─── Chat Research ────────────────────────────────────────────────────────────
 
 @app.post("/api/chat/research")
-def api_chat_research(body: dict = Body(...)):
+async def api_chat_research(body: dict = Body(...)):
     """Chat con ricerca storica in linguaggio naturale.
 
     L'utente puo' fare domande come:
@@ -2516,6 +2516,7 @@ def api_chat_research(body: dict = Body(...)):
         ai_used: bool
         ai_model: str
     """
+    import asyncio
     from chat_research import chat_research
 
     question = body.get("question", "").strip()
@@ -2523,13 +2524,19 @@ def api_chat_research(body: dict = Body(...)):
         raise HTTPException(status_code=400, detail="question mancante")
 
     try:
-        result = chat_research(
-            question,
-            conversation_id=body.get("conversation_id"),
-            use_ai=body.get("use_ai", True),
-            persist=body.get("persist", True),
+        result = await asyncio.wait_for(
+            asyncio.to_thread(
+                chat_research,
+                question,
+                body.get("conversation_id"),
+                body.get("use_ai", True),
+                body.get("persist", True),
+            ),
+            timeout=90.0,
         )
         return result
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="Ricerca in timeout (90s). Troppi provider da interrogare. Riprova con una query più specifica.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Errore chat research: {str(e)}")
 
