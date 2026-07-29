@@ -103,8 +103,8 @@ def federated_search(
     filters: dict = None,
     *,
     context: Optional[FederatedSearchContext] = None,
-    timeout_per_provider: float = 12.0,
-    num_workers: int = 4,
+    timeout_per_provider: float = 8.0,
+    num_workers: int = 6,
 ) -> List[dict]:
     """Cerca across provider in parallelo con distribuzione dinamica del lavoro.
 

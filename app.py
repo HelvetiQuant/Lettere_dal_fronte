@@ -2533,11 +2533,11 @@ async def api_chat_research(body: dict = Body(...)):
                     persist=body.get("persist", True),
                 )
             ),
-            timeout=180.0,
+            timeout=300.0,
         )
         return result
     except asyncio.TimeoutError:
-        raise HTTPException(status_code=504, detail="Ricerca in timeout (180s). Il sistema sta interrogando 27 provider esterni in parallelo. Riprova con una query piu' specifica (nome + cognome + anno).")
+        raise HTTPException(status_code=504, detail="Ricerca in timeout (300s). Il sistema sta interrogando 27 provider esterni in parallelo. Riprova con una query piu' specifica (nome + cognome + anno).")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Errore chat research: {str(e)}")
 
