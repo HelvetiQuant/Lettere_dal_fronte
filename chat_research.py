@@ -260,7 +260,7 @@ def _fallback_parse(question: str) -> dict:
 
 
 def _ai_generate_answer(question: str, dossier_dict: dict, conversation: Conversation) -> str:
-    """Use Qwen to generate a natural language answer from the dossier."""
+    """Use OpenAI API to generate a natural language answer from the dossier."""
     history = conversation.history_text(max_turns=4)
 
     # Prepare dossier summary for AI — rich details for conversational answer
@@ -300,6 +300,32 @@ def _ai_generate_answer(question: str, dossier_dict: dict, conversation: Convers
     if history:
         user_msg = f"Contesto conversazione:\n{history}\n\n{user_msg}"
 
+    # ── Try OpenAI API directly for best conversational quality ──
+    try:
+        import os
+        from openai import OpenAI
+        api_key = os.environ.get("OPENAI_API_KEY", "")
+        if api_key:
+            client = OpenAI(api_key=api_key)
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "system", "content": ANSWER_SYSTEM},
+                    {"role": "user", "content": user_msg},
+                ],
+                max_tokens=4096,
+                temperature=0.7,
+                timeout=90,
+            )
+            text = response.choices[0].message.content
+            if text and len(text) > 20:
+                log.info("Answer generated with OpenAI gpt-4o (%d chars)", len(text))
+                return text
+            log.warning("OpenAI returned short/empty answer, trying fallback")
+    except Exception as e:
+        log.warning("OpenAI answer failed: %s, trying Qwen/cloud fallback", e)
+
+    # ── Fallback: try ai_runtime adapter (Qwen or cloud) ──
     try:
         from ai_runtime import get_adapter
         adapter = get_adapter()
