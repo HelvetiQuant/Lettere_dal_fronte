@@ -123,23 +123,19 @@ Regole:
 FALLBACK_SYSTEM = """Sei un assistente storico-archivistico italiano. Rispondi in modo chiaro e strutturato.
 Se non hai dati sufficienti, dillo apertamente e suggerisci dove cercare."""
 
-ANSWER_SYSTEM = """Sei un ricercatore storico-archivistico digitale. Rispondi alla domanda dell'utente
-basandoti ESCLUSIVAMENTE sui dati del dossier fornito. Non inventare informazioni.
+ANSWER_SYSTEM = """Sei un ricercatore storico-archivistico digitale esperto in eventi bellici del Novecento.
+Rispondi alla domanda dell'utente in linguaggio naturale, come se fossi un collega ricercatore che ha appena consultato decine di archivi.
 
-Struttura la risposta in questo modo:
-1. **Stato della ricerca** (1-2 righe)
-2. **Dati accertati** (se presenti, elenco puntato)
-3. **Candidati trovati** (riassunto dei match, con fonti)
-4. **Contraddizioni o dubbi** (se presenti)
-5. **Prossimi passi** (piste e richieste archivistiche)
-
-Se la ricerca non ha trovato risultati, spiega cosa è stato cercato e suggerisci:
-- Quali archivi contattare
-- Quali documenti richiedere
-- Quali ricerche fare manualmente
-
-Usa un tono professionale ma accessibile. Cita le fonti quando menzioni dati specifici.
-Rispondi in italiano."""
+REGOLE:
+- Basati ESCLUSIVAMENTE sui dati del dossier fornito. Non inventare informazioni.
+- Usa un tono conversazionale, professionale ma accessibile — come una risposta di ChatGPT.
+- Non usare elenchi numerati rigidi. Piuttosto, scrivi paragrafi fluidi.
+- Quando menzioni un dato specifico, cita la fonte (es: "secondo l'Albo d'Oro del Ministero della Difesa...").
+- Se hai trovato candidati, descrivili in modo narrativo: chi sono, cosa combacia, cosa no.
+- Se ci sono contraddizioni tra le fonti, evidenziale con onestà.
+- Se la ricerca non ha trovato risultati, spiega cosa hai cercato (quali archivi, quali query) e suggerisci i prossimi passi in modo pratico.
+- Se l'utente fa una domanda di follow-up, usa il contesto della conversazione precedente.
+- Rispondi in italiano, con markdown leggero (grassetto per nomi e fonti, non elenchi numerati)."""
 
 
 def _ai_parse_question(question: str, conversation: Conversation) -> dict:
@@ -267,7 +263,7 @@ def _ai_generate_answer(question: str, dossier_dict: dict, conversation: Convers
     """Use Qwen to generate a natural language answer from the dossier."""
     history = conversation.history_text(max_turns=4)
 
-    # Prepare dossier summary for AI
+    # Prepare dossier summary for AI — rich details for conversational answer
     summary = {
         "stato_identificazione": dossier_dict.get("stato_identificazione"),
         "candidati_count": len(dossier_dict.get("candidati", [])),
@@ -275,19 +271,29 @@ def _ai_generate_answer(question: str, dossier_dict: dict, conversation: Convers
             {
                 "nome": c.get("nome_originale"),
                 "stato": c.get("stato"),
+                "confidence": c.get("confidence"),
+                "data_nascita": c.get("data_nascita"),
+                "luogo_nascita": c.get("luogo_nascita"),
+                "reparto": c.get("reparto"),
+                "grado": c.get("grado"),
+                "morte": c.get("morte"),
                 "compatibilita": c.get("compatibilita", []),
                 "contraddizioni": c.get("contraddizioni", []),
-                "fonti": [f.get("istituzione") for f in c.get("fonti", [])[:3]],
+                "fonti": [{"istituzione": f.get("istituzione"), "url": f.get("url"), "source_level": f.get("source_level")} for f in c.get("fonti", [])[:5]],
             }
-            for c in dossier_dict.get("candidati", [])[:5]
+            for c in dossier_dict.get("candidati", [])[:10]
         ],
         "omonimi_esclusi_count": len(dossier_dict.get("omonimi_esclusi", [])),
+        "omonimi_esclusi": [c.get("nome_originale") for c in dossier_dict.get("omonimi_esclusi", [])[:5]],
         "fonti_count": len(dossier_dict.get("fonti", [])),
-        "contraddizioni": dossier_dict.get("contraddizioni", [])[:3],
+        "fonti_elenche": [f.get("istituzione") for f in dossier_dict.get("fonti", [])[:15]],
+        "contraddizioni": dossier_dict.get("contraddizioni", [])[:5],
         "ricerche_negative_count": len(dossier_dict.get("ricerche_negative", [])),
-        "piste": dossier_dict.get("piste", [])[:3],
-        "richieste_archivistiche": dossier_dict.get("richieste", [])[:3],
-        "varianti_generate": [v.get("text") for v in dossier_dict.get("varianti", [])[:5]],
+        "ricerche_negative_archivi": [r.get("motore_o_archivio") for r in dossier_dict.get("ricerche_negative", [])[:10]],
+        "piste": dossier_dict.get("piste", [])[:5],
+        "richieste_archivistiche": dossier_dict.get("richieste", [])[:5],
+        "varianti_generate": [v.get("text") for v in dossier_dict.get("varianti", [])[:8]],
+        "search_log": [{"archivio": s.get("motore_o_archivio"), "risultati": s.get("risultati_trovati"), "esito": s.get("esito")} for s in dossier_dict.get("search_log", [])[:15]],
     }
 
     user_msg = f"Domanda utente: {question}\n\nDossier di ricerca:\n{json.dumps(summary, ensure_ascii=False, indent=2)}"
@@ -303,8 +309,8 @@ def _ai_generate_answer(question: str, dossier_dict: dict, conversation: Convers
 
         result = adapter.generate(
             ANSWER_SYSTEM, user_msg,
-            max_tokens=2048, temperature=0.3,
-            task_type="historical_research_answer", timeout=60,
+            max_tokens=4096, temperature=0.7,
+            task_type="historical_research_answer", timeout=90,
         )
         if result.ok and result.text:
             return result.text
