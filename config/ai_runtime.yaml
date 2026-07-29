@@ -5,14 +5,18 @@
 provider: lm_studio
 
 # If true, blocks all remote providers at application level
-local_only: true
+# Set false to allow cloud fallback when LM Studio is not running
+local_only: false
+
+# Fallback strategy: lm_studio_first (try local, then cloud) | remote_first | local_only
+fallback_strategy: lm_studio_first
 
 # LM Studio settings
 lm_studio:
   base_url: ""  # Set via LM_STUDIO_API_URL env var
   model_id: ""  # Auto-detected from /v1/models
 
-# Remote provider settings (used only when local_only=false)
+# Remote provider settings (used when local_only=false or LM Studio unavailable)
 remote:
   fallback_order: ["openai", "anthropic", "mistral", "perplexity", "gemini"]
   timeout: 120

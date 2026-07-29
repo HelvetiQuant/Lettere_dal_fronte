@@ -284,7 +284,14 @@ _adapter: Optional[InferenceAdapter] = None
 
 
 def get_adapter() -> InferenceAdapter:
-    """Ritorna l'adapter attivo (singleton). Inizializza da config/env."""
+    """Ritorna l'adapter attivo (singleton). Inizializza da config/env.
+
+    Strategia fallback (lm_studio_first):
+    1. Se LM_STUDIO_API_URL è impostata → prova LM Studio
+    2. Se LM Studio non risponde (health fail) → passa a RemoteAIAdapter (cloud)
+    3. Se local_only=True e LM Studio non attivo → DeterministicTestAdapter
+    4. Se nessun LM Studio URL → RemoteAIAdapter (cloud con fallback)
+    """
     global _adapter
     if _adapter is not None:
         return _adapter
@@ -296,15 +303,43 @@ def get_adapter() -> InferenceAdapter:
     lm_studio_url = env.get("LM_STUDIO_API_URL", "")
     local_only = os.environ.get("AI_LOCAL_ONLY", "false").lower() in ("true", "1", "yes")
 
-    if lm_studio_url:
+    # Read fallback strategy from config
+    strategy = "lm_studio_first"
+    try:
+        import yaml
+        from pathlib import Path
+        yaml_path = Path(__file__).parent / "config" / "ai_runtime.yaml"
+        if yaml_path.exists():
+            with open(yaml_path, "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f) or {}
+            strategy = cfg.get("fallback_strategy", "lm_studio_first")
+    except Exception:
+        pass
+
+    if lm_studio_url and strategy == "lm_studio_first":
+        # Try LM Studio first, fall back to cloud if not running
+        lm = LMStudioAdapter(base_url=lm_studio_url)
+        health = lm.health()
+        if health.healthy:
+            _adapter = lm
+            log.info("AI runtime: LMStudioAdapter (%s) — model=%s", lm_studio_url, health.model)
+        else:
+            log.warning("AI runtime: LM Studio not healthy (%s), falling back to cloud", health.detail)
+            if local_only:
+                _adapter = DeterministicTestAdapter()
+                log.warning("AI runtime: DeterministicTestAdapter (local_only=True, LM Studio unavailable)")
+            else:
+                _adapter = RemoteAIAdapter(local_only=False)
+                log.info("AI runtime: RemoteAIAdapter (cloud fallback — LM Studio unavailable)")
+    elif lm_studio_url and strategy == "local_only":
         _adapter = LMStudioAdapter(base_url=lm_studio_url)
-        log.info("AI runtime: LMStudioAdapter (%s)", lm_studio_url)
+        log.info("AI runtime: LMStudioAdapter (%s) — local_only strategy", lm_studio_url)
     elif local_only:
         _adapter = DeterministicTestAdapter()
         log.warning("AI runtime: DeterministicTestAdapter (local_only, no LM Studio URL)")
     else:
         _adapter = RemoteAIAdapter(local_only=False)
-        log.info("AI runtime: RemoteAIAdapter (remote providers with fallback)")
+        log.info("AI runtime: RemoteAIAdapter (cloud providers with fallback)")
 
     return _adapter
 
