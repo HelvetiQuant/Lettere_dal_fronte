@@ -2454,6 +2454,43 @@ def api_person_finder_get(
         raise HTTPException(status_code=500, detail=f"Errore person finder: {str(e)}")
 
 
+# ─── Research Protocol ────────────────────────────────────────────────────────
+
+@app.post("/api/research-protocol")
+def api_research_protocol(body: dict = Body(...)):
+    """Esegue il protocollo completo di ricerca storico-archivistica.
+
+    Input: oggetto JSON con tutti i campi della sezione 1 del protocollo.
+    Output: dossier strutturato (sezioni A-N).
+
+    Body fields (tutti opzionali tranne cognome o nome):
+        nome, cognome, secondi_nomi[], varianti_nome[], varianti_cognome[],
+        soprannome, data_nascita, anno_nascita, luogo_nascita, provincia_nascita,
+        paese_nascita, paternita, maternita, coniuge, residenza, professione,
+        grado, arma, reparto, battaglione, compagnia, distretto_militare,
+        numero_matricola, numero_prigioniero, conflitto_presunto,
+        periodo_presunto, luogo_evento, stato_presunto,
+        informazioni_familiari, documenti_iniziali[], note_utente
+
+    Options:
+        use_ai: bool = True  (usa Qwen/LMStudio per normalizzazione e dossier)
+        persist: bool = True (salva in Supabase)
+    """
+    from research_protocol import research_person
+
+    use_ai = body.pop("use_ai", True)
+    persist = body.pop("persist", True)
+
+    if not body.get("cognome") and not body.get("nome"):
+        raise HTTPException(status_code=400, detail="Almeno cognome o nome è obbligatorio")
+
+    try:
+        dossier = research_person(body, use_ai=use_ai, persist=persist)
+        return dossier.to_dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore research protocol: {str(e)}")
+
+
 @app.get("/api/research/subjects")
 def api_research_subjects(
     subject_type: str = None,
