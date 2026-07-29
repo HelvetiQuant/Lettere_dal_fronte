@@ -12,7 +12,7 @@ Usage:
 """
 from __future__ import annotations
 
-import json, logging, re, sqlite3, os
+import json, logging, re, sqlite3, os, threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -510,6 +510,8 @@ Rispondi in JSON con: {
 
 # ─── Search execution ─────────────────────────────────────────────────────────
 
+_dossier_lock = threading.Lock()
+
 def _search_local(si: SearchInput, variants: List[NameVariant], dossier: Dossier):
     """Search local SQLite databases."""
     from person_finder import _search_local_sqlite, PersonQuery
@@ -517,28 +519,29 @@ def _search_local(si: SearchInput, variants: List[NameVariant], dossier: Dossier
                      birth_year=int(si.anno_nascita) if si.anno_nascita.isdigit() else None,
                      birth_place=si.luogo_nascita, conflict=si.conflitto_presunto)
     matches = _search_local_sqlite(pq)
-    for m in matches:
-        c = Candidate(
-            nome_originale=m.name, nome_normalizzato=m.name,
-            data_nascita=str(m.birth_year or ""), luogo_nascita=m.birth_place,
-            reparto=m.military_unit, grado=m.rank, morte=m.fate,
-            stato="POSSIBLE", raw_data=m.raw_data, confidence=m.confidence,
-        )
-        c.fonti.append(SourceRecord(
-            url=m.url, istituzione=f"SQLite:{m.source_detail}",
-            connection_type="DIRECT_HTML_GET", metodo_individuazione="FORM_SEARCH",
-            source_level=classify_source(m.source_detail), esito="positive",
-            data_accesso=datetime.now().isoformat(),
+    with _dossier_lock:
+        for m in matches:
+            c = Candidate(
+                nome_originale=m.name, nome_normalizzato=m.name,
+                data_nascita=str(m.birth_year or ""), luogo_nascita=m.birth_place,
+                reparto=m.military_unit, grado=m.rank, morte=m.fate,
+                stato="POSSIBLE", raw_data=m.raw_data, confidence=m.confidence,
+            )
+            c.fonti.append(SourceRecord(
+                url=m.url, istituzione=f"SQLite:{m.source_detail}",
+                connection_type="DIRECT_HTML_GET", metodo_individuazione="FORM_SEARCH",
+                source_level=classify_source(m.source_detail), esito="positive",
+                data_accesso=datetime.now().isoformat(),
+            ))
+            score_candidate(c, si)
+            dossier.candidati.append(c)
+        dossier.search_log.append(SearchLogEntry(
+            query_id=f"local_{datetime.now().strftime('%H%M%S')}", timestamp=datetime.now().isoformat(),
+            query=si.full_name, motore_o_archivio="SQLite_local", connection_type="DIRECT_HTML_GET",
+            risultati_trovati=len(matches), esito="positive" if matches else "negative",
         ))
-        score_candidate(c, si)
-        dossier.candidati.append(c)
-    dossier.search_log.append(SearchLogEntry(
-        query_id=f"local_{datetime.now().strftime('%H%M%S')}", timestamp=datetime.now().isoformat(),
-        query=si.full_name, motore_o_archivio="SQLite_local", connection_type="DIRECT_HTML_GET",
-        risultati_trovati=len(matches), esito="positive" if matches else "negative",
-    ))
-    if not matches:
-        dossier.ricerche_negative.append(dossier.search_log[-1])
+        if not matches:
+            dossier.ricerche_negative.append(dossier.search_log[-1])
 
 
 def _search_supabase(si: SearchInput, dossier: Dossier):
@@ -548,26 +551,27 @@ def _search_supabase(si: SearchInput, dossier: Dossier):
                      birth_year=int(si.anno_nascita) if si.anno_nascita.isdigit() else None,
                      birth_place=si.luogo_nascita)
     matches = _search_supabase(pq)
-    for m in matches:
-        c = Candidate(
-            nome_originale=m.name, nome_normalizzato=m.name,
-            stato="POSSIBLE", raw_data=m.raw_data, confidence=m.confidence,
-        )
-        c.fonti.append(SourceRecord(
-            url=m.url, istituzione=f"Supabase:{m.source_detail}",
-            connection_type="PUBLIC_JSON_LOOKUP", metodo_individuazione="API_SEARCH",
-            source_level="B", esito="positive",
-            data_accesso=datetime.now().isoformat(),
+    with _dossier_lock:
+        for m in matches:
+            c = Candidate(
+                nome_originale=m.name, nome_normalizzato=m.name,
+                stato="POSSIBLE", raw_data=m.raw_data, confidence=m.confidence,
+            )
+            c.fonti.append(SourceRecord(
+                url=m.url, istituzione=f"Supabase:{m.source_detail}",
+                connection_type="PUBLIC_JSON_LOOKUP", metodo_individuazione="API_SEARCH",
+                source_level="B", esito="positive",
+                data_accesso=datetime.now().isoformat(),
+            ))
+            score_candidate(c, si)
+            dossier.candidati.append(c)
+        dossier.search_log.append(SearchLogEntry(
+            query_id=f"supa_{datetime.now().strftime('%H%M%S')}", timestamp=datetime.now().isoformat(),
+            query=si.full_name, motore_o_archivio="Supabase", connection_type="PUBLIC_JSON_LOOKUP",
+            risultati_trovati=len(matches), esito="positive" if matches else "negative",
         ))
-        score_candidate(c, si)
-        dossier.candidati.append(c)
-    dossier.search_log.append(SearchLogEntry(
-        query_id=f"supa_{datetime.now().strftime('%H%M%S')}", timestamp=datetime.now().isoformat(),
-        query=si.full_name, motore_o_archivio="Supabase", connection_type="PUBLIC_JSON_LOOKUP",
-        risultati_trovati=len(matches), esito="positive" if matches else "negative",
-    ))
-    if not matches:
-        dossier.ricerche_negative.append(dossier.search_log[-1])
+        if not matches:
+            dossier.ricerche_negative.append(dossier.search_log[-1])
 
 
 def _search_federated(si: SearchInput, variants: List[NameVariant], dossier: Dossier):
@@ -577,27 +581,28 @@ def _search_federated(si: SearchInput, variants: List[NameVariant], dossier: Dos
                      birth_year=int(si.anno_nascita) if si.anno_nascita.isdigit() else None,
                      birth_place=si.luogo_nascita, conflict=si.conflitto_presunto)
     matches = _search_federated(pq)
-    for m in matches:
-        c = Candidate(
-            nome_originale=m.name, nome_normalizzato=m.name,
-            stato="POSSIBLE", raw_data=m.raw_data, confidence=m.confidence,
-        )
-        provider = m.source_detail
-        c.fonti.append(SourceRecord(
-            url=m.url, istituzione=provider,
-            connection_type=classify_connection(provider, has_api=True, url=m.url),
-            metodo_individuazione="API_SEARCH", source_level=classify_source(provider, m.url),
-            esito="positive", data_accesso=datetime.now().isoformat(),
+    with _dossier_lock:
+        for m in matches:
+            c = Candidate(
+                nome_originale=m.name, nome_normalizzato=m.name,
+                stato="POSSIBLE", raw_data=m.raw_data, confidence=m.confidence,
+            )
+            provider = m.source_detail
+            c.fonti.append(SourceRecord(
+                url=m.url, istituzione=provider,
+                connection_type=classify_connection(provider, has_api=True, url=m.url),
+                metodo_individuazione="API_SEARCH", source_level=classify_source(provider, m.url),
+                esito="positive", data_accesso=datetime.now().isoformat(),
+            ))
+            score_candidate(c, si)
+            dossier.candidati.append(c)
+        dossier.search_log.append(SearchLogEntry(
+            query_id=f"fed_{datetime.now().strftime('%H%M%S')}", timestamp=datetime.now().isoformat(),
+            query=si.full_name, motore_o_archivio="federated_27_providers", connection_type="OFFICIAL_API",
+            risultati_trovati=len(matches), esito="positive" if matches else "negative",
         ))
-        score_candidate(c, si)
-        dossier.candidati.append(c)
-    dossier.search_log.append(SearchLogEntry(
-        query_id=f"fed_{datetime.now().strftime('%H%M%S')}", timestamp=datetime.now().isoformat(),
-        query=si.full_name, motore_o_archivio="federated_27_providers", connection_type="OFFICIAL_API",
-        risultati_trovati=len(matches), esito="positive" if matches else "negative",
-    ))
-    if not matches:
-        dossier.ricerche_negative.append(dossier.search_log[-1])
+        if not matches:
+            dossier.ricerche_negative.append(dossier.search_log[-1])
 
 
 def _search_web(si: SearchInput, dossier: Dossier):
@@ -607,24 +612,25 @@ def _search_web(si: SearchInput, dossier: Dossier):
                      birth_year=int(si.anno_nascita) if si.anno_nascita.isdigit() else None,
                      birth_place=si.luogo_nascita)
     matches = _search_web(pq)
-    for m in matches:
-        c = Candidate(
-            nome_originale=m.name, stato="INSUFFICIENT_DATA",
-            confidence=m.confidence, raw_data=m.raw_data,
-        )
-        c.fonti.append(SourceRecord(
-            url=m.url, istituzione=m.source_detail,
-            connection_type="SEARCH_DISCOVERY", metodo_individuazione="SEARCH_QUERY",
-            source_level=classify_source(m.source_detail, m.url),
-            esito="ambiguous", note=m.raw_data.get("search_hint", ""),
-            data_accesso=datetime.now().isoformat(),
+    with _dossier_lock:
+        for m in matches:
+            c = Candidate(
+                nome_originale=m.name, stato="INSUFFICIENT_DATA",
+                confidence=m.confidence, raw_data=m.raw_data,
+            )
+            c.fonti.append(SourceRecord(
+                url=m.url, istituzione=m.source_detail,
+                connection_type="SEARCH_DISCOVERY", metodo_individuazione="SEARCH_QUERY",
+                source_level=classify_source(m.source_detail, m.url),
+                esito="ambiguous", note=m.raw_data.get("search_hint", ""),
+                data_accesso=datetime.now().isoformat(),
+            ))
+            dossier.candidati.append(c)
+        dossier.search_log.append(SearchLogEntry(
+            query_id=f"web_{datetime.now().strftime('%H%M%S')}", timestamp=datetime.now().isoformat(),
+            query=si.full_name, motore_o_archivio="web_archives", connection_type="SEARCH_DISCOVERY",
+            risultati_trovati=len(matches), esito="ambiguous",
         ))
-        dossier.candidati.append(c)
-    dossier.search_log.append(SearchLogEntry(
-        query_id=f"web_{datetime.now().strftime('%H%M%S')}", timestamp=datetime.now().isoformat(),
-        query=si.full_name, motore_o_archivio="web_archives", connection_type="SEARCH_DISCOVERY",
-        risultati_trovati=len(matches), esito="ambiguous",
-    ))
 
 
 # ─── Persistence ──────────────────────────────────────────────────────────────
@@ -691,23 +697,53 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
     dossier = Dossier(created_at=t_start.isoformat())
     dossier.profilo["input"] = input_data
 
-    # Phase 4: normalization
+    # Phase 4: base variants (fast, no AI)
     variants = generate_variants(si)
-    if use_ai:
-        variants = _ai_normalize_variants(si, variants)
-    dossier.varianti = variants
-    log.info("Generated %d name variants", len(variants))
 
-    # Phase 5: progressive search
-    # Level 1-2: local + supabase
-    _search_local(si, variants, dossier)
-    _search_supabase(si, dossier)
+    # ── Parallel execution: AI variants + all 4 search levels concurrently ──
+    import concurrent.futures
+    import threading
 
-    # Level 1-3: federated providers
-    _search_federated(si, variants, dossier)
+    candidates_lock = threading.Lock()
+    search_log_lock = threading.Lock()
 
-    # Level 4: web archives
-    _search_web(si, dossier)
+    def _safe_search(func, *args):
+        """Run a search function, catching errors. Appends to shared dossier."""
+        try:
+            func(*args)
+        except Exception as e:
+            log.warning("Search %s error: %s", func.__name__, e)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
+        # AI variant enrichment — runs concurrently with searches
+        future_ai = None
+        if use_ai:
+            future_ai = pool.submit(_ai_normalize_variants, si, variants)
+
+        # All 4 search levels in parallel
+        future_local = pool.submit(_safe_search, _search_local, si, variants, dossier)
+        future_supabase = pool.submit(_safe_search, _search_supabase, si, dossier)
+        future_federated = pool.submit(_safe_search, _search_federated, si, variants, dossier)
+        future_web = pool.submit(_safe_search, _search_web, si, dossier)
+
+        # Wait for AI variants (should finish in ~5s, searches take longer)
+        if future_ai is not None:
+            try:
+                variants = future_ai.result(timeout=30)
+            except Exception as e:
+                log.warning("AI variant enrichment failed: %s", e)
+        dossier.varianti = variants
+
+        # Wait for all searches (federated is the bottleneck, now parallelized internally)
+        for fut in [future_local, future_supabase, future_federated, future_web]:
+            try:
+                fut.result(timeout=120)
+            except concurrent.futures.TimeoutError:
+                log.warning("Search timed out: %s", fut)
+            except Exception as e:
+                log.warning("Search error: %s", e)
+
+    log.info("Search complete: %d candidates in %.1fs", len(dossier.candidati), (datetime.now() - t_start).total_seconds())
 
     # Separate excluded homonyms
     dossier.omonimi_esclusi = [c for c in dossier.candidati if c.stato == "EXCLUDED"]

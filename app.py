@@ -2526,11 +2526,12 @@ async def api_chat_research(body: dict = Body(...)):
     try:
         result = await asyncio.wait_for(
             asyncio.to_thread(
-                chat_research,
-                question,
-                body.get("conversation_id"),
-                body.get("use_ai", True),
-                body.get("persist", True),
+                lambda: chat_research(
+                    question,
+                    body.get("conversation_id"),
+                    use_ai=body.get("use_ai", True),
+                    persist=body.get("persist", True),
+                )
             ),
             timeout=90.0,
         )

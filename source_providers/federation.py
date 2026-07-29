@@ -5,8 +5,11 @@ multi-provider, e gestisce fetch on-demand con cache.
 """
 
 import json
+import logging
 from datetime import datetime
 from typing import Dict, List, Optional
+
+log = logging.getLogger(__name__)
 
 from database import get_conn
 from .base import SourceProvider, score_source, _dict_factory, FederatedSearchContext
@@ -100,10 +103,15 @@ def federated_search(
     filters: dict = None,
     *,
     context: Optional[FederatedSearchContext] = None,
-    timeout_per_provider: float = 15.0,
+    timeout_per_provider: float = 12.0,
+    num_workers: int = 4,
 ) -> List[dict]:
-    """Cerca across provider in parallelo. Non scarica documenti.
-    Ritorna metadati con score.
+    """Cerca across provider in parallelo con distribuzione dinamica del lavoro.
+
+    I provider vengono divisi in chunk e assegnati ai worker dinamicamente:
+    il primo worker che finisce prende il chunk successivo (work-stealing).
+    Es: 27 provider / 4 worker → worker1 prende 7, worker2 prende 7, ecc.
+    Il primo che finisce prende i rimanenti.
 
     Args:
         query: testo query
@@ -112,8 +120,11 @@ def federated_search(
         filters: filtri aggiuntivi
         context: contesto tipizzato evento/soggetto (raccomandato)
         timeout_per_provider: timeout in secondi per ogni provider
+        num_workers: numero di worker paralleli (default 4)
     """
     import concurrent.futures
+    import threading
+    import queue
 
     reg = get_registry()
     if providers:
@@ -121,32 +132,58 @@ def federated_search(
     else:
         targets = reg
 
-    def _search_one(pname_provider):
-        pname, provider = pname_provider
-        try:
-            results = provider.search(query, filters or {}, context=context)
-            scored = []
-            for r in results:
-                r["provider"] = pname
-                r["score"] = score_source(r, cues or {})
-                scored.append(r)
-            return scored
-        except Exception as e:
-            return [{"provider": pname, "error": str(e), "score": 0.0}]
+    if not targets:
+        return []
 
+    # Crea una coda con tutti i provider
+    provider_queue: queue.Queue = queue.Queue()
+    for pname, prov in targets.items():
+        provider_queue.put((pname, prov))
+
+    results_lock = threading.Lock()
     all_results = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(targets), 10)) as pool:
-        futures = {pool.submit(_search_one, (pname, prov)): pname for pname, prov in targets.items()}
-        for future in concurrent.futures.as_completed(futures, timeout=timeout_per_provider + 5):
+    completed_count = 0
+    total = len(targets)
+
+    def _worker_search(worker_id: int):
+        nonlocal completed_count
+        local_results = []
+        while True:
             try:
-                results = future.result(timeout=timeout_per_provider)
-                all_results.extend(results)
-            except concurrent.futures.TimeoutError:
-                pname = futures[future]
-                all_results.append({"provider": pname, "error": "timeout", "score": 0.0})
+                pname, provider = provider_queue.get_nowait()
+            except queue.Empty:
+                break  # No more providers to search
+
+            try:
+                results = provider.search(query, filters or {}, context=context)
+                for r in results:
+                    r["provider"] = pname
+                    r["score"] = score_source(r, cues or {})
+                    local_results.append(r)
             except Exception as e:
-                pname = futures[future]
-                all_results.append({"provider": pname, "error": str(e), "score": 0.0})
+                local_results.append({"provider": pname, "error": str(e), "score": 0.0})
+
+            with results_lock:
+                completed_count += 1
+                log.debug("FederatedSearch worker %d: completed %s (%d/%d)", worker_id, pname, completed_count, total)
+
+        return local_results
+
+    num_workers = min(num_workers, len(targets))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as pool:
+        futures = [pool.submit(_worker_search, i) for i in range(num_workers)]
+
+        # Wait for all workers with global timeout
+        global_timeout = timeout_per_provider * (len(targets) // num_workers + 2)
+        for future in concurrent.futures.as_completed(futures, timeout=global_timeout):
+            try:
+                worker_results = future.result(timeout=global_timeout)
+                with results_lock:
+                    all_results.extend(worker_results)
+            except concurrent.futures.TimeoutError:
+                log.warning("FederatedSearch: worker timed out")
+            except Exception as e:
+                log.warning("FederatedSearch: worker error: %s", e)
 
     # ordina per score
     all_results.sort(key=lambda x: x.get("score", 0), reverse=True)
