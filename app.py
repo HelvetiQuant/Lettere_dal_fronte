@@ -2379,6 +2379,81 @@ def api_research_auto_index(body: dict = Body(...)):
         raise HTTPException(status_code=500, detail=f"Errore creazione soggetto: {str(e)}")
 
 
+# ─── Person Finder ────────────────────────────────────────────────────────────
+
+@app.post("/api/person-finder")
+def api_person_finder(body: dict = Body(...)):
+    """Ricerca automatica persona su tutti i DB locali + 27 provider esterni + web.
+
+    Body:
+        query: str — nome da cercare (e.g. "Siracusa Francesco classe 1886")
+        birth_year: int (optional)
+        birth_place: str (optional)
+        conflict: str — ww1/ww2 (optional)
+        search_local: bool = True
+        search_supabase: bool = True
+        search_federated: bool = True
+        search_web: bool = True
+        persist: bool = True
+    """
+    from person_finder import find_person
+
+    query = body.get("query", "").strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="query mancante")
+
+    try:
+        result = find_person(
+            query,
+            birth_year=body.get("birth_year"),
+            birth_place=body.get("birth_place", ""),
+            conflict=body.get("conflict", ""),
+            search_local=body.get("search_local", True),
+            search_supabase=body.get("search_supabase", True),
+            search_federated=body.get("search_federated", True),
+            search_web=body.get("search_web", True),
+            persist=body.get("persist", True),
+        )
+        return result.to_dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore person finder: {str(e)}")
+
+
+@app.get("/api/person-finder")
+def api_person_finder_get(
+    q: str,
+    year: int = None,
+    place: str = "",
+    conflict: str = "",
+    local: bool = True,
+    supabase: bool = True,
+    federated: bool = True,
+    web: bool = True,
+    persist: bool = True,
+):
+    """GET version of person finder for quick searches."""
+    from person_finder import find_person
+
+    if not q or len(q.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Termine di ricerca troppo corto")
+
+    try:
+        result = find_person(
+            q.strip(),
+            birth_year=year,
+            birth_place=place,
+            conflict=conflict,
+            search_local=local,
+            search_supabase=supabase,
+            search_federated=federated,
+            search_web=web,
+            persist=persist,
+        )
+        return result.to_dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore person finder: {str(e)}")
+
+
 @app.get("/api/research/subjects")
 def api_research_subjects(
     subject_type: str = None,
