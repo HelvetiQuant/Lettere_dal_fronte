@@ -446,6 +446,7 @@ export interface EventSource {
   author_or_institution: string;
   date: string;
   excerpt: string;
+  summary: string;
   availability: string;
   relevance_score: number;
   temporal_compatible: boolean;
@@ -501,6 +502,7 @@ export interface NarrativeReport {
   luoghi: { nome: string; ruolo: string; fonti: string[] }[];
   reparti: { nome: string; ruolo: string; fonti: string[] }[];
   cause_conseguenze: string;
+  sintesi_concordanti: string;
   fatti_concordanti: { fatto: string; fonti: string[] }[];
   versioni_divergenti: { fatto: string; versione_a: string; fonte_a: string; versione_b: string; fonte_b: string }[];
   elementi_incerti: { elemento: string; motivo: string; fonti: string[] }[];
@@ -830,4 +832,60 @@ export interface ChatHealthDTO {
   model: string;
   local: boolean;
   detail: string;
+}
+
+// ── Chat Research (Person Finder) ──
+
+export interface ResearchParsedInput {
+  nome?: string;
+  cognome?: string;
+  anno_nascita?: string;
+  luogo_nascita?: string;
+  conflitto_presunto?: string;
+  [key: string]: unknown;
+}
+
+export interface ResearchCandidate {
+  nome_originale: string;
+  nome_normalizzato: string;
+  stato: string;
+  compatibilita: string[];
+  contraddizioni: string[];
+  fonti: Array<{
+    istituzione: string;
+    source_level: string;
+    url: string;
+    esito: string;
+  }>;
+  confidence: number;
+}
+
+export interface ResearchDossier {
+  stato_identificazione: string;
+  profilo: Record<string, unknown>;
+  candidati: ResearchCandidate[];
+  omonimi_esclusi: ResearchCandidate[];
+  fonti: Array<Record<string, unknown>>;
+  contraddizioni: Array<Record<string, unknown>>;
+  ricerche_negative: Array<Record<string, unknown>>;
+  piste: Array<Record<string, unknown>>;
+  richieste: Array<{
+    ente: string;
+    fondo: string;
+    documento_richiesto: string;
+    dati_conosciuti: string;
+    motivazione: string;
+  }>;
+  varianti: Array<{ text: string; variant_type: string }>;
+  ai_used: boolean;
+  ai_model: string;
+}
+
+export interface ResearchChatResponse {
+  conversation_id: string;
+  answer: string;
+  dossier: ResearchDossier;
+  parsed_input: ResearchParsedInput;
+  ai_used: boolean;
+  ai_model: string;
 }

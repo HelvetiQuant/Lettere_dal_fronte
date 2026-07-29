@@ -5,11 +5,15 @@ import type { ChatHealthDTO } from '@/api/types';
 import { LoadingState, ErrorState } from '@/components/feedback/States';
 import { PageIntro, Section } from '@/components/layout/PageIntro';
 import { ChatPanel } from '@/components/chat/ChatPanel';
+import { ResearchChatPanel } from '@/components/chat/ResearchChatPanel';
+
+type Tab = 'general' | 'research';
 
 export function ChatPage() {
   const [health, setHealth] = useState<ChatHealthDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ApiError | null>(null);
+  const [tab, setTab] = useState<Tab>('research');
 
   useEffect(() => {
     api.chatHealth()
@@ -22,9 +26,9 @@ export function ChatPage() {
     <>
       <PageIntro
         title="Chat storica AI"
-        description="Conversa con l'AI specializzata in eventi bellici del Novecento. Il modello gira localmente tramite LM Studio."
-        aiNote="L\u2019AI usa il runtime locale (LM Studio) con il modello Qwen2.5. Nessun dato viene inviato a server esterni quando local_only è attivo."
-        steps={['Verifica che LM Studio sia in esecuzione', 'Fai domande su eventi, persone, luoghi del Novecento', 'L\u2019AI risponde con accuratezza storica']}
+        description="Conversa con l'AI specializzata in eventi bellici del Novecento e ricerca militari. Il modello usa LM Studio locale con fallback automatico ai provider cloud."
+        aiNote="L'AI usa il runtime locale (LM Studio / Qwen) con fallback automatico a OpenAI, Anthropic, Mistral, Perplexity, Gemini quando LM Studio non è attivo."
+        steps={['Seleziona la modalità: ricerca persone o chat generale', 'Per la ricerca persone: scrivi nome, cognome, anno e luogo di nascita', 'L\u2019AI cerca in DB locali, 27 provider esterni e archivi web', 'Ricevi un dossier strutturato con candidati, fonti e richieste archivistiche']}
       />
 
       {error && <ErrorState message={error.userMessage} />}
@@ -59,15 +63,42 @@ export function ChatPage() {
               borderRadius: 'var(--radius-md)',
               fontSize: 13,
             }}>
-              <strong>LM Studio non rilevato.</strong> Avvia LM Studio su http://127.0.0.1:1234 e carica un modello.
+              <strong>LM Studio non rilevato.</strong> Fallback automatico ai provider cloud attivo.
               {!health.detail.includes('Connection') && ` Dettaglio: ${health.detail}`}
             </div>
           )}
         </Section>
       )}
 
+      {/* Tab selector */}
       {!loading && !error && (
-        <Section title="Conversazione">
+        <div style={{ display: 'flex', gap: 0, marginBottom: 0 }}>
+          <button
+            className={`btn ${tab === 'research' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ borderRadius: 'var(--radius-md) var(--radius-md) 0 0', fontSize: 14, padding: '8px 20px' }}
+            onClick={() => setTab('research')}
+          >
+            Ricerca persone
+          </button>
+          <button
+            className={`btn ${tab === 'general' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ borderRadius: 'var(--radius-md) var(--radius-md) 0 0', fontSize: 14, padding: '8px 20px' }}
+            onClick={() => setTab('general')}
+          >
+            Chat generale
+          </button>
+        </div>
+      )}
+
+      {/* Tab content */}
+      {!loading && !error && tab === 'research' && (
+        <Section>
+          <ResearchChatPanel />
+        </Section>
+      )}
+
+      {!loading && !error && tab === 'general' && (
+        <Section title="Conversazione generale">
           <ChatPanel
             title="Chat storica AI — generale"
             placeholder="Fai una domanda sulla Prima o Seconda Guerra Mondiale…"

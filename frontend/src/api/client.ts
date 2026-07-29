@@ -18,6 +18,7 @@ import type {
   MapFeatureRecord, MapFeatureListResponse,
   AIRuntimeHealth, AIRuntimeConfig, AIRuntimeBenchmark,
   ChatMessageDTO, ChatResponseDTO, ChatHealthDTO,
+  ResearchChatResponse,
 } from './types';
 
 export const api = {
@@ -127,6 +128,10 @@ export const api = {
   chat: (message: string, opts?: { history?: ChatMessageDTO[]; context?: string; context_label?: string; max_tokens?: number; temperature?: number }) =>
     post<ChatResponseDTO>('/api/chat', { message, ...opts }),
   chatHealth: () => get<ChatHealthDTO>('/api/chat/health'),
+
+  // ── Chat Research (Person Finder) ──
+  chatResearch: (question: string, conversationId?: string) =>
+    post<ResearchChatResponse>('/api/chat/research', { question, conversation_id: conversationId }),
 
   // ── External Sources ──
   icrcSearch: (q: string, nationality = 'italy', status = '', files = '') =>
