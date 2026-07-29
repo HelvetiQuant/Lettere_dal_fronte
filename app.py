@@ -2491,6 +2491,64 @@ def api_research_protocol(body: dict = Body(...)):
         raise HTTPException(status_code=500, detail=f"Errore research protocol: {str(e)}")
 
 
+# ─── Chat Research ────────────────────────────────────────────────────────────
+
+@app.post("/api/chat/research")
+def api_chat_research(body: dict = Body(...)):
+    """Chat con ricerca storica in linguaggio naturale.
+
+    L'utente puo' fare domande come:
+    - "cerca Francesco Siracusa nato a Messina classe 1886"
+    - "trovami informazioni su Antonio Smiraldi della prima guerra mondiale"
+    - "quali fonti hai consultato?" (follow-up nella stessa conversazione)
+
+    Body:
+        question: str — domanda in linguaggio naturale
+        conversation_id: str (optional) — per continuare una conversazione
+        use_ai: bool = True — usa Qwen per parsing e risposta
+        persist: bool = True — salva risultati in Supabase
+
+    Returns:
+        answer: str — risposta in linguaggio naturale
+        dossier: dict — dossier strutturato completo
+        parsed_input: dict — dati estratti dalla domanda
+        conversation_id: str — ID per follow-up
+        ai_used: bool
+        ai_model: str
+    """
+    from chat_research import chat_research
+
+    question = body.get("question", "").strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="question mancante")
+
+    try:
+        result = chat_research(
+            question,
+            conversation_id=body.get("conversation_id"),
+            use_ai=body.get("use_ai", True),
+            persist=body.get("persist", True),
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore chat research: {str(e)}")
+
+
+@app.get("/api/chat/research")
+def api_chat_research_get(q: str, conversation_id: str = None):
+    """GET version for quick chat queries."""
+    from chat_research import chat_research
+
+    if not q or len(q.strip()) < 3:
+        raise HTTPException(status_code=400, detail="Domanda troppo corta")
+
+    try:
+        result = chat_research(q.strip(), conversation_id=conversation_id)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore chat research: {str(e)}")
+
+
 @app.get("/api/research/subjects")
 def api_research_subjects(
     subject_type: str = None,
