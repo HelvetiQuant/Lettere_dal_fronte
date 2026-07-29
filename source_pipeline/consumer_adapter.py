@@ -147,7 +147,13 @@ def _exec_sql_returning(sql: str) -> list:
     r = httpx.post(url, headers=_HEADERS, json={"query": sql}, timeout=60)
     if r.status_code in (200, 201, 204):
         try:
-            return r.json()
+            data = r.json()
+            if isinstance(data, list):
+                return data
+            if isinstance(data, str):
+                parsed = json.loads(data)
+                return parsed if isinstance(parsed, list) else []
+            return []
         except Exception:
             return []
     log.error("exec_sql_returning failed: %s", r.text[:500])
