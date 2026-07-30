@@ -1,14 +1,30 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, Component } from 'react';
 import { api } from '@/api/client';
 import { ApiError } from '@/api/errors';
 import type { ResearchChatResponse, ResearchDossier } from '@/api/types';
 
 interface Message {
+  id: string;
   role: 'user' | 'assistant';
   text: string;
   dossier?: ResearchDossier;
   provider?: string;
   latencyMs?: number;
+}
+
+class ChatErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(err: unknown) { console.error('ChatErrorBoundary:', err); }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{ padding: 12, color: 'var(--color-danger-600)' }}>Errore rendering chat. Ricarica la pagina.</div>;
+    }
+    return this.props.children;
+  }
 }
 
 export function ResearchChatPanel() {
@@ -31,15 +47,18 @@ export function ResearchChatPanel() {
     const msg = input.trim();
     if (!msg || loading) return;
 
+    const userMsgId = `u-${Date.now()}`;
     setInput('');
     setLoading(true);
-    setMessages(prev => [...prev, { role: 'user', text: msg }]);
+    setMessages(prev => [...prev, { id: userMsgId, role: 'user', text: msg }]);
     scrollToBottom();
 
     try {
       const res: ResearchChatResponse = await api.chatResearch(msg, conversationId);
       if (!conversationId) setConversationId(res.conversation_id);
+      const aiMsgId = `a-${Date.now()}`;
       setMessages(prev => [...prev, {
+        id: aiMsgId,
         role: 'assistant',
         text: res.answer,
         dossier: res.dossier,
@@ -47,7 +66,9 @@ export function ResearchChatPanel() {
       }]);
     } catch (e) {
       const err = e instanceof ApiError ? e.userMessage : String(e);
+      const errMsgId = `e-${Date.now()}`;
       setMessages(prev => [...prev, {
+        id: errMsgId,
         role: 'assistant',
         text: `Errore: ${err}`,
       }]);
@@ -71,6 +92,7 @@ export function ResearchChatPanel() {
   ];
 
   return (
+    <ChatErrorBoundary>
     <div className="chat-panel" style={{
       border: '1px solid var(--color-neutral-300)',
       borderRadius: 'var(--radius-md)',
@@ -129,7 +151,7 @@ export function ResearchChatPanel() {
           </div>
         )}
         {messages.map((m, i) => (
-          <div key={i}>
+          <div key={m.id}>
             <div style={{
               display: 'flex',
               justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
@@ -231,6 +253,7 @@ export function ResearchChatPanel() {
         </button>
       </div>
     </div>
+    </ChatErrorBoundary>
   );
 }
 
