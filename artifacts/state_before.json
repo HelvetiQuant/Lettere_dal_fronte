@@ -1,0 +1,324 @@
+{
+  "generated_at": "2026-07-28T17:39:21.497400+00:00",
+  "git_commit": "56ac6183e8fa8e38565c992d3bf722c7122be254",
+  "git_dirty": true,
+  "branch": "fix/provenance-linking-v2",
+  "runtime_versions": {
+    "python": "3.11.9",
+    "fastapi": "0.104.1",
+    "sqlite3": "3.45.1",
+    "pydantic": "2.13.4"
+  },
+  "database_engines": {
+    "imi_internati.db": {
+      "exists": true,
+      "size_bytes": 1876578304,
+      "sha256": "2662feb6eb0ac6f1ffacc9461f5a813efc6a21a3aa9316977d90d257d6048a7e"
+    },
+    "eventi_1gm.db": {
+      "exists": true,
+      "size_bytes": 248549376,
+      "sha256": "f93591ba543d9cd1df5f421d6e13fea10fbed570d83290fd031a437b54081836"
+    },
+    "validazioni_ai.db": {
+      "exists": true,
+      "size_bytes": 94208,
+      "sha256": "cfe1efe0e308df15ce816692de97959bbf354b53070a0fbd5ae76a63727a2e89"
+    }
+  },
+  "integrity_checks": {
+    "imi_internati.db": {
+      "quick_check": "ok",
+      "journal_mode": "wal"
+    },
+    "eventi_1gm.db": {
+      "quick_check": "ok",
+      "journal_mode": "delete"
+    }
+  },
+  "table_counts": {
+    "imi_internati.db": {
+      "acquisitions": 0,
+      "ai_models": 7,
+      "ai_providers": 6,
+      "ai_ricerche": 250,
+      "ai_routing_policies": 21,
+      "ai_task_runs": 78,
+      "ai_usage_ledger": 68,
+      "api_usage": 10657,
+      "archival_metadata": 0,
+      "archive_connectors": 27,
+      "archivio_documenti": 979,
+      "archivio_fonti": 1153,
+      "budget_reservations": 0,
+      "caduti_albooro": 342555,
+      "caduti_bologna": 9656,
+      "caduti_cwgc": 506446,
+      "caduti_francia_ww1": 24279,
+      "caduti_ministero": 162646,
+      "caduti_sardi": 20435,
+      "claim_evidence": 550,
+      "claim_relations": 102,
+      "claims": 43,
+      "collegamenti": 2349417,
+      "collegamenti_backup": 4894390,
+      "compliance_authorizations": 0,
+      "compliance_decisions": 0,
+      "compliance_review_queue": 0,
+      "consolidated_memory": 1,
+      "content_fingerprints": 0,
+      "decorati": 1286,
+      "decorati_nastroazzurro": 279832,
+      "document_extractions": 0,
+      "documenti_nara_catalog": 272,
+      "documenti_nara_t315": 1153,
+      "edge_evidence": 0,
+      "edge_versions": 0,
+      "entita": 688739,
+      "entity_match_candidates": 0,
+      "entity_variants": 299,
+      "event_links": 0,
+      "eventi_1gm": 15,
+      "external_access_requests": 0,
+      "external_digital_objects": 0,
+      "external_import_jobs": 2,
+      "external_person_mentions": 0,
+      "external_record_links": 0,
+      "external_source_facts": 0,
+      "external_source_records": 1,
+      "fondi_archivistici": 4808,
+      "fonti_indice": 35664,
+      "fonti_narrative": 40,
+      "fonti_risorse": 0,
+      "generated_narratives": 0,
+      "graph_edge_reviews": 0,
+      "graph_edges": 0,
+      "graph_integrity_issues": 0,
+      "graph_nodes": 0,
+      "graph_pipeline_runs": 0,
+      "idx_entita_search": 688739,
+      "idx_entita_search_config": 1,
+      "idx_entita_search_content": 688739,
+      "idx_entita_search_data": 6590,
+      "idx_entita_search_docsize": 688739,
+      "idx_entita_search_idx": 3973,
+      "internati": 20465,
+      "lettere_personali": 1,
+      "memory_trace": 55,
+      "menzioni": 10976,
+      "nara_catalog_files": 0,
+      "permitted_operations": 68,
+      "populate_progress": 8516,
+      "progress": 63,
+      "prompt_versions": 1,
+      "publication_versions": 0,
+      "rc_administrative_cases": 0,
+      "rc_ai_analyses": 28,
+      "rc_audit_log": 164,
+      "rc_candidates": 83,
+      "rc_communications": 0,
+      "rc_contact_attempts": 0,
+      "rc_descendant_cases": 0,
+      "rc_descendant_contacts": 0,
+      "rc_descendant_packages": 0,
+      "rc_document_checklists": 0,
+      "rc_document_versions": 1,
+      "rc_documents": 0,
+      "rc_family_persons": 0,
+      "rc_historical_events": 45,
+      "rc_institutional_contacts": 0,
+      "rc_invitations": 0,
+      "rc_kinship_links": 0,
+      "rc_practice_deadlines": 0,
+      "rc_practice_documents": 1,
+      "rc_practices": 0,
+      "rc_recognition_assessments": 50,
+      "rc_recognition_types": 12,
+      "rc_sessions": 44,
+      "rc_sources": 80,
+      "rc_state_transitions": 0,
+      "rc_users": 2,
+      "record_links": 169184,
+      "research_cycles": 50,
+      "research_gaps": 472,
+      "research_hits": 0,
+      "research_plans": 46,
+      "research_queries": 0,
+      "research_results": 0,
+      "research_sessions": 46,
+      "research_subject_sources": 1431,
+      "research_subjects": 118,
+      "source_access_audit": 0,
+      "source_fetch_cache": 14,
+      "source_policies": 4,
+      "source_rights": 0,
+      "sqlite_sequence": 75,
+      "stable_locators": 0
+    },
+    "eventi_1gm.db": {
+      "event_aliases": 161,
+      "event_links": 1539685,
+      "eventi_1gm": 49,
+      "map_features": 0,
+      "sqlite_sequence": 3
+    }
+  },
+  "relation_counts_by_type_and_status": {
+    "event_links_by_type": {},
+    "record_links_by_type": {
+      "stesso_evento_luogo": 142594,
+      "stesso_anno_decorazione": 11222,
+      "fonte_personale": 9546,
+      "documento_evento": 5822
+    },
+    "collegamenti_by_tipo": {
+      "reason": "table not found"
+    },
+    "graph_edges_by_status": {}
+  },
+  "event_links_counts": {
+    "event_links_by_type": {
+      "soldato_decorato": 1262644,
+      "soldato_caduto": 260903,
+      "internato_ww2": 12759,
+      "fonte_archivistica": 2310,
+      "documento": 1068,
+      "soldato_caduto_cwgc": 1
+    },
+    "record_links_by_type": {
+      "reason": "table not found"
+    },
+    "collegamenti_by_tipo": {
+      "reason": "table not found"
+    },
+    "graph_edges_by_status": {
+      "reason": "table not found"
+    }
+  },
+  "supabase_sync_state": {
+    "project": "wyqesimzxieykmyhfvqs",
+    "schema_canonical_applied": true,
+    "tables_synced": [
+      "archivio_documenti",
+      "eventi_1gm",
+      "event_aliases"
+    ],
+    "event_links_sync_in_progress": true,
+    "note": "event_links sync running in background (~18% at last check)"
+  },
+  "security": {
+    "env_tracked": false,
+    "hardcoded_port_8000_files": [
+      "_apply_canonical_schema.py",
+      "_audit_baseline.py",
+      "_audit_graph.py",
+      "_audit_links.py",
+      "_check_db_entities.py",
+      "_check_endpoints.py",
+      "_check_env_safe.py",
+      "_check_gaiaschi.py",
+      "_check_keys.py",
+      "_check_keywords.py",
+      "_check_pgcrypto.py",
+      "_check_repo_schema.py",
+      "_check_static.py",
+      "_check_supabase_status.py",
+      "_check_tables_sql.py",
+      "_cleanup_test_rows.py",
+      "_clean_bad_links.py",
+      "_create_functions.py",
+      "_create_triggers.py",
+      "_db_status.py",
+      "_diagnose_supabase.py",
+      "_doc_status.py",
+      "_find_best_candidates.py",
+      "_find_doc_matches.py",
+      "_fix_db.py",
+      "_fix_digest_functions.py",
+      "_fix_gaiaschi_db.py",
+      "_gen_event_links.py",
+      "_gen_record_links.py",
+      "_gen_state_before.py",
+      "_inspect_schema.py",
+      "_report_all_db.py",
+      "_rl_status.py",
+      "_schema_check.py",
+      "_scrape_acs_playwright.py",
+      "_scrape_acs_registri.py",
+      "_status.py",
+      "_status_check.py",
+      "_test_acs.py",
+      "_test_bio.py",
+      "_test_endpoints.py",
+      "_test_exec_sql_insert.py",
+      "_test_ext.py",
+      "_test_gaiaschi3.py",
+      "_test_insert_schema.py",
+      "_test_link_insert.py",
+      "_test_qualified_digest.py",
+      "_test_repository_layer.py",
+      "_test_schema_access.py",
+      "_test_tna_quick.py",
+      "_validate_links_ai.py",
+      "_val_status.py",
+      "_verify_canonical_schema.py"
+    ]
+  },
+  "legacy_scripts": {
+    "_gen_event_links.py": {
+      "events_hardcoded": 22,
+      "events_in_db": 49,
+      "mixes_ww1_ww2": true,
+      "uses_substring_match": true,
+      "breaks_on_first_match": true,
+      "generic_keywords": [
+        "campo",
+        "Russia",
+        "Africa",
+        "Nero",
+        "Corno",
+        "Lana"
+      ],
+      "skips_if_any_exist": true,
+      "no_provenance": true,
+      "no_algorithm_version": true
+    },
+    "_gen_record_links.py": {
+      "runs_at_import": true,
+      "has_main": false,
+      "deletes_fonte_personale": true,
+      "star_topology_hub": true,
+      "uses_limit_50": true,
+      "same_year_as_relation": true,
+      "no_evidence": true,
+      "onm_scan": true
+    },
+    "_clean_bad_links.py": {
+      "namespace_confusion": true,
+      "destructive_delete": true,
+      "has_dry_run": true
+    },
+    "_fix_gaiaschi_db.py": {
+      "modifies_luogo_nascita": true,
+      "no_claim_model": true,
+      "no_evidence_locator": true,
+      "uses_entity_variants": true
+    },
+    "_check_keys.py": {
+      "prints_only_set_not_set": true,
+      "reads_env_file": true
+    },
+    "_find_best_candidates.py": {
+      "cognome_only_matching": true,
+      "no_discriminators": true
+    }
+  },
+  "known_blockers": [
+    "No staging Supabase environment — only production project available",
+    "No labeled golden dataset exists for calibration",
+    "event_links sync (1.5M rows) still running in background on production Supabase",
+    "exec_sql RPC exposes arbitrary SQL execution — security risk",
+    "No Alembic or formal migration framework — migrations are raw SQL scripts",
+    "No pytest test suite exists for linking logic"
+  ]
+}

@@ -25,6 +25,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.MASS_INDEX, "mass_index.py is frozen — use source_pipeline worker instead")
+
 from database import get_conn
 from source_providers.federation import federated_search, get_registry
 

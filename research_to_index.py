@@ -25,6 +25,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.RESEARCH_TO_INDEX, "research_to_index.py is frozen — use source_pipeline worker instead")
+
 from database import get_conn, search_all
 from source_providers.federation import federated_search, get_registry
 from source_providers.base import score_source, _dict_factory

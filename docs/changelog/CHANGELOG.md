@@ -1,5 +1,47 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-27 — Audit bootstrap Internet Archive + Schema `core.events` su Supabase
+
+### Contesto
+Richiesta di avviare il bootstrap automatico Internet Archive → Supabase (28 sezioni di specifica). Prima di scrivere qualunque job/worker è stato eseguito un audit reale: verifica materiale (query dirette PostgREST, non solo lettura di file `.sql`) di cosa esiste davvero su Supabase vs cosa presupponeva la specifica.
+
+### Finding critico
+Il modello `core.events`/`core.entities` presupposto dal prompt **non esisteva** su Supabase (verificato: `Invalid schema: core` via PostgREST). Gli eventi storici vivevano solo in SQLite (`eventi_1gm.db`, 22 righe: 15 WWI, 7 WWII). Le tabelle `archive.*`/`ops.*`/`evidence.*`/`ai.*` esistevano già (migrazione `001_supabase_historical_archive_core.sql`) ma erano vuote, senza alcun worker/consumer applicativo.
+
+### Audit
+- `docs/audit/internet-archive-bootstrap-preflight.md` — tabella di audit con 15 aree (provider IA, Advanced Search, Metadata Read, job queue, valutazione pertinenza, registry, ecc.), stato reale verificato, gap, azione.
+
+### Modifiche
+
+#### `sql/002_supabase_core_events.sql` (nuovo, additivo)
+- Schema `core` con `entities`, `events`, `entity_names`
+- Trigger `updated_at` (riusa `archive.set_updated_at()` da `001_...sql`, nessuna duplicazione)
+- RLS pattern identico a `001_supabase_historical_archive_core.sql`
+- RPC `exec_sql_query` (SELECT semplici) ed `exec_sql_returning` (query con CTE `INSERT...RETURNING`, necessaria perché Postgres richiede che un WITH con data-modifying statement sia al livello top — `exec_sql_query` lo avvolge in una subquery e fallisce con `0A000`)
+
+#### `apply_migration_002.py` (nuovo)
+- Riusa `split_sql_statements`/`is_meaningful_statement` da `apply_migration_v2.py` (nessun parser duplicato)
+- Eseguito: **41/41 statement OK**
+
+#### `migrate_events_to_core.py` (nuovo)
+- Migrazione dati idempotente `eventi_1gm.db` → `core.entities`/`core.events`/`core.entity_names` (upsert su `stable_id`/`source_id`)
+- Risoluzione automatica `parent_event_id` in seconda passata (i riferimenti in SQLite sono per `stable_id` testuale, es. `evt_0017`)
+- Eseguito due volte per verificare idempotenza: stesso risultato, zero duplicati
+
+### Risultati verificati (non simulati)
+- **22 eventi** migrati (15 WWI, 7 WWII)
+- **84 alias** in `core.entity_names`
+- **7 relazioni parent/child** risolte correttamente (es. `evt_0018` Battaglia del Carso → parent `evt_0017` Battaglie dell'Isonzo; `evt_0024` Monte San Michele → parent `evt_0018`)
+- Idempotenza confermata su doppia esecuzione
+
+### Azione manuale richiesta (non completabile da codice)
+Schema `core` da aggiungere in **Supabase Dashboard → Settings → API → Exposed Schemas** (necessario per usare `repository_layer.py`/`supabase_client.select_schema` via REST diretto; le RPC `exec_sql_query`/`exec_sql_returning` funzionano già perché vivono in `public`, già esposto).
+
+### Non fatto (fuori scope, dichiarato esplicitamente)
+Job queue con worker reali, admin UI popolamento, estrazione/dedup nuovi eventi WWI/WWII con AI, sincronizzazione incrementale, claim/evidence review — stimati settimane di lavoro, non implementabili in modo credibile e verificabile in un'unica sessione. Prossimo passo: collegare `ia_pipeline.py`/`ia_evaluation.py` per scrivere in `archive.external_items`/`archive.representations` su un evento pilota (Battaglia del Carso, `evt_0018`).
+
+---
+
 ## 2026-07-25 (sera) — Fix Internet Archive: Context Propagation + Query Planner + Evaluation Integration
 
 ### Problema

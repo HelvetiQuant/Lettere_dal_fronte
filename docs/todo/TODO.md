@@ -1,6 +1,30 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 24 luglio 2026 — Refactor grafo canonico, identity resolution, fonti. Branch `codex/refactor-grafo-fonti-20260724`.
+Aggiornato: 27 luglio 2026 — Audit bootstrap Internet Archive, schema `core.events` su Supabase.
+
+---
+
+## Giornata 2026-07-27 — Bootstrap Internet Archive → Supabase (audit + fondamenta)
+
+Richiesta originale: bootstrap automatico completo (28 sezioni: job queue, worker, admin UI, estrazione/dedup nuovi eventi WWI/WWII con AI). Eseguito audit reale prima di scrivere codice, come richiesto dalla specifica stessa.
+
+### Completato
+- [x] **Audit materiale**: verifiche dirette via PostgREST (non solo lettura `.sql`) su Supabase. Finding: schema `core.events`/`core.entities` presupposto dal prompt **non esisteva**; le tabelle `archive.*`/`ops.*`/`evidence.*`/`ai.*` esistevano già ma vuote, senza worker.
+- [x] **`docs/audit/internet-archive-bootstrap-preflight.md`**: tabella di audit 15 aree con stato reale/riuso/gap/azione.
+- [x] **`sql/002_supabase_core_events.sql`**: schema `core` (`entities`, `events`, `entity_names`) additivo, applicato 41/41 statement OK.
+- [x] **`migrate_events_to_core.py`**: migrazione idempotente 22 eventi (15 WWI, 7 WWII), 84 alias, 7 link parent/child da SQLite a Supabase `core.*`. Idempotenza verificata (doppia esecuzione, zero duplicati).
+- [x] **RPC `exec_sql_query`/`exec_sql_returning`**: helper riusabili per letture (inclusi pattern `WITH...INSERT...RETURNING`) via Supabase, dato che `exec_sql` esistente non ritorna righe.
+
+### Azione manuale richiesta
+- [ ] **Supabase Dashboard → Settings → API → Exposed Schemas**: aggiungere `core` alla lista (già presenti `archive, evidence, ops, ai, api_public, legacy`). Necessario per `repository_layer.py`/`supabase_client.select_schema` via REST diretto.
+
+### Da completare (fuori scope di questa sessione — settimane di lavoro)
+- [ ] Collegare `ia_pipeline.py`/`ia_evaluation.py` per scrivere in `archive.external_items`/`archive.representations` su un evento pilota (Battaglia del Carso, `evt_0018`) — prossimo passo naturale, end-to-end reale prima di generalizzare.
+- [ ] Job queue reale con worker (`ops.job_queue` esiste ma senza consumer).
+- [ ] Estrazione/dedup nuovi eventi WWI/WWII da fonti acquisite (`research.event_candidates`, non esiste ancora).
+- [ ] Admin UI popolamento Internet Archive nel frontend.
+- [ ] Config `IA_*` (rate limit, quote, profili `test_exhaustive`) in `.env`/`archive_providers.yml`.
+- [ ] Sincronizzazione incrementale (checkpoint, ETag/Last-Modified).
 
 ---
 

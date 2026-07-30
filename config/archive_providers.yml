@@ -1,6 +1,6 @@
 # archive_providers.yml — Registry versionato dei provider di fonti storiche
-# Versione: 1.0.0
-# Data: 2026-07-26
+# Versione: 1.1.0
+# Data: 2026-07-28
 #
 # Ogni provider dichiara:
 # - code: identificatore univoco
@@ -12,12 +12,16 @@
 # - access_mode: auto | assisted | manual
 # - rights_default: METADATA_ONLY | PUBLIC_VIEW | PUBLIC_DOWNLOAD | REQUEST_REQUIRED
 # - authority_score: 0.0–1.0 (affidabilità storica)
+# - authority_class: PRIMARY_ARCHIVAL | OFFICIAL_DERIVED | SCHOLARLY_CURATED
+#                    | AGGREGATOR | DISCOVERY_ONLY | USER_CONTRIBUTED
+#   (se omesso, inferito da authority_score + rights_default)
+# - independence_group: gruppo di indipendenza per deduplication evidenze
 # - historical_periods: WWI, WWII, interwar, postwar
 # - geographic_areas: aree geografiche coperte
 # - entity_types: person, event, place, unit, document
 # - languages: lingue dei contenuti
 # - contract_version: versione del contratto API
-# - config: parametri specifici (api_key_env, rate_limit, etc.)
+# - config: parametri specifici (api_key_env, rate_limit, terms_url, license_uri, etc.)
 
 version: "1.0.0"
 
@@ -35,6 +39,8 @@ providers:
     access_mode: assisted
     rights_default: METADATA_ONLY
     authority_score: 0.95
+    authority_class: primary_archival
+    independence_group: ussme
     historical_periods: [WWI, WWII, interwar, postwar]
     geographic_areas: [Italy]
     entity_types: [event, unit, document, place]
@@ -42,6 +48,7 @@ providers:
     contract_version: "1.0"
     config:
       rate_limit_delay: 3
+      terms_url: "https://www.esercito.difesa.it/ussme"
       notes: "Scraping HTML, no API ufficiale. Contattare per accesso archivio digitale."
 
   - code: archiviodistato
@@ -56,6 +63,8 @@ providers:
     access_mode: assisted
     rights_default: METADATA_ONLY
     authority_score: 0.90
+    authority_class: primary_archival
+    independence_group: san
     historical_periods: [WWI, WWII, interwar, postwar]
     geographic_areas: [Italy]
     entity_types: [person, event, place, unit, document]
@@ -63,6 +72,7 @@ providers:
     contract_version: "1.0"
     config:
       rate_limit_delay: 2
+      terms_url: "https://www.archiviodistato.it/ricercaArchivi/"
 
   - code: antenati
     display_name: "Portale degli Antenati"
@@ -75,6 +85,8 @@ providers:
     access_mode: auto
     rights_default: PUBLIC_VIEW
     authority_score: 0.80
+    authority_class: primary_archival
+    independence_group: san
     historical_periods: [WWI, WWII, pre1900, postwar]
     geographic_areas: [Italy]
     entity_types: [person]
@@ -82,6 +94,7 @@ providers:
     contract_version: "1.0"
     config:
       rate_limit_delay: 1
+      terms_url: "https://www.antenati.san.beniculturali.it/condizioni-uso/"
 
   - code: internetculturale
     display_name: "Internet Culturale"
@@ -113,6 +126,8 @@ providers:
     access_mode: assisted
     rights_default: REQUEST_REQUIRED
     authority_score: 0.90
+    authority_class: primary_archival
+    independence_group: cri
     historical_periods: [WWI, WWII, interwar]
     geographic_areas: [Italy]
     entity_types: [person, document]
@@ -120,6 +135,7 @@ providers:
     contract_version: "1.0"
     config:
       rate_limit_delay: 3
+      terms_url: "https://www.cri.it/fondi-archivistici"
       notes: "Accesso su richiesta. Archivio storico CRI."
 
   - code: lebi
@@ -135,6 +151,8 @@ providers:
     access_mode: auto
     rights_default: METADATA_ONLY
     authority_score: 0.85
+    authority_class: official_derived
+    independence_group: anrp
     historical_periods: [WWII, postwar]
     geographic_areas: [Italy, Germany, Austria]
     entity_types: [person]
@@ -142,6 +160,7 @@ providers:
     contract_version: "1.0"
     config:
       rate_limit_delay: 2
+      terms_url: "https://www.lessicobiograficoimi.it/"
       pdf_download_allowed: true
 
   # ═══ ARCHIVI INTERNAZIONALI ═══════════════════════════════════════════════
@@ -159,6 +178,8 @@ providers:
     access_mode: auto
     rights_default: PUBLIC_DOWNLOAD
     authority_score: 0.95
+    authority_class: primary_archival
+    independence_group: nara
     historical_periods: [WWI, WWII, interwar, postwar]
     geographic_areas: [USA, Europe, Pacific]
     entity_types: [person, event, unit, document, place]
@@ -167,6 +188,7 @@ providers:
     config:
       api_key_env: NARA_API_KEY
       rate_limit_delay: 1
+      terms_url: "https://www.archives.gov/about/terms-of-use"
 
   - code: internetarchive
     display_name: "Internet Archive"
@@ -203,6 +225,8 @@ providers:
     access_mode: auto
     rights_default: PUBLIC_VIEW
     authority_score: 0.75
+    authority_class: aggregator
+    independence_group: europeana
     historical_periods: [WWI, WWII, interwar, postwar, pre1900]
     geographic_areas: [Europe]
     entity_types: [document, event, place, person]
@@ -211,6 +235,7 @@ providers:
     config:
       api_key_env: EUROPEANA_API_KEY
       rate_limit_delay: 1
+      terms_url: "https://www.europeana.eu/rights/terms-of-use"
 
   - code: gallica
     display_name: "Gallica (BnF)"
@@ -225,6 +250,8 @@ providers:
     access_mode: auto
     rights_default: PUBLIC_VIEW
     authority_score: 0.85
+    authority_class: primary_archival
+    independence_group: bnf
     historical_periods: [WWI, WWII, interwar, postwar, pre1900]
     geographic_areas: [France, Europe]
     entity_types: [document, event, place, person]
@@ -232,6 +259,7 @@ providers:
     contract_version: "1.0"
     config:
       rate_limit_delay: 2
+      terms_url: "https://gallica.bnf.fr/html/und/conditions-utilisation"
 
   - code: googlebooks
     display_name: "Google Books"
@@ -289,6 +317,8 @@ providers:
     access_mode: auto
     rights_default: PUBLIC_VIEW
     authority_score: 0.95
+    authority_class: primary_archival
+    independence_group: icrc
     historical_periods: [WWI]
     geographic_areas: [Europe, global]
     entity_types: [person]
@@ -296,6 +326,7 @@ providers:
     contract_version: "1.0"
     config:
       rate_limit_delay: 2
+      terms_url: "https://grandeguerre.icrc.org/en/Legal/"
 
   - code: cwgc
     display_name: "Commonwealth War Graves Commission"
@@ -346,6 +377,8 @@ providers:
     access_mode: assisted
     rights_default: REQUEST_REQUIRED
     authority_score: 0.95
+    authority_class: primary_archival
+    independence_group: arolsen
     historical_periods: [WWII, postwar]
     geographic_areas: [Europe, Germany]
     entity_types: [person, document]
@@ -353,6 +386,7 @@ providers:
     contract_version: "1.0"
     config:
       rate_limit_delay: 3
+      terms_url: "https://arolsen-archives.org/en/about-us/legal-notice/"
       notes: "Accesso su richiesta per documenti personali."
 
   - code: bundesarchiv

@@ -284,10 +284,12 @@ def find_candidate_sources(query: str, limit: int = 20) -> dict:
     return {"cues": cues, "candidates": candidates, "total": len(candidates)}
 
 
-def find_sources_by_subject(subject: str, limit: int = 100) -> dict:
+def find_sources_by_subject(subject: str, limit: int = 100, event_conflict: str = None, event_start: str = None, event_end: str = None) -> dict:
     """Recupera tutte le fonti in fonti_indice collegate a un soggetto/evento esatto.
 
     Utile per mostrare le fonti multilaterali di un evento (es. 'Eccidio di Cefalonia').
+    Se event_conflict è specificato (WWI/WWII), applica filtro temporale per escludere
+    fonti con marcatori della guerra opposta.
     """
     if not subject or not subject.strip():
         return {"subject": subject, "candidates": [], "total": 0}
@@ -302,14 +304,34 @@ def find_sources_by_subject(subject: str, limit: int = 100) -> dict:
     )
     rows = cur.fetchall()
     candidates = []
+    
+    from linking.temporal_filter import classify_source_for_event
+    
     for r in rows:
         r["availability"] = _classify_availability(cur, r)
-        # decodifica eventuale nota JSON per estrarre fazione/descrizione
         if r.get("note"):
             try:
                 r["note_parsed"] = json.loads(r["note"])
             except Exception:
                 r["note_parsed"] = None
+        
+        if event_conflict:
+            text = " ".join(filter(None, [
+                r.get("titolo", ""), r.get("soggetti_collegati", ""),
+                r.get("note", ""), r.get("luogo", ""),
+            ]))
+            cov_start = r.get("coverage_start") or r.get("data_inizio")
+            cov_end = r.get("coverage_end") or r.get("data_fine")
+            classification = classify_source_for_event(
+                text, cov_start, cov_end, event_conflict, event_start, event_end
+            )
+            r["_decision"] = classification["decision"]
+            r["_reason"] = classification["reason"]
+            r["_temporal_relation"] = classification["temporal_relation"]
+            r["_conflict_markers"] = classification["conflict_markers"]
+            if classification["decision"] == "rejected":
+                continue
+        
         candidates.append(r)
     conn.close()
     return {"subject": subject, "candidates": candidates, "total": len(candidates)}

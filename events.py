@@ -294,11 +294,11 @@ def get_eventi_1gm() -> List[Dict]:
         conn.close()
 
 
-def get_evento_1gm_dossier(query: str) -> Dict:
+def get_evento_1gm_dossier(query: str, include_candidates: bool = False) -> Dict:
     """Query completa per un evento 1GM usando event_query_engine."""
     try:
         from event_query_engine import query_event
-        return query_event(query, verbose=False)
+        return query_event(query, verbose=False, include_candidates=include_candidates)
     except Exception as e:
         return {"ok": False, "error": str(e)}
 

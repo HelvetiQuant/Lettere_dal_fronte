@@ -1,9 +1,26 @@
-"""Pulizia fonti "finte" (URL di pagine di ricerca) e relativi collegamenti.
+"""DEPRECATED — Legacy bad links cleanup.
 
-Uso:
-    python _clean_bad_links.py --dry-run   # solo conteggio
-    python _clean_bad_links.py --execute   # rimuove davvero
+This script is FROZEN. It has known issues:
+- Compares fonti_indice.id with collegamenti.entita_id without proving namespaces match
+- Destructive DELETE without quarantine
+- No typed resource UUIDs
+- No restore mechanism
+
+Use the new quarantine pipeline instead:
+    python -m linking.cli legacy-relations audit
+    python -m linking.cli legacy-relations quarantine --dry-run
+
+To run in audit-only mode:
+    LEGACY_JOB_LEGACY_CLEAN_BAD_LINKS=true python _clean_bad_links.py --dry-run
 """
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.CLEAN_BAD_LINKS, "_clean_bad_links.py is deprecated")
+
 import argparse
 import sqlite3
 from pathlib import Path

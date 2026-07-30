@@ -14,6 +14,8 @@ import sqlite3, json, re, sys, io
 from pathlib import Path
 from datetime import datetime
 
+from linking.temporal_filter import filter_sources_for_event
+
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 DB = Path(__file__).parent / "imi_internati.db"
@@ -66,7 +68,7 @@ def find_event(conn_ev, query):
     return None
 
 
-def query_event(event_name, verbose=True):
+def query_event(event_name, verbose=True, include_candidates=False):
     """
     Esegue query event-centric.
     Ritorna dict strutturato con tutti i dati aggregati.
@@ -273,46 +275,74 @@ def query_event(event_name, verbose=True):
         "SELECT target_id, match_value, confidence FROM event_links WHERE evento_id=? AND link_type='fonte_archivistica'",
         (ev["id"],)
     ).fetchall()
-    result["fonti"]["count"] = len(fon_links)
 
     if verbose:
-        print(f"\n--- FONTI ARCHIVISTICHE: {len(fon_links)} ---")
+        print(f"\n--- FONTI ARCHIVISTICHE: {len(fon_links)} (pre-filter) ---")
 
     if fon_links:
         fon_ids = [r["target_id"] for r in fon_links]
         conn_ro.executemany("INSERT INTO _tmp_ids VALUES(?)", [(i,) for i in fon_ids])
 
-        top_archivi = conn_ro.execute(
-            "SELECT archivio, COUNT(*) as n FROM fonti_indice f "
-            "JOIN _tmp_ids t ON f.id = t.ids "
-            "WHERE f.archivio IS NOT NULL "
-            "GROUP BY f.archivio ORDER BY n DESC LIMIT 10"
+        # Fetch ALL fonti_indice records for this event (not just sample 30)
+        all_fon = conn_ro.execute(
+            "SELECT f.id, f.archivio, f.titolo, f.tipo_fonte, f.url_catalogo, f.url_file, "
+            "f.access_type, f.luogo, f.soggetti_collegati, f.note, f.data_inizio, f.data_fine, "
+            "f.coverage_start, f.coverage_end "
+            "FROM fonti_indice f JOIN _tmp_ids t ON f.id = t.ids"
         ).fetchall()
-        result["fonti"]["top_archivi"] = [(r["archivio"], r["n"]) for r in top_archivi]
 
-        if verbose:
-            print(f"\n  Top archivi:")
-            for ar, n in result["fonti"]["top_archivi"]:
-                print(f"    {ar:45s} {n:>5}")
-
-        # Sample (primi 30)
-        sample_fon = conn_ro.execute(
-            "SELECT f.id, f.archivio, f.titolo, f.tipo_fonte, f.url_catalogo, f.url_file, f.access_type, f.luogo "
-            "FROM fonti_indice f JOIN _tmp_ids t ON f.id = t.ids LIMIT 30"
-        ).fetchall()
-        result["fonti"]["items"] = []
-        for row in sample_fon:
+        all_fon_dicts = []
+        for row in all_fon:
             item = dict(row)
             archivio = (item.get("archivio") or "").lower()
             if "bundesarchiv" in archivio and not (item.get("url_catalogo") or item.get("url_file")):
                 item["url_catalogo"] = "https://open-data.bundesarchiv.de/ddb-bestand/"
                 item["access_type"] = item.get("access_type") or "online"
-            result["fonti"]["items"].append(item)
+            all_fon_dicts.append(item)
+
+        # Apply temporal filter
+        event_data = {
+            "conflict": ev["conflict"] if "conflict" in ev.keys() else "WWI",
+            "data_inizio": ev["data_inizio"],
+            "data_fine": ev["data_fine"],
+        }
+        filtered = filter_sources_for_event(
+            all_fon_dicts, event_data, include_candidates=include_candidates
+        )
+
+        result["fonti"]["count"] = len(filtered["sources"])
+        result["fonti"]["items"] = filtered["sources"][:30]
+        result["fonti"]["candidate_sources"] = filtered["candidate_sources"][:30]
+        result["fonti"]["rejected_count"] = filtered["rejected_count"]
+        result["fonti"]["needs_review_count"] = filtered["needs_review_count"]
+        result["fonti"]["linking_version"] = filtered["linking_version"]
+        result["fonti"]["total_legacy_count"] = len(fon_links)
+
+        # Top archivi from accepted sources only
+        accepted_ids = {s["id"] for s in filtered["sources"]}
+        if accepted_ids:
+            conn_ro.execute("DELETE FROM _tmp_ids")
+            conn_ro.executemany("INSERT INTO _tmp_ids VALUES(?)", [(i,) for i in accepted_ids])
+            top_archivi = conn_ro.execute(
+                "SELECT archivio, COUNT(*) as n FROM fonti_indice f "
+                "JOIN _tmp_ids t ON f.id = t.ids "
+                "WHERE f.archivio IS NOT NULL "
+                "GROUP BY f.archivio ORDER BY n DESC LIMIT 10"
+            ).fetchall()
+            result["fonti"]["top_archivi"] = [(r["archivio"], r["n"]) for r in top_archivi]
+        else:
+            result["fonti"]["top_archivi"] = []
 
         conn_ro.execute("DELETE FROM _tmp_ids")
 
         if verbose:
-            print(f"\n  Esempi fonti (primi 30):")
+            print(f"  Accepted: {len(filtered['sources'])}")
+            print(f"  Needs review: {filtered['needs_review_count']}")
+            print(f"  Rejected: {filtered['rejected_count']}")
+            print(f"\n  Top archivi (accepted):")
+            for ar, n in result["fonti"]["top_archivi"]:
+                print(f"    {ar:45s} {n:>5}")
+            print(f"\n  Esempi fonti accettate (primi 30):")
             for s in result["fonti"]["items"]:
                 print(f"    [{s['archivio']}] {s['titolo'][:60]}")
                 if s["url_catalogo"]:
@@ -332,7 +362,11 @@ def query_event(event_name, verbose=True):
         "decorati": result["decorati"]["count"],
         "documenti": result["documenti"]["count"],
         "fonti": result["fonti"]["count"],
+        "fonti_candidate": result["fonti"].get("needs_review_count", 0),
+        "fonti_respinte": result["fonti"].get("rejected_count", 0),
+        "fonti_legacy_total": result["fonti"].get("total_legacy_count", 0),
         "links_esterni": len(result["links_esterni"]),
+        "linking_version": result["fonti"].get("linking_version", "legacy"),
     }
 
     if verbose:
@@ -341,7 +375,10 @@ def query_event(event_name, verbose=True):
         print(f"  Caduti:      {result['statistiche']['caduti']:,}")
         print(f"  Decorati:    {result['statistiche']['decorati']:,}")
         print(f"  Documenti:   {result['statistiche']['documenti']}")
-        print(f"  Fonti:       {result['statistiche']['fonti']}")
+        print(f"  Fonti:       {result['statistiche']['fonti']} (accepted)")
+        print(f"  Fonti candidate: {result['statistiche']['fonti_candidate']}")
+        print(f"  Fonti respinte:  {result['statistiche']['fonti_respinte']}")
+        print(f"  Fonti legacy total: {result['statistiche']['fonti_legacy_total']}")
         print(f"  Link esterni: {result['statistiche']['links_esterni']}")
         print(f"{'=' * 70}")
 

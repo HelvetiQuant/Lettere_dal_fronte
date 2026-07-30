@@ -186,7 +186,11 @@ class RepositoryBackend:
 
 
 class SupabaseBackend(RepositoryBackend):
-    """Backend Supabase via REST API (PostgREST)."""
+    """Backend Supabase via REST API (PostgREST).
+
+    Uses PostgREST schema-switching headers (Accept-Profile / Content-Type-Profile)
+    instead of schema-qualified URL paths, which are not exposed by default.
+    """
 
     def __init__(self):
         from supabase_client import SUPABASE_URL, _rest_headers, _TIMEOUT
@@ -194,20 +198,44 @@ class SupabaseBackend(RepositoryBackend):
         self.headers = _rest_headers()
         self.timeout = _TIMEOUT
 
-    def _post(self, table: str, data: Dict, prefer: str = "return=representation") -> Dict:
-        import httpx
-        url = f"{self.url}/rest/v1/{table}"
+    @staticmethod
+    def _split_table(table: str) -> tuple[str, str]:
+        if "." in table:
+            schema, name = table.split(".", 1)
+            return schema, name
+        return "public", table
+
+    def _schema_headers(self, schema: str, *, prefer: str = "") -> Dict:
         h = dict(self.headers)
-        h["Prefer"] = prefer
-        r = httpx.post(url, headers=h, json=data, timeout=self.timeout)
-        if r.status_code in (200, 201):
-            return r.json()[0] if r.json() else {}
-        return {"error": r.text[:500], "status": r.status_code}
+        h["Accept-Profile"] = schema
+        h["Content-Type-Profile"] = schema
+        if prefer:
+            h["Prefer"] = prefer
+        return h
+
+    def _post(self, table: str, data: Dict, prefer: str = "return=representation") -> Dict:
+        """Insert or upsert a single row using exec_sql.
+
+        PostgREST writes to non-public schemas often fail unless the schema is
+        listed in Supabase Exposed Schemas. exec_sql (SECURITY DEFINER) is
+        reliable and bypasses both RLS and schema exposure limits. It does not
+        return the inserted row; callers should fetch explicitly if they need
+        the generated id.
+        """
+        from supabase_client import insert_batch_schema
+        schema, name = self._split_table(table)
+        on_conflict = "merge" if "merge-duplicates" in prefer else "ignore"
+        result = insert_batch_schema(schema, name, [data], on_conflict=on_conflict, batch_size=1)
+        if result.get("ok"):
+            return {"ok": True, "count": result.get("count", 0)}
+        return {"error": result.get("error", "insert failed"), "status": 500}
 
     def _get(self, table: str, params: str) -> List[Dict]:
         import httpx
-        url = f"{self.url}/rest/v1/{table}?{params}"
-        r = httpx.get(url, headers=self.headers, timeout=self.timeout)
+        schema, name = self._split_table(table)
+        url = f"{self.url}/rest/v1/{name}?{params}"
+        h = self._schema_headers(schema)
+        r = httpx.get(url, headers=h, timeout=self.timeout)
         if r.status_code == 200:
             return r.json()
         return []

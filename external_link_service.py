@@ -15,6 +15,10 @@ import re
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Tuple
 
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.EXTERNAL_LINK_SERVICE, "external_link_service.py is frozen — use linking v2 pipeline instead")
+
 from database import get_conn
 
 

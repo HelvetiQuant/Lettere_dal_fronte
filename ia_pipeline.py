@@ -29,6 +29,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.IA_PIPELINE, "ia_pipeline.py is frozen — use source_pipeline worker instead")
+
 import requests
 
 from database import DB_PATH

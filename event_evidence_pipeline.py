@@ -35,6 +35,29 @@ from event_resolver import get_event_by_id, get_related_events, resolve_event
 EDB = Path(__file__).parent / "eventi_1gm.db"
 
 
+def _build_summary(title: str, description: str, provider: str, date: str, source_type: str) -> str:
+    """Costruisce un riassunto di ~5 righe dal contenuto disponibile della fonte."""
+    parts = []
+    if title:
+        parts.append(str(title))
+    desc = str(description or "").strip().replace("\n", " ")
+    if desc:
+        if len(desc) > 300:
+            desc = desc[:297] + "..."
+        parts.append(desc)
+    else:
+        if provider:
+            parts.append(f"Fonte: {provider}")
+        if source_type:
+            parts.append(f"Tipo: {source_type}")
+        if date:
+            parts.append(f"Data: {date}")
+    summary = " — ".join(parts)
+    if len(summary) > 400:
+        summary = summary[:397] + "..."
+    return summary
+
+
 # ─── Modelli dati ────────────────────────────────────────────────────────────
 
 @dataclass
@@ -55,6 +78,7 @@ class Source:
     geographic_compatible: bool
     verification_status: str  # "verificata" | "candidata" | "non_verificata"
     verification_note: str
+    summary: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -67,6 +91,7 @@ class Source:
             "author_or_institution": self.author_or_institution,
             "date": self.date,
             "excerpt": self.excerpt,
+            "summary": self.summary,
             "availability": self.availability,
             "relevance_score": self.relevance_score,
             "temporal_compatible": self.temporal_compatible,
@@ -91,9 +116,11 @@ class Claim:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "claim_id": self.claim_id,
+            "fatto": self.text,
             "text": self.text,
             "claim_type": self.claim_type,
             "value": self.value,
+            "fonti": self.sources,
             "sources": self.sources,
             "confidence": self.confidence,
             "concordance": self.concordance,
@@ -197,56 +224,137 @@ def _relevance_tokens(canonical: str) -> Set[str]:
 # ─── Livello 1: Fonti interne ────────────────────────────────────────────────
 
 def _internal_sources(event_id: int, event_name: str, event_data: Dict[str, Any]) -> List[Source]:
-    """Fonti dal DB interno: event_links, archivio_documenti, fonti_indice."""
+    """Fonti dal DB interno: linking v2 relations (preferred), event_links (legacy fallback as to_review), archivio_documenti, fonti_indice."""
     sources: List[Source] = []
     ev_start = event_data.get("data_inizio", "")
     ev_end = event_data.get("data_fine", "")
     ev_luogo = event_data.get("luogo", "")
+    ev_conflict = event_data.get("conflict", "")
     tokens = _relevance_tokens(event_name)
 
-    # 1a. event_links → fonti_indice
+    # 1a. Linking v2 relations (source_describes_event) — preferred
+    v2_fonti_ids = []
+    v2_status_map = {}
+    try:
+        conn_main = sqlite3.connect(str(DB_PATH), timeout=30)
+        conn_main.row_factory = sqlite3.Row
+        v2_rows = conn_main.execute(
+            "SELECT r.source_resource_id, r.target_resource_id, r.status, r.conflict_flags, "
+            "r.raw_score, rr1.external_ref as source_ref, rr2.external_ref as event_ref "
+            "FROM relations r "
+            "JOIN resource_registry rr1 ON r.source_resource_id = rr1.id "
+            "JOIN resource_registry rr2 ON r.target_resource_id = rr2.id "
+            "WHERE r.relation_type = 'source_describes_event' "
+            "AND rr2.external_ref = ? AND rr1.resource_type = 'source' "
+            "AND r.status IN ('accepted','needs_review','candidate','confirmed')",
+            (f"eventi_1gm:{event_id}",)
+        ).fetchall()
+        for vr in v2_rows:
+            source_ref = vr["source_ref"] or ""
+            if source_ref.startswith("fonti_indice:"):
+                fid = source_ref.split(":", 1)[1]
+                v2_fonti_ids.append(fid)
+                v2_status_map[fid] = {
+                    "status": vr["status"],
+                    "conflict_flags": json.loads(vr["conflict_flags"] or "[]"),
+                    "raw_score": vr["raw_score"],
+                }
+        conn_main.close()
+    except Exception:
+        pass
+
+    # 1b. Legacy event_links → fonti_indice (fallback, marked as to_review)
+    legacy_fonti_ids = []
     if EDB.exists():
         conn_ev = sqlite3.connect(str(EDB), timeout=30)
         conn_ev.row_factory = sqlite3.Row
         conn_main = sqlite3.connect(str(DB_PATH), timeout=30)
         conn_main.row_factory = sqlite3.Row
         try:
-            # Fonti archivistiche collegate
-            fonti_ids = [r["target_id"] for r in conn_ev.execute(
+            # Fonti archivistiche collegate (legacy)
+            legacy_fonti_ids = [r["target_id"] for r in conn_ev.execute(
                 "SELECT target_id FROM event_links WHERE evento_id=? AND link_type='fonte_archivistica'",
                 (event_id,),
             ).fetchall()]
-            if fonti_ids:
-                placeholders = ",".join("?" * len(fonti_ids))
-                for r in conn_main.execute(
-                    f"SELECT id, titolo, luogo, soggetti_collegati, url_catalogo, url_file, "
-                    f"archivio, fondo, serie, segnatura, tipo_fonte, access_type "
-                    f"FROM fonti_indice WHERE id IN ({placeholders})",
-                    fonti_ids,
-                ).fetchall():
-                    ref = f"{r['archivio'] or ''} {r['fondo'] or ''} {r['segnatura'] or ''}".strip()
-                    temp_ok = True  # fonti_indice non ha sempre date precise
-                    geo_ok = _geographic_overlap(ev_luogo, r["luogo"] or "")
-                    verification = "verificata" if ref else "candidata"
-                    sources.append(Source(
-                        source_id=f"INT-FI-{r['id']}",
-                        title=r["titolo"] or "",
-                        source_type="primaria" if r["archivio"] else "istituzionale",
-                        authority="archivio" if r["archivio"] else "banca_dati",
-                        url=r["url_catalogo"] or r["url_file"] or "",
-                        archive_reference=ref,
-                        author_or_institution=r["archivio"] or "",
-                        date="",
-                        excerpt=(r["soggetti_collegati"] or "")[:500],
-                        availability=r["access_type"] or "da_richiedere",
-                        relevance_score=0.8 if geo_ok else 0.5,
-                        temporal_compatible=temp_ok,
-                        geographic_compatible=geo_ok,
-                        verification_status=verification,
-                        verification_note="Fonte interna collegata via event_links" if verification == "verificata" else "Fonte interna senza riferimento archivistico completo",
-                    ))
+        finally:
+            conn_ev.close()
 
-            # Documenti collegati
+    # Merge: v2 first, then legacy (excluding those already in v2)
+    all_fonti_ids = list(v2_fonti_ids)
+    for fid in legacy_fonti_ids:
+        if str(fid) not in {str(x) for x in v2_fonti_ids}:
+            all_fonti_ids.append(fid)
+
+    if all_fonti_ids:
+        conn_main = sqlite3.connect(str(DB_PATH), timeout=30)
+        conn_main.row_factory = sqlite3.Row
+        try:
+            placeholders = ",".join("?" * len(all_fonti_ids))
+            for r in conn_main.execute(
+                f"SELECT id, titolo, luogo, soggetti_collegati, url_catalogo, url_file, "
+                f"archivio, fondo, serie, segnatura, tipo_fonte, access_type, "
+                f"coverage_start, coverage_end "
+                f"FROM fonti_indice WHERE id IN ({placeholders})",
+                all_fonti_ids,
+            ).fetchall():
+                ref = f"{r['archivio'] or ''} {r['fondo'] or ''} {r['segnatura'] or ''}".strip()
+                fid_str = str(r["id"])
+                is_v2 = fid_str in {str(x) for x in v2_fonti_ids}
+                v2_info = v2_status_map.get(fid_str, {})
+
+                # Temporal compatibility check
+                from linking.temporal_filter import temporal_relation as _tr
+                cov_start = r["coverage_start"] or ""
+                cov_end = r["coverage_end"] or ""
+                t_rel = _tr(cov_start, cov_end, ev_start, ev_end)
+                temp_ok = t_rel != "conflict"
+
+                geo_ok = _geographic_overlap(ev_luogo, r["luogo"] or "")
+
+                if is_v2:
+                    v2_status = v2_info.get("status", "candidate")
+                    if v2_status == "accepted":
+                        verification = "verificata"
+                        verification_note = "Fonte collegata via linking v2 (accepted)"
+                    elif v2_status == "needs_review":
+                        verification = "candidata"
+                        verification_note = "Fonte collegata via linking v2 (needs_review)"
+                    else:
+                        verification = "candidata"
+                        verification_note = "Fonte collegata via linking v2 (candidate)"
+                    relevance = 0.8 if (geo_ok and temp_ok) else 0.5
+                else:
+                    verification = "non_verificata"
+                    verification_note = "Fonte legacy (event_links) — in attesa di migrazione v2"
+                    relevance = 0.5 if temp_ok else 0.2
+
+                sources.append(Source(
+                    source_id=f"INT-FI-{r['id']}",
+                    title=r["titolo"] or "",
+                    source_type="primaria" if r["archivio"] else "istituzionale",
+                    authority="archivio" if r["archivio"] else "banca_dati",
+                    url=r["url_catalogo"] or r["url_file"] or "",
+                    archive_reference=ref,
+                    author_or_institution=r["archivio"] or "",
+                    date="",
+                    excerpt=(r["soggetti_collegati"] or "")[:500],
+                    availability=r["access_type"] or "da_richiedere",
+                    relevance_score=relevance,
+                    temporal_compatible=temp_ok,
+                    geographic_compatible=geo_ok,
+                    verification_status=verification,
+                    verification_note=verification_note,
+                ))
+        finally:
+            conn_main.close()
+
+    # 1c. Documenti collegati (legacy event_links, still used)
+    if EDB.exists():
+        conn_ev = sqlite3.connect(str(EDB), timeout=30)
+        conn_ev.row_factory = sqlite3.Row
+        conn_main = sqlite3.connect(str(DB_PATH), timeout=30)
+        conn_main.row_factory = sqlite3.Row
+        try:
             doc_ids = [r["target_id"] for r in conn_ev.execute(
                 "SELECT target_id FROM event_links WHERE evento_id=? AND link_type='documento'",
                 (event_id,),
@@ -351,9 +459,10 @@ def _federated_sources(event_name: str, event_data: Dict[str, Any]) -> List[Sour
 
     try:
         from source_providers.federation import federated_search
+        # "internetculturale" escluso: restituisce solo record bibliografici di libri
         providers = [
             "nara", "ussme", "archivio_stato", "europeana", "internetarchive",
-            "googlebooks", "gallica", "hathitrust", "internetculturale",
+            "googlebooks", "gallica", "hathitrust",
             "memoiredeshommes", "iwm_lives", "tna", "shd",
         ]
         rows = federated_search(event_name, cues=event_data, providers=providers)
@@ -387,6 +496,7 @@ def _federated_sources(event_name: str, event_data: Dict[str, Any]) -> List[Sour
             author_or_institution=r.get("provider", ""),
             date=date_str,
             excerpt=snippet_fed[:800],
+            summary=_build_summary(r.get("title") or r.get("label") or event_name, snippet_fed, r.get("provider", ""), date_str, r.get("source_type") or r.get("type", "")),
             availability="online" if r.get("url") else "da_richiedere",
             relevance_score=0.6 if temp_ok and geo_ok else 0.3,
             temporal_compatible=temp_ok,
@@ -426,10 +536,12 @@ def _web_sources(event_name: str, event_data: Dict[str, Any]) -> List[Source]:
     ev_start = event_data.get("data_inizio", "")
     ev_end = event_data.get("data_fine", "")
 
-    # Provider con contenuti storico-militari affidabili
+    # Provider con contenuti storico-militari affidabili — "internetculturale" escluso
+    # perché restituisce solo record bibliografici di libri (OPAC SBN), non fonti
+    # archivistiche o documenti pertinenti alla ricerca sull'evento
     web_providers = [
         "ussme", "googlebooks", "gallica", "europeana",
-        "internetarchive", "hathitrust", "internetculturale",
+        "internetarchive", "hathitrust",
         "archivio_stato", "memoiredeshommes", "iwm_lives",
     ]
 
@@ -532,6 +644,7 @@ def _web_sources(event_name: str, event_data: Dict[str, Any]) -> List[Source]:
             author_or_institution=provider_name,
             date=date_str,
             excerpt=snippet[:800],
+            summary=_build_summary(title, snippet, provider_name, date_str, "web"),
             availability="online" if url else "da_richiedere",
             relevance_score=relevance,
             temporal_compatible=temp_ok,
@@ -589,13 +702,14 @@ def _web_sources(event_name: str, event_data: Dict[str, Any]) -> List[Source]:
         sources.append(Source(
             source_id=f"WEB-{provider_name}-{identifier}",
             title=title,
-            source_type="web",
-            authority="pagina_web",
+            source_type="primaria",  # Internet Archive è un archivio digitale, non una pagina web generica
+            authority="archivio",
             url=url,
-            archive_reference="",
+            archive_reference="Internet Archive",
             author_or_institution=provider_name,
             date=date_str,
             excerpt=snippet[:800],
+            summary=_build_summary(title, snippet, provider_name, date_str, r.get("mediatype", "documento digitale")),
             availability="online" if url else "da_richiedere",
             relevance_score=relevance,
             temporal_compatible=temp_ok,
@@ -608,6 +722,31 @@ def _web_sources(event_name: str, event_data: Dict[str, Any]) -> List[Source]:
 
 
 # ─── Estrazione claim ────────────────────────────────────────────────────────
+
+def _plausible_historical_date(date_str: str, event_data: Optional[Dict[str, Any]]) -> bool:
+    """Verifica che una data estratta da un excerpt sia plausibile come fatto storico
+    relativo all'evento, escludendo date di metadati/archiviazione (es. snapshot perma.cc,
+    data di upload YouTube, timestamp di scraping) che non hanno nulla a che fare con
+    l'evento bellico stesso."""
+    m = re.search(r"(\d{4})", date_str)
+    if not m:
+        return False
+    year = int(m.group(1))
+    if event_data:
+        di = (event_data.get("data_inizio") or "")
+        df = (event_data.get("data_fine") or "")
+        try:
+            start_year = int(di[:4]) if di else None
+            end_year = int(df[:4]) if df else None
+        except ValueError:
+            start_year = end_year = None
+        if start_year and end_year:
+            # Tolleranza di 10 anni per fonti pubblicate poco prima/dopo l'evento
+            # (es. resoconti, memorie, pubblicazioni successive alla guerra)
+            return (start_year - 10) <= year <= (end_year + 10)
+    # Fallback senza metadati evento: accetta solo range plausibili per conflitti del '900
+    return 1900 <= year <= 1950
+
 
 def _extract_claims_from_sources(event_name: str, sources: List[Source], event_data: Dict[str, Any] = None) -> List[Claim]:
     """Estrae claim verificabili dalle fonti raccolte.
@@ -632,6 +771,8 @@ def _extract_claims_from_sources(event_name: str, sources: List[Source], event_d
         dates += re.findall(r"\b(\d{4}-\d{2}-\d{2})\b", excerpt)
         dates += re.findall(r"\b(\d{1,2}/\d{1,2}/\d{4})\b", excerpt)
         for d in set(dates):
+            if not _plausible_historical_date(d, event_data):
+                continue
             claim_counter += 1
             claims.append(Claim(
                 claim_id=f"CL-{claim_counter:03d}",
@@ -679,10 +820,12 @@ def _extract_claims_from_sources(event_name: str, sources: List[Source], event_d
                 concordance="unica_fonte",
             ))
 
-    # Analisi concordanze: claim dello stesso tipo con stesso valore
-    _analyze_concordances(claims)
+    # Analisi concordanze: claim dello stesso tipo con stesso valore vengono fuse
+    # in un unico claim con le fonti combinate (evita righe duplicate nel report)
+    claims = _analyze_concordances(claims)
 
-    # Claim dai metadati dell'evento (baseline verificato da DB interno)
+    # Claim dai metadati dell'evento (contesto da DB interno, NON è concordanza tra fonti
+    # esterne indipendenti: usa concordance="contesto_evento" per distinguerlo)
     if event_data:
         ev_start = event_data.get("data_inizio", "")
         ev_end = event_data.get("data_fine", "")
@@ -699,7 +842,7 @@ def _extract_claims_from_sources(event_name: str, sources: List[Source], event_d
                 value=ev_start,
                 sources=["EVENT-META"],
                 confidence="alta",
-                concordance="verificata",
+                concordance="contesto_evento",
             ))
         if ev_end:
             claim_counter += 1
@@ -710,7 +853,7 @@ def _extract_claims_from_sources(event_name: str, sources: List[Source], event_d
                 value=ev_end,
                 sources=["EVENT-META"],
                 confidence="alta",
-                concordance="verificata",
+                concordance="contesto_evento",
             ))
         if ev_luogo:
             claim_counter += 1
@@ -721,7 +864,7 @@ def _extract_claims_from_sources(event_name: str, sources: List[Source], event_d
                 value=ev_luogo,
                 sources=["EVENT-META"],
                 confidence="alta",
-                concordance="verificata",
+                concordance="contesto_evento",
             ))
         if ev_desc:
             claim_counter += 1
@@ -732,7 +875,7 @@ def _extract_claims_from_sources(event_name: str, sources: List[Source], event_d
                 value=ev_desc,
                 sources=["EVENT-META"],
                 confidence="alta",
-                concordance="verificata",
+                concordance="contesto_evento",
             ))
         for alias in ev_aliases:
             claim_counter += 1
@@ -743,33 +886,41 @@ def _extract_claims_from_sources(event_name: str, sources: List[Source], event_d
                 value=alias,
                 sources=["EVENT-META"],
                 confidence="alta",
-                concordance="verificata",
+                concordance="contesto_evento",
             ))
 
     return claims
 
 
-def _analyze_concordances(claims: List[Claim]) -> None:
-    """Analizza concordanze e divergenze tra claim."""
+def _analyze_concordances(claims: List[Claim]) -> List[Claim]:
+    """Analizza concordanze tra claim e fonde i duplicati (stesso tipo+valore) in un unico
+    claim con le fonti combinate, per evitare righe ripetute nel report finale."""
     by_type_value: Dict[Tuple[str, str], List[Claim]] = {}
+    order: List[Tuple[str, str]] = []
     for c in claims:
         key = (c.claim_type, c.value.lower().strip())
+        if key not in by_type_value:
+            order.append(key)
         by_type_value.setdefault(key, []).append(c)
 
-    for key, group in by_type_value.items():
-        if len(group) > 1:
-            source_ids = set()
-            for c in group:
-                source_ids.update(c.sources)
-            if len(source_ids) >= 2:
-                for c in group:
-                    c.concordance = "concordante"
-                    c.confidence = "alta"
-            else:
-                for c in group:
-                    c.concordance = "unica_fonte"
-        # Rileva divergenze: stesso tipo, valore diverso, stessa fonte
-    # (semplificato — l'AI nel narrative builder farà analisi più approfondita)
+    merged: List[Claim] = []
+    for key in order:
+        group = by_type_value[key]
+        source_ids: List[str] = []
+        for c in group:
+            for sid in c.sources:
+                if sid not in source_ids:
+                    source_ids.append(sid)
+
+        head = group[0]
+        if len(source_ids) >= 2:
+            head.concordance = "concordante"
+            head.confidence = "alta"
+        else:
+            head.concordance = "unica_fonte"
+        head.sources = source_ids
+        merged.append(head)
+    return merged
 
 
 # ─── Persone e documenti collegati ───────────────────────────────────────────
@@ -1049,7 +1200,8 @@ def collect_evidence(query: str) -> EvidencePackage:
     # Estrai claim
     claims = _extract_claims_from_sources(event_name, unique_sources, event_data)
 
-    # Classifica claim
+    # Classifica claim — "contesto_evento" (metadati DB interno) non è concordanza
+    # tra fonti esterne indipendenti e non viene incluso nei fatti concordanti
     concordant = [c for c in claims if c.concordance == "concordante"]
     divergent = [c for c in claims if c.concordance == "divergente"]
     uncertain = [c for c in claims if c.concordance in ("unica_fonte", "incerta")]

@@ -861,11 +861,18 @@ class ProviderInternetArchive(SourceProvider):
                         results.append({
                             "provider": self.name,
                             "provider_record_id": did,
+                            "identifier": did,
                             "archivio": "Internet Archive",
                             "titolo": doc.get("title", ""),
+                            "title": doc.get("title", ""),
                             "description": desc,
                             "source_type": "digitized_document",
                             "date_start": doc.get("date", ""),
+                            "date": doc.get("date", ""),
+                            "mediatype": doc.get("mediatype", ""),
+                            "collection": doc.get("collection", ""),
+                            "language": doc.get("language", ""),
+                            "downloads": doc.get("downloads", 0),
                             "catalog_url": f"https://archive.org/details/{did}",
                             "direct_url": f"https://archive.org/details/{did}",
                             "access_type": "online",
@@ -874,7 +881,7 @@ class ProviderInternetArchive(SourceProvider):
                             "discovery_strategy": entry.strategy,
                             "discovery_query": entry.query,
                             "query_plan_version": IA_QUERY_PLAN_VERSION,
-                            "confidence": 0.5,  # legacy field — actual relevance from evaluate_candidates
+                            "confidence": 0.5,
                         })
             except Exception:
                 continue
@@ -913,11 +920,18 @@ class ProviderInternetArchive(SourceProvider):
                             results.append({
                                 "provider": self.name,
                                 "provider_record_id": did,
+                                "identifier": did,
                                 "archivio": "Internet Archive",
                                 "titolo": doc.get("title", ""),
+                                "title": doc.get("title", ""),
                                 "description": (doc.get("description") or "")[:200],
                                 "source_type": "digitized_document",
                                 "date_start": doc.get("date", ""),
+                                "date": doc.get("date", ""),
+                                "mediatype": doc.get("mediatype", ""),
+                                "collection": doc.get("collection", ""),
+                                "language": doc.get("language", ""),
+                                "downloads": doc.get("downloads", 0),
                                 "catalog_url": f"https://archive.org/details/{did}",
                                 "direct_url": f"https://archive.org/details/{did}",
                                 "access_type": "online",

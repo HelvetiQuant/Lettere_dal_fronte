@@ -18,9 +18,11 @@ import logging
 import sqlite3
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+from supabase_client import execute_sql
 
 # Force UTF-8 output on Windows
 if sys.platform == "win32":
@@ -30,6 +32,7 @@ if sys.platform == "win32":
 logger = logging.getLogger("backfill")
 
 BASE = Path(__file__).parent
+BATCH_SIZE = 5000
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -37,39 +40,113 @@ def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 def _stable_id(namespace: str, external_id: str, provider: str = "") -> str:
+    """Generate a stable_id compatible with archive.generate_stable_id()."""
     raw = f"{namespace}:{external_id}"
     if provider:
         raw += f":{provider}"
-    return f"sha256:{hashlib.sha256(raw.encode()).hexdigest()[:32]}"
+    return f"sha256:{hashlib.sha256(raw.encode()).hexdigest()}"
 
 def _now() -> str:
-    return datetime.utcnow().isoformat() + "Z"
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _sql_literal(value: Any) -> str:
+    if value is None:
+        return "NULL"
+    if isinstance(value, bool):
+        return "TRUE" if value else "FALSE"
+    if isinstance(value, (int, float)):
+        return str(value)
+    if isinstance(value, dict):
+        text = json.dumps(value, ensure_ascii=False, default=str).replace("'", "''")
+        return f"'{text}'::jsonb"
+    if isinstance(value, list):
+        if not value:
+            return "NULL"
+        if all(isinstance(v, str) for v in value):
+            escaped = ", ".join(f"'{v.replace(chr(39), chr(39)+chr(39))}'" for v in value)
+            return f"ARRAY[{escaped}]::text[]"
+        text = json.dumps(value, ensure_ascii=False, default=str).replace("'", "''")
+        return f"'{text}'::jsonb"
+    text = str(value).replace("'", "''")
+    return f"'{text}'"
+
+
+def _build_insert_sql(schema: str, table: str, rows: List[Dict[str, Any]], *, conflict_target: Optional[str] = None) -> str:
+    if not rows:
+        return "SELECT 1"
+    columns = list(rows[0].keys())
+    col_str = ", ".join(f'"{c}"' for c in columns)
+    values = []
+    for row in rows:
+        vals = [_sql_literal(row.get(c)) for c in columns]
+        values.append("(" + ", ".join(vals) + ")")
+    conflict = ""
+    if conflict_target:
+        excluded = ", ".join(f'"{c}" = EXCLUDED."{c}"' for c in columns if c not in conflict_target.replace(' ', '').split(",") and c != "id")
+        if excluded:
+            conflict = f" ON CONFLICT ({conflict_target}) DO UPDATE SET {excluded}"
+        else:
+            conflict = f" ON CONFLICT ({conflict_target}) DO NOTHING"
+    else:
+        conflict = " ON CONFLICT DO NOTHING"
+    return f'INSERT INTO {schema}."{table}" ({col_str}) VALUES {", ".join(values)}{conflict}'
+
+
+def _bulk_insert(schema: str, table: str, rows: List[Dict[str, Any]], *, conflict_target: Optional[str] = None, dry_run: bool = False) -> Dict[str, int]:
+    """Insert rows in batches via exec_sql; returns stats."""
+    if not rows:
+        return {"inserted": 0, "errors": 0}
+    if dry_run:
+        return {"inserted": len(rows), "errors": 0}
+    total = 0
+    errors = 0
+    for i in range(0, len(rows), BATCH_SIZE):
+        batch = rows[i:i + BATCH_SIZE]
+        sql = _build_insert_sql(schema, table, batch, conflict_target=conflict_target)
+        try:
+            r = execute_sql(sql, timeout=120)
+            data = r.get("data") or {}
+            if r.get("ok") and data.get("ok") is not False:
+                total += len(batch)
+            else:
+                logger.error("Batch insert failed: %s", data.get("error", r.get("error")))
+                errors += 1
+        except Exception as e:
+            logger.error("Batch insert exception: %s", e)
+            errors += 1
+    return {"inserted": total, "errors": errors}
 
 
 # ─── Backfill: Events ────────────────────────────────────────────────────────
 
 def backfill_events(dry_run: bool = False) -> Dict:
-    """Migra eventi_1gm -> core.events (tabella legacy, solo populate stable_id)."""
+    """Populate stable_id in SQLite eventi_1gm if missing."""
     db = BASE / "eventi_1gm.db"
     if not db.exists():
         return {"table": "events", "error": "DB non trovato", "count": 0}
 
     conn = sqlite3.connect(str(db))
     conn.row_factory = sqlite3.Row
-    rows = conn.execute("SELECT * FROM eventi_1gm").fetchall()
+    rows = conn.execute("SELECT id, nome FROM eventi_1gm").fetchall()
 
     stats = {"table": "events", "total": len(rows), "would_migrate": 0, "migrated": 0, "skipped": 0}
 
     for row in rows:
-        stable_id = row["stable_id"] if "stable_id" in row.keys() and row["stable_id"] else f"evt_{row['id']:04d}"
+        stable_id = _stable_id("event", str(row["id"]))
+        existing = conn.execute("SELECT stable_id FROM eventi_1gm WHERE id=?", (row["id"],)).fetchone()
+        if existing and existing[0]:
+            stats["skipped"] += 1
+            continue
         if dry_run:
             stats["would_migrate"] += 1
             print(f"  [DRY-RUN] Event {row['id']}: {row['nome']} -> stable_id={stable_id}")
         else:
-            # Su Supabase: UPDATE public.eventi_1gm SET stable_id=? WHERE id=?
-            # Per ora solo conteggio
+            conn.execute("UPDATE eventi_1gm SET stable_id=? WHERE id=?", (stable_id, row["id"]))
             stats["migrated"] += 1
 
+    if not dry_run:
+        conn.commit()
     conn.close()
     return stats
 
@@ -88,20 +165,20 @@ def backfill_external_items(dry_run: bool = False) -> Dict:
 
     stats = {"table": "external_items", "total": len(rows), "would_migrate": 0, "migrated": 0, "skipped": 0}
 
+    to_insert = []
     for row in rows:
         provider_code = str(row["provider"] or "unknown").lower().replace(" ", "_")
         external_id = str(row["external_id"] or "")
+        if not external_id:
+            stats["skipped"] += 1
+            continue
         stable_id = _stable_id("item", external_id, provider_code)
 
-        title = row["title"] or ""
-        url = row["source_url"] or ""
-        date_text = row["date_text"] or ""
-
         metadata = {
-            "title": title,
+            "title": row["title"],
             "provider": row["provider"],
-            "source_url": url,
-            "date_text": date_text,
+            "source_url": row["source_url"],
+            "date_text": row["date_text"],
             "description": row["description"],
             "creator": row["creator"],
             "place": row["place"],
@@ -109,14 +186,33 @@ def backfill_external_items(dry_run: bool = False) -> Dict:
             "language": row["language"],
             "rights": row["rights"],
         }
-        metadata_hash = _sha256(json.dumps(metadata, sort_keys=True))
+        metadata_hash = _sha256(json.dumps(metadata, sort_keys=True, default=str))
 
-        if dry_run:
-            stats["would_migrate"] += 1
-            print(f"  [DRY-RUN] Item: {title[:50]} -> provider={provider_code}, stable_id={stable_id[:20]}...")
-        else:
-            # Su Supabase: INSERT INTO archive.external_items ...
-            stats["migrated"] += 1
+        to_insert.append({
+            "stable_id": stable_id,
+            "provider_code": provider_code,
+            "external_id": external_id,
+            "item_type": str(row["doc_type"] or "document"),
+            "title": row["title"],
+            "description": row["description"],
+            "date_text": row["date_text"],
+            "canonical_url": row["source_url"],
+            "access_status": "active",
+            "review_status": "candidate",
+            "metadata_hash": metadata_hash,
+            "http_status": 200,
+        })
+
+    if dry_run:
+        stats["would_migrate"] = len(to_insert)
+        for item in to_insert[:5]:
+            print(f"  [DRY-RUN] Item: {item['title'][:50]} -> provider={item['provider_code']}, stable_id={item['stable_id'][:20]}...")
+    else:
+        result = _bulk_insert("archive", "external_items", to_insert,
+                              conflict_target="provider_code, external_id")
+        stats["migrated"] = result["inserted"]
+        if result["errors"]:
+            stats["errors"] = result["errors"]
 
     conn.close()
     return stats

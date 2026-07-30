@@ -36,9 +36,20 @@ function SourceCard({ source }: { source: EventSource }) {
             <div className="text-sm mt-1" style={{ fontFamily: 'var(--f-mono)' }}>{source.archive_reference}</div>
           )}
           {source.date && <div className="text-sm text-muted">Data: {source.date}</div>}
-          {source.excerpt && (
-            <div className="text-sm mt-2" style={{ maxHeight: 80, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {source.excerpt.substring(0, 200)}{source.excerpt.length > 200 ? '…' : ''}
+          {source.summary && (
+            <div className="text-sm mt-2" style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 5,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              lineHeight: '1.5',
+              color: 'var(--c-text)',
+              fontStyle: 'italic',
+              borderLeft: '2px solid var(--c-divider)',
+              paddingLeft: 'var(--s-2)',
+            }}>
+              {source.summary}
             </div>
           )}
           {source.url && (
@@ -108,7 +119,7 @@ export function EventResearchPage() {
     if (!eventName) return;
     const name = decodeURIComponent(eventName);
     setLoading(true);
-    api.eventNarrative(name, ai, 'mistral')
+    api.eventNarrative(name, ai, 'gpt')
       .then((r) => setReport(r))
       .catch((e) => setError(e instanceof ApiError ? e : new ApiError(0, String(e))))
       .finally(() => setLoading(false));
@@ -145,9 +156,10 @@ export function EventResearchPage() {
   const cronologia = report?.cronologia || [];
   const luoghi = report?.luoghi || [];
   const reparti = report?.reparti || [];
-  const fattiConcordanti = report?.fatti_concordanti || [];
+  const fattiConcordanti = (report?.fatti_concordanti || []).filter((f) => !(f.fonti || []).includes('EVENT-META'));
   const versioniDivergenti = report?.versioni_divergenti || [];
   const elementiIncerti = report?.elementi_incerti || [];
+  const concordantSummary = report?.sintesi_concordanti || '';
   const documents = report?.evidence_package?.related_documents || [];
 
   return (
@@ -174,7 +186,7 @@ export function EventResearchPage() {
               size="sm"
               onClick={() => { const next = !useAI; setUseAI(next); loadReport(next); }}
             >
-              {useAI ? 'AI attiva (Mistral)' : 'Modalità senza AI'}
+              {useAI ? 'AI attiva (GPT-4.1)' : 'Modalità senza AI'}
             </Button>
             <span className="text-sm text-muted">
               {report?.ai_used ? `Generato con ${report.ai_model}` : 'Narrazione da dati strutturati'}
@@ -233,7 +245,7 @@ export function EventResearchPage() {
                       <div key={i} style={{ display: 'flex', gap: 'var(--s-3)', alignItems: 'baseline', borderBottom: i < cronologia.length - 1 ? '1px solid var(--c-divider)' : 'none', paddingBottom: 'var(--s-2)' }}>
                         <span style={{ fontFamily: 'var(--f-mono)', fontSize: 'var(--fs-sm)', minWidth: 120, color: 'var(--c-text-muted)' }}>{c.data}</span>
                         <span>{c.descrizione || c.fase}</span>
-                        {c.fonti.length > 0 && c.fonti.map((f) => <Tag key={f} variant="neutral">{f}</Tag>)}
+                        {(c.fonti || []).length > 0 && (c.fonti || []).map((f) => <Tag key={f} variant="neutral">{f}</Tag>)}
                       </div>
                     ))}
                   </div>
@@ -320,16 +332,21 @@ export function EventResearchPage() {
           {activeTab === 'punti-vista' && (
             <>
               <Section title="Fatti concordanti tra le fonti">
+                {concordantSummary && (
+                  <Card>
+                    <div style={{ whiteSpace: 'pre-wrap', marginBottom: 'var(--s-3)' }}>{concordantSummary}</div>
+                  </Card>
+                )}
                 {fattiConcordanti.length > 0 ? (
                   <Card>
                     <ul>
                       {fattiConcordanti.map((f, i) => (
-                        <li key={i}>{f.fatto} {f.fonti.map((src) => <Tag key={src} variant="success">{src}</Tag>)}</li>
+                        <li key={i}>{f.fatto} {(f.fonti || []).map((src) => <Tag key={src} variant="success">{src}</Tag>)}</li>
                       ))}
                     </ul>
                   </Card>
                 ) : (
-                  <Card><p className="text-muted">Nessun fatto concordante tra fonti indipendenti.</p></Card>
+                  !concordantSummary && <Card><p className="text-muted">Nessun fatto concordante tra fonti indipendenti.</p></Card>
                 )}
               </Section>
               <Section title="Versioni divergenti">
@@ -352,7 +369,7 @@ export function EventResearchPage() {
                   <Card>
                     <ul>
                       {elementiIncerti.map((e, i) => (
-                        <li key={i}><strong>{e.elemento}</strong> — {e.motivo}</li>
+                        <li key={i}><strong>{e.elemento}</strong> — {e.motivo} {(e.fonti || []).map((src) => <Tag key={src} variant="warning">{src}</Tag>)}</li>
                       ))}
                     </ul>
                   </Card>

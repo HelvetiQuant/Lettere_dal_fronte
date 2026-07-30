@@ -20,6 +20,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Tuple
 
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.IMPORT_PERSONAL_SOURCES, "import_personal_sources.py is frozen — use source_pipeline worker instead")
+
 from database import get_conn
 from extractor import _get_mistral_client
 from indexing_rules import normalize_match_key

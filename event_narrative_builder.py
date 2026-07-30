@@ -65,6 +65,7 @@ class NarrativeReport:
     luoghi: List[Dict[str, Any]]
     reparti: List[Dict[str, Any]]
     cause_conseguenze: str
+    sintesi_concordanti: str
     fatti_concordanti: List[Dict[str, Any]]
     versioni_divergenti: List[Dict[str, Any]]
     elementi_incerti: List[Dict[str, Any]]
@@ -88,6 +89,7 @@ class NarrativeReport:
             "luoghi": self.luoghi,
             "reparti": self.reparti,
             "cause_conseguenze": self.cause_conseguenze,
+            "sintesi_concordanti": self.sintesi_concordanti,
             "fatti_concordanti": self.fatti_concordanti,
             "versioni_divergenti": self.versioni_divergenti,
             "elementi_incerti": self.elementi_incerti,
@@ -252,6 +254,48 @@ def _split_json_and_narrative(text: str) -> tuple:
 
 # ─── Costruzione narrazione senza AI ─────────────────────────────────────────
 
+CONCORDANT_SYNTHESIS_SYSTEM = (
+    "Sei un ricercatore storico. Riassumi in modo discorsivo e narrativo SOLO i fatti "
+    "concordanti tra fonti indipendenti che ti vengono forniti. Non aggiungere alcuna "
+    "informazione che non sia presente nell'elenco. Non usare la tua memoria generale. "
+    "Se l'elenco è vuoto o troppo scarso per una sintesi, scrivi che non ci sono ancora "
+    "fatti concordanti tra fonti indipendenti sufficienti per una sintesi."
+)
+
+CONCORDANT_SYNTHESIS_PROMPT = """Evento: "{event_name}"
+
+Fatti concordanti tra fonti indipendenti (ognuno attestato da almeno 2 fonti diverse):
+{facts}
+
+Scrivi un paragrafo discorsivo (massimo 120 parole) in italiano che riassuma SOLO questi fatti concordanti, citando le fonti tra parentesi quadre [ID]. Non introdurre altri dettagli."""
+
+
+def _build_concordant_synthesis(event_name: str, concordant_facts: List[Claim], provider: str = "gpt") -> str:
+    """Genera una sintesi discorsiva SOLO dai fatti realmente concordanti tra fonti indipendenti
+    (esclude i claim di contesto/metadato interno che non sono concordanza tra fonti)."""
+    if not concordant_facts:
+        return "Non ci sono ancora fatti concordanti tra fonti indipendenti sufficienti per una sintesi."
+
+    facts_text = "\n".join(
+        f"- {c.text} [{', '.join(c.sources)}]" for c in concordant_facts
+    )
+
+    try:
+        import biography as bio
+        result = bio._call_with_fallback(
+            system=CONCORDANT_SYNTHESIS_SYSTEM,
+            prompt=CONCORDANT_SYNTHESIS_PROMPT.format(event_name=event_name, facts=facts_text),
+            tag=f"sintesi concordanti: {event_name}",
+            preferred=provider,
+            fallback_order=["gpt", "mistral", "claude", "perplexity"],
+        )
+        if result.get("error"):
+            return facts_text
+        return (result.get("risposta") or "").strip() or facts_text
+    except Exception:
+        return facts_text
+
+
 def _build_narrative_without_ai(evidence: EvidencePackage) -> NarrativeReport:
     """Costruisce la narrazione esclusivamente dai dati strutturati, senza AI."""
     event_data = evidence.resolution
@@ -405,6 +449,7 @@ def _build_narrative_without_ai(evidence: EvidencePackage) -> NarrativeReport:
         luoghi=luoghi,
         reparti=reparti,
         cause_conseguenze=cause_conseguenze,
+        sintesi_concordanti="\n".join(f"- {c.text} [{', '.join(c.sources)}]" for c in evidence.concordant_facts) or "Non ci sono ancora fatti concordanti tra fonti indipendenti sufficienti per una sintesi.",
         fatti_concordanti=[c.to_dict() for c in evidence.concordant_facts],
         versioni_divergenti=[c.to_dict() for c in evidence.divergent_versions],
         elementi_incerti=[c.to_dict() for c in evidence.uncertain_elements],
@@ -437,7 +482,7 @@ def _build_narrative_with_ai(evidence: EvidencePackage, provider: str = "mistral
         evidence=evidence_json,
     )
 
-    fallback_order = ["mistral", "gpt", "claude", "perplexity"]
+    fallback_order = ["gpt", "mistral", "claude", "perplexity"]
     result = bio._call_with_fallback(
         system=NARRATIVE_SYSTEM,
         prompt=prompt,
@@ -512,6 +557,8 @@ def _build_narrative_with_ai(evidence: EvidencePackage, provider: str = "mistral
             source_ids=list(set(src_ids)),
         ))
 
+    sintesi_concordanti = _build_concordant_synthesis(event_name, evidence.concordant_facts, provider=provider)
+
     return NarrativeReport(
         event_name=event_name,
         event_id=evidence.event_id,
@@ -523,9 +570,10 @@ def _build_narrative_with_ai(evidence: EvidencePackage, provider: str = "mistral
         luoghi=json_data.get("luoghi", []),
         reparti=json_data.get("reparti", []),
         cause_conseguenze=json_data.get("cause_conseguenze", ""),
-        fatti_concordanti=json_data.get("fatti_concordanti", []),
-        versioni_divergenti=json_data.get("versioni_divergenti", []),
-        elementi_incerti=json_data.get("elementi_incerti", []),
+        sintesi_concordanti=sintesi_concordanti,
+        fatti_concordanti=[c.to_dict() for c in evidence.concordant_facts],
+        versioni_divergenti=[c.to_dict() for c in evidence.divergent_versions],
+        elementi_incerti=[c.to_dict() for c in evidence.uncertain_elements],
         fonti_archivistiche=[s.to_dict() for s in evidence.archival_sources],
         fonti_bibliografiche=[s.to_dict() for s in evidence.bibliographic_sources + evidence.web_sources],
         grafo=evidence.graph_data,
@@ -538,7 +586,7 @@ def _build_narrative_with_ai(evidence: EvidencePackage, provider: str = "mistral
 
 # ─── API principale ──────────────────────────────────────────────────────────
 
-def build_narrative(query: str, use_ai: bool = True, provider: str = "mistral") -> Dict[str, Any]:
+def build_narrative(query: str, use_ai: bool = True, provider: str = "gpt") -> Dict[str, Any]:
     """Pipeline completa: raccoglie evidenze e genera narrazione.
 
     Args:

@@ -1936,10 +1936,14 @@ def api_events_1gm_list():
 
 
 @app.get("/api/events/1gm/{event_name}")
-def api_event_1gm_dossier(event_name: str):
-    """Dossier completo per un evento: caduti, decorati, documenti, fonti con link."""
+def api_event_1gm_dossier(event_name: str, include_candidates: bool = False):
+    """Dossier completo per un evento: caduti, decorati, documenti, fonti con link.
+    
+    Fonti filtrate per compatibilita temporale (WWI/WWII) via linking v2.
+    Passare include_candidates=true per includere fonti needs_review.
+    """
     nome_decoded = event_name.replace("+", " ")
-    result = events.get_evento_1gm_dossier(nome_decoded)
+    result = events.get_evento_1gm_dossier(nome_decoded, include_candidates=include_candidates)
     if not result.get("ok", True) and result.get("error"):
         raise HTTPException(status_code=404, detail=result["error"])
     return result
@@ -2186,12 +2190,12 @@ def api_graph_soldati_cluster(cluster_field: str, cluster_value: str,
 
 
 @app.get("/api/events/{event_name}")
-def api_event_dossier_unified(event_name: str):
+def api_event_dossier_unified(event_name: str, include_candidates: bool = False):
     """Dossier unificato per evento: prova prima eventi_1gm.db (event-centric),
     poi fallback su eventi curati WW2 (fonti multilaterali)."""
     nome_decoded = event_name.replace("+", " ")
     # 1. Try event-centric DB (1GM + WW2 canonical events)
-    result = events.get_evento_1gm_dossier(nome_decoded)
+    result = events.get_evento_1gm_dossier(nome_decoded, include_candidates=include_candidates)
     if result.get("evento"):
         result["ok"] = True
         return {**result, "source": "eventi_1gm"}

@@ -1,7 +1,7 @@
 # IMI Extractor — Pipeline Complete
 
 > Documento di riferimento per il flusso dati end-to-end.
-> Versione: 2026-07-25 — Internet Archive Integration + AI Provider Consolidation + LeBI Fase 4
+> Versione: 2026-07-28 — Linking v2 + RAG Pipeline + AI Runtime + Graph Provenance + Event Canonical + Map Features
 
 ---
 
@@ -755,3 +755,654 @@ npm run build    # Build produzione in dist/
 - `templates/index.html` (DC runtime, 3173 righe) rimane servito da FastAPI su `/`
 - `frontend/dist/` può essere montato da FastAPI su route separata (es. `/app/`) o servito da CDN
 - Entrambi i frontend condividono gli stessi design tokens e gli stessi endpoint API
+
+---
+
+## 12. Pipeline Linking v2 (Provenance-Aware)
+
+### 12.1 Architettura
+
+Sostituisce i 6 script legacy frozen (`_gen_event_links.py`, `_gen_record_links.py`, ecc.) con un sistema modulare, provenance-aware, idempotente.
+
+```
+Record sorgente (es. internati #12345)
+    │
+    ▼
+┌──────────────────────────────────────────────────────────┐
+│  1. NORMALIZATION — linking/normalization.py             │
+│     normalize_name(): NFKD + accent stripping + lower    │
+│     normalize_date(): ISO/Italian/year/range → precision │
+│     normalize_place(): NFKD + strip, historical aliases  │
+│     VERSION = "2.0.0" (versionata per reproducibilità)   │
+│     Output: NormalizedName, NormalizedDate, NormalizedPlace │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  2. CANDIDATE GENERATION — linking/candidate_generation  │
+│     Blocking indexes (O(N+M), non O(N*M)):               │
+│       - phonetic_cognome: 3 consonanti prefisso          │
+│       - name_initial: cognome[:4] + nome[:1]             │
+│       - birth_year: anno nascita bucket                   │
+│       - place_prefix: luogo normalizzato[:6]             │
+│       - matricola: exact match                           │
+│     Dedup per (source_ns, source_key, target_ns,         │
+│                target_key, block_type)                   │
+│     Output: list[CandidatePair]                          │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  3. FEATURE EXTRACTION — linking/feature_extraction.py   │
+│     extract_features_person_source():                    │
+│       - name_cognome_exact / phonetic                    │
+│       - birth_date_compatible (date_overlap)             │
+│       - birth_place_compatible (_place_match con \b)     │
+│       - same_matricola, same_unit                        │
+│     extract_features_person_event():                     │
+│       - temporal_overlap (date_overlap persona↔evento)   │
+│       - geographic_compatible                            │
+│       - unit_in_theater (keyword match con \b)           │
+│     extract_features_document_event():                   │
+│       - _word_boundary_match(keyword, text) con \b       │
+│       - Salta AMBIGUOUS_KEYWORDS (campo, russia, ecc.)   │
+│       - keyword_in_title bonus                           │
+│     ConflictFlags:                                       │
+│       - ww1_ww2_mismatch (veto)                          │
+│       - born_after_event (veto)                          │
+│       - died_before_event (veto)                         │
+│       - omonimia_no_discriminator (veto)                 │
+│       - matricola_mismatch (veto)                        │
+│       - geo_incompatible, unit_not_active, event_too_broad│
+│     Output: (Features, ConflictFlags)                    │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  4. SCORING — linking/scoring.py                        │
+│     score_candidate(features, conflicts):                │
+│       - Base: name_cognome_exact +0.15, phonetic +0.08  │
+│       - name_nome_exact +0.05                            │
+│       - 0 discriminatori → weak, score 0.0-0.2          │
+│       - 1 discriminatore → moderate, +0.2               │
+│       - 2 discriminatori → moderate, +0.35              │
+│       - 3+ discriminatori → strong, +0.45               │
+│       - same_matricola +0.2 (fortissimo)                 │
+│       - birth_date + birth_place +0.1                    │
+│       - document_citation +0.1                           │
+│       - Cap 0.95 (mai 1.0)                               │
+│       - Veto → score max 0.15, evidence_strength=weak   │
+│       - confidence_calibrated = NULL (no golden dataset) │
+│     can_be_confirmed:                                    │
+│       not has_veto AND n_discriminators >= 2             │
+│       AND evidence_strength in (moderate, strong)        │
+│       AND features.name_match                            │
+│     Output: ScoreResult(raw_score, evidence_strength,    │
+│             conflict_flags, can_be_confirmed)            │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  5. PERSISTENCE — linking/persistence.py                 │
+│     create_pipeline_run(): UUID + code_commit_sha +      │
+│       configuration_hash (SHA256 del config JSON)       │
+│     register_resource(): idempotente su (namespace, key) │
+│     upsert_relation():                                   │
+│       - Chiave semantica: (source, target, type,         │
+│         algorithm_name, algorithm_version)              │
+│       - Symmetric: normalizza orientazione A-B vs B-A    │
+│       - Se esiste → UPDATE features/score/pipeline_run   │
+│       - Se nuovo → INSERT con tutti i campi provenance   │
+│     finish_pipeline_run(): counts + status + error       │
+│     Output: relation_id (UUID)                           │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  6. CLI — linking/cli.py                                │
+│     python -m linking.cli generate --dry-run             │
+│     python -m linking.cli generate --execute             │
+│     python -m linking.cli legacy-relations audit         │
+│     python -m linking.cli legacy-relations quarantine    │
+│       --dry-run / --execute                              │
+│     python -m linking.cli legacy-relations restore       │
+│     python -m linking.cli legacy-relations list          │
+│     python -m linking.cli kill-switch                    │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  7. API v2 — linking_v2_api.py                          │
+│     GET  /api/v2/status/manifest   (conteggi + kill switch)│
+│     GET  /api/v2/events            (eventi canonici v2)  │
+│     GET  /api/v2/relations         (relazioni con features)│
+│     POST /api/v2/kill-switch       (toggle legacy jobs)  │
+└──────────────────────────────────────────────────────────┘
+```
+
+### 12.2 Schema v2 (16 tabelle nuove)
+
+```
+LINKING V2 SCHEMA (SQLite — imi_internati.db)
+├── resource_registry          (UUID PK, kind, namespace, key)
+├── historical_events          (conflict_code, event_type, parent_event_id)
+├── relations                  (source_id, target_id, type, algorithm,
+│                               features JSON, raw_score, evidence_strength,
+│                               conflict_flags, pipeline_run_id)
+├── claims_v2                  (claim_type, subject_id, predicate, object_id)
+├── pipeline_runs              (algorithm_version, code_commit_sha,
+│                               configuration_hash, status, counts)
+├── legacy_relation_quarantine (migration_run_id, restored_at)
+├── golden_dataset_labels      (case_id, expected_status, expected_score)
+├── snapshot_metadata          (snap_id, checksum, table_count)
+├── archival_metadata          (resource_id, provenance_json)
+└── ... (6 tabelle graph provenance, vedi §15)
+```
+
+### 12.3 Kill Switch
+
+```python
+# linking/kill_switch.py
+class LegacyJob(Enum):
+    EVENT_LINKS              # _gen_event_links.py
+    RECORD_LINKS             # _gen_record_links.py
+    CLEAN_BAD_LINKS          # _clean_bad_links.py
+    FIX_GAIASCHI             # _fix_gaiaschi_db.py
+    SYNC_EVENT_LINKS_SUPABASE
+    SYNC_RECORD_LINKS_SUPABASE
+
+# Tutti disabled by default
+# Enable via env: LEGACY_JOB_LEGACY_EVENT_LINKS=true
+# Force execute: LEGACY_JOB_FORCE_EXECUTE=true
+# assert_frozen() → RuntimeError se disabled
+```
+
+### 12.4 Golden Dataset
+
+8 casi obbligatori per calibrazione:
+- 2 positive (match confermato, 2+ discriminatori)
+- 2 negative (veto conflict, same name different person)
+- 2 uncertain (1 discriminatore, omonimia possibile)
+- 2 edge cases (WW1/WW2 same place, date range overlap)
+
+### 12.5 Fix tecnici v2 vs legacy
+
+| # | Errore legacy | Fix v2 | File |
+|---|--------------|--------|------|
+| 1 | `in` substring matching | `\b` word boundary regex | `feature_extraction.py:341-349` |
+| 2 | Keyword ambigue senza discriminatore | `AMBIGUOUS_KEYWORDS` set + skip | `feature_extraction.py:78-82` |
+| 3 | WW1/WW2 misti senza conflict detection | `ww1_ww2_mismatch` veto | `feature_extraction.py:173-176` |
+| 4 | Confidence 0.9 arbitraria | `evidence_strength` + `confidence_calibrated=NULL` | `scoring.py:105` |
+| 5 | Skip-or-insert (no idempotency) | `upsert_relation()` con chiave semantica | `persistence.py:118-196` |
+| 6 | No provenance | `algorithm_version` + `pipeline_run_id` + `features` JSON | `persistence.py:180-193` |
+| 7 | `_place_match()` substring | `_word_boundary_match()` per luoghi | `feature_extraction.py:325-338` |
+
+---
+
+## 13. Pipeline RAG (Retrieval-Augmented Generation)
+
+### 13.1 Architettura
+
+```
+Query utente (es. "Mauthausen prigionia italiana WW1")
+    │
+    ▼
+┌──────────────────────────────────────────────────────────┐
+│  1. RETRIEVAL — rag_pipeline.py retrieve()               │
+│     Hybrid: FTS5 (BM25) + metadata filters              │
+│                                                        │
+│     FTS5:                                               │
+│       - Tokenizzazione \w{2,} + wildcard *              │
+│       - idx_{table}_fts (FTS5 virtual table)            │
+│       - ORDER BY rank (BM25 scoring)                    │
+│       - Tabelle: internati, caduti_albooro, decorati,   │
+│         menzioni, fonti_indice, archivio_documenti,     │
+│         fondi_archivistici                               │
+│                                                        │
+│     Metadata filters:                                   │
+│       - date_start / date_end → date_fields[]           │
+│       - place → place_fields[] LIKE %place%             │
+│       - TABLE_SPECS definisce campi per tabella         │
+│                                                        │
+│     Events DB (eventi_1gm):                             │
+│       - LIKE search su nome, descrizione, aliases,      │
+│         keywords                                        │
+│                                                        │
+│     Dedup per chunk_id ({table}:{id})                   │
+│     Output: list[RetrievedChunk] (max 30)               │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  2. RERANKING — rag_pipeline.py rerank()                 │
+│     Boost factors:                                      │
+│       - title_match: +0.2 (query in title)              │
+│       - text_match: +0.1 (query in text)                │
+│       - archival_source: +0.15 (fonti_indice, fondi)    │
+│       - primary_document: +0.2 (archivio_documenti,     │
+│         lettere_personali)                               │
+│       - mention_record: +0.1 (menzioni)                 │
+│       - temporal_match: +0.15 (same year as event)      │
+│       - temporal_close: +0.08 (±1 year)                 │
+│       - geographic_match: +0.12 (place overlap)         │
+│     Cap 1.0, sort desc by reranked_score                │
+│     Output: list[RerankedChunk] with reasons[]          │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  3. CONTEXT BUILDER — rag_pipeline.py build_context()    │
+│     System prompt: regole citazione [fonte: table#id]   │
+│       - Solo dati verificati, no invenzioni             │
+│       - Distingui confirmed vs single-source            │
+│       - Stato epistemico: confirmed, probable,          │
+│         candidate, to_review, conflicting, unverifiable │
+│     Token budget: max 6000 (default)                    │
+│     Truncation: se superato, tronca + warning           │
+│     Output: RAGContext(system_prompt, user_context,     │
+│             chunks, citations, token_estimate)          │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  4. AI GENERATION — ai_runtime.get_adapter().generate() │
+│     Adapter: LMStudioAdapter | RemoteAIAdapter |        │
+│              DeterministicTestAdapter                   │
+│     Input: RAGContext.system_prompt + user_context      │
+│     Output: GenerateResult(text, tokens, latency,       │
+│             provider, model)                            │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  5. OUTPUT VALIDATION — rag_pipeline.py                 │
+│     validate_ai_output(text, citations):                │
+│       - Check [fonte: table#id] references              │
+│       - Hallucination patterns:                         │
+│         "secondo la storiografia", "come è noto",       │
+│         "probabilmente morto/catturato/ferito"          │
+│       - Long output senza citazioni → warning           │
+│     Output: (is_valid, issues[])                        │
+└──────────────────────────────────────────────────────────┘
+```
+
+### 13.2 API RAG
+
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/rag/retrieve` | POST | Retrieval + reranking + context build |
+| `/api/rag/validate` | POST | Validazione output AI |
+
+### 13.3 Data Classes
+
+```python
+@dataclass
+class RetrievedChunk:
+    chunk_id: str          # "{table}:{id}"
+    source_table: str
+    source_id: int
+    title: str
+    text: str
+    score: float
+    retrieval_method: str  # "fts" | "metadata" | "semantic"
+    metadata: dict
+
+@dataclass
+class RerankedChunk:
+    chunk: RetrievedChunk
+    reranked_score: float
+    rerank_reasons: list[str]
+
+@dataclass
+class RAGContext:
+    system_prompt: str
+    user_context: str
+    chunks: list[RerankedChunk]
+    citations: list[dict]
+    token_estimate: int
+    truncated: bool
+    warnings: list[str]
+```
+
+---
+
+## 14. Pipeline AI Runtime
+
+### 14.1 Architettura Adapter
+
+```
+Codice applicativo (biography.py, event_research, RAG, ecc.)
+    │
+    ▼
+┌──────────────────────────────────────────────────────────┐
+│  ai_runtime.get_adapter() → InferenceAdapter (singleton)│
+│                                                        │
+│  Selezione adapter (priorità):                          │
+│    1. LM_STUDIO_API_URL env → LMStudioAdapter          │
+│       (OpenAI-compatible, CPU quantized, locale)        │
+│    2. AI_LOCAL_ONLY=true → DeterministicTestAdapter    │
+│       (no real AI, per test)                            │
+│    3. Default → RemoteAIAdapter                         │
+│       (delega ad ai_client.py con fallback chain)       │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+           ┌───────────┼───────────┐
+           ▼           ▼           ▼
+    LMStudioAdapter  RemoteAIAdapter  DeterministicTestAdapter
+    ┌────────────┐  ┌────────────┐  ┌────────────────────┐
+    │ /v1/chat/  │  │ ai_client  │  │ Echo / static      │
+    │ completions│  │ .call_ai() │  │ response           │
+    │            │  │            │  │                    │
+    │ /v1/embed  │  │ Fallback:  │  │ embed(): [0.0]*384 │
+    │ dings      │  │ OpenAI→    │  │                    │
+    │            │  │ Anthropic→ │  │ health(): ok       │
+    │ health:    │  │ Mistral→   │  │                    │
+    │ /v1/models │  │ Perplexity │  │                    │
+    │            │  │ → Gemini   │  │                    │
+    └────────────┘  └────────────┘  └────────────────────┘
+```
+
+### 14.2 Interfaccia InferenceAdapter
+
+```python
+class InferenceAdapter(ABC):
+    def generate(system, user, *, max_tokens, temperature, task_type, timeout) -> GenerateResult
+    def generate_structured(system, user, *, ...) -> GenerateResult  # JSON output
+    def embed(text, *, timeout) -> EmbedResult
+    def health() -> HealthResult
+```
+
+### 14.3 GenerateResult
+
+```python
+@dataclass
+class GenerateResult:
+    ok: bool
+    text: str
+    provider: str
+    model: str
+    input_tokens: int
+    output_tokens: int
+    latency_ms: int
+    error: str
+    citations: list[dict]
+    fallback_used: bool
+```
+
+### 14.4 API AI Runtime
+
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/ai-runtime/health` | GET | Stato adapter (healthy, provider, model, local) |
+| `/api/ai-runtime/config` | GET | Configurazione (no secrets): provider, local_only, fallback_order |
+| `/api/ai-runtime/benchmark` | POST | Benchmark generazione + latenza |
+| `/api/ai-runtime/reset` | POST | Reset singleton adapter (per test) |
+
+### 14.5 Configurazione
+
+```yaml
+# config/ai_runtime.yaml
+provider: lm_studio | remote | test
+local_only: false
+generation:
+  max_tokens: 4096
+  temperature: 0.3
+embedding:
+  model: bge-small-it
+remote:
+  fallback_order: [openai, anthropic, mistral, perplexity, gemini]
+```
+
+---
+
+## 15. Pipeline Graph Provenance
+
+### 15.1 Architettura
+
+```
+Frontend (GraphEntityPage.tsx) → /api/graph/entity/{table}/{id}
+    │
+    ▼
+┌──────────────────────────────────────────────────────────┐
+│  graph_service.py — get_entity_graph()                   │
+│  Read-through adapter su 5 tabelle legacy:               │
+│    - event_links (891K righe, eventi_1gm.db)             │
+│    - record_links (169K righe, imi_internati.db)         │
+│    - external_links (record esterni ↔ internati)         │
+│    - claim_relations (claim ↔ entità)                    │
+│    - menzioni (10K righe)                                │
+│                                                        │
+│  Per ogni arco:                                          │
+│    - Sistema originale (event_links, record_links, ecc.)│
+│    - ID originale preservato                             │
+│    - Nessun candidato legacy → confirmed automatico     │
+│    - Label umane (RELATION_LABELS)                       │
+│  Output: GraphResponse(nodes[], edges[], evidence[])    │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  Edge Review — graph_service.py review_edge()            │
+│  POST /api/graph/edges/{edge_id}/review                  │
+│    - status: confirmed | rejected | needs_review        │
+│    - reviewer, notes, timestamp                          │
+│    - Scrive in graph_edge_reviews                        │
+└──────────────────────────────────────────────────────────┘
+```
+
+### 15.2 Schema Graph (6 tabelle)
+
+```
+GRAPH SCHEMA (imi_internati.db)
+├── graph_nodes          (id, table, record_id, label, kind)
+├── graph_edges          (id, source_node, target_node,
+│                         relation_type, source_system, source_id,
+│                         confidence, status)
+├── graph_edge_reviews   (edge_id, reviewer, status, notes, timestamp)
+├── graph_pipeline_runs  (run_id, algorithm, started_at, status)
+├── graph_integrity_issues (edge_id, issue_type, description)
+└── archival_metadata    (resource_id, provenance_json)
+```
+
+### 15.3 API Graph
+
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/graph/entity/{table}/{id}` | GET | Grafo entità (nodi + archi + evidenze) |
+| `/api/graph/edges/{edge_id}/review` | POST | Review arco (confirm/reject/needs_review) |
+| `/api/graph/luoghi` | GET | Dati grafo luoghi |
+| `/api/graph/mesi` | GET | Dati grafo mesi |
+| `/api/graph/paesi` | GET | Dati grafo paesi |
+| `/api/graph/soldati/architecture` | GET | Dati grafo soldati/architettura |
+
+### 15.4 Frontend Graph
+
+- `GraphEntityPage.tsx` — pagina dedicata con ForceGraph visualization
+- Filtri per status (confirmed, candidate, rejected)
+- Click su arco → panel di review
+- Click su nodo → navigazione a entità
+
+---
+
+## 16. Pipeline Event Canonical
+
+### 16.1 Architettura
+
+```
+Evento (nome o ID)
+    │
+    ▼
+┌──────────────────────────────────────────────────────────┐
+│  1. SCHEMA — event_schema.py                             │
+│     12 colonne additive su eventi_1gm:                   │
+│       conflict_code (ww1/ww2/other)                     │
+│       event_type (battle, capture, internment, ecc.)    │
+│       parent_event_id (gerarchia)                        │
+│       canonical_place_id, geometry                       │
+│       languages, historical_place_names                  │
+│       description_claim_id, status                       │
+│     event_aliases table (90 righe, varianti nome)       │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  2. API — event_canonical_api.py                         │
+│     GET /api/canonical-events        (lista paginata)    │
+│     GET /api/canonical-events/{id}   (dettaglio)         │
+│     GET /api/canonical-events/{id}/children (sotto-eventi)│
+│     PATCH /api/canonical-events/{id} (update status)     │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  3. CONFLICT RECLASSIFICATION                            │
+│     7 eventi WWII riclassificati con conflict_code=ww2  │
+│     Parent hierarchy:                                    │
+│       Operazione Achse → Mauthausen e Gusen             │
+│       Operazione Achse → Lavoro forzato nel Reich        │
+│       Battaglie dell'Isonzo → Battaglia del Carso       │
+│       Battaglie dell'Isonzo → Monte San Michele          │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 17. Pipeline Map Features
+
+### 17.1 Architettura
+
+```
+Feature geografica (luogo, coordinate, evento)
+    │
+    ▼
+┌──────────────────────────────────────────────────────────┐
+│  1. SCHEMA — map_schema.py                               │
+│     map_features table:                                  │
+│       id, feature_type (point/line/polygon)             │
+│       label, description                                │
+│       geometry (GeoJSON TEXT)                           │
+│       source_table, source_id (provenance)              │
+│       event_id (FK eventi_1gm)                          │
+│       status: candidate | reviewed | published          │
+│       created_at, reviewed_at, reviewed_by              │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  2. API — map_features_api.py                            │
+│     GET  /api/map-features           (lista + filtri)    │
+│     POST /api/map-features           (create candidate)  │
+│     POST /api/map-features/{id}/review (review)          │
+└──────────────────────────────────────────────────────────┘
+```
+
+### 17.2 Frontend Map
+
+- Integrazione Leaflet in EventsPage e GraphEntityPage
+- Layer per tipo (punti battle, poligoni area, linee fronte)
+- Popup con dettaglio + link a evento
+- Filtri per status e conflict_code
+
+---
+
+## 18. Mappa Endpoint API v2 (14 nuovi)
+
+### Linking v2
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/v2/status/manifest` | GET | Conteggi DB + kill switch status |
+| `/api/v2/events` | GET | Eventi canonici v2 |
+| `/api/v2/relations` | GET | Relazioni con features + score |
+| `/api/v2/kill-switch` | POST | Toggle legacy jobs |
+
+### RAG
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/rag/retrieve` | POST | Retrieval + reranking + context |
+| `/api/rag/validate` | POST | Validazione output AI |
+
+### AI Runtime
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/ai-runtime/health` | GET | Stato adapter |
+| `/api/ai-runtime/config` | GET | Configurazione (no secrets) |
+| `/api/ai-runtime/benchmark` | POST | Benchmark generazione |
+| `/api/ai-runtime/reset` | POST | Reset adapter singleton |
+
+### Graph
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/graph/entity/{table}/{id}` | GET | Grafo entità |
+| `/api/graph/edges/{edge_id}/review` | POST | Review arco |
+
+### Map Features
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/map-features` | GET/POST | Lista / crea feature |
+| `/api/map-features/{id}/review` | POST | Review feature |
+
+### Event Canonical
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/canonical-events` | GET | Lista eventi canonici |
+| `/api/canonical-events/{id}` | GET | Dettaglio evento |
+| `/api/canonical-events/{id}/children` | GET | Sotto-eventi |
+| `/api/canonical-events/{id}` | PATCH | Update status |
+
+---
+
+## 19. Schema Migrations (tutte additive, reversibili)
+
+| Migration | DB | Tabelle/Colonne | Stato |
+|-----------|-----|-----------------|-------|
+| `linking/schema_v2.py` | imi_internati.db | 16 tabelle nuove | Applicata |
+| `graph_schema.py` | imi_internati.db | 6 tabelle graph | Applicata |
+| `event_schema.py` | eventi_1gm.db | 12 colonne + event_aliases | Applicata |
+| `map_schema.py` | eventi_1gm.db | map_features table | Applicata |
+| `sql/001_supabase_historical_archive_core.sql` | Supabase | 5 schemi, 21 tabelle | Pendente (requires approval) |
+
+---
+
+## 20. Sicurezza
+
+### 20.1 Secret Redaction — `linking/security.py`
+
+```python
+redact_secrets(text) → text con API keys, tokens, passwords mascherate
+```
+
+### 20.2 .env Tracking
+
+Verifica che `.env` sia in `.gitignore` e non committato.
+
+### 20.3 Packaging Allowlist
+
+Solo file approvati inclusi in distribuzione. Script legacy esclusi.
+
+### 20.4 Security Audit
+
+`run_security_audit()` → report completo: secrets, .env, packaging, permissions.
+
+---
+
+## 21. Test Suite
+
+### 21.1 Master Test — `test_linking_v2_master.py`
+
+20 test coprono:
+- Kill switch (frozen, enabled, force_execute)
+- Normalization (name, date, place, date_overlap)
+- Feature extraction (word boundary, ambiguous keywords, conflict flags)
+- Scoring (weak/moderate/strong, veto, cap 0.95)
+- Schema v2 (tabelle esistenti, indici, vincoli)
+- Security (redaction, .env check, packaging)
+- Persistence (idempotency, upsert, symmetric)
+- Golden dataset (8 casi, seeding, listing)
+- Candidate generation (blocking, dedup, no self-match)
+
+### 21.2 Esecuzione
+
+```bash
+python test_linking_v2_master.py
+# Expected: 20/20 PASS
+```

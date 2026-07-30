@@ -383,6 +383,22 @@ def evaluate_candidate(
     )
 
 
+def _normalize_ia_item(item: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalizza i nomi dei campi dal formato provider al formato evaluator.
+
+    Mappa: provider_record_id→identifier, titolo→title, date_start→date.
+    Preserva i campi originali, aggiunge solo i alias mancanti.
+    """
+    normalized = dict(item)
+    if not normalized.get("identifier") and normalized.get("provider_record_id"):
+        normalized["identifier"] = normalized["provider_record_id"]
+    if not normalized.get("title") and normalized.get("titolo"):
+        normalized["title"] = normalized["titolo"]
+    if not normalized.get("date") and normalized.get("date_start"):
+        normalized["date"] = normalized["date_start"]
+    return normalized
+
+
 def evaluate_candidates(
     items: List[Dict[str, Any]],
     event_data: Dict[str, Any],
@@ -391,7 +407,7 @@ def evaluate_candidates(
     """Valuta una lista di candidati IA.
 
     Args:
-        items: lista metadati IA
+        items: lista metadati IA (formato provider o formato raw IA)
         event_data: dati evento canonico
         files_map: mappa identifier → lista file (opzionale, per quality scoring)
 
@@ -401,8 +417,9 @@ def evaluate_candidates(
     files_map = files_map or {}
     evaluations = []
     for item in items:
-        files = files_map.get(item.get("identifier", ""), [])
-        ev = evaluate_candidate(item, event_data, files)
+        norm = _normalize_ia_item(item)
+        files = files_map.get(norm.get("identifier", ""), [])
+        ev = evaluate_candidate(norm, event_data, files)
         evaluations.append(ev)
     evaluations.sort(key=lambda e: e.overall_score, reverse=True)
     return evaluations

@@ -177,6 +177,8 @@ def _status_from_row(
     ):
         return "to_review"
     if source_system in {"event_links", "collegamenti"}:
+        if str(row.get("algorithm_version") or "") == "legacy" or not row.get("algorithm_version"):
+            return "to_review"
         return "candidate"
     if values & {"probable"}:
         return "probable"

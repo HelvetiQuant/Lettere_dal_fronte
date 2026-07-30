@@ -1,12 +1,33 @@
 #!/usr/bin/env python3
 """
-Pipeline event-centric per 1GM.
-Crea:
-1. Tabella eventi_1gm con battaglie/eventi canonici
-2. Tabella event_links che collega eventi a soldati, documenti, fonti, diari, immagini
-3. Query engine che dato un evento aggrega tutti i dati e risale alle fonti esterne
+DEPRECATED — Legacy event-centric linking pipeline.
+
+This script is FROZEN. It has known issues:
+- Mixes WW1/WW2 events with generic keywords (campo, Russia, Africa, Nero, Corno, Lana)
+- Uses non-tokenized substring matching
+- Breaks on first event match (order-dependent)
+- Skips entire processing if any links exist
+- No provenance, no algorithm version, no evidence
+- Confidence values are not calibrated
+
+Use the new linking v2 pipeline instead:
+    python -m linking.cli generate --dry-run
+
+To run this script in audit-only mode:
+    LEGACY_JOB_LEGACY_EVENT_LINKS=true python _gen_event_links.py
+
+To force execution (NOT RECOMMENDED):
+    LEGACY_JOB_LEGACY_EVENT_LINKS=true LEGACY_JOB_FORCE_EXECUTE=true python _gen_event_links.py
 """
-import sqlite3, json, re, os
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.EVENT_LINKS, "_gen_event_links.py is deprecated")
+
+import sqlite3, json, re
 from datetime import datetime
 from pathlib import Path
 

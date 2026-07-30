@@ -28,6 +28,10 @@ import time
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
+
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.MASS_INDEX_PARALLEL, "mass_index_parallel.py is frozen — use source_pipeline worker instead")
 from pathlib import Path
 from dotenv import load_dotenv
 

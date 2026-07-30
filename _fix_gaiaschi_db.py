@@ -1,3 +1,25 @@
+"""DEPRECATED — Legacy Gaiaschi correction.
+
+This script is FROZEN. It has known issues:
+- Direct UPDATE to internati.luogo_nascita without structured claim/review
+- "Confermata Grecia" without evidence locator or documental reference
+- No review_decision record
+- Uses entity_variants as workaround, not a proper claim model
+
+Use the new claim/review pipeline instead:
+    python -m linking.cli claims add --subject internati:22808 --predicate luogo_nascita --value "Nibbiano (Piacenza)" --status proposed
+
+To run in audit-only mode:
+    LEGACY_JOB_LEGACY_FIX_GAIASCHI=true python _fix_gaiaschi_db.py
+"""
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.FIX_GAIASCHI, "_fix_gaiaschi_db.py is deprecated")
+
 import sqlite3
 from datetime import datetime
 

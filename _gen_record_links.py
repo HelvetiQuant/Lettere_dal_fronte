@@ -1,8 +1,30 @@
-"""Grafo record-to-record: collega soldati che partecipano allo stesso evento/luogo/anno,
-poi collega fonti personali (diari, foto) ai singoli soldati.
-Tabella: record_links (from_table, from_id, to_table, to_id, link_type, confidence).
+"""DEPRECATED — Legacy record-to-record linking pipeline.
+
+This script is FROZEN. It has known issues:
+- Runs at import time (no main(), no CLI)
+- Deletes fonte_personale links on startup
+- Creates star topology with arbitrary hub (first ID)
+- Uses LIMIT 50 without ordering
+- Treats same-year as historical relation
+- O(N×M) scan of persons × fonti
+- No evidence, no candidate/confirmed distinction
+- Creates artificial centralities in the graph
+
+Use the new linking v2 pipeline instead:
+    python -m linking.cli generate --dry-run
+
+To run in audit-only mode:
+    LEGACY_JOB_LEGACY_RECORD_LINKS=true python _gen_record_links.py
 """
-import sqlite3, os, re, time
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from linking.kill_switch import LegacyJob, assert_frozen
+
+assert_frozen(LegacyJob.RECORD_LINKS, "_gen_record_links.py is deprecated")
+
+import sqlite3, re, time
 from datetime import datetime
 
 DB = os.path.join(os.path.dirname(__file__), "imi_internati.db")
