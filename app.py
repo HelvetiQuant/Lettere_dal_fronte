@@ -600,6 +600,88 @@ def api_ai_research_history(limit: int = 20):
     return {"ricerche": get_ai_ricerche(limit=limit)}
 
 
+@app.post("/api/ai-web-search")
+def api_ai_web_search(data: dict = Body(...)):
+    """Ricerca storica con OpenAI web search (Responses API).
+
+    Usa gpt-5.5 con web_search tool per cercare informazioni online reali.
+    Body: {query: str, context_size?: "low"|"medium"|"high", model?: str}
+    """
+    query = data.get("query", "").strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="Query vuota")
+
+    context_size = data.get("context_size", "high")
+    model = data.get("model", "gpt-5.5")
+
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    try:
+        from openai import OpenAI
+        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+
+        instructions = data.get("instructions", (
+            "Sei un ricercatore storico-archivistico specializzato in storia militare "
+            "italiana del 1900 (Prima e Seconda Guerra Mondiale, IMI, internati, caduti, "
+            "decorati). Cerca informazioni reali online negli archivi italiani. "
+            "NON inventare dati. Rispondi in italiano con formato strutturato: "
+            "DATI TROVATI, FONTI CONSULTATE (con URL), AFFIDABILITA, SUGGERIMENTI."
+        ))
+
+        resp = client.responses.create(
+            model=model,
+            tools=[{
+                "type": "web_search",
+                "search_context_size": context_size,
+                "user_location": {
+                    "type": "approximate",
+                    "country": "IT",
+                },
+            }],
+            instructions=instructions,
+            input=query,
+        )
+
+        sources = []
+        search_actions = []
+        if hasattr(resp, "output"):
+            for item in resp.output:
+                if item.type == "web_search_call":
+                    action_type = ""
+                    if hasattr(item, "action") and hasattr(item.action, "type"):
+                        action_type = item.action.type
+                    search_actions.append(action_type)
+                    if hasattr(item, "results") and item.results:
+                        for r in item.results:
+                            url = getattr(r, "url", None) or ""
+                            title = getattr(r, "title", None) or url
+                            if url:
+                                sources.append({"url": url, "title": title})
+
+        usage = {}
+        if hasattr(resp, "usage"):
+            u = resp.usage
+            usage = {
+                "input_tokens": getattr(u, "input_tokens", 0),
+                "output_tokens": getattr(u, "output_tokens", 0),
+                "total_tokens": getattr(u, "total_tokens", 0),
+            }
+
+        return {
+            "ok": True,
+            "query": query,
+            "model": model,
+            "text": resp.output_text,
+            "sources": sources,
+            "search_actions": search_actions,
+            "usage": usage,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore web search: {str(e)}")
+
+
 # ─── Caduti Albo d'Oro (Cimeetrincee) ───
 
 @app.get("/api/albooro")

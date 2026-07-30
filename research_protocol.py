@@ -188,6 +188,9 @@ class Dossier:
     # AI metadata
     ai_used: bool = False
     ai_model: str = ""
+    # Web search fallback
+    web_search_used: bool = False
+    web_search_results: dict = field(default_factory=dict)
     # Timestamps
     created_at: str = ""
     completed_at: str = ""
@@ -819,6 +822,12 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
         for contra in c.contraddizioni:
             dossier.contraddizioni.append({"candidato": c.nome_originale, "contraddizione": contra})
 
+    # Web search fallback: if data is insufficient, search online via OpenAI
+    # Trigger when: no candidates, all insufficient, or only weak (POSSIBLE) matches
+    has_strong_match = any(c.stato in ("CONFIRMED", "PROBABLE") for c in dossier.candidati)
+    if not has_strong_match:
+        dossier = _web_search_fallback(si, dossier)
+
     # AI dossier synthesis
     if use_ai:
         dossier = _ai_build_dossier(dossier)
@@ -834,6 +843,107 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
     dossier.completed_at = datetime.now().isoformat()
     log.info("ResearchProtocol: completed in %.1fs — status=%s candidates=%d",
              (datetime.now() - t_start).total_seconds(), dossier.stato_identificazione, len(dossier.candidati))
+    return dossier
+
+
+def _web_search_fallback(si: SearchInput, dossier: Dossier) -> Dossier:
+    """Fallback: se i risultati locali sono insufficienti, usa OpenAI web search."""
+    try:
+        import os
+        from openai import OpenAI
+        from dotenv import load_dotenv
+        load_dotenv()
+
+        api_key = os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            log.info("Web search fallback: OPENAI_API_KEY non configurata, skip")
+            return dossier
+
+        client = OpenAI(api_key=api_key)
+
+        query_parts = [si.full_name]
+        if si.anno_nascita:
+            query_parts.append(f"nato nel {si.anno_nascita}")
+        if si.luogo_nascita:
+            query_parts.append(f"a {si.luogo_nascita}")
+        if si.paternita:
+            query_parts.append(f"figlio di {si.paternita}")
+        if si.grado:
+            query_parts.append(f"grado {si.grado}")
+        if si.reparto:
+            query_parts.append(f"reparto {si.reparto}")
+        if si.conflitto_presunto:
+            query_parts.append(si.conflitto_presunto)
+        else:
+            query_parts.append("militare italiano Prima/Seconda Guerra Mondiale")
+
+        query = ", ".join(query_parts)
+        query += ". Verifica in Albo d'Oro caduti (cadutigrandeguerra.it), ruoli matricolari (antenati.cultura.gov.it), Archivi di Stato, ICRC, LeBI, o altri archivi storici italiani online."
+
+        instructions = (
+            "Sei un ricercatore storico-archivistico specializzato in storia militare "
+            "italiana del 1900 (Prima e Seconda Guerra Mondiale, IMI, internati, caduti, "
+            "decorati). Cerca informazioni reali online negli archivi italiani. "
+            "NON inventare dati. Rispondi in italiano con formato strutturato: "
+            "DATI TROVATI, FONTI CONSULTATE (con URL), AFFIDABILITA, SUGGERIMENTI."
+        )
+
+        log.info("Web search fallback: querying OpenAI for '%s'", query[:80])
+
+        resp = client.responses.create(
+            model="gpt-5.5",
+            tools=[{
+                "type": "web_search",
+                "search_context_size": "high",
+                "user_location": {
+                    "type": "approximate",
+                    "country": "IT",
+                },
+            }],
+            instructions=instructions,
+            input=query,
+        )
+
+        sources = []
+        search_actions = []
+        if hasattr(resp, "output"):
+            for item in resp.output:
+                if item.type == "web_search_call":
+                    action_type = ""
+                    if hasattr(item, "action") and hasattr(item.action, "type"):
+                        action_type = item.action.type
+                    search_actions.append(action_type)
+                    if hasattr(item, "results") and item.results:
+                        for r in item.results:
+                            url = getattr(r, "url", None) or ""
+                            title = getattr(r, "title", None) or url
+                            if url:
+                                sources.append({"url": url, "title": title})
+
+        usage = {}
+        if hasattr(resp, "usage"):
+            u = resp.usage
+            usage = {
+                "input_tokens": getattr(u, "input_tokens", 0),
+                "output_tokens": getattr(u, "output_tokens", 0),
+                "total_tokens": getattr(u, "total_tokens", 0),
+            }
+
+        dossier.web_search_used = True
+        dossier.web_search_results = {
+            "query": query,
+            "text": resp.output_text,
+            "sources": sources,
+            "search_actions": search_actions,
+            "usage": usage,
+        }
+
+        log.info("Web search fallback: completed — %d sources, %d tokens",
+                 len(sources), usage.get("total_tokens", 0))
+
+    except Exception as e:
+        log.warning("Web search fallback failed: %s", e)
+
     return dossier
 
 
