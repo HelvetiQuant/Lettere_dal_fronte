@@ -822,11 +822,8 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
         for contra in c.contraddizioni:
             dossier.contraddizioni.append({"candidato": c.nome_originale, "contraddizione": contra})
 
-    # Web search fallback: if data is insufficient, search online via OpenAI
-    # Trigger when: no candidates, all insufficient, or only weak (POSSIBLE) matches
-    has_strong_match = any(c.stato in ("CONFIRMED", "PROBABLE") for c in dossier.candidati)
-    if not has_strong_match:
-        dossier = _web_search_fallback(si, dossier)
+    # Web search: always run to confirm and expand results with online sources
+    dossier = _web_search_enrich(si, dossier)
 
     # AI dossier synthesis
     if use_ai:
@@ -846,8 +843,8 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
     return dossier
 
 
-def _web_search_fallback(si: SearchInput, dossier: Dossier) -> Dossier:
-    """Fallback: se i risultati locali sono insufficienti, usa OpenAI web search."""
+def _web_search_enrich(si: SearchInput, dossier: Dossier) -> Dossier:
+    """Web search con OpenAI: conferma candidati locali e amplia con fonti online certe."""
     try:
         import os
         from openai import OpenAI
@@ -856,7 +853,7 @@ def _web_search_fallback(si: SearchInput, dossier: Dossier) -> Dossier:
 
         api_key = os.environ.get("OPENAI_API_KEY", "")
         if not api_key:
-            log.info("Web search fallback: OPENAI_API_KEY non configurata, skip")
+            log.info("Web search: OPENAI_API_KEY non configurata, skip")
             return dossier
 
         client = OpenAI(api_key=api_key)
@@ -878,17 +875,52 @@ def _web_search_fallback(si: SearchInput, dossier: Dossier) -> Dossier:
             query_parts.append("militare italiano Prima/Seconda Guerra Mondiale")
 
         query = ", ".join(query_parts)
-        query += ". Verifica in Albo d'Oro caduti (cadutigrandeguerra.it), ruoli matricolari (antenati.cultura.gov.it), Archivi di Stato, ICRC, LeBI, o altri archivi storici italiani online."
+
+        # Include local candidates as context for confirmation
+        local_context = ""
+        if dossier.candidati:
+            confirmed_candidates = []
+            for c in dossier.candidati:
+                if c.stato == "INSUFFICIENT_DATA":
+                    continue
+                parts = [c.nome_originale]
+                if c.paternita:
+                    parts.append(f"padre: {c.paternita}")
+                if c.data_nascita:
+                    parts.append(f"nascita: {c.data_nascita}")
+                if c.luogo_nascita:
+                    parts.append(f"luogo: {c.luogo_nascita}")
+                if c.reparto:
+                    parts.append(f"reparto: {c.reparto}")
+                if c.grado:
+                    parts.append(f"grado: {c.grado}")
+                if c.morte:
+                    parts.append(f"sorte: {c.morte}")
+                parts.append(f"stato: {c.stato}")
+                confirmed_candidates.append(" | ".join(parts))
+
+            if confirmed_candidates:
+                local_context = "\n\nCANDIDATI TROVATI NEL DB LOCALE (da confermare):\n" + "\n".join(
+                    f"- {c}" for c in confirmed_candidates[:10]
+                )
+                query += local_context
+                query += "\n\nVerifica se questi candidati corrispondono a record online reali (Albo d'Oro, ICRC, archivi statali). Cerca anche ULTERIORI fonti certe non presenti nel DB locale."
+
+        query += "\n\nVerifica in: cadutigrandeguerra.it (Albo d'Oro), antenati.cultura.gov.it (ruoli matricolari), Archivi di Stato, ICRC, LeBI, Ministero Difesa, o altri archivi storici italiani online."
 
         instructions = (
             "Sei un ricercatore storico-archivistico specializzato in storia militare "
             "italiana del 1900 (Prima e Seconda Guerra Mondiale, IMI, internati, caduti, "
             "decorati). Cerca informazioni reali online negli archivi italiani. "
-            "NON inventare dati. Rispondi in italiano con formato strutturato: "
-            "DATI TROVATI, FONTI CONSULTATE (con URL), AFFIDABILITA, SUGGERIMENTI."
+            "NON inventare dati. Rispondi in italiano con formato strutturato:\n"
+            "1. CONFERMA CANDIDATI: per ogni candidato locale, indica se confermato online o meno\n"
+            "2. NUOVI DATI TROVATI: informazioni aggiuntive non presenti nel DB locale\n"
+            "3. FONTI CONSULTATE: elenco con URL\n"
+            "4. AFFIDABILITA: livello (alta/media/bassa) con motivazione\n"
+            "5. SUGGERIMENTI: fonti archivistiche da consultare"
         )
 
-        log.info("Web search fallback: querying OpenAI for '%s'", query[:80])
+        log.info("Web search: querying OpenAI for '%s'", query[:80])
 
         resp = client.responses.create(
             model="gpt-5.5",
@@ -938,11 +970,11 @@ def _web_search_fallback(si: SearchInput, dossier: Dossier) -> Dossier:
             "usage": usage,
         }
 
-        log.info("Web search fallback: completed — %d sources, %d tokens",
+        log.info("Web search: completed — %d sources, %d tokens",
                  len(sources), usage.get("total_tokens", 0))
 
     except Exception as e:
-        log.warning("Web search fallback failed: %s", e)
+        log.warning("Web search failed: %s", e)
 
     return dossier
 
