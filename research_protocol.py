@@ -421,7 +421,16 @@ def score_candidate(candidate: Candidate, si: SearchInput) -> str:
     elif contradictions and not strong_matches:
         candidate.stato = "EXCLUDED"
     else:
-        candidate.stato = "INSUFFICIENT_DATA"
+        # If user provided no strong identifiers, but candidate has data,
+        # mark as POSSIBLE instead of INSUFFICIENT_DATA
+        has_si_identifiers = any([si.data_nascita, si.luogo_nascita, si.paternita, si.numero_matricola])
+        has_candidate_data = any([candidate.data_nascita, candidate.luogo_nascita,
+                                  candidate.paternita, candidate.reparto, candidate.grado,
+                                  candidate.matricola, candidate.distretto])
+        if not has_si_identifiers and has_candidate_data:
+            candidate.stato = "POSSIBLE"
+        else:
+            candidate.stato = "INSUFFICIENT_DATA"
 
     return candidate.stato
 
@@ -521,11 +530,23 @@ def _search_local(si: SearchInput, variants: List[NameVariant], dossier: Dossier
     matches = _search_local_sqlite(pq)
     with _dossier_lock:
         for m in matches:
+            rd = m.raw_data or {}
             c = Candidate(
                 nome_originale=m.name, nome_normalizzato=m.name,
-                data_nascita=str(m.birth_year or ""), luogo_nascita=m.birth_place,
-                reparto=m.military_unit, grado=m.rank, morte=m.fate,
-                stato="POSSIBLE", raw_data=m.raw_data, confidence=m.confidence,
+                data_nascita=str(m.birth_year or rd.get("classe") or rd.get("anno_nascita") or rd.get("data_nascita") or ""),
+                luogo_nascita=m.birth_place or rd.get("luogo_nascita") or rd.get("comune_nascita") or rd.get("comune_attuale") or "",
+                paternita=rd.get("paternita") or rd.get("nominativo_paternita") or "",
+                maternita=rd.get("maternita") or "",
+                residenza=rd.get("residenza") or rd.get("comune_residenza") or rd.get("luogo_dimora") or "",
+                professione=rd.get("professione") or "",
+                matricola=rd.get("matricola") or rd.get("numero_matricola") or "",
+                distretto=rd.get("distretto") or rd.get("distretto_militare") or "",
+                reparto=m.military_unit or rd.get("reparto") or "",
+                grado=m.rank or rd.get("grado") or "",
+                morte=m.fate or rd.get("causa_morte") or "",
+                prigionia=rd.get("luogo_internamento") or rd.get("luogo_cattura") or "",
+                sepoltura=rd.get("cimitero") or rd.get("luogo_sepoltura") or rd.get("paese_cimitero") or "",
+                stato="POSSIBLE", raw_data=rd, confidence=m.confidence,
             )
             c.fonti.append(SourceRecord(
                 url=m.url, istituzione=f"SQLite:{m.source_detail}",
@@ -553,9 +574,21 @@ def _search_supabase(si: SearchInput, dossier: Dossier):
     matches = _search_supabase(pq)
     with _dossier_lock:
         for m in matches:
+            rd = m.raw_data or {}
             c = Candidate(
                 nome_originale=m.name, nome_normalizzato=m.name,
-                stato="POSSIBLE", raw_data=m.raw_data, confidence=m.confidence,
+                data_nascita=str(m.birth_year or rd.get("classe") or rd.get("anno_nascita") or rd.get("data_nascita") or ""),
+                luogo_nascita=m.birth_place or rd.get("luogo_nascita") or rd.get("comune_nascita") or rd.get("comune_attuale") or "",
+                paternita=rd.get("paternita") or rd.get("nominativo_paternita") or "",
+                maternita=rd.get("maternita") or "",
+                residenza=rd.get("residenza") or rd.get("comune_residenza") or "",
+                matricola=rd.get("matricola") or rd.get("numero_matricola") or "",
+                distretto=rd.get("distretto") or rd.get("distretto_militare") or "",
+                reparto=m.military_unit or rd.get("reparto") or "",
+                grado=m.rank or rd.get("grado") or "",
+                morte=m.fate or rd.get("causa_morte") or "",
+                prigionia=rd.get("luogo_internamento") or rd.get("luogo_cattura") or "",
+                stato="POSSIBLE", raw_data=rd, confidence=m.confidence,
             )
             c.fonti.append(SourceRecord(
                 url=m.url, istituzione=f"Supabase:{m.source_detail}",
@@ -583,9 +616,21 @@ def _search_federated(si: SearchInput, variants: List[NameVariant], dossier: Dos
     matches = _search_federated(pq)
     with _dossier_lock:
         for m in matches:
+            rd = m.raw_data or {}
             c = Candidate(
                 nome_originale=m.name, nome_normalizzato=m.name,
-                stato="POSSIBLE", raw_data=m.raw_data, confidence=m.confidence,
+                data_nascita=str(m.birth_year or rd.get("classe") or rd.get("anno_nascita") or rd.get("data_nascita") or ""),
+                luogo_nascita=m.birth_place or rd.get("luogo_nascita") or rd.get("comune_nascita") or rd.get("comune_attuale") or "",
+                paternita=rd.get("paternita") or rd.get("nominativo_paternita") or rd.get("father_name") or "",
+                maternita=rd.get("maternita") or rd.get("mother_name") or "",
+                residenza=rd.get("residenza") or rd.get("comune_residenza") or "",
+                matricola=rd.get("matricola") or rd.get("numero_matricola") or rd.get("prisoner_number") or "",
+                distretto=rd.get("distretto") or rd.get("distretto_militare") or "",
+                reparto=m.military_unit or rd.get("reparto") or rd.get("regiment") or rd.get("unit") or "",
+                grado=m.rank or rd.get("grado") or rd.get("rank") or rd.get("grade") or "",
+                morte=m.fate or rd.get("causa_morte") or rd.get("fate") or "",
+                prigionia=rd.get("luogo_internamento") or rd.get("luogo_cattura") or rd.get("camp") or "",
+                stato="POSSIBLE", raw_data=rd, confidence=m.confidence,
             )
             provider = m.source_detail
             c.fonti.append(SourceRecord(
