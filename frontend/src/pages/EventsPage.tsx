@@ -16,11 +16,13 @@ export function EventsPage() {
   const [error, setError] = useState<ApiError | null>(null);
 
   useEffect(() => {
+    const ac = new AbortController();
     Promise.all([
-      api.events1gm(),
-      api.canonicalEvents(),
+      api.events1gm(undefined, ac.signal),
+      api.canonicalEvents(undefined, ac.signal),
     ])
       .then(([d, ce]) => {
+        if (ac.signal.aborted) return;
         setEvents(d.eventi || []);
         const map = new Map<string, CanonicalEvent>();
         for (const e of ce.events) {
@@ -28,8 +30,15 @@ export function EventsPage() {
         }
         setCanonicalEvents(map);
       })
-      .catch((e) => setError(e instanceof ApiError ? e : new ApiError(0, String(e))))
-      .finally(() => setLoading(false));
+      .catch((e) => {
+        if (ac.signal.aborted) return;
+        setError(e instanceof ApiError ? e : new ApiError(0, String(e)));
+      })
+      .finally(() => {
+        if (ac.signal.aborted) return;
+        setLoading(false);
+      });
+    return () => ac.abort();
   }, []);
 
   return (

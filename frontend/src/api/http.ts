@@ -33,7 +33,8 @@ async function request<T>(
   const url = buildUrlWithParams(path, params);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  let timedOut = false;
+  const timeoutId = setTimeout(() => { timedOut = true; controller.abort('timeout'); }, timeout);
   const combinedSignal = signal || controller.signal;
 
   try {
@@ -59,10 +60,14 @@ async function request<T>(
   } catch (e) {
     if (e instanceof ApiError) throw e;
     if (e instanceof DOMException && e.name === 'AbortError') {
-      if (retry && method === 'GET') {
-        return request<T>(method, path, { ...opts, retry: false });
+      if (timedOut) {
+        if (retry && method === 'GET') {
+          timedOut = false;
+          return request<T>(method, path, { ...opts, retry: false });
+        }
+        throw new TimeoutError(url);
       }
-      throw new TimeoutError(url);
+      throw new ApiError(0, 'Richiesta cancellata', undefined, url);
     }
     throw new ApiError(0, (e as Error).message || 'Errore di rete', undefined, url);
   } finally {

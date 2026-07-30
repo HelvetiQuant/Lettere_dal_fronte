@@ -54,7 +54,7 @@ export const api = {
   decoratiDetail: (id: number) => get<DecoratoRecord>(`/api/decorati/${id}`),
 
   // ── Events ──
-  events1gm: () => get<{ eventi: EventRecord[] }>('/api/events/1gm'),
+  events1gm: (params?: Record<string, string | number | boolean | undefined>, signal?: AbortSignal) => get<{ eventi: EventRecord[] }>('/api/events/1gm', params, signal),
   eventDossier: (eventName: string) =>
     get<EventDossierResponse>(`/api/events/1gm/${encodeURIComponent(eventName)}`),
   eventCaduti: (eventName: string, limit = 50) =>
@@ -95,8 +95,8 @@ export const api = {
     post<Record<string, unknown>>(`/api/graph/edges/${encodeURIComponent(edgeId)}/review`, body),
 
   // ── Canonical Events ──
-  canonicalEvents: (opts?: { conflict?: string; event_type?: string; limit?: number }) =>
-    get<CanonicalEventListResponse>('/api/canonical-events', opts),
+  canonicalEvents: (opts?: { conflict?: string; event_type?: string; limit?: number }, signal?: AbortSignal) =>
+    get<CanonicalEventListResponse>('/api/canonical-events', opts, signal),
   canonicalEvent: (stableId: string) =>
     get<CanonicalEvent>(`/api/canonical-events/${stableId}`),
   canonicalEventChildren: (stableId: string) =>
