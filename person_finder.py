@@ -190,38 +190,63 @@ def _search_local_sqlite(pq: PersonQuery) -> List[PersonMatch]:
         return matches
 
     # Define all searchable tables with their text columns
+    # surname_cols: columns where the surname appears as a word (name fields)
+    # other_cols: additional text columns for nome filtering only
     table_configs = [
-        ("internati", ["cognome", "nome", "luogo_nascita", "residenza", "luogo_internamento", "raw_text"]),
-        ("caduti_albooro", ["nominativo", "paternita", "comune_attuale", "grado", "reparto"]),
-        ("caduti_ministero", ["cognome", "nome", "nominativo_paternita", "comune_nascita"]),
-        ("caduti_bologna", ["nome", "paternita", "luogo_nascita", "luogo_dimora"]),
-        ("caduti_cwgc", ["nome", "cognome", "regiment", "cimitero"]),
-        ("caduti_sardi", ["cognome", "nome", "paternita", "luogo_nascita"]),
-        ("caduti_francia_ww1", ["nom", "lieu_naissance", "unite"]),
-        ("decorati", ["cognome", "nome", "comune_nascita", "comune_residenza"]),
-        ("decorati_nastroazzurro", ["cognome", "nome", "arma", "tipo_decorazione"]),
-        ("menzioni", ["cognome", "nome", "grado", "reparto", "luogo", "contesto"]),
-        ("fonti_indice", ["titolo", "descrizione"]),
-        ("lettere_personali", ["mittente", "destinatario", "testo"]),
-        ("entita", ["nome", "tipo", "descrizione"]),
-        ("eventi_1gm", ["nome", "descrizione", "aliases", "keywords"]),
-        ("archivio_documenti", ["titolo", "descrizione", "soggetto"]),
-        ("external_person_mentions", ["person_name", "context"]),
+        ("internati", ["cognome", "nome"], ["luogo_nascita", "residenza", "luogo_internamento", "raw_text"]),
+        ("caduti_albooro", ["nominativo"], ["paternita", "comune_attuale", "grado", "reparto"]),
+        ("caduti_ministero", ["cognome", "nome"], ["nominativo_paternita", "comune_nascita"]),
+        ("caduti_bologna", ["nome"], ["paternita", "luogo_nascita", "luogo_dimora"]),
+        ("caduti_cwgc", ["nome", "cognome"], ["regiment", "cimitero"]),
+        ("caduti_sardi", ["cognome", "nome"], ["paternita", "luogo_nascita"]),
+        ("caduti_francia_ww1", ["nom"], ["lieu_naissance", "unite"]),
+        ("decorati", ["cognome", "nome"], ["comune_nascita", "comune_residenza"]),
+        ("decorati_nastroazzurro", ["cognome", "nome"], ["arma", "tipo_decorazione"]),
+        ("menzioni", ["cognome", "nome"], ["grado", "reparto", "luogo", "contesto"]),
+        ("fonti_indice", [], ["titolo", "descrizione"]),
+        ("lettere_personali", [], ["mittente", "destinatario", "testo"]),
+        ("entita", ["nome"], ["tipo", "descrizione"]),
+        ("eventi_1gm", ["nome"], ["descrizione", "aliases", "keywords"]),
+        ("archivio_documenti", [], ["titolo", "descrizione", "soggetto"]),
+        ("external_person_mentions", ["person_name"], ["context"]),
     ]
 
-    for table, cols in table_configs:
+    # Columns that contain person names (for nome filtering)
+    name_columns = {"nominativo", "cognome", "nome", "name", "person_name", "nom"}
+
+    for table, surname_cols, other_cols in table_configs:
         try:
             tbl_cols = [d[1] for d in conn.execute(f"PRAGMA table_info({table})").fetchall()]
-            search_cols = [c for c in cols if c in tbl_cols]
-            if not search_cols:
-                continue
+            s_cols = [c for c in surname_cols if c in tbl_cols]
+            o_cols = [c for c in other_cols if c in tbl_cols]
+            if not s_cols:
+                # No surname columns — skip surname search, only use for nome filtering
+                # (e.g. fonti_indice, archivio_documenti)
+                if not pq.nome or pq.nome == pq.cognome:
+                    continue
+                s_cols = o_cols  # fallback: search nome on all columns
+            else:
+                search_cols = s_cols
 
-            conditions = " OR ".join(f"CAST({c} AS TEXT) LIKE '%{search_term}%'" for c in search_cols)
+            # Word-boundary matching for surname: match at start of field or after space
+            # This prevents 'LARI' matching 'ALARIO', 'CLARICE', or place name 'Lari'
+            surname = search_term.replace("'", "''")
+            conditions = " OR ".join(
+                f"(CAST({c} AS TEXT) LIKE '{surname} %' OR CAST({c} AS TEXT) LIKE '{surname}' OR CAST({c} AS TEXT) LIKE '{surname}\\_%' ESCAPE '\\')"
+                for c in s_cols
+            )
+
+            # Filter by nome on name columns + other text columns
             if pq.nome and pq.nome != pq.cognome:
-                nome_conditions = " OR ".join(f"CAST({c} AS TEXT) LIKE '%{pq.nome}%'" for c in search_cols)
+                nome = pq.nome.replace("'", "''")
+                all_cols = s_cols + o_cols
+                nome_conditions = " OR ".join(
+                    f"(CAST({c} AS TEXT) LIKE '%{nome}%')"
+                    for c in all_cols
+                )
                 conditions = f"({conditions}) AND ({nome_conditions})"
 
-            rows = conn.execute(f"SELECT * FROM {table} WHERE {conditions} LIMIT 20").fetchall()
+            rows = conn.execute(f"SELECT * FROM {table} WHERE {conditions} LIMIT 30").fetchall()
             for r in rows:
                 d = dict(r)
                 # Extract name fields
