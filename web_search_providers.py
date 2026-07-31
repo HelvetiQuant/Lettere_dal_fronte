@@ -170,10 +170,63 @@ def search_brave(query: str, *, max_results: int = 10, timeout: int = 30) -> Web
                                  elapsed_ms=int((time.time() - t0) * 1000))
 
 
+# ─── SerpApi ─────────────────────────────────────────────────────────────────
+
+def search_serpapi(query: str, *, max_results: int = 10, timeout: int = 60) -> WebSearchResponse:
+    """SerpApi — Google Search API via serpapi.com. 100 free searches/month.
+
+    Endpoint: https://serpapi.com/search?engine=google
+    Auth: api_key as query parameter.
+    Returns organic_results with title, link, snippet.
+    """
+    api_key = _get_key("SERPAPI_API_KEY")
+    if not api_key:
+        return WebSearchResponse(ok=False, provider="serpapi", query=query, error="SERPAPI_API_KEY not set")
+
+    t0 = time.time()
+    try:
+        resp = requests.get(
+            "https://serpapi.com/search",
+            params={
+                "engine": "google",
+                "q": query,
+                "num": max_results,
+                "api_key": api_key,
+            },
+            timeout=timeout,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        results = []
+        for r in data.get("organic_results", []):
+            results.append(SearchResult(
+                url=r.get("link", ""),
+                title=r.get("title", ""),
+                snippet=r.get("snippet", "")[:500],
+                score=1.0 - (len(results) * 0.1),
+            ))
+        # Knowledge graph if present
+        kg = data.get("knowledge_graph", {})
+        if kg:
+            results.insert(0, SearchResult(
+                url=kg.get("website", "") or "",
+                title=kg.get("title", ""),
+                snippet=kg.get("description", "")[:500],
+                score=1.0,
+            ))
+        return WebSearchResponse(
+            ok=True, provider="serpapi", query=query, results=results,
+            elapsed_ms=int((time.time() - t0) * 1000),
+        )
+    except Exception as e:
+        return WebSearchResponse(ok=False, provider="serpapi", query=query, error=str(e)[:200],
+                                 elapsed_ms=int((time.time() - t0) * 1000))
+
+
 # ─── Orchestrator ────────────────────────────────────────────────────────────
 
 # Tavily = primary (1000 free calls/month)
-# Serper = validation only (limited monthly calls, Google results for cross-check)
+# SerpApi = validation/deep search (100 free calls/month, Google results)
 # Brave = fallback if available
 
 _PRIMARY_PROVIDERS = [
@@ -182,6 +235,7 @@ _PRIMARY_PROVIDERS = [
 ]
 
 _VALIDATION_PROVIDERS = [
+    ("serpapi", search_serpapi),
     ("serper", search_serper),
 ]
 
