@@ -1360,20 +1360,21 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
 
 
 def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget = None) -> Dossier:
-    """Web search con OpenAI: conferma candidati locali e amplia con fonti online certe.
+    """Web search enrichment: Tavily (real search API) + Mistral AI per elaborazione.
 
-    FIX: Query is anchored ONLY to the immutable ResearchTarget.
-    Local candidates are NOT included in the query to prevent subject drift.
-    Sources are classified by object_kind (homepage/search_page vs catalog_record).
-    Circuit breaker prevents cascading failures after systemic errors.
+    Pipeline:
+    1. Costruisce query anchored al ResearchTarget (no candidati locali → no subject drift)
+    2. Chiama Tavily API per risultati di ricerca web reali
+    3. Passa i risultati a Mistral per elaborazione strutturata
+    4. Classifica le fonti per object_kind ed evidence_eligibility
+    5. Circuit breaker per cascading failure prevention
     """
     from circuit_breaker import CircuitBreaker, WebSearchErrorCode, classify_exception
 
-    # Module-level circuit breaker instance
     global _web_search_circuit
     if '_web_search_circuit' not in globals():
         _web_search_circuit = CircuitBreaker(
-            provider_name="openai_web_search",
+            provider_name="tavily_mistral",
             failure_threshold=5,
             recovery_timeout=60.0,
         )
@@ -1390,25 +1391,17 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
                 "stage": "web_search",
                 "error_code": WebSearchErrorCode.CIRCUIT_OPEN.value,
                 "safe_message": "Circuit breaker open — too many consecutive failures",
-                "provider": "openai_web_search",
+                "provider": "tavily_mistral",
             },
         }
         return dossier
 
     try:
         import os
-        from openai import OpenAI
         from dotenv import load_dotenv
         load_dotenv()
 
-        api_key = os.environ.get("OPENAI_API_KEY", "")
-        if not api_key:
-            log.info("Web search: OPENAI_API_KEY non configurata, skip")
-            return dossier
-
-        client = OpenAI(api_key=api_key)
-
-        # ── FIX: Query built ONLY from immutable target, not from candidates ──
+        # ── Step 1: Build search query from immutable target ──
         query_parts = [si.full_name]
         if si.anno_nascita:
             query_parts.append(f"nato nel {si.anno_nascita}")
@@ -1426,72 +1419,93 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
             query_parts.append("militare italiano Prima/Seconda Guerra Mondiale")
 
         query = ", ".join(query_parts)
+        search_query = f"{si.full_name} {si.anno_nascita} {si.luogo_nascita} caduto militare italiano Grande Guerra"
 
-        # ── FIX: NO local candidate context in query — prevents subject drift ──
-        # The query must search for the TARGET, not for candidates that may be wrong.
-        query += "\n\nVerifica in: cadutigrandeguerra.it (Albo d'Oro), antenati.cultura.gov.it (ruoli matricolari), Archivi di Stato, ICRC, LeBI, Ministero Difesa, o altri archivi storici italiani online."
-        query += f"\n\nIMPORTANTE: Cerca SOLO per '{si.full_name}' nato nel {si.anno_nascita or '?'} a {si.luogo_nascita or '?'}. NON sostituire con omonimi di altri anni o luoghi."
+        log.info("Web search: Tavily query '%s'", search_query[:80])
 
-        instructions = (
+        # ── Step 2: Call Tavily API for real web search results ──
+        from web_search_providers import search_tavily
+        search_resp = search_tavily(search_query, max_results=10, timeout=30)
+
+        if not search_resp.ok or not search_resp.results:
+            error_msg = search_resp.error or "No results returned"
+            log.warning("Web search: Tavily failed — %s", error_msg)
+            _web_search_circuit.record_failure(WebSearchErrorCode.RATE_LIMITED.value)
+            dossier.web_search_used = False
+            dossier.web_search_results = {
+                "target_id": target.target_id if target else "",
+                "target_hash": target.target_hash if target else "",
+                "error": {
+                    "stage": "web_search",
+                    "error_code": "SEARCH_FAILED",
+                    "safe_message": error_msg[:200],
+                    "provider": "tavily",
+                    "retryable": True,
+                },
+            }
+            return dossier
+
+        log.info("Web search: Tavily returned %d results in %dms",
+                 len(search_resp.results), search_resp.elapsed_ms)
+
+        # ── Step 3: Mistral AI elaboration of real search results ──
+        sources_for_ai = [
+            {"url": r.url, "title": r.title, "snippet": r.snippet}
+            for r in search_resp.results[:10]
+        ]
+
+        ai_instructions = (
             "Sei un ricercatore storico-archivistico specializzato in storia militare "
             "italiana del 1900 (Prima e Seconda Guerra Mondiale, IMI, internati, caduti, "
-            "decorati). Cerca informazioni reali online negli archivi italiani. "
-            "NON inventare dati. NON sostituire il soggetto della ricerca con un omonimo. "
+            "decorati). Analizza i risultati di ricerca web reali per il soggetto indicato. "
+            "NON inventare dati. NON sostituire il soggetto con un omonimo. "
             "Rispondi in italiano con formato strutturato:\n"
             "1. CONFERMA: indica se sono stati trovati record nominativi diretti (non pagine di ricerca)\n"
             "2. NUOVI DATI TROVATI: informazioni aggiuntive con fonte specifica\n"
-            "3. FONTI CONSULTATE: elenco con URL diretto al record (non homepage o pagine di ricerca)\n"
+            "3. FONTI CONSULTATE: elenco con URL diretto al record\n"
             "4. AFFIDABILITA: livello (alta/media/bassa) con motivazione\n"
             "5. SUGGERIMENTI: fonti archivistiche da consultare"
         )
 
-        log.info("Web search: querying OpenAI for '%s'", query[:80])
+        ai_user = json.dumps({
+            "soggetto": query,
+            "risultati_ricerca": sources_for_ai,
+        }, ensure_ascii=False)
 
-        resp = client.responses.create(
-            model="gpt-5.5",
-            tools=[{
-                "type": "web_search",
-                "search_context_size": "high",
-                "user_location": {
-                    "type": "approximate",
-                    "country": "IT",
-                },
-            }],
-            instructions=instructions,
-            input=query,
+        from ai_runtime import get_adapter
+        adapter = get_adapter()
+        ai_result = adapter.generate(
+            system=ai_instructions,
+            user=ai_user,
+            max_tokens=2048,
+            temperature=0.2,
+            task_type="web_search",
+            timeout=60,
         )
 
-        sources = []
-        search_actions = []
-        if hasattr(resp, "output"):
-            for item in resp.output:
-                if item.type == "web_search_call":
-                    action_type = ""
-                    if hasattr(item, "action") and hasattr(item.action, "type"):
-                        action_type = item.action.type
-                    search_actions.append(action_type)
-                    if hasattr(item, "results") and item.results:
-                        for r in item.results:
-                            url = getattr(r, "url", None) or ""
-                            title = getattr(r, "title", None) or url
-                            if url:
-                                sources.append({"url": url, "title": title})
+        ai_text = ai_result.text if ai_result.ok else ""
+        if not ai_result.ok:
+            log.warning("Web search: Mistral elaboration failed — %s", ai_result.error)
 
-        usage = {}
-        if hasattr(resp, "usage"):
-            u = resp.usage
-            usage = {
-                "input_tokens": getattr(u, "input_tokens", 0),
-                "output_tokens": getattr(u, "output_tokens", 0),
-                "total_tokens": getattr(u, "total_tokens", 0),
-            }
+        # ── Step 4: Build structured results ──
+        sources = [{"url": r.url, "title": r.title} for r in search_resp.results]
+        if ai_text:
+            import re as _re
+            extra_urls = _re.findall(r'https?://[^\s<>"\']+', ai_text)
+            existing = {s["url"] for s in sources}
+            for u in extra_urls:
+                if u not in existing:
+                    sources.append({"url": u, "title": u.split("/")[2] if "/" in u else u})
+                    existing.add(u)
 
         dossier.web_search_used = True
         dossier.web_search_results = {
             "target_id": target.target_id if target else "",
             "target_hash": target.target_hash if target else "",
             "query": query,
-            "text": resp.output_text,
+            "search_query": search_query,
+            "search_provider": "tavily",
+            "text": ai_text or "Elaborazione AI non disponibile. Risultati di ricerca grezzi nei sources.",
             "sources": sources,
             "source_classifications": [
                 {"url": s["url"], "title": s["title"],
@@ -1499,14 +1513,20 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
                  "evidence_eligible": is_evidence_eligible(classify_object_kind(s["url"]))}
                 for s in sources
             ],
-            "search_actions": search_actions,
-            "usage": usage,
+            "search_actions": ["tavily_search", "mistral_elaboration"],
+            "usage": {
+                "input_tokens": ai_result.input_tokens if ai_result.ok else 0,
+                "output_tokens": ai_result.output_tokens if ai_result.ok else 0,
+                "total_tokens": (ai_result.input_tokens + ai_result.output_tokens) if ai_result.ok else 0,
+            },
+            "raw_results_count": len(search_resp.results),
+            "search_elapsed_ms": search_resp.elapsed_ms,
         }
 
-        log.info("Web search: completed — %d sources, %d tokens",
-                 len(sources), usage.get("total_tokens", 0))
+        log.info("Web search: completed — %d sources, AI: %s, %d tokens",
+                 len(sources), "OK" if ai_result.ok else "FAILED",
+                 (ai_result.input_tokens + ai_result.output_tokens) if ai_result.ok else 0)
 
-        # ── Record circuit breaker success ──
         _web_search_circuit.record_success()
 
         # ── Discovery persistence pipeline ──
@@ -1516,7 +1536,7 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
                 web_search_results=dossier.web_search_results,
                 subject_name=si.full_name,
                 subject_type="soldier",
-                subject_id=si.cognome,  # best-effort ID
+                subject_id=si.cognome,
                 query_used=query,
             )
             dossier.discovery_persistence = {
@@ -1566,7 +1586,7 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
                 "error_code": error_code.value,
                 "exception_type": type(e).__name__,
                 "safe_message": str(e)[:200],
-                "provider": "openai_web_search",
+                "provider": "tavily_mistral",
                 "retryable": error_code in (WebSearchErrorCode.RATE_LIMITED, WebSearchErrorCode.TIMEOUT),
             },
         }
