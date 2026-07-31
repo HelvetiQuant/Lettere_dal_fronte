@@ -28,6 +28,12 @@ class ProviderLeBI(SourceProvider):
     authorized_domains = {"lessicobiograficoimi.it", "www.lessicobiograficoimi.it"}
     cache_ttl_days = 90
 
+    # ── Capability routing ──
+    conflicts = ("ww2",)
+    subject_types = ("person",)
+    time_start = 1943
+    time_end = 1945
+
     # ─── Ricerca ──────────────────────────────────────────────────────
     def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         """Cerca nell'archivio LeBI per cognome/nome.

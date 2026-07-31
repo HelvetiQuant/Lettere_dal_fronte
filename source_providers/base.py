@@ -207,6 +207,48 @@ class SourceProvider(abc.ABC):
     authorized_domains: set = set()
     cache_ttl_days: int = CACHE_TTL_DAYS
 
+    # ── Capability routing ──
+    # Which conflicts this provider covers. Empty = all conflicts.
+    conflicts: tuple = ()
+    # Which subject types this provider handles. Empty = all types.
+    subject_types: tuple = ()
+    # Time range coverage. None = no limit.
+    time_start: Optional[int] = None
+    time_end: Optional[int] = None
+    # How evidence from this provider should be treated.
+    evidence_mode: str = "search_lead_until_record_opened"
+
+    def is_compatible(self, conflict: str = "unknown", subject_type: str = "unknown",
+                      target_year: Optional[int] = None) -> bool:
+        """Check if this provider is compatible with the target's conflict/subject/time."""
+        # Conflict check: if provider declares conflicts and target conflict is known, must match
+        if self.conflicts and conflict != "unknown":
+            normalized = _normalize_conflict(conflict)
+            if normalized not in self.conflicts:
+                return False
+        # Subject type check
+        if self.subject_types and subject_type != "unknown":
+            if subject_type not in self.subject_types:
+                return False
+        # Time range check
+        if target_year is not None:
+            if self.time_start is not None and target_year < self.time_start:
+                return False
+            if self.time_end is not None and target_year > self.time_end:
+                return False
+        return True
+
+    def capability_dict(self) -> dict:
+        """Return capability metadata for logging/reporting."""
+        return {
+            "provider_id": self.name,
+            "conflicts": list(self.conflicts),
+            "subject_types": list(self.subject_types),
+            "time_start": self.time_start,
+            "time_end": self.time_end,
+            "evidence_mode": self.evidence_mode,
+        }
+
     @abc.abstractmethod
     def search(
         self,

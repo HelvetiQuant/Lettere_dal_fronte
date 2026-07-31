@@ -108,19 +108,8 @@ def federated_search(
 ) -> List[dict]:
     """Cerca across provider in parallelo con distribuzione dinamica del lavoro.
 
-    I provider vengono divisi in chunk e assegnati ai worker dinamicamente:
-    il primo worker che finisce prende il chunk successivo (work-stealing).
-    Es: 27 provider / 4 worker → worker1 prende 7, worker2 prende 7, ecc.
-    Il primo che finisce prende i rimanenti.
-
-    Args:
-        query: testo query
-        cues: cue legacy (dict piatto, deprecato — usare context)
-        providers: lista nomi provider da interrogare (None = tutti)
-        filters: filtri aggiuntivi
-        context: contesto tipizzato evento/soggetto (raccomandato)
-        timeout_per_provider: timeout in secondi per ogni provider
-        num_workers: numero di worker paralleli (default 4)
+    FIX: Provider capability routing — providers are filtered by conflict/subject_type/time_range
+    before being called. Skipped providers are logged with reason codes.
     """
     import concurrent.futures
     import threading
@@ -133,6 +122,50 @@ def federated_search(
         targets = reg
 
     if not targets:
+        return []
+
+    # ── FIX: Provider capability routing ──
+    # Extract conflict/subject_type/year from context or filters
+    target_conflict = "unknown"
+    target_subject_type = "unknown"
+    target_year = None
+
+    if context:
+        target_conflict = context.conflict
+        target_subject_type = context.subject_type
+        target_year = context.start_year
+    elif filters:
+        target_conflict = filters.get("conflict", "unknown")
+        target_subject_type = filters.get("subject_type", "unknown")
+        yr = filters.get("year") or filters.get("birth_year")
+        if yr:
+            try:
+                target_year = int(yr)
+            except (ValueError, TypeError):
+                pass
+
+    skipped_providers = []
+    compatible_targets = {}
+    for pname, prov in targets.items():
+        if prov.is_compatible(target_conflict, target_subject_type, target_year):
+            compatible_targets[pname] = prov
+        else:
+            reason = "PROVIDER_CONFLICT_MISMATCH"
+            if target_subject_type != "unknown" and prov.subject_types and target_subject_type not in prov.subject_types:
+                reason = "PROVIDER_SUBJECT_TYPE_MISMATCH"
+            elif target_year is not None:
+                if prov.time_start is not None and target_year < prov.time_start:
+                    reason = "PROVIDER_TIME_RANGE_BEFORE"
+                elif prov.time_end is not None and target_year > prov.time_end:
+                    reason = "PROVIDER_TIME_RANGE_AFTER"
+            skipped_providers.append({"provider": pname, "reason": reason})
+            log.debug("FederatedSearch: skipping %s — %s (conflict=%s, subject=%s, year=%s)",
+                      pname, reason, target_conflict, target_subject_type, target_year)
+
+    targets = compatible_targets
+    if not targets:
+        log.info("FederatedSearch: all providers skipped (conflict=%s, subject=%s, year=%s)",
+                 target_conflict, target_subject_type, target_year)
         return []
 
     # Crea una coda con tutti i provider

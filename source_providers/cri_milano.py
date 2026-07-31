@@ -28,6 +28,12 @@ class ProviderCRIMilano(SourceProvider):
     authorized_domains = {"cri-mi.archimista.com"}
     cache_ttl_days = 90
 
+    # ── Capability routing ──
+    conflicts = ("ww2",)
+    subject_types = ("person",)
+    time_start = 1939
+    time_end = 1945
+
     def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         """Cerca nell'archivio CRI Milano. Solo metadati, no documenti."""
         filters = filters or {}

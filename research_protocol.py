@@ -1365,7 +1365,36 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
     FIX: Query is anchored ONLY to the immutable ResearchTarget.
     Local candidates are NOT included in the query to prevent subject drift.
     Sources are classified by object_kind (homepage/search_page vs catalog_record).
+    Circuit breaker prevents cascading failures after systemic errors.
     """
+    from circuit_breaker import CircuitBreaker, WebSearchErrorCode, classify_exception
+
+    # Module-level circuit breaker instance
+    global _web_search_circuit
+    if '_web_search_circuit' not in globals():
+        _web_search_circuit = CircuitBreaker(
+            provider_name="openai_web_search",
+            failure_threshold=5,
+            recovery_timeout=60.0,
+        )
+
+    if not _web_search_circuit.can_call():
+        log.warning("Web search: CIRCUIT_OPEN — skipping (failures=%d, last_error=%s)",
+                    _web_search_circuit.consecutive_failures,
+                    _web_search_circuit.last_error_code)
+        dossier.web_search_used = False
+        dossier.web_search_results = {
+            "target_id": target.target_id if target else "",
+            "target_hash": target.target_hash if target else "",
+            "error": {
+                "stage": "web_search",
+                "error_code": WebSearchErrorCode.CIRCUIT_OPEN.value,
+                "safe_message": "Circuit breaker open — too many consecutive failures",
+                "provider": "openai_web_search",
+            },
+        }
+        return dossier
+
     try:
         import os
         from openai import OpenAI
@@ -1477,6 +1506,9 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
         log.info("Web search: completed — %d sources, %d tokens",
                  len(sources), usage.get("total_tokens", 0))
 
+        # ── Record circuit breaker success ──
+        _web_search_circuit.record_success()
+
         # ── Discovery persistence pipeline ──
         try:
             from discovery_persistence import process_web_search_results
@@ -1520,7 +1552,24 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
             }
 
     except Exception as e:
-        log.warning("Web search failed: %s", e)
+        error_code = classify_exception(e)
+        _web_search_circuit.record_failure(error_code.value)
+        log.warning("Web search failed: %s — %s (circuit failures=%d)",
+                    error_code.value, str(e)[:200],
+                    _web_search_circuit.consecutive_failures)
+        dossier.web_search_used = False
+        dossier.web_search_results = {
+            "target_id": target.target_id if target else "",
+            "target_hash": target.target_hash if target else "",
+            "error": {
+                "stage": "web_search",
+                "error_code": error_code.value,
+                "exception_type": type(e).__name__,
+                "safe_message": str(e)[:200],
+                "provider": "openai_web_search",
+                "retryable": error_code in (WebSearchErrorCode.RATE_LIMITED, WebSearchErrorCode.TIMEOUT),
+            },
+        }
 
     return dossier
 

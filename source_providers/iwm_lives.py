@@ -20,6 +20,12 @@ class ProviderIWMLives(SourceProvider):
     }
     cache_ttl_days = 90
 
+    # ── Capability routing ──
+    conflicts = ("ww1",)
+    subject_types = ("person",)
+    time_start = 1914
+    time_end = 1918
+
     def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         return []
 

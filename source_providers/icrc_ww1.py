@@ -30,6 +30,12 @@ class ProviderICRCWW1(SourceProvider):
     authorized_domains = {"grandeguerre.icrc.org", "icrc.org"}
     cache_ttl_days = 60
 
+    # ── Capability routing ──
+    conflicts = ("ww1",)
+    subject_types = ("person",)
+    time_start = 1914
+    time_end = 1918
+
     # Nazionalità disponibili sul portale ICRC
     NATIONALITIES = {
         "italy": "Italy",
