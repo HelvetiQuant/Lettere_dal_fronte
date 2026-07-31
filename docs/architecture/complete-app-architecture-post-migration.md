@@ -373,12 +373,34 @@ Risposta validata + citations
 
 ### Da completare
 
-- [ ] Aggiungere schemi `archive,evidence,ops,ai,api_public,legacy` agli **Exposed Schemas** di Supabase.
+- [ ] Aggiungere schemi `archive,evidence,ops,ai,api_public,legacy,core` agli **Exposed Schemas** di Supabase. **`core` è bloccante** per Discovery Persistence + IA Bootstrap.
 - [ ] Eseguire backfill reale su Supabase.
 - [ ] Configurare bucket Storage e policy.
 - [ ] Integrare `repository_layer.py` nelle pipeline esistenti (sostituire scritture legacy dove appropriato).
 - [ ] Frontend admin per revisione `link_quarantine`, claims, evidence.
 - [ ] Test di unità, integrazione, sicurezza RLS, regressione.
+
+---
+
+## 9.5 Discovery Persistence Pipeline (2026-07-30)
+
+### Modulo nuovo: `discovery_persistence.py`
+
+Pipeline di acquisizione, classificazione e persistenza fonti scoperte via web search. Si integra in `research_protocol.py` (`_web_search_enrich()`) e output API `/api/research-protocol`.
+
+**7 nuove tabelle SQLite:** `source_registry`, `historical_claims`, `discovered_entities`, `research_leads`, `source_object_links`, `sync_outbox`, `ingestion_runs`
+
+**Sync Supabase via outbox pattern:** `sync_outbox_to_supabase()` → `insert_batch_schema()` per `archive.external_items`, `evidence.claims`, `core.entities`
+
+### ⚠️ Problema critico: sync Supabase fallito
+
+Vedi `ARCHITECTURE.md` sezione 10 per analisi tecnica completa. Riepilogo:
+
+1. **Schema `core` non esposto** — `VALID_SCHEMAS` in `supabase_client.py:247` non include `core`; PostgREST non lo serve. Fix: 1 riga codice + 1 click Dashboard.
+2. **Column mismatch `evidence.claims`** — payload SQLite ha `subject_type`/`subject_id`, Supabase ha `subject_entity_id`. Serve mapping layer (`_map_claim_payload()`).
+3. **Mapping `archive.external_items`** — colonne SQLite `source_registry` non coincidono con schema Supabase. Serve `_map_source_payload()`.
+
+**Impatto trasversale:** blocca Discovery Persistence sync, IA Bootstrap `repository_layer.py`, e API eventi canonici via REST.
 
 ---
 
@@ -394,4 +416,5 @@ Risposta validata + citations
 | `docs/adr/ADR-Canonical-Archive-Supabase.md` | Decisioni architetturali |
 | `docs/architecture/canonical-historical-archive.md` | Audit pre-migrazione |
 | `docs/architecture/complete-app-architecture-post-migration.md` | Questo documento |
+| `discovery_persistence.py` | Pipeline persistenza fonti web search (2026-07-30) |
 | `apply_migration_v2.py` | Runner migrazione statement-by-statement |

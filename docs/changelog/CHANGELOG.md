@@ -1,5 +1,59 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-30 — Discovery Persistence Pipeline (Web Search Archival System)
+
+### Contesto
+Implementata la pipeline completa di acquisizione, classificazione e persistenza delle fonti scoperte via web search. Ogni risultato di ricerca web viene ora sistematicamente classificato, deduplicato, collegato a oggetti storici, e persistito localmente (SQLite) con sync idempotente a Supabase via outbox pattern.
+
+### File principale
+- `discovery_persistence.py` (nuovo, ~1400 righe) — dataclasses, schema SQLite, pipeline completa
+
+### Dataclasses
+- `ArchivalDecision` — policy archivistica + diritti/licenze
+- `SourceMetadata` — metadati provenienza completi
+- `SourceObjectLink` — collegamento tipato fonte-oggetto
+- `HistoricalClaim` — claim versionato con conflict detection
+- `DiscoveredEntity` — entità candidata con entity resolution
+- `ResearchLead` — pista di ricerca persistente
+- `SyncState` — stato sync locale-Supabase
+- `DiscoveryPersistenceResult` — output aggregato per dossier API
+
+### Tabelle SQLite create
+- `source_registry`, `historical_claims`, `discovered_entities`, `research_leads`, `source_object_links`, `sync_outbox`, `ingestion_runs`
+
+### Funzioni
+- `classify_archival_policy()` — classificazione via compliance_gate
+- `deduplicate_sources()` — dedup per URL canonico, hash, ID
+- `extract_claims_from_text()` — estrazione claim strutturati con clean encoding
+- `detect_conflicting_claims()` — conflict detection vs DB esistente
+- `resolve_or_create_entity()` — entity resolution + nuove entità
+- `extract_research_leads()` — piste archivistiche + URL deduplicati
+- `sync_outbox_to_supabase()` — sync idempotente via `insert_batch_schema`
+- `process_web_search_results()` — orchestrazione pipeline
+
+### Integrazione
+- `research_protocol.py`: `_web_search_enrich()` chiama `process_web_search_results()`
+- `Dossier` dataclass: campo `discovery_persistence` aggiunto
+- API `/api/research-protocol`: output include `discovery_persistence`
+
+### Fix applicati durante test
+1. Column count mismatch in `_persist_source()`: 38→39 placeholder
+2. Supabase sync: sostituito `get_supabase_client()` (inesistente) con `supabase_client.insert_batch_schema()`
+3. Encoding mojibake: pulizia UTF-8 (Â°, Ã, etc.) su testo web search
+4. Claim garbage filter: filtrati valori non informativi
+5. Claim deduplicazione per predicate+normalized_value
+6. Entity section headers esclusi ("CONFERMA CANDIDATI", etc.)
+7. Lead deduplicazione per dominio URL e institution name
+
+### Test end-to-end (query "damioli giovanni, nato 1899")
+- 1 fonte creata (metadata_only), 6 claim estratti, 12 entità scoperte, 8 piste, 11 item in outbox
+- Local persistence: completed | Supabase sync: failed (schema `core` non esposto)
+
+### PENDING
+- Vedi TODO.md sezione "Discovery Persistence — PENDING"
+
+---
+
 ## 2026-07-27 — Audit bootstrap Internet Archive + Schema `core.events` su Supabase
 
 ### Contesto

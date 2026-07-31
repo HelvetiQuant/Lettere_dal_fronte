@@ -1,7 +1,7 @@
 # IMI Extractor — Architettura Tecnica Completa
 
 > Documento di riferimento per sviluppatori frontend e backend.
-> Versione: 2026-07-24 · AI Provider Consolidation + LeBI Fase 4 — Frontend, API, Parser Fix
+> Versione: 2026-07-30 · Discovery Persistence Pipeline + Web Search Archival System
 
 ---
 
@@ -1168,4 +1168,261 @@ psycopg2-binary (per PostgreSQL)
 
 ---
 
-*Documento generato il 2026-07-23. Aggiornare in caso di modifiche architetturali.*
+*Documento generato il 2026-07-23. Aggiornato il 2026-07-30 (Discovery Persistence). Aggiornare in caso di modifiche architetturali.*
+
+---
+
+## 9. Discovery Persistence Pipeline (2026-07-30)
+
+### 9.1 Panoramica
+
+La pipeline `discovery_persistence.py` (~1400 righe) implementa l'acquisizione, classificazione e persistenza sistematica delle fonti scoperte via web search (OpenAI Responses API con `web_search` tool). Ogni risultato viene classificato archivisticamente, deduplicato, collegato a oggetti storici, e persistito localmente in SQLite con sync idempotente a Supabase via outbox pattern.
+
+```
+Web Search (OpenAI)
+      │
+      ▼
+process_web_search_results()
+      │
+      ├── classify_archival_policy() ──→ ArchivalDecision (policy + rights)
+      ├── deduplicate_sources() ────────→ SourceMetadata[] (dedup by URL/hash/ID)
+      ├── extract_claims_from_text() ───→ HistoricalClaim[] (with conflict detection)
+      ├── resolve_or_create_entity() ───→ DiscoveredEntity[] (entity resolution)
+      ├── extract_research_leads() ─────→ ResearchLead[] (archives + URLs)
+      │
+      ▼
+_persist_source() / _persist_claim() / _persist_entity() / _persist_lead()
+      │                   (SQLite locale, transazionale)
+      │
+      ▼
+_enqueue_sync() ──→ sync_outbox (pending)
+      │
+      ▼
+sync_outbox_to_supabase() ──→ Supabase (archive.external_items, evidence.claims, core.entities)
+```
+
+### 9.2 Dataclasses
+
+| Dataclass | Scopo | Campi chiave |
+|---|---|---|
+| `ArchivalDecision` | Policy archivistica + diritti | `policy` (full_content/structured_data/metadata_only/link_only/manual_review), `rights_status`, `license_name`, `license_url`, `terms_url` |
+| `SourceMetadata` | Metadati provenienza fonte | `canonical_id`, `canonical_url`, `source_title`, `institution`, `content_sha256`, `source_cluster_id`, `provenance_payload` |
+| `SourceObjectLink` | Link tipato fonte→oggetto | `source_id`, `object_type`, `object_id`, `link_type`, `linkage_score`, `review_required` |
+| `HistoricalClaim` | Claim storico versionato | `canonical_id`, `subject_type`, `subject_id`, `predicate`, `original_value`, `normalized_value`, `status` (unverified/corroborated/conflicting/verified/rejected), `conflict_code`, `manual_review_required` |
+| `DiscoveredEntity` | Entità candidata | `canonical_id`, `entity_type` (person/unit/place), `canonical_label`, `status` (candidate/confirmed/rejected), `review_required`, `discovery_source_id` |
+| `ResearchLead` | Pista di ricerca | `canonical_id`, `lead_type` (archive/related_source), `title`, `target_url`, `institution`, `priority` (high/medium/low), `status` (open/verified/exhausted) |
+| `SyncState` | Stato sync locale→Supabase | `sync_status` (pending/syncing/synced/retryable_error/permanent_error), `retry_count`, `last_error`, `last_attempt_at` |
+| `DiscoveryPersistenceResult` | Output aggregato per API | conteggi sources/claims/entities/leads/links, dettagli per output dossier |
+
+### 9.3 Schema SQLite (7 nuove tabelle)
+
+| Tabella | Scopo | Chiave primaria |
+|---|---|---|
+| `source_registry` | Registro centrale fonti con policy | `canonical_id` (UUID) |
+| `historical_claims` | Claim versionati con conflict detection | `canonical_id` (UUID) |
+| `discovered_entities` | Entità candidate con entity resolution | `canonical_id` (UUID) |
+| `research_leads` | Piste di ricerca persistenti | `canonical_id` (UUID) |
+| `source_object_links` | Collegamenti tipati fonte→oggetto | `id` (autoincrement) |
+| `sync_outbox` | Outbox per sync idempotente Supabase | `id` (autoincrement) |
+| `ingestion_runs` | Log delle esecuzioni pipeline | `run_id` (UUID) |
+
+### 9.4 Integrazione con sistema esistente
+
+- **`research_protocol.py`**: `_web_search_enrich()` chiama `process_web_search_results()` dopo ogni web search OpenAI
+- **`Dossier` dataclass**: campo `discovery_persistence` aggiunto all'output
+- **API `/api/research-protocol`**: il JSON di risposta include `discovery_persistence` con conteggi e dettagli
+
+### 9.5 Mappatura SQLite → Supabase
+
+| Tabella SQLite | Schema Supabase | Tabella Supabase | Stato sync |
+|---|---|---|---|
+| `source_registry` | `archive` | `external_items` | ⚠️ Richiede mapping colonne |
+| `historical_claims` | `evidence` | `claims` | ⚠️ Column mismatch (`subject_type` non esiste in Supabase) |
+| `discovered_entities` | `core` | `entities` | ❌ Schema `core` non esposto in PostgREST |
+
+---
+
+## 10. Problema tecnico critico: Supabase schema exposure + column mapping
+
+### 10.1 Descrizione del problema
+
+Il sync da SQLite locale a Supabase fallisce per **due cause distinte ma correlate**:
+
+#### Problema A: Schema `core` non esposto in PostgREST
+
+**Sintomo:**
+```
+Sync failed for <UUID>: Invalid schema 'core'.
+Valid: {'ops', 'legacy', 'archive', 'api_public', 'public', 'ai', 'evidence'}
+```
+
+**Causa radice:**
+`supabase_client.py` definisce un set hardcoded di schemi validi:
+```python
+# supabase_client.py:247
+VALID_SCHEMAS = {"public", "archive", "evidence", "ops", "ai", "api_public", "legacy"}
+```
+Lo schema `core` — creato da `sql/002_supabase_core_events.sql` (2026-07-27) con tabelle `core.entities`, `core.events`, `core.entity_names` — **non è incluso** in questo set. La funzione `_validate_schema()` solleva `ValueError` prima ancora di fare la richiesta HTTP.
+
+Inoltre, anche se `core` fosse aggiunto a `VALID_SCHEMAS`, PostgREST (il layer REST di Supabase) non lo servirebbe perché non è elencato in **Supabase Dashboard → Settings → API → Exposed Schemas**. Attualmente sono esposti: `public, archive, evidence, ops, ai, api_public, legacy`. Lo schema `core` esiste nel database PostgreSQL (verificato via `exec_sql`) ma non è raggiungibile via REST.
+
+**Impatto:**
+- **Discovery Persistence**: `sync_outbox_to_supabase()` non può sincronizzare `discovered_entities` → `core.entities`
+- **Internet Archive Bootstrap**: `repository_layer.py` non può leggere/scrivere `core.events`/`core.entities` via REST
+- **Eventi canonici**: 22 eventi migrati in `core.events` via `exec_sql` (RPC diretta) ma non accessibili via PostgREST
+
+**Fix richiesto (2 azioni):**
+1. **Codice** — Aggiungere `"core"` a `VALID_SCHEMAS` in `supabase_client.py:247`:
+   ```python
+   VALID_SCHEMAS = {"public", "archive", "evidence", "ops", "ai", "api_public", "legacy", "core"}
+   ```
+2. **Dashboard Supabase** — Settings → API → Exposed Schemas → aggiungere `core` alla lista
+
+**Verifica post-fix:**
+```python
+from supabase_client import table_exists_schema
+table_exists_schema("core", "entities")  # → True
+```
+
+#### Problema B: Column mismatch `evidence.claims`
+
+**Sintomo:**
+```
+exec_sql error: column "subject_type" of relation "claims" does not exist
+```
+
+**Causa radice:**
+Il payload SQLite per `historical_claims` contiene colonne che non esistono nello schema Supabase `evidence.claims`. La funzione `sync_outbox_to_supabase()` prende il payload JSON dalla riga SQLite e lo invia direttamente a `insert_batch_schema()` senza alcun mapping.
+
+**Schema SQLite `historical_claims` (locale):**
+```sql
+CREATE TABLE historical_claims (
+    canonical_id TEXT PRIMARY KEY,
+    subject_type TEXT,      -- ← non esiste in Supabase
+    subject_id TEXT,        -- ← non esiste in Supabase
+    predicate TEXT,
+    original_value TEXT,
+    normalized_value TEXT,
+    value_type TEXT,
+    source_id TEXT,
+    source_locator TEXT,
+    extraction_method TEXT,
+    status TEXT,
+    first_observed_at TEXT,
+    last_evaluated_at TEXT,
+    manual_review_required INTEGER,
+    conflict_code TEXT,
+    created_at TEXT
+)
+```
+
+**Schema Supabase `evidence.claims` (remoto, da `sql/003_source_pipeline_schema.sql`):**
+```sql
+CREATE TABLE evidence.claims (
+    stable_id TEXT PRIMARY KEY,
+    subject_entity_id TEXT,   -- ← non ha subject_type/subject_id
+    predicate TEXT,
+    original_value TEXT,
+    normalized_value TEXT,
+    value_type TEXT,
+    source_item_id TEXT,
+    source_locator TEXT,
+    extraction_method TEXT,
+    status TEXT,
+    first_observed_at TIMESTAMPTZ,
+    last_evaluated_at TIMESTAMPTZ,
+    manual_review_required BOOLEAN,
+    conflict_code TEXT,
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ
+)
+```
+
+**Differenze chiave:**
+
+| Campo SQLite | Campo Supabase | Mapping richiesto |
+|---|---|---|
+| `canonical_id` | `stable_id` | Rename diretto |
+| `subject_type` + `subject_id` | `subject_entity_id` | Fusione: richiede lookup in `core.entities` per risolvere `subject_id` → `entity.stable_id` |
+| `source_id` | `source_item_id` | Rename diretto |
+| `manual_review_required` (INTEGER 0/1) | `manual_review_required` (BOOLEAN) | Cast tipo |
+| `created_at` (TEXT ISO) | `created_at` (TIMESTAMPTZ) | Cast tipo |
+| — | `updated_at` (TIMESTAMPTZ) | Aggiungere `now()` al sync |
+
+**Fix richiesto:**
+Implementare una funzione `_map_claim_payload(payload: dict) -> dict` in `discovery_persistence.py` che trasforma il payload SQLite nello schema Supabase prima di inviarlo a `insert_batch_schema()`:
+
+```python
+def _map_claim_payload(payload: dict) -> dict:
+    """Mappa payload SQLite historical_claims → evidence.claims Supabase."""
+    return {
+        "stable_id": payload["canonical_id"],
+        "subject_entity_id": payload["subject_id"],  # richiede pre-resolution
+        "predicate": payload["predicate"],
+        "original_value": payload["original_value"],
+        "normalized_value": payload["normalized_value"],
+        "value_type": payload.get("value_type"),
+        "source_item_id": payload.get("source_id"),
+        "source_locator": payload.get("source_locator"),
+        "extraction_method": payload.get("extraction_method"),
+        "status": payload.get("status", "unverified"),
+        "first_observed_at": payload.get("first_observed_at"),
+        "last_evaluated_at": payload.get("last_evaluated_at"),
+        "manual_review_required": bool(payload.get("manual_review_required", 0)),
+        "conflict_code": payload.get("conflict_code"),
+        "created_at": payload.get("created_at"),
+        "updated_at": datetime.now().isoformat(),
+    }
+```
+
+Analogo mapping serve per `source_registry` → `archive.external_items` (campi diversi: `canonical_url` vs `canonical_url`, `institution` vs `repository_code`, ecc.).
+
+### 10.2 Architettura del sync outbox (stato attuale)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  SQLite locale (imi_internati.db)                       │
+│                                                         │
+│  source_registry ──┐                                    │
+│  historical_claims ┼──→ sync_outbox (pending)           │
+│  discovered_entities┘    │                              │
+│                         │ sync_outbox_to_supabase()     │
+└─────────────────────────┼───────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────┐
+│  supabase_client.insert_batch_schema()                  │
+│                                                         │
+│  ⚠️ VALID_SCHEMAS check: core ❌ rejected               │
+│  ⚠️ evidence.claims: column mismatch ❌ rejected        │
+│  ✅ archive.external_items: richiede mapping colonne    │
+│                                                         │
+│  PostgREST → Supabase PostgreSQL                        │
+│  Exposed: public, archive, evidence, ops, ai,           │
+│           api_public, legacy                            │
+│  NOT exposed: core ❌                                   │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 10.3 Piano di risoluzione
+
+| Priorità | Azione | File | Sforzo |
+|---|---|---|---|
+| 1 | Aggiungere `core` a `VALID_SCHEMAS` | `supabase_client.py:247` | 1 riga |
+| 2 | Esporre `core` in Supabase Dashboard | Dashboard manuale | 1 click |
+| 3 | Implementare `_map_claim_payload()` | `discovery_persistence.py` | ~20 righe |
+| 4 | Implementare `_map_source_payload()` per `archive.external_items` | `discovery_persistence.py` | ~25 righe |
+| 5 | Implementare `_map_entity_payload()` per `core.entities` | `discovery_persistence.py` | ~15 righe |
+| 6 | Test sync end-to-end con Supabase attivo | manuale | 1 run |
+
+### 10.4 Impatto trasversale
+
+Il blocco `core` non esposto impatta **tre moduli indipendenti**:
+
+| Modulo | Funzione bloccata | Workaround attuale |
+|---|---|---|
+| Discovery Persistence | Sync entità scoperte → `core.entities` | Local only, outbox `retryable_error` |
+| Internet Archive Bootstrap | `repository_layer.py` CRUD su `core.events` | Nessuno (bloccato) |
+| Eventi canonici API | `/api/canonical-events` lettura `core.events` | `exec_sql` RPC diretta (bypassa PostgREST) |
+
+Il workaround `exec_sql` (RPC diretta) funziona perché bypassa PostgREST e il check `VALID_SCHEMAS`, ma è **meno efficiente** (no batch insert, no SELECT filtri REST) e **non idempotente nativamente** (richiede logica applicativa).

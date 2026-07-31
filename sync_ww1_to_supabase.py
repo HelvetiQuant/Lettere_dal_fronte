@@ -162,7 +162,7 @@ def sync_event_links(batch_size: int = 500):
     # Kill switch check
     if os.getenv("SYNC_EVENT_LINKS_SUPABASE", "true").lower() == "false":
         print("=" * 70)
-        print("FASE 3: Sync event_links → Supabase [SUSPENDED]")
+        print("FASE 3: Sync event_links -> Supabase [SUSPENDED]")
         print("=" * 70)
         print("  [KILL SWITCH] SYNC_EVENT_LINKS_SUPABASE=false")
         print("  Legacy event_links sync suspended until linking v2 migration complete.")
@@ -170,7 +170,7 @@ def sync_event_links(batch_size: int = 500):
         return 0
     
     print("=" * 70)
-    print("FASE 3: Sync event_links → Supabase")
+    print("FASE 3: Sync event_links -> Supabase")
     print("=" * 70)
 
     conn = sqlite3.connect(str(EDB), timeout=30)

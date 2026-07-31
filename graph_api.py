@@ -21,6 +21,7 @@ def graph_entity(
     max_edges: int = Query(200, ge=1, le=1000),
     include_candidates: bool = True,
     include_rejected: bool = False,
+    include_to_review: bool = True,
 ):
     try:
         return get_graph(
@@ -30,6 +31,7 @@ def graph_entity(
             max_edges=max_edges,
             include_candidates=include_candidates,
             include_rejected=include_rejected,
+            include_to_review=include_to_review,
         )
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc

@@ -1,6 +1,38 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 27 luglio 2026 — Audit bootstrap Internet Archive, schema `core.events` su Supabase.
+Aggiornato: 30 luglio 2026 — Discovery Persistence Pipeline, web search archival system.
+
+---
+
+## Discovery Persistence — PENDING (2026-07-30)
+
+### Bug da fixare
+- [ ] **Supabase sync `core` schema**: `insert_batch_schema` rifiuta schema `core` (non in `VALID_SCHEMAS`). Aggiungere `core` a `VALID_SCHEMAS` in `supabase_client.py` o esporre `core` in Supabase Dashboard → Settings → API → Exposed Schemas
+- [ ] **Supabase sync `evidence.claims`**: errore "column subject_type does not exist" — mappare payload SQLite → schema Supabase (`evidence.claims` ha colonne diverse: `subject_entity_id` non `subject_type`)
+- [ ] **Claim extraction patterns**: affinare regex per ridurre falsi positivi su `military_unit` (es. "e vicende militari" ancora presente in alcuni edge case)
+- [ ] **Entity extraction**: `NON CONFERMATO` ancora estratto come entità person in alcuni run — ampliare `_SECTION_HEADERS`
+
+### Test da scrivere
+- [ ] **Test fonte archiviabile**: URL con policy `full_content` → verifica persistenza completa
+- [ ] **Test fonte non archiviabile**: URL con policy `link_only` → verifica solo metadati
+- [ ] **Test claim nuovo**: claim non presente in DB → status `unverified`
+- [ ] **Test claim contraddittorio**: claim con valore diverso da esistente → status `conflicting` + `manual_review_required=True`
+- [ ] **Test entità nuova**: persona/unità/luogo non in DB → status `candidate` + `review_required=True`
+- [ ] **Test deduplicazione**: stessa URL/ID/hash → non crea duplicati in `source_registry`
+- [ ] **Test Supabase down**: sync fallisce → outbox resta `retryable_error`, local persist `completed`
+- [ ] **Test pista di ricerca**: URL scoperto → `research_leads` con `lead_type=related_source`
+- [ ] **Test file voluminoso**: contenuto > soglia → policy `metadata_only` o `link_only`
+
+### Miglioramenti
+- [ ] **Object links**: implementare `_create_object_links()` effettivo (attualmente 0 link creati)
+- [ ] **ArchivedContent**: gestire file binari grandi (immagini, PDF) fuori dal DB relazionale
+- [ ] **Sync retry**: implementare retry con backoff esponenziale per `retryable_error`
+- [ ] **Sync conflict**: gestire `sync_status=conflict` (versione remota più recente)
+- [ ] **Frontend**: visualizzare `discovery_persistence` nel dossier UI (tab "Scoperte Web")
+- [ ] **API endpoint**: `GET /api/discovery/sources` per elenco fonti scoperte
+- [ ] **API endpoint**: `GET /api/discovery/claims` per elenco claim con filtri
+- [ ] **API endpoint**: `GET /api/discovery/leads` per piste di ricerca
+- [ ] **API endpoint**: `POST /api/discovery/sync` per forzare sync outbox
 
 ---
 

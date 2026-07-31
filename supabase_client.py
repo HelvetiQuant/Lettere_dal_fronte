@@ -241,10 +241,10 @@ def health_check() -> dict:
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# Multi-schema support (archive, evidence, ops, ai, api_public, legacy)
+# Multi-schema support (archive, evidence, ops, ai, api_public, legacy, core)
 # ════════════════════════════════════════════════════════════════════════════
 
-VALID_SCHEMAS = {"public", "archive", "evidence", "ops", "ai", "api_public", "legacy"}
+VALID_SCHEMAS = {"public", "archive", "evidence", "ops", "ai", "api_public", "legacy", "core"}
 
 
 def _validate_schema(schema: str) -> str:

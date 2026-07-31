@@ -191,6 +191,8 @@ class Dossier:
     # Web search fallback
     web_search_used: bool = False
     web_search_results: dict = field(default_factory=dict)
+    # Discovery persistence
+    discovery_persistence: dict = field(default_factory=dict)
     # Timestamps
     created_at: str = ""
     completed_at: str = ""
@@ -972,6 +974,48 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier) -> Dossier:
 
         log.info("Web search: completed — %d sources, %d tokens",
                  len(sources), usage.get("total_tokens", 0))
+
+        # ── Discovery persistence pipeline ──
+        try:
+            from discovery_persistence import process_web_search_results
+            dp_result = process_web_search_results(
+                web_search_results=dossier.web_search_results,
+                subject_name=si.full_name,
+                subject_type="soldier",
+                subject_id=si.cognome,  # best-effort ID
+                query_used=query,
+            )
+            dossier.discovery_persistence = {
+                "sources_discovered": dp_result.sources_discovered,
+                "new_sources_created": dp_result.new_sources_created,
+                "existing_sources_updated": dp_result.existing_sources_updated,
+                "full_content_archived": dp_result.full_content_archived,
+                "metadata_only_saved": dp_result.metadata_only_saved,
+                "link_only_saved": dp_result.link_only_saved,
+                "new_claims_created": dp_result.new_claims_created,
+                "conflicting_claims_created": dp_result.conflicting_claims_created,
+                "new_entities_discovered": dp_result.new_entities_discovered,
+                "research_leads_created": dp_result.research_leads_created,
+                "object_links_created": dp_result.object_links_created,
+                "local_persistence": dp_result.local_persistence,
+                "supabase_sync": dp_result.supabase_sync,
+                "manual_review_required": dp_result.manual_review_required,
+                "sources": dp_result.sources,
+                "claims": dp_result.claims,
+                "entities": dp_result.entities,
+                "leads": dp_result.leads,
+            }
+            log.info("DiscoveryPersistence: sources=%d claims=%d entities=%d leads=%d sync=%s",
+                     dp_result.new_sources_created, dp_result.new_claims_created,
+                     dp_result.new_entities_discovered, dp_result.research_leads_created,
+                     dp_result.supabase_sync)
+        except Exception as dp_err:
+            log.warning("Discovery persistence failed: %s", dp_err)
+            dossier.discovery_persistence = {
+                "local_persistence": "failed",
+                "supabase_sync": "failed",
+                "error": str(dp_err),
+            }
 
     except Exception as e:
         log.warning("Web search failed: %s", e)

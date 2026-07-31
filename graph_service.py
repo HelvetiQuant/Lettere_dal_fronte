@@ -193,11 +193,13 @@ class GraphBuilder:
         max_edges: int = 200,
         include_candidates: bool = True,
         include_rejected: bool = False,
+        include_to_review: bool = True,
     ):
         self.max_nodes = max(1, min(int(max_nodes), 500))
         self.max_edges = max(1, min(int(max_edges), 1000))
         self.include_candidates = include_candidates
         self.include_rejected = include_rejected
+        self.include_to_review = include_to_review
         self.main = connect_database("main", read_only=True)
         self.events: sqlite3.Connection | None = None
         if EVENTS_DB_PATH.exists():
@@ -339,7 +341,9 @@ class GraphBuilder:
         status = _status_from_row(row, source_system=source_system, review=review)
         if status == "rejected" and not self.include_rejected:
             return
-        if status in {"candidate", "to_review", "probable", "conflicting"} and not self.include_candidates:
+        if status == "to_review" and not self.include_to_review:
+            return
+        if status in {"candidate", "probable", "conflicting"} and not self.include_candidates:
             return
         confidence = _confidence(
             row.get("confidence")
@@ -753,6 +757,7 @@ def get_graph(
     max_edges: int = 200,
     include_candidates: bool = True,
     include_rejected: bool = False,
+    include_to_review: bool = True,
 ) -> GraphResponse:
     get_table_spec(table)
     builder = GraphBuilder(
@@ -760,6 +765,7 @@ def get_graph(
         max_edges=max_edges,
         include_candidates=include_candidates,
         include_rejected=include_rejected,
+        include_to_review=include_to_review,
     )
     try:
         return builder.build(table, int(record_id))
@@ -774,12 +780,14 @@ def get_graph_many(
     max_edges: int = 800,
     include_candidates: bool = True,
     include_rejected: bool = False,
+    include_to_review: bool = True,
 ) -> GraphBatch:
     builder = GraphBuilder(
         max_nodes=max_nodes,
         max_edges=max_edges,
         include_candidates=include_candidates,
         include_rejected=include_rejected,
+        include_to_review=include_to_review,
     )
     roots: list[GraphNode] = []
     seen: set[tuple[str, int]] = set()
