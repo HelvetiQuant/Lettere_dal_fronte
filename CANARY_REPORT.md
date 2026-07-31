@@ -1,6 +1,6 @@
-# Canary Report — canary_20260731210224
+# Canary Report — canary_20260731210758
 
-**Manifest hash:** `872548f7d20f3138`  
+**Manifest hash:** `269e42b3311fca3f`  
 **Scope:** people-only  
 **Expected targets:** 10  
 **Run state:** `SUCCESS`  
@@ -10,16 +10,16 @@
 
 | # | Target | Target data | Stato | Resolution | Candidates | Omonimi | Web | AI | Elapsed |
 |---|--------|-------------|-------|------------|------------|---------|-----|----|---------|
-| 1 | LARI GIUSEPPE | 1886, Canneto sull'Oglio | dati_insufficienti | UNRESOLVED | 51 | 13 | ❌ | ❌ | 11.2s |
-| 2 | FEDERICO LUIGI | 1885, Longobucco | dati_insufficienti | UNRESOLVED | 89 | 36 | ❌ | ❌ | 7.6s |
-| 3 | GIUNTA GIUSEPPE | 1879, Modica | dati_insufficienti | UNRESOLVED | 36 | 18 | ❌ | ❌ | 8.8s |
-| 4 | VENEZIANO NICOLA | 1898, Lioni | dati_insufficienti | UNRESOLVED | 30 | 1 | ❌ | ❌ | 6.1s |
-| 5 | FANTUZ ANTONIO | 1896, Pasiano di Pordenone | dati_insufficienti | UNRESOLVED | 30 | 1 | ❌ | ❌ | 7.0s |
-| 6 | FEDELE AGOSTINO | 1880, Magnano in Riviera | dati_insufficienti | UNRESOLVED | 34 | 2 | ❌ | ❌ | 3.2s |
-| 7 | RUSSO GAETANO | 1888, Misterbianco | dati_insufficienti | UNRESOLVED | 38 | 29 | ❌ | ❌ | 4.0s |
-| 8 | PAPINI PUBLIO | 1890, Roccalbegna | dati_insufficienti | UNRESOLVED | 30 | 1 | ❌ | ❌ | 7.0s |
-| 9 | FOLLADOR GIOVANNI | 1898, Falcade | dati_insufficienti | UNRESOLVED | 30 | 0 | ❌ | ❌ | 5.0s |
-| 10 | SIFANNO TOMMASO | 1884, Bitonto | dati_insufficienti | UNRESOLVED | 30 | 0 | ❌ | ❌ | 3.3s |
+| 1 | LARI GIUSEPPE | 1886, Canneto sull'Oglio | dati_insufficienti | UNRESOLVED | 51 | 13 | ❌ | ✅ | 40.5s |
+| 2 | FEDERICO LUIGI | 1885, Longobucco | dati_insufficienti | UNRESOLVED | 89 | 36 | ❌ | ✅ | 16.9s |
+| 3 | GIUNTA GIUSEPPE | 1879, Modica | dati_insufficienti | UNRESOLVED | 36 | 18 | ❌ | ✅ | 15.4s |
+| 4 | VENEZIANO NICOLA | 1898, Lioni | dati_insufficienti | UNRESOLVED | 30 | 1 | ❌ | ✅ | 15.3s |
+| 5 | FANTUZ ANTONIO | 1896, Pasiano di Pordenone | dati_insufficienti | UNRESOLVED | 30 | 1 | ❌ | ✅ | 30.9s |
+| 6 | FEDELE AGOSTINO | 1880, Magnano in Riviera | dati_insufficienti | UNRESOLVED | 34 | 2 | ❌ | ✅ | 13.4s |
+| 7 | RUSSO GAETANO | 1888, Misterbianco | dati_insufficienti | UNRESOLVED | 38 | 29 | ❌ | ✅ | 14.5s |
+| 8 | PAPINI PUBLIO | 1890, Roccalbegna | dati_insufficienti | UNRESOLVED | 30 | 1 | ❌ | ✅ | 13.5s |
+| 9 | FOLLADOR GIOVANNI | 1898, Falcade | dati_insufficienti | UNRESOLVED | 30 | 0 | ❌ | ✅ | 16.4s |
+| 10 | SIFANNO TOMMASO | 1884, Bitonto | dati_insufficienti | UNRESOLVED | 30 | 0 | ❌ | ✅ | 36.1s |
 
 ## Dettaglio per target
 
@@ -81,13 +81,13 @@
 | 28 | WikiTree: Felice Salvatori (Salvatori-29) | INSUFFICIENT_DATA | 0.60 |  |  |  |  |  | Supabase:supabase_external_items |
 | 29 | Ricerca in Invenio: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 30 | Open Data / DDB-Bestand: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 31 | Ricerca LeBI: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 31 | Ricerca CRI Milano: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
 | 32 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 33 | Ricerca CRI Milano: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 34 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
-| 35 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 36 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 37 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 33 | Ricerca LeBI: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 34 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 35 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 36 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 37 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 38 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 39 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 40 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -142,23 +142,7 @@
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:02:35.960830"
-}
-```
-
-**Elapsed:** 11.2s
+**Elapsed:** 40.5s
 
 ---
 
@@ -255,16 +239,16 @@
 | 63 | D'Annunzio e Fiume per l'ordine nuovo / Federico Augusto Perini Bembo | INSUFFICIENT_DATA | 0.60 |  |  |  |  |  | Supabase:supabase_external_items |
 | 64 | Ricerca in Invenio: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 65 | Open Data / DDB-Bestand: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 66 | Ricerca CRI Milano: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 67 | Ricerca LeBI: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 68 | Verdi: Stiffelio Oliviero De Fabritiis 1973 | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | internetarchive |
-| 69 | Verdi: Stiffelio Oliviero de Fabritiis 1972 | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | internetarchive |
-| 70 | Relazione sui servizi amministrativi del comune di Budoia | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | internetarchive |
-| 71 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 72 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
-| 73 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 74 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 75 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 66 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 67 | Verdi: Stiffelio Oliviero De Fabritiis 1973 | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | internetarchive |
+| 68 | Verdi: Stiffelio Oliviero de Fabritiis 1972 | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | internetarchive |
+| 69 | Relazione sui servizi amministrativi del comune di Budoia | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | internetarchive |
+| 70 | Ricerca CRI Milano: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
+| 71 | Ricerca LeBI: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 72 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 73 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 74 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 75 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 76 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 77 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 78 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -342,23 +326,7 @@
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:02:43.610809"
-}
-```
-
-**Elapsed:** 7.6s
+**Elapsed:** 16.9s
 
 ---
 
@@ -406,11 +374,11 @@
 | 14 | Ricerca in Invenio: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 15 | Open Data / DDB-Bestand: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
 | 16 | Ricerca CRI Milano: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 17 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 18 | Ricerca LeBI: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 19 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 20 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
-| 21 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 17 | Ricerca LeBI: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 18 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 19 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 20 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 21 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
 | 22 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 23 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 24 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -471,23 +439,7 @@
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:02:52.428162"
-}
-```
-
-**Elapsed:** 8.8s
+**Elapsed:** 15.4s
 
 ---
 
@@ -528,13 +480,13 @@
 | 7 | VENEZIANO NICOLA | POSSIBLE | 1.00 | 1898 | Lioni | VITO | 4 Reggimento Fanteria | Soldato | SQLite:caduti_albooro |
 | 8 | Ricerca in Invenio: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 9 | Open Data / DDB-Bestand: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 10 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 11 | Ricerca CRI Milano: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 12 | Ricerca LeBI: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 13 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 14 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 15 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
-| 16 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 10 | Ricerca CRI Milano: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
+| 11 | Ricerca LeBI: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 12 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 13 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 14 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 15 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 16 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 17 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 18 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 19 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -577,23 +529,7 @@
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:02:58.576730"
-}
-```
-
-**Elapsed:** 6.1s
+**Elapsed:** 15.3s
 
 ---
 
@@ -637,10 +573,10 @@
 | 10 | Ricerca CRI Milano: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
 | 11 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
 | 12 | Ricerca LeBI: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 13 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
-| 14 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
-| 15 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 16 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 13 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 14 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 15 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 16 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
 | 17 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 18 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 19 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -683,23 +619,7 @@
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:03:05.597153"
-}
-```
-
-**Elapsed:** 7.0s
+**Elapsed:** 30.9s
 
 ---
 
@@ -744,11 +664,11 @@
 | 11 | LO MANTO, GUISEPPE Fedele | INSUFFICIENT_DATA | 0.60 |  |  |  |  |  | Supabase:supabase_external_items |
 | 12 | Ricerca in Invenio: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 13 | Open Data / DDB-Bestand: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 14 | Ricerca CRI Milano: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 15 | Ricerca LeBI: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 16 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 17 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
-| 18 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 14 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 15 | Ricerca CRI Milano: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
+| 16 | Ricerca LeBI: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 17 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 18 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 19 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
 | 20 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 21 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -792,23 +712,7 @@
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:03:08.749775"
-}
-```
-
-**Elapsed:** 3.2s
+**Elapsed:** 13.4s
 
 ---
 
@@ -857,13 +761,13 @@
 | 15 | Francesco Albanese: Canzone Napoletana Vol.1-3 | INSUFFICIENT_DATA | 0.60 |  |  |  |  |  | Supabase:supabase_external_items |
 | 16 | Ricerca in Invenio: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 17 | Open Data / DDB-Bestand: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 18 | Ricerca LeBI: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 19 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 20 | Ricerca CRI Milano: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
+| 18 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 19 | Ricerca CRI Milano: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
+| 20 | Ricerca LeBI: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
 | 21 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
 | 22 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 23 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
-| 24 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 23 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 24 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
 | 25 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 26 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 27 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -932,23 +836,7 @@
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:03:12.725029"
-}
-```
-
-**Elapsed:** 4.0s
+**Elapsed:** 14.5s
 
 ---
 
@@ -989,13 +877,13 @@
 | 7 | PAPINI PUBLIO | POSSIBLE | 1.00 | 1890 | Roccalbegna | GIOVANNI | 351 Batteria Bombardieri | Soldato | SQLite:caduti_albooro |
 | 8 | Ricerca in Invenio: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 9 | Open Data / DDB-Bestand: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 10 | Ricerca CRI Milano: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 11 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 10 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 11 | Ricerca CRI Milano: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
 | 12 | Ricerca LeBI: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 13 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 14 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 13 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 14 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 15 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 16 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 16 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 17 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 18 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 19 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -1036,23 +924,7 @@
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:03:19.688841"
-}
-```
-
-**Elapsed:** 7.0s
+**Elapsed:** 13.5s
 
 ---
 
@@ -1096,10 +968,10 @@
 | 10 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
 | 11 | Ricerca CRI Milano: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
 | 12 | Ricerca LeBI: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 13 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 13 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
 | 14 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
-| 15 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 16 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 15 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 16 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 17 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 18 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 19 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -1134,23 +1006,7 @@
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:03:24.643114"
-}
-```
-
-**Elapsed:** 5.0s
+**Elapsed:** 16.4s
 
 ---
 
@@ -1191,12 +1047,12 @@
 | 7 | SIFANNO TOMMASO | POSSIBLE | 1.00 | 1884 | Bitonto | GIUSEPPE | 139 Reggimento Fanteria | Soldato | SQLite:caduti_albooro |
 | 8 | Ricerca in Invenio: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 9 | Open Data / DDB-Bestand: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 10 | Ricerca CRI Milano: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 11 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 10 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 11 | Ricerca CRI Milano: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
 | 12 | Ricerca LeBI: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
 | 13 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 14 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
-| 15 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 14 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 15 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
 | 16 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 17 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 18 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -1226,29 +1082,15 @@
 ```json
 {
   "stage": "web_search",
-  "error_code": "CIRCUIT_OPEN",
-  "safe_message": "Circuit breaker open — too many consecutive failures",
-  "provider": "openai_web_search"
+  "error_code": "RATE_LIMITED",
+  "exception_type": "RateLimitError",
+  "safe_message": "Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quo",
+  "provider": "openai_web_search",
+  "retryable": true
 }
 ```
 
-**AI error:**
-```json
-{
-  "stage": "dossier_synthesis",
-  "error_code": "GENERATION_FAILED",
-  "exception_type": "str",
-  "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-  "provider": "lmstudio",
-  "model": "google/gemma-4-e4b",
-  "request_id": "",
-  "attempt": 1,
-  "retryable": false,
-  "timestamp": "2026-07-31T21:03:27.961019"
-}
-```
-
-**Elapsed:** 3.3s
+**Elapsed:** 36.1s
 
 ---
 
@@ -1257,8 +1099,8 @@
 
 ```json
 {
-  "run_id": "canary_20260731210224",
-  "manifest_hash": "872548f7d20f3138",
+  "run_id": "canary_20260731210758",
+  "manifest_hash": "269e42b3311fca3f",
   "state": "SUCCESS",
   "scope": "people-only",
   "expected": 10,
@@ -1282,7 +1124,7 @@
     "WWI-010": "COMPLETED"
   },
   "provider_health": {},
-  "started_at": "2026-07-31T21:02:24.728072",
-  "completed_at": "2026-07-31T21:03:27.963031"
+  "started_at": "2026-07-31T21:07:58.055651",
+  "completed_at": "2026-07-31T21:11:30.853653"
 }
 ```

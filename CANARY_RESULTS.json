@@ -9,7 +9,7 @@
       "reparto": "206 Reggimento Fanteria",
       "paternita": "EMANUELE"
     },
-    "elapsed_seconds": 11.2,
+    "elapsed_seconds": 40.5,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -941,7 +941,7 @@
         ]
       },
       {
-        "name": "Ricerca LeBI: LARI GIUSEPPE 1886 Canneto sull'Oglio",
+        "name": "Ricerca CRI Milano: LARI GIUSEPPE 1886 Canneto sull'Oglio",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
         "birth_year": "",
@@ -964,8 +964,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "lebi",
-            "url": "https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/search?d=0&q=LARI%20GIUSEPPE%201886%20Canneto%20sull%27Oglio",
+            "istituzione": "cri_milano",
+            "url": "https://cri-mi.archimista.com/search?q=LARI%20GIUSEPPE%201886%20Canneto%20sull%27Oglio",
             "source_level": "D",
             "esito": "positive"
           }
@@ -1003,7 +1003,7 @@
         ]
       },
       {
-        "name": "Ricerca CRI Milano: LARI GIUSEPPE 1886 Canneto sull'Oglio",
+        "name": "Ricerca LeBI: LARI GIUSEPPE 1886 Canneto sull'Oglio",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
         "birth_year": "",
@@ -1026,70 +1026,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "cri_milano",
-            "url": "https://cri-mi.archimista.com/search?q=LARI%20GIUSEPPE%201886%20Canneto%20sull%27Oglio",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
-        "name": "Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.27,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "archivportal_d",
-            "url": "https://www.archivportal-d.de/search?query=LARI+GIUSEPPE+1886+Canneto+sull'Oglio",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
-        "name": "Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.27,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "internetculturale",
-            "url": "https://www.internetculturale.it/opac/search?q=LARI+GIUSEPPE+1886+Canneto+sull'Oglio",
+            "istituzione": "lebi",
+            "url": "https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/search?d=0&q=LARI%20GIUSEPPE%201886%20Canneto%20sull%27Oglio",
             "source_level": "D",
             "esito": "positive"
           }
@@ -1152,6 +1090,68 @@
           {
             "istituzione": "lac",
             "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=LARI+GIUSEPPE+1886+Canneto+sull'Oglio",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.27,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "archivportal_d",
+            "url": "https://www.archivportal-d.de/search?query=LARI+GIUSEPPE+1886+Canneto+sull'Oglio",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.27,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "internetculturale",
+            "url": "https://www.internetculturale.it/opac/search?q=LARI+GIUSEPPE+1886+Canneto+sull'Oglio",
             "source_level": "D",
             "esito": "positive"
           }
@@ -1924,6 +1924,46 @@
           "text": "GIUSEPPE L.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "GIUSEPPE",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "GIUSEPPE",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "IOSIPHUS",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "LARI",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "LARIS",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "LARIO",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "DE LARI",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "LARIUS",
+          "type": "latin",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -1957,7 +1997,38 @@
         }
       ],
       "ricerche_negative": [],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica incrociata con archivi militari italiani (1915-1918) per il 206° Reggimento Fanteria",
+          "fonte": "Archivio Centrale dello Stato (ACS) - Fondo Ministero della Guerra, Serie Matricole e Ruoli",
+          "motivazione": "Il reparto militare (206 Reggimento Fanteria) e il grado (Soldato) sono dati specifici che possono confermare o smentire l'identificazione. Necessario consultare registri di arruolamento e matricole per il periodo 1915-1918."
+        },
+        {
+          "priorita": 2,
+          "azione": "Consultazione registri anagrafici di Canneto sull'Oglio (1880-1890)",
+          "fonte": "Archivio Storico Comunale di Canneto sull'Oglio",
+          "motivazione": "La nascita nel 1886 a Canneto sull'Oglio e la paternità (Emanuele) sono dati chiave per l'identificazione. I registri anagrafici possono fornire conferma diretta."
+        },
+        {
+          "priorita": 3,
+          "azione": "Ricerca nei fondi dell'Albo d'Oro dei Caduti della Grande Guerra",
+          "fonte": "Ministero della Difesa - Ufficio Storico",
+          "motivazione": "L'eventuale presenza del nome in questo albo potrebbe confermare la partecipazione al conflitto e lo stato di soldato nel 206° Reggimento Fanteria."
+        },
+        {
+          "priorita": 4,
+          "azione": "Verifica nei registri di leva del Distretto Militare di Mantova (anni 1906-1908)",
+          "fonte": "Archivio di Stato di Mantova - Fondo Distretto Militare",
+          "motivazione": "Il distretto militare di riferimento per Canneto sull'Oglio è Mantova. I registri di leva possono confermare l'arruolamento e il numero di matricola."
+        },
+        {
+          "priorita": 5,
+          "azione": "Ricerca nei fondi del Museo Centrale del Risorgimento (Roma) - Sezione Grande Guerra",
+          "fonte": "Museo Centrale del Risorgimento",
+          "motivazione": "Archivi museali possono contenere elenchi di soldati arruolati nei reggimenti di fanteria durante la WWI, inclusi eventuali riferimenti al 206° Reggimento."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Canneto sull'Oglio",
@@ -2040,18 +2111,6 @@
           "accepted_evidence_sources": 5,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:02:35.960830"
         }
       },
       "web_search_used": false,
@@ -2067,7 +2126,7 @@
           "retryable": true
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
@@ -2080,19 +2139,8 @@
       "retryable": true
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:02:35.960830"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   },
   {
     "target_id": "WWI-002",
@@ -2104,7 +2152,7 @@
       "reparto": "138 Reggimento Fanteria",
       "paternita": "GIUSEPPE"
     },
-    "elapsed_seconds": 7.6,
+    "elapsed_seconds": 16.9,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -4121,7 +4169,7 @@
         ]
       },
       {
-        "name": "Ricerca CRI Milano: FEDERICO LUIGI 1885 Longobucco",
+        "name": "Ricerca: FEDERICO LUIGI 1885 Longobucco",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
         "birth_year": "",
@@ -4144,40 +4192,9 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "cri_milano",
-            "url": "https://cri-mi.archimista.com/search?q=FEDERICO%20LUIGI%201885%20Longobucco",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
-        "name": "Ricerca LeBI: FEDERICO LUIGI 1885 Longobucco",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.285,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "lebi",
-            "url": "https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/search?d=0&q=FEDERICO%20LUIGI%201885%20Longobucco",
-            "source_level": "D",
+            "istituzione": "arolsen",
+            "url": "https://collections.arolsen-archives.org/en/search/FEDERICO%20LUIGI%201885%20Longobucco",
+            "source_level": "B",
             "esito": "positive"
           }
         ]
@@ -4276,7 +4293,7 @@
         ]
       },
       {
-        "name": "Ricerca: FEDERICO LUIGI 1885 Longobucco",
+        "name": "Ricerca CRI Milano: FEDERICO LUIGI 1885 Longobucco",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
         "birth_year": "",
@@ -4299,17 +4316,17 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "arolsen",
-            "url": "https://collections.arolsen-archives.org/en/search/FEDERICO%20LUIGI%201885%20Longobucco",
-            "source_level": "B",
+            "istituzione": "cri_milano",
+            "url": "https://cri-mi.archimista.com/search?q=FEDERICO%20LUIGI%201885%20Longobucco",
+            "source_level": "D",
             "esito": "positive"
           }
         ]
       },
       {
-        "name": "Ricerca: FEDERICO LUIGI 1885 Longobucco",
+        "name": "Ricerca LeBI: FEDERICO LUIGI 1885 Longobucco",
         "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.27,
+        "confidence": 0.285,
         "birth_year": "",
         "birth_place": "",
         "paternita": "",
@@ -4330,8 +4347,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "archivportal_d",
-            "url": "https://www.archivportal-d.de/search?query=FEDERICO+LUIGI+1885+Longobucco",
+            "istituzione": "lebi",
+            "url": "https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/search?d=0&q=FEDERICO%20LUIGI%201885%20Longobucco",
             "source_level": "D",
             "esito": "positive"
           }
@@ -4425,6 +4442,37 @@
           {
             "istituzione": "lac",
             "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=FEDERICO+LUIGI+1885+Longobucco",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca: FEDERICO LUIGI 1885 Longobucco",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.27,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "archivportal_d",
+            "url": "https://www.archivportal-d.de/search?query=FEDERICO+LUIGI+1885+Longobucco",
             "source_level": "D",
             "esito": "positive"
           }
@@ -5650,6 +5698,46 @@
           "text": "LUIGI F.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "Luigi",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Lugi",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Luigi",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Ludovicus",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Federico",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Federigo",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Federico",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Federicus",
+          "type": "latin",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -5683,7 +5771,44 @@
         }
       ],
       "ricerche_negative": [],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica anagrafica e stato civile presso Comune di Longobucco (CS)",
+          "fonte": "Archivio Storico Comunale di Longobucco",
+          "motivazione": "Confermare la nascita di Luigi Federico nel 1885 e raccogliere dati familiari (paternità, maternità) per validare l'identità."
+        },
+        {
+          "priorita": 1,
+          "azione": "Ricerca matricola militare presso Archivio di Stato di Cosenza",
+          "fonte": "Archivio di Stato di Cosenza - Fondo Distretto Militare di Cosenza",
+          "motivazione": "Verificare la presenza di Luigi Federico (nato nel 1885) nel 138° Reggimento Fanteria durante la WWI, tramite registri matricolari."
+        },
+        {
+          "priorita": 2,
+          "azione": "Consultazione Albo d'Oro dei Caduti della Grande Guerra",
+          "fonte": "Ministero della Difesa - Ufficio Storico",
+          "motivazione": "Ricercare eventuali riferimenti a Luigi Federico nel 138° Reggimento Fanteria, per confermare lo stato di soldato e l'eventuale decesso in guerra."
+        },
+        {
+          "priorita": 2,
+          "azione": "Ricerca nei registri parrocchiali di Longobucco",
+          "fonte": "Archivio Parrocchiale di Longobucco (CS)",
+          "motivazione": "Verificare battesimo, matrimonio o altri eventi sacramentali che possano fornire ulteriori dati anagrafici o familiari."
+        },
+        {
+          "priorita": 3,
+          "azione": "Consultazione fondi archivistici del 138° Reggimento Fanteria",
+          "fonte": "Archivio Centrale dello Stato - Fondo Ministero della Guerra",
+          "motivazione": "Ricercare documenti di reparto (ruoli, elenchi, corrispondenza) che possano contenere riferimenti a Luigi Federico."
+        },
+        {
+          "priorita": 3,
+          "azione": "Ricerca nei registri di leva del Distretto Militare di Cosenza",
+          "fonte": "Archivio di Stato di Cosenza - Fondo Leva",
+          "motivazione": "Verificare la posizione di leva di Luigi Federico (nato nel 1885) per incrociare dati con il reparto militare."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Longobucco",
@@ -5766,18 +5891,6 @@
           "accepted_evidence_sources": 30,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:02:43.610809"
         }
       },
       "web_search_used": false,
@@ -5793,7 +5906,7 @@
           "retryable": true
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
@@ -5806,19 +5919,8 @@
       "retryable": true
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:02:43.610809"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   },
   {
     "target_id": "WWI-003",
@@ -5830,7 +5932,7 @@
       "reparto": "2 Reggimento Granatieri",
       "paternita": "RAFFAELE"
     },
-    "elapsed_seconds": 8.8,
+    "elapsed_seconds": 15.4,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -6328,37 +6430,6 @@
         ]
       },
       {
-        "name": "Ricerca: GIUNTA GIUSEPPE 1879 Modica",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.285,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "arolsen",
-            "url": "https://collections.arolsen-archives.org/en/search/GIUNTA%20GIUSEPPE%201879%20Modica",
-            "source_level": "B",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
         "name": "Ricerca LeBI: GIUNTA GIUSEPPE 1879 Modica",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
@@ -6392,7 +6463,7 @@
       {
         "name": "Ricerca: GIUNTA GIUSEPPE 1879 Modica",
         "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.27,
+        "confidence": 0.285,
         "birth_year": "",
         "birth_place": "",
         "paternita": "",
@@ -6413,9 +6484,9 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "shd",
-            "url": "https://www.memoiredeshommes.sga.defense.gouv.fr/fr/search.php?q=GIUNTA+GIUSEPPE+1879+Modica",
-            "source_level": "D",
+            "istituzione": "arolsen",
+            "url": "https://collections.arolsen-archives.org/en/search/GIUNTA%20GIUSEPPE%201879%20Modica",
+            "source_level": "B",
             "esito": "positive"
           }
         ]
@@ -6477,6 +6548,37 @@
           {
             "istituzione": "lac",
             "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=GIUNTA+GIUSEPPE+1879+Modica",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca: GIUNTA GIUSEPPE 1879 Modica",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.27,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "shd",
+            "url": "https://www.memoiredeshommes.sga.defense.gouv.fr/fr/search.php?q=GIUNTA+GIUSEPPE+1879+Modica",
             "source_level": "D",
             "esito": "positive"
           }
@@ -7384,6 +7486,56 @@
           "text": "GIUSEPPE G.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "GIUSEPPE",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "GIUSEPPO",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "GIUSEPHE",
+          "type": "french",
+          "source": "qwen"
+        },
+        {
+          "text": "JOSIP",
+          "type": "slavic",
+          "source": "qwen"
+        },
+        {
+          "text": "JOSIPHUS",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "GIUNTA",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "GIVNTA",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "GIVNTHA",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "IUNTA",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "JUNTA",
+          "type": "transliteration",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -7423,7 +7575,38 @@
           "esito": "negative"
         }
       ],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica documentale del candidato con dati completi (nascita 1879, Modica, paternità Raffaele, reparto 2 Reggimento Granatieri, grado Maggiore In Servizio Attivo)",
+          "fonte": "Archivio di Stato di Ragusa - Fondo Stato Civile",
+          "motivazione": "Il candidato presenta 3 strong matches e 3 medium matches sui dati noti, rendendolo il più promettente per l'identificazione. La verifica anagrafica è prioritaria per confermare l'identità."
+        },
+        {
+          "priorita": 2,
+          "azione": "Ricerca nei ruoli matricolari del Distretto Militare di Modica per l'anno 1899-1900",
+          "fonte": "Archivio di Stato di Ragusa - Fondo Distretto Militare",
+          "motivazione": "La data di nascita (1879) suggerisce arruolamento intorno al 1899-1900. La verifica nei ruoli matricolari potrebbe fornire il numero di matricola e ulteriori dettagli militari."
+        },
+        {
+          "priorita": 3,
+          "azione": "Consultazione degli archivi del 2 Reggimento Granatieri per documenti di servizio attivo durante la WWI",
+          "fonte": "Archivio dell'Esercito Italiano - Ufficio Storico",
+          "motivazione": "Il reparto (2 Reggimento Granatieri) e il grado (Maggiore In Servizio Attivo) indicano un possibile arruolamento nella Grande Guerra. La documentazione di reparto potrebbe contenere registri di servizio o elenchi di ufficiali."
+        },
+        {
+          "priorita": 4,
+          "azione": "Ricerca nei registri parrocchiali di Modica per la nascita di Giuseppe Giunta figlio di Raffaele (1879)",
+          "fonte": "Archivio Parrocchiale di Modica - Fondo Battesimi",
+          "motivazione": "La località di nascita (Modica) e la paternità (Raffaele) sono dati certi. La verifica nei registri parrocchiali potrebbe confermare la data esatta di nascita e eventuali dettagli familiari."
+        },
+        {
+          "priorita": 5,
+          "azione": "Ricerca nei fondi dell'Archivio Centrale dello Stato relativi a prigionieri di guerra italiani (se applicabile)",
+          "fonte": "Archivio Centrale dello Stato - Fondo Ministero della Guerra",
+          "motivazione": "Sebbene il conflitto presunto sia la WWI, non è escluso un arruolamento successivo. La verifica nei fondi prigionieri potrebbe fornire ulteriori dettagli in caso di cattura o decesso."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Modica",
@@ -7506,18 +7689,6 @@
           "accepted_evidence_sources": 1,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:02:52.428162"
         }
       },
       "web_search_used": false,
@@ -7533,7 +7704,7 @@
           "retryable": true
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
@@ -7546,19 +7717,8 @@
       "retryable": true
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:02:52.428162"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   },
   {
     "target_id": "WWI-004",
@@ -7570,7 +7730,7 @@
       "reparto": "4 Reggimento Fanteria",
       "paternita": "VITO"
     },
-    "elapsed_seconds": 6.1,
+    "elapsed_seconds": 15.3,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -7851,37 +8011,6 @@
         ]
       },
       {
-        "name": "Ricerca: VENEZIANO NICOLA 1898 Lioni",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.285,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "arolsen",
-            "url": "https://collections.arolsen-archives.org/en/search/VENEZIANO%20NICOLA%201898%20Lioni",
-            "source_level": "B",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
         "name": "Ricerca CRI Milano: VENEZIANO NICOLA 1898 Lioni",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
@@ -7938,6 +8067,68 @@
           {
             "istituzione": "lebi",
             "url": "https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/search?d=0&q=VENEZIANO%20NICOLA%201898%20Lioni",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca: VENEZIANO NICOLA 1898 Lioni",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.285,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "arolsen",
+            "url": "https://collections.arolsen-archives.org/en/search/VENEZIANO%20NICOLA%201898%20Lioni",
+            "source_level": "B",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca: VENEZIANO NICOLA 1898 Lioni",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.27,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "lac",
+            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=VENEZIANO+NICOLA+1898+Lioni",
             "source_level": "D",
             "esito": "positive"
           }
@@ -8031,37 +8222,6 @@
           {
             "istituzione": "archivportal_d",
             "url": "https://www.archivportal-d.de/search?query=VENEZIANO+NICOLA+1898+Lioni",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
-        "name": "Ricerca: VENEZIANO NICOLA 1898 Lioni",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.27,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "lac",
-            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=VENEZIANO+NICOLA+1898+Lioni",
             "source_level": "D",
             "esito": "positive"
           }
@@ -8584,6 +8744,56 @@
           "text": "NICOLA V.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "Nicola",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Niccolò",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Nicolò",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Niccola",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Nicolao",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Nicolaus",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Veneziano",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Venetiano",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Venetianus",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Venetianus",
+          "type": "latin",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -8623,7 +8833,32 @@
           "esito": "negative"
         }
       ],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica incrociata con archivi militari italiani (1915-1918) per soldati del 4° Reggimento Fanteria nati nel 1898 a Lioni",
+          "fonte": "Archivio Centrale dello Stato (ACS) - Fondo Ministero della Guerra, Serie Matricole e Ruoli",
+          "motivazione": "Il candidato con stato 'POSSIBLE' presenta dati coerenti con il target (nome, cognome, anno/luogo di nascita, reparto e grado). Necessario confermare l'identità tramite documenti militari primari."
+        },
+        {
+          "priorita": 2,
+          "azione": "Consultazione registri parrocchiali di Lioni (AV) per estrarre atti di nascita di Nicola Veneziano figlio di Vito (1898)",
+          "fonte": "Archivio Diocesano di Sant'Angelo dei Lombardi - Contea di Lioni",
+          "motivazione": "I registri parrocchiali rappresentano la fonte primaria per la verifica anagrafica. Potrebbe fornire conferma del nome del padre e data esatta di nascita."
+        },
+        {
+          "priorita": 3,
+          "azione": "Ricerca nei fondi del Distretto Militare di Avellino per soldati del 4° Reggimento Fanteria arruolati nel 1915-1918",
+          "fonte": "Archivio di Stato di Avellino - Fondo Distretto Militare",
+          "motivazione": "Il distretto militare di riferimento per Lioni (AV) potrebbe contenere matricole o ruoli di leva che includono Nicola Veneziano."
+        },
+        {
+          "priorita": 4,
+          "azione": "Verifica nei registri di stato civile di Lioni per atti di nascita di Nicola Veneziano (1898)",
+          "fonte": "Comune di Lioni - Archivio Storico Comunale",
+          "motivazione": "Fonti civili alternative ai registri parrocchiali per confermare i dati anagrafici."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Lioni",
@@ -8706,18 +8941,6 @@
           "accepted_evidence_sources": 0,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:02:58.576730"
         }
       },
       "web_search_used": false,
@@ -8733,7 +8956,7 @@
           "retryable": true
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
@@ -8746,19 +8969,8 @@
       "retryable": true
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:02:58.576730"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   },
   {
     "target_id": "WWI-005",
@@ -8770,7 +8982,7 @@
       "reparto": "228 Reggimento Fanteria",
       "paternita": "PIETRO"
     },
-    "elapsed_seconds": 7.0,
+    "elapsed_seconds": 30.9,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -9167,68 +9379,6 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "archivportal_d",
-            "url": "https://www.archivportal-d.de/search?query=FANTUZ+ANTONIO+1896+Pasiano+di+Pordenone",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
-        "name": "Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.27,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "lac",
-            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=FANTUZ+ANTONIO+1896+Pasiano+di+Pordenone",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
-        "name": "Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.27,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
             "istituzione": "shd",
             "url": "https://www.memoiredeshommes.sga.defense.gouv.fr/fr/search.php?q=FANTUZ+ANTONIO+1896+Pasiano+di+Pordenone",
             "source_level": "D",
@@ -9260,8 +9410,70 @@
         "contraddizioni": [],
         "fonti": [
           {
+            "istituzione": "archivportal_d",
+            "url": "https://www.archivportal-d.de/search?query=FANTUZ+ANTONIO+1896+Pasiano+di+Pordenone",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.27,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
             "istituzione": "internetculturale",
             "url": "https://www.internetculturale.it/opac/search?q=FANTUZ+ANTONIO+1896+Pasiano+di+Pordenone",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.27,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "lac",
+            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=FANTUZ+ANTONIO+1896+Pasiano+di+Pordenone",
             "source_level": "D",
             "esito": "positive"
           }
@@ -9783,6 +9995,51 @@
           "text": "ANTONIO F.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "ANTONIO",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "ANTONIO",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "ANTONIO",
+          "type": "transliteration",
+          "source": "qwen"
+        },
+        {
+          "text": "FANTUZZI",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "FANTUZZO",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "FANTUZIO",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "FANTUZI",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "FANTUZIUS",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "FANTUZZI",
+          "type": "transliteration",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -9822,7 +10079,38 @@
           "esito": "negative"
         }
       ],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica incrociata anagrafica e militare con archivi locali (Comune di Pasiano di Pordenone, Archivio di Stato di Pordenone)",
+          "fonte": "Archivio Storico Comunale di Pasiano di Pordenone, Archivio di Stato di Pordenone - Sezione di Udine",
+          "motivazione": "Il candidato con stato 'POSSIBLE' presenta dati coerenti (nome, cognome, anno di nascita, luogo di nascita, paternità, reparto militare) ma richiede conferma documentale per validare l'identificazione deterministica."
+        },
+        {
+          "priorita": 2,
+          "azione": "Consultazione archivi militari specifici per il 228° Reggimento Fanteria (Archivio Ufficio Storico dello Stato Maggiore dell'Esercito, Roma)",
+          "fonte": "Archivio Ufficio Storico dello Stato Maggiore dell'Esercito - Roma",
+          "motivazione": "Il reparto militare (228 Reggimento Fanteria) è un elemento distintivo che potrebbe permettere l'identificazione del soggetto tramite registri di arruolamento o matricole."
+        },
+        {
+          "priorita": 3,
+          "azione": "Ricerca nei registri di leva del Distretto Militare di Pordenone (1896-1916)",
+          "fonte": "Archivio di Stato di Pordenone - Sezione di Udine, Distretto Militare di Pordenone",
+          "motivazione": "I registri di leva potrebbero contenere dati anagrafici, di paternità e di arruolamento utili per confermare l'identità del soggetto."
+        },
+        {
+          "priorita": 4,
+          "azione": "Verifica nei fondi archivistici della Croce Rossa Italiana (CRI) per eventuali registri di prigionieri o feriti della WWI",
+          "fonte": "Archivio Storico della Croce Rossa Italiana - Milano",
+          "motivazione": "Il conflitto presunto (WWI) e la possibile condizione di prigioniero o ferito richiedono una verifica nei fondi della CRI, che spesso registrava tali eventi."
+        },
+        {
+          "priorita": 5,
+          "azione": "Ricerca nei registri parrocchiali di Pasiano di Pordenone per conferma anagrafica (battesimo, matrimonio, morte)",
+          "fonte": "Archivio Parrocchiale di Pasiano di Pordenone",
+          "motivazione": "I registri parrocchiali possono fornire dati anagrafici precisi (data di nascita esatta, genitori) per validare l'identificazione."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Pasiano di Pordenone",
@@ -9905,18 +10193,6 @@
           "accepted_evidence_sources": 0,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:03:05.597153"
         }
       },
       "web_search_used": false,
@@ -9932,7 +10208,7 @@
           "retryable": true
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
@@ -9945,19 +10221,8 @@
       "retryable": true
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:03:05.597153"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   },
   {
     "target_id": "WWI-006",
@@ -9969,7 +10234,7 @@
       "reparto": "128 Battaglione M. T.",
       "paternita": "PIETRO"
     },
-    "elapsed_seconds": 3.2,
+    "elapsed_seconds": 13.4,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -10374,6 +10639,37 @@
         ]
       },
       {
+        "name": "Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.285,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "arolsen",
+            "url": "https://collections.arolsen-archives.org/en/search/FEDELE%20AGOSTINO%201880%20Magnano%20in%20Riviera",
+            "source_level": "B",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
         "name": "Ricerca CRI Milano: FEDELE AGOSTINO 1880 Magnano in Riviera",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
@@ -10438,7 +10734,7 @@
       {
         "name": "Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera",
         "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.285,
+        "confidence": 0.27,
         "birth_year": "",
         "birth_place": "",
         "paternita": "",
@@ -10459,9 +10755,9 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "arolsen",
-            "url": "https://collections.arolsen-archives.org/en/search/FEDELE%20AGOSTINO%201880%20Magnano%20in%20Riviera",
-            "source_level": "B",
+            "istituzione": "lac",
+            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=FEDELE+AGOSTINO+1880+Magnano+in+Riviera",
+            "source_level": "D",
             "esito": "positive"
           }
         ]
@@ -10492,37 +10788,6 @@
           {
             "istituzione": "archivportal_d",
             "url": "https://www.archivportal-d.de/search?query=FEDELE+AGOSTINO+1880+Magnano+in+Riviera",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
-        "name": "Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.27,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "lac",
-            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=FEDELE+AGOSTINO+1880+Magnano+in+Riviera",
             "source_level": "D",
             "esito": "positive"
           }
@@ -11128,6 +11393,51 @@
           "text": "AGOSTINO F.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "Agostino",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Augustinus",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Augustin",
+          "type": "french",
+          "source": "qwen"
+        },
+        {
+          "text": "Augustin",
+          "type": "german",
+          "source": "qwen"
+        },
+        {
+          "text": "Fedeli",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Fedele",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Fedellus",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Fedel",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Fedeli",
+          "type": "historical",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -11161,7 +11471,44 @@
         }
       ],
       "ricerche_negative": [],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica incrociata con archivi militari italiani (1915-1918) per il 128° Battaglione M.T. (Mitraglieri Truppe)",
+          "fonte": "Archivio Centrale dello Stato - Fondo Ministero della Guerra, Serie Matricole e Ruoli",
+          "motivazione": "Il reparto '128 Battaglione M. T.' è specifico e potrebbe contenere registri di arruolamento o matricole. La data di nascita (1880) e il luogo (Magnano in Riviera) sono compatibili con il periodo storico."
+        },
+        {
+          "priorita": 1,
+          "azione": "Consultazione Archivio di Stato di Udine per registri anagrafici di Magnano in Riviera (1880-1920)",
+          "fonte": "Archivio di Stato di Udine - Fondo Stato Civile",
+          "motivazione": "Il luogo di nascita è Magnano in Riviera (UD). I registri anagrafici potrebbero contenere dati di nascita, paternità e residenza per il periodo."
+        },
+        {
+          "priorita": 2,
+          "azione": "Ricerca nei registri parrocchiali di Magnano in Riviera per atto di nascita di Agostino Fedele (1880)",
+          "fonte": "Archivio Parrocchiale di Magnano in Riviera",
+          "motivazione": "I registri ecclesiastici sono una fonte primaria per dati anagrafici pre-1900. La paternità 'Pietro' potrebbe essere verificata."
+        },
+        {
+          "priorita": 2,
+          "azione": "Verifica nei fondi dell'Archivio Ufficio Storico dello Stato Maggiore dell'Esercito per il 128° Battaglione M.T.",
+          "fonte": "Archivio Ufficio Storico dello Stato Maggiore dell'Esercito - Fondo Battaglioni Mitraglieri",
+          "motivazione": "Il reparto è specifico e potrebbe contenere documenti di arruolamento, ruoli o elenchi di soldati per il periodo 1915-1918."
+        },
+        {
+          "priorita": 3,
+          "azione": "Ricerca nei registri del Distretto Militare di Udine per il soldato Agostino Fedele (1880)",
+          "fonte": "Archivio Distretto Militare di Udine - Fondo Ruoli Matricolari",
+          "motivazione": "Il distretto militare di Udine era competente per la leva dei nati nella provincia. Potrebbe contenere dati di arruolamento o matricola."
+        },
+        {
+          "priorita": 3,
+          "azione": "Consultazione dei registri del Cimitero di Magnano in Riviera per eventuali lapidi o documenti funerari di Agostino Fedele",
+          "fonte": "Archivio Comunale di Magnano in Riviera - Fondo Cimiteriale",
+          "motivazione": "Se deceduto in loco, potrebbe contenere dati biografici o riferimenti militari."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Magnano in Riviera",
@@ -11244,18 +11591,6 @@
           "accepted_evidence_sources": 1,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:03:08.749775"
         }
       },
       "web_search_used": false,
@@ -11269,7 +11604,7 @@
           "provider": "openai_web_search"
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
@@ -11280,19 +11615,8 @@
       "provider": "openai_web_search"
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:03:08.749775"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   },
   {
     "target_id": "WWI-007",
@@ -11304,7 +11628,7 @@
       "reparto": "48 Reggimento Fanteria",
       "paternita": "FRANCESCO"
     },
-    "elapsed_seconds": 4.0,
+    "elapsed_seconds": 14.5,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -11833,37 +12157,6 @@
         ]
       },
       {
-        "name": "Ricerca LeBI: RUSSO GAETANO 1888 Misterbianco",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.285,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "lebi",
-            "url": "https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/search?d=0&q=RUSSO%20GAETANO%201888%20Misterbianco",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
         "name": "Ricerca: RUSSO GAETANO 1888 Misterbianco",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
@@ -11920,6 +12213,37 @@
           {
             "istituzione": "cri_milano",
             "url": "https://cri-mi.archimista.com/search?q=RUSSO%20GAETANO%201888%20Misterbianco",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca LeBI: RUSSO GAETANO 1888 Misterbianco",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.285,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "lebi",
+            "url": "https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/search?d=0&q=RUSSO%20GAETANO%201888%20Misterbianco",
             "source_level": "D",
             "esito": "positive"
           }
@@ -12011,8 +12335,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "lac",
-            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=RUSSO+GAETANO+1888+Misterbianco",
+            "istituzione": "archivportal_d",
+            "url": "https://www.archivportal-d.de/search?query=RUSSO+GAETANO+1888+Misterbianco",
             "source_level": "D",
             "esito": "positive"
           }
@@ -12042,8 +12366,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "archivportal_d",
-            "url": "https://www.archivportal-d.de/search?query=RUSSO+GAETANO+1888+Misterbianco",
+            "istituzione": "lac",
+            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=RUSSO+GAETANO+1888+Misterbianco",
             "source_level": "D",
             "esito": "positive"
           }
@@ -13140,6 +13464,46 @@
           "text": "GAETANO R.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "Gaetano",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Gaetano",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Cajetanus",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Russo",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Rosso",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Russi",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Ruxo",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Rutius",
+          "type": "latin",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -13173,7 +13537,38 @@
         }
       ],
       "ricerche_negative": [],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica documenti militari del 48° Reggimento Fanteria (1915-1918) per identificare soldati con nome Gaetano Russo, nato nel 1888 a Misterbianco, figlio di Francesco",
+          "fonte": "Archivio Ufficio Storico dello Stato Maggiore dell’Esercito (Roma), Fondo: Reggimenti Fanteria, Serie: Ruoli Matricolari",
+          "motivazione": "Il reparto e il grado corrispondono al candidato con stato 'POSSIBLE'. I ruoli matricolari contengono dati anagrafici e di arruolamento essenziali per la conferma."
+        },
+        {
+          "priorita": 1,
+          "azione": "Consultare i registri di leva del Distretto Militare di Catania per il 1888, verificando la presenza di Gaetano Russo, figlio di Francesco, residente a Misterbianco",
+          "fonte": "Archivio di Stato di Catania, Fondo: Distretto Militare di Catania, Serie: Ruoli di Leva",
+          "motivazione": "I registri di leva contengono dati anagrafici precisi e possono confermare la nascita nel 1888 a Misterbianco e la paternità."
+        },
+        {
+          "priorita": 2,
+          "azione": "Ricercare nei fondi dell’Archivio Centrale dello Stato (Roma) eventuali fascicoli personali di prigionieri di guerra italiani (1915-1918) con nome Gaetano Russo",
+          "fonte": "Archivio Centrale dello Stato, Fondo: Ministero della Guerra, Serie: Prigionieri di Guerra",
+          "motivazione": "Se il soggetto fu prigioniero, potrebbe essere registrato in questa serie, utile per incrociare dati anagrafici e militari."
+        },
+        {
+          "priorita": 2,
+          "azione": "Verificare nei registri parrocchiali di Misterbianco (1888) la nascita di Gaetano Russo, figlio di Francesco",
+          "fonte": "Archivio Parrocchiale di Misterbianco (CT), Fondo: Registri Battesimali",
+          "motivazione": "I registri parrocchiali sono fonte primaria per la conferma della nascita e della paternità nel 1888."
+        },
+        {
+          "priorita": 3,
+          "azione": "Ricercare nei fondi del Comune di Misterbianco eventuali anagrafi storiche (1888-1920) con dati su Gaetano Russo, figlio di Francesco",
+          "fonte": "Archivio Storico Comunale di Misterbianco (CT), Fondo: Anagrafe Storica",
+          "motivazione": "Le anagrafi storiche possono fornire dati di residenza e stato civile utili per la ricostruzione biografica."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Misterbianco",
@@ -13256,18 +13651,6 @@
           "accepted_evidence_sources": 3,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:03:12.725029"
         }
       },
       "web_search_used": false,
@@ -13281,7 +13664,7 @@
           "provider": "openai_web_search"
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
@@ -13292,19 +13675,8 @@
       "provider": "openai_web_search"
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:03:12.725029"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   },
   {
     "target_id": "WWI-008",
@@ -13316,7 +13688,7 @@
       "reparto": "351 Batteria Bombardieri",
       "paternita": "GIOVANNI"
     },
-    "elapsed_seconds": 7.0,
+    "elapsed_seconds": 13.5,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -13597,37 +13969,6 @@
         ]
       },
       {
-        "name": "Ricerca CRI Milano: PAPINI PUBLIO 1890 Roccalbegna",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.285,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "cri_milano",
-            "url": "https://cri-mi.archimista.com/search?q=PAPINI%20PUBLIO%201890%20Roccalbegna",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
         "name": "Ricerca: PAPINI PUBLIO 1890 Roccalbegna",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
@@ -13659,6 +14000,37 @@
         ]
       },
       {
+        "name": "Ricerca CRI Milano: PAPINI PUBLIO 1890 Roccalbegna",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.285,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "cri_milano",
+            "url": "https://cri-mi.archimista.com/search?q=PAPINI%20PUBLIO%201890%20Roccalbegna",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
         "name": "Ricerca LeBI: PAPINI PUBLIO 1890 Roccalbegna",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
@@ -13684,37 +14056,6 @@
           {
             "istituzione": "lebi",
             "url": "https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/search?d=0&q=PAPINI%20PUBLIO%201890%20Roccalbegna",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
-        "name": "Ricerca: PAPINI PUBLIO 1890 Roccalbegna",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.27,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "internetculturale",
-            "url": "https://www.internetculturale.it/opac/search?q=PAPINI+PUBLIO+1890+Roccalbegna",
             "source_level": "D",
             "esito": "positive"
           }
@@ -13775,6 +14116,37 @@
         "contraddizioni": [],
         "fonti": [
           {
+            "istituzione": "archivportal_d",
+            "url": "https://www.archivportal-d.de/search?query=PAPINI+PUBLIO+1890+Roccalbegna",
+            "source_level": "D",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca: PAPINI PUBLIO 1890 Roccalbegna",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.27,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
             "istituzione": "shd",
             "url": "https://www.memoiredeshommes.sga.defense.gouv.fr/fr/search.php?q=PAPINI+PUBLIO+1890+Roccalbegna",
             "source_level": "D",
@@ -13806,8 +14178,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "archivportal_d",
-            "url": "https://www.archivportal-d.de/search?query=PAPINI+PUBLIO+1890+Roccalbegna",
+            "istituzione": "internetculturale",
+            "url": "https://www.internetculturale.it/opac/search?q=PAPINI+PUBLIO+1890+Roccalbegna",
             "source_level": "D",
             "esito": "positive"
           }
@@ -14331,6 +14703,66 @@
           "text": "PUBLIO P.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "Publio",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Publio",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Publio",
+          "type": "transliteration",
+          "source": "qwen"
+        },
+        {
+          "text": "Papini",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Papini",
+          "type": "transliteration",
+          "source": "qwen"
+        },
+        {
+          "text": "Papini",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Papino",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Papino",
+          "type": "diminutive",
+          "source": "qwen"
+        },
+        {
+          "text": "Papino",
+          "type": "transliteration",
+          "source": "qwen"
+        },
+        {
+          "text": "Papin",
+          "type": "french",
+          "source": "qwen"
+        },
+        {
+          "text": "Papini",
+          "type": "italian",
+          "source": "qwen"
+        },
+        {
+          "text": "Papini",
+          "type": "toscan",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -14370,7 +14802,38 @@
           "esito": "negative"
         }
       ],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica incrociata tra dati anagrafici e militari",
+          "fonte": "Archivio di Stato di Grosseto - Fondo Stato Civile",
+          "motivazione": "Confermare la nascita di PUBLIO PAPINI nel 1890 a Roccalbegna e il legame con GIOVANNI come padre, tramite registri parrocchiali o atti civili."
+        },
+        {
+          "priorita": 1,
+          "azione": "Ricerca nei registri militari della Prima Guerra Mondiale",
+          "fonte": "Archivio Centrale dello Stato - Fondo Ministero della Guerra",
+          "motivazione": "Identificare il soldato PUBLIO PAPINI arruolato nel 351 Batteria Bombardieri, verificando matricola e reparto."
+        },
+        {
+          "priorita": 2,
+          "azione": "Consultazione dei ruoli matricolari del Distretto Militare di Grosseto",
+          "fonte": "Archivio di Stato di Grosseto - Fondo Distretto Militare",
+          "motivazione": "Trovare il numero di matricola di PUBLIO PAPINI per incrociare con dati di arruolamento e prigionia."
+        },
+        {
+          "priorita": 2,
+          "azione": "Ricerca nei registri di prigionia della Prima Guerra Mondiale",
+          "fonte": "Archivio Centrale dello Stato - Fondo Ufficio Storico dello Stato Maggiore dell'Esercito",
+          "motivazione": "Verificare se PUBLIO PAPINI risulta tra i prigionieri di guerra, incrociando con reparto e grado."
+        },
+        {
+          "priorita": 3,
+          "azione": "Ricerca in archivi parrocchiali di Roccalbegna",
+          "fonte": "Archivio Diocesano di Grosseto - Fondo Parrocchiale Roccalbegna",
+          "motivazione": "Confermare dati anagrafici e familiari tramite registri battesimali o di stato civile ecclesiastico."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Roccalbegna",
@@ -14453,18 +14916,6 @@
           "accepted_evidence_sources": 1,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:03:19.688841"
         }
       },
       "web_search_used": false,
@@ -14478,7 +14929,7 @@
           "provider": "openai_web_search"
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
@@ -14489,19 +14940,8 @@
       "provider": "openai_web_search"
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:03:19.688841"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   },
   {
     "target_id": "WWI-009",
@@ -14513,7 +14953,7 @@
       "reparto": "117 Reggimento Fanteria",
       "paternita": ""
     },
-    "elapsed_seconds": 5.0,
+    "elapsed_seconds": 16.4,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -14910,8 +15350,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "shd",
-            "url": "https://www.memoiredeshommes.sga.defense.gouv.fr/fr/search.php?q=FOLLADOR+GIOVANNI+1898+Falcade",
+            "istituzione": "lac",
+            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=FOLLADOR+GIOVANNI+1898+Falcade",
             "source_level": "D",
             "esito": "positive"
           }
@@ -14972,8 +15412,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "internetculturale",
-            "url": "https://www.internetculturale.it/opac/search?q=FOLLADOR+GIOVANNI+1898+Falcade",
+            "istituzione": "shd",
+            "url": "https://www.memoiredeshommes.sga.defense.gouv.fr/fr/search.php?q=FOLLADOR+GIOVANNI+1898+Falcade",
             "source_level": "D",
             "esito": "positive"
           }
@@ -15003,8 +15443,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "lac",
-            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=FOLLADOR+GIOVANNI+1898+Falcade",
+            "istituzione": "internetculturale",
+            "url": "https://www.internetculturale.it/opac/search?q=FOLLADOR+GIOVANNI+1898+Falcade",
             "source_level": "D",
             "esito": "positive"
           }
@@ -15505,6 +15945,41 @@
           "text": "GIOVANNI F.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "ZUAN",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "GIOVAN",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "IOANNES",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "FOLADOR",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "FOLLADORI",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "FOLLADORE",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "FOLLADORO",
+          "type": "historical",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -15544,7 +16019,38 @@
           "esito": "negative"
         }
       ],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica incrociata con archivi militari italiani (1915-1918) per il 117° Reggimento Fanteria",
+          "fonte": "Archivio Centrale dello Stato (ACS) - Fondo Ministero della Guerra, Serie Matricole e Ruoli",
+          "motivazione": "Il reparto (117° Reggimento Fanteria) e il grado (Soldato) sono dati specifici che possono essere verificati in fonti militari primarie. L'anno di nascita (1898) e il luogo (Falcade) sono compatibili con la leva di massa della Prima Guerra Mondiale."
+        },
+        {
+          "priorita": 2,
+          "azione": "Consultazione del Casellario Matricolare del Distretto Militare di Belluno (ove ricade Falcade)",
+          "fonte": "Archivio di Stato di Belluno - Fondo Distretto Militare",
+          "motivazione": "I distretti militari conservano registri dettagliati dei soldati arruolati, inclusi dati anagrafici, reparto e matricola. Falcade ricade nel distretto di Belluno."
+        },
+        {
+          "priorita": 3,
+          "azione": "Ricerca nei registri parrocchiali di Falcade (battesimo/matrimonio)",
+          "fonte": "Archivio Parrocchiale di Falcade (Belluno) - Registri ecclesiastici",
+          "motivazione": "I registri parrocchiali possono fornire dati anagrafici precisi (data di nascita, paternità) per Giovanni Follador nato nel 1898 a Falcade."
+        },
+        {
+          "priorita": 4,
+          "azione": "Verifica nei fondi dell'Albo d'Oro dei Caduti della Grande Guerra",
+          "fonte": "Ministero della Difesa - Ufficio Storico",
+          "motivazione": "L'Albo d'Oro elenca i soldati caduti o dispersi durante la Prima Guerra Mondiale. Se Giovanni Follador è deceduto, potrebbe essere presente in questo elenco."
+        },
+        {
+          "priorita": 5,
+          "azione": "Ricerca nei fondi del Museo Storico della Guerra di Rovereto (archivi digitalizzati)",
+          "fonte": "Museo Storico della Guerra di Rovereto - Archivio Digitale",
+          "motivazione": "Il museo conserva documenti e fotografie relativi ai soldati della Prima Guerra Mondiale, inclusi elenchi di reparti e registri di prigionia."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Falcade",
@@ -15627,18 +16133,6 @@
           "accepted_evidence_sources": 0,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:03:24.643114"
         }
       },
       "web_search_used": false,
@@ -15652,7 +16146,7 @@
           "provider": "openai_web_search"
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
@@ -15663,19 +16157,8 @@
       "provider": "openai_web_search"
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:03:24.643114"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   },
   {
     "target_id": "WWI-010",
@@ -15687,7 +16170,7 @@
       "reparto": "139 Reggimento Fanteria",
       "paternita": "GIUSEPPE"
     },
-    "elapsed_seconds": 3.3,
+    "elapsed_seconds": 36.1,
     "stato_identificazione": "dati_insufficienti",
     "resolution_state": "UNRESOLVED",
     "local_match_state": "NOT_SEARCHED",
@@ -15968,37 +16451,6 @@
         ]
       },
       {
-        "name": "Ricerca CRI Milano: SIFANNO TOMMASO 1884 Bitonto",
-        "stato": "INSUFFICIENT_DATA",
-        "confidence": 0.285,
-        "birth_year": "",
-        "birth_place": "",
-        "paternita": "",
-        "maternita": "",
-        "residenza": "",
-        "professione": "",
-        "matricola": "",
-        "distretto": "",
-        "unit": "",
-        "grado": "",
-        "morte": "",
-        "prigionia": "",
-        "sepoltura": "",
-        "compatibilita": [
-          "strong_matches=0",
-          "medium_matches=0"
-        ],
-        "contraddizioni": [],
-        "fonti": [
-          {
-            "istituzione": "cri_milano",
-            "url": "https://cri-mi.archimista.com/search?q=SIFANNO%20TOMMASO%201884%20Bitonto",
-            "source_level": "D",
-            "esito": "positive"
-          }
-        ]
-      },
-      {
         "name": "Ricerca: SIFANNO TOMMASO 1884 Bitonto",
         "stato": "INSUFFICIENT_DATA",
         "confidence": 0.285,
@@ -16025,6 +16477,37 @@
             "istituzione": "arolsen",
             "url": "https://collections.arolsen-archives.org/en/search/SIFANNO%20TOMMASO%201884%20Bitonto",
             "source_level": "B",
+            "esito": "positive"
+          }
+        ]
+      },
+      {
+        "name": "Ricerca CRI Milano: SIFANNO TOMMASO 1884 Bitonto",
+        "stato": "INSUFFICIENT_DATA",
+        "confidence": 0.285,
+        "birth_year": "",
+        "birth_place": "",
+        "paternita": "",
+        "maternita": "",
+        "residenza": "",
+        "professione": "",
+        "matricola": "",
+        "distretto": "",
+        "unit": "",
+        "grado": "",
+        "morte": "",
+        "prigionia": "",
+        "sepoltura": "",
+        "compatibilita": [
+          "strong_matches=0",
+          "medium_matches=0"
+        ],
+        "contraddizioni": [],
+        "fonti": [
+          {
+            "istituzione": "cri_milano",
+            "url": "https://cri-mi.archimista.com/search?q=SIFANNO%20TOMMASO%201884%20Bitonto",
+            "source_level": "D",
             "esito": "positive"
           }
         ]
@@ -16115,8 +16598,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "lac",
-            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=SIFANNO+TOMMASO+1884+Bitonto",
+            "istituzione": "archivportal_d",
+            "url": "https://www.archivportal-d.de/search?query=SIFANNO+TOMMASO+1884+Bitonto",
             "source_level": "D",
             "esito": "positive"
           }
@@ -16146,8 +16629,8 @@
         "contraddizioni": [],
         "fonti": [
           {
-            "istituzione": "archivportal_d",
-            "url": "https://www.archivportal-d.de/search?query=SIFANNO+TOMMASO+1884+Bitonto",
+            "istituzione": "lac",
+            "url": "https://www.bac-lac.gc.ca/eng/search/Pages/search.aspx?k=SIFANNO+TOMMASO+1884+Bitonto",
             "source_level": "D",
             "esito": "positive"
           }
@@ -16679,6 +17162,51 @@
           "text": "TOMMASO S.",
           "type": "initial",
           "source": "auto"
+        },
+        {
+          "text": "Tommaso",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Thommaso",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Tomasso",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Sifano",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Sifanni",
+          "type": "historical",
+          "source": "qwen"
+        },
+        {
+          "text": "Sifano",
+          "type": "transliteration",
+          "source": "qwen"
+        },
+        {
+          "text": "Sifan",
+          "type": "transliteration",
+          "source": "qwen"
+        },
+        {
+          "text": "Sifano",
+          "type": "latin",
+          "source": "qwen"
+        },
+        {
+          "text": "Sifannus",
+          "type": "latin",
+          "source": "qwen"
         }
       ],
       "search_log": [
@@ -16718,7 +17246,38 @@
           "esito": "negative"
         }
       ],
-      "piste": [],
+      "piste": [
+        {
+          "priorita": 1,
+          "azione": "Verifica incrociata con archivi militari italiani (1915-1918) per il 139 Reggimento Fanteria",
+          "fonte": "Archivio Centrale dello Stato (ACS) - Fondo Ministero della Guerra, Ufficio Storico",
+          "motivazione": "Il reparto '139 Reggimento Fanteria' è specifico e consente di restringere la ricerca a documenti militari del periodo WWI. Necessario verificare matricole, ruoli e dati anagrafici."
+        },
+        {
+          "priorita": 2,
+          "azione": "Consultazione registri parrocchiali di Bitonto (1880-1890) per certificato di nascita",
+          "fonte": "Archivio Diocesano di Bitonto - Registri Battesimali",
+          "motivazione": "La data di nascita (1884) e il luogo (Bitonto) sono elementi solidi per una ricerca anagrafica. I registri parrocchiali sono la fonte primaria per verificare dati anagrafici pre-1861."
+        },
+        {
+          "priorita": 3,
+          "azione": "Ricerca nei fondi dell'Archivio di Stato di Bari - Sezione di Bitonto",
+          "fonte": "Archivio di Stato di Bari - Fondo Stato Civile",
+          "motivazione": "I registri di stato civile (nascita, matrimonio, morte) post-1861 possono fornire dati anagrafici completi, inclusa la paternità (GIUSEPPE)."
+        },
+        {
+          "priorita": 4,
+          "azione": "Verifica nei registri del Distretto Militare di Bari (1884-1918)",
+          "fonte": "Archivio di Stato di Bari - Fondo Distretto Militare",
+          "motivazione": "Il distretto militare di appartenenza è un dato chiave per identificare eventuali matricole o documenti di arruolamento. Necessario per collegare il soldato al reparto."
+        },
+        {
+          "priorita": 5,
+          "azione": "Ricerca nei fondi del Museo Centrale del Risorgimento (Roma) - Archivio Storico",
+          "fonte": "Museo Centrale del Risorgimento - Archivio Storico",
+          "motivazione": "Il museo conserva documenti relativi ai soldati della Grande Guerra, inclusi elenchi di reparti e ruoli. Potrebbe contenere riferimenti al 139 Reggimento Fanteria."
+        }
+      ],
       "richieste": [
         {
           "ente": "Archivio di Stato di Bitonto",
@@ -16801,18 +17360,6 @@
           "accepted_evidence_sources": 0,
           "independent_evidence_lineages": 0,
           "supported_claims": 0
-        },
-        "ai_error": {
-          "stage": "dossier_synthesis",
-          "error_code": "GENERATION_FAILED",
-          "exception_type": "str",
-          "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-          "provider": "lmstudio",
-          "model": "google/gemma-4-e4b",
-          "request_id": "",
-          "attempt": 1,
-          "retryable": false,
-          "timestamp": "2026-07-31T21:03:27.961019"
         }
       },
       "web_search_used": false,
@@ -16821,34 +17368,27 @@
         "target_hash": "ea89305cc3672d5b",
         "error": {
           "stage": "web_search",
-          "error_code": "CIRCUIT_OPEN",
-          "safe_message": "Circuit breaker open — too many consecutive failures",
-          "provider": "openai_web_search"
+          "error_code": "RATE_LIMITED",
+          "exception_type": "RateLimitError",
+          "safe_message": "Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quo",
+          "provider": "openai_web_search",
+          "retryable": true
         }
       },
-      "ai_used": false
+      "ai_used": true
     },
     "web_search_used": false,
     "web_search_sources_count": 0,
     "web_search_error": {
       "stage": "web_search",
-      "error_code": "CIRCUIT_OPEN",
-      "safe_message": "Circuit breaker open — too many consecutive failures",
-      "provider": "openai_web_search"
+      "error_code": "RATE_LIMITED",
+      "exception_type": "RateLimitError",
+      "safe_message": "Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quo",
+      "provider": "openai_web_search",
+      "retryable": true
     },
     "web_search_source_classifications": [],
-    "ai_error": {
-      "stage": "dossier_synthesis",
-      "error_code": "GENERATION_FAILED",
-      "exception_type": "str",
-      "safe_message": "400 Client Error: Bad Request for url: http://127.0.0.1:1234/v1/chat/completions",
-      "provider": "lmstudio",
-      "model": "google/gemma-4-e4b",
-      "request_id": "",
-      "attempt": 1,
-      "retryable": false,
-      "timestamp": "2026-07-31T21:03:27.961019"
-    },
-    "ai_used": false
+    "ai_error": null,
+    "ai_used": true
   }
 ]

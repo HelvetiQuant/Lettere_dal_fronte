@@ -101,7 +101,7 @@ def _get_anthropic_client():
 def _get_mistral_client():
     global _mistral_client
     if _mistral_client is None:
-        from mistralai import Mistral
+        from mistralai.client import Mistral
         key = _get_key("MISTRAL_API_KEY")
         if not key:
             raise RuntimeError("MISTRAL_API_KEY non trovata")

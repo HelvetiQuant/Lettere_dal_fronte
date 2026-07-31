@@ -9,7 +9,7 @@ provider: lm_studio
 local_only: false
 
 # Fallback strategy: lm_studio_first (try local, then cloud) | remote_first | local_only
-fallback_strategy: lm_studio_first
+fallback_strategy: remote_first
 
 # LM Studio settings
 lm_studio:
