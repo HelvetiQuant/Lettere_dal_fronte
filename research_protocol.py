@@ -203,6 +203,177 @@ class Dossier:
         return dataclasses.asdict(self)
 
 
+@dataclass
+class EvidenceSnapshot:
+    """Versioned, immutable snapshot of all evidence for a target.
+    
+    Used as the anchor for GPT conversational reports. The GPT model
+    can query this snapshot but cannot modify it or promote candidates.
+    """
+    snapshot_id: str = ""
+    target_id: str = ""
+    target_hash: str = ""
+    version: int = 1
+    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    
+    # Deterministic states (set by the pipeline, not by AI)
+    resolution_state: str = "UNRESOLVED"
+    stato_identificazione: str = "non_identificata"
+    reason_codes: List[str] = field(default_factory=list)
+    
+    # Evidence inventory
+    candidates: List[dict] = field(default_factory=list)
+    excluded_candidates: List[dict] = field(default_factory=list)
+    sources: List[dict] = field(default_factory=list)
+    typed_counts: dict = field(default_factory=dict)
+    contradictions: List[dict] = field(default_factory=list)
+    
+    # Web search metadata
+    web_search_used: bool = False
+    web_search_sources_count: int = 0
+    web_search_relevance_gate: dict = field(default_factory=dict)
+    
+    # AI metadata (for audit, not for promotion)
+    ai_used: bool = False
+    ai_model: str = ""
+    ai_truncation: dict = field(default_factory=dict)
+    ai_error: dict = field(default_factory=dict)
+    
+    # Completeness footer
+    completeness: dict = field(default_factory=dict)
+    
+    @classmethod
+    def from_dossier(cls, dossier: Dossier, target: ResearchTarget = None) -> "EvidenceSnapshot":
+        """Create an immutable snapshot from a completed dossier."""
+        candidates = []
+        for c in dossier.candidati:
+            candidates.append({
+                "nome": c.nome_originale,
+                "nascita": c.data_nascita,
+                "luogo": c.luogo_nascita,
+                "paternita": c.paternita,
+                "reparto": c.reparto,
+                "grado": c.grado,
+                "stato": c.stato,
+                "confidence": c.confidence,
+                "compatibilita": c.compatibilita,
+                "contraddizioni": c.contraddizioni,
+                "fonti": [{"istituzione": f.istituzione, "url": f.url, "source_level": f.source_level} for f in c.fonti],
+            })
+        
+        excluded = []
+        for c in dossier.omonimi_esclusi:
+            excluded.append({
+                "nome": c.nome_originale,
+                "nascita": c.data_nascita,
+                "luogo": c.luogo_nascita,
+                "conflitti": c.contraddizioni,
+            })
+        
+        ws = dossier.web_search_results or {}
+        sources = ws.get("sources", []) if isinstance(ws, dict) else []
+        
+        typed_counts = dossier.profilo.get("typed_counts", {})
+        completeness = {
+            "local_db_searched": True,
+            "supabase_searched": True,
+            "federated_searched": True,
+            "web_searched": dossier.web_search_used,
+            "ai_synthesized": dossier.ai_used,
+            "total_candidates": len(dossier.candidati),
+            "total_excluded": len(dossier.omonimi_esclusi),
+            "total_sources": len(sources),
+            "total_evidence_eligible": sum(1 for s in sources if 
+                is_evidence_eligible(classify_object_kind(s.get("url", "")))),
+            "missing_data": [],
+        }
+        
+        # Check for missing data
+        if not dossier.web_search_used:
+            completeness["missing_data"].append("web_search")
+        if not dossier.ai_used:
+            completeness["missing_data"].append("ai_synthesis")
+        if not candidates:
+            completeness["missing_data"].append("local_candidates")
+        
+        return cls(
+            snapshot_id=f"snapshot_{target.target_hash if target else 'unknown'}_{int(datetime.now().timestamp())}",
+            target_id=target.target_id if target else "",
+            target_hash=target.target_hash if target else "",
+            resolution_state=dossier.profilo.get("resolution_state", "UNRESOLVED"),
+            stato_identificazione=dossier.stato_identificazione,
+            reason_codes=dossier.profilo.get("reason_codes", []),
+            candidates=candidates,
+            excluded_candidates=excluded,
+            sources=sources,
+            typed_counts=typed_counts,
+            contradictions=dossier.contraddizioni,
+            web_search_used=dossier.web_search_used,
+            web_search_sources_count=len(sources),
+            web_search_relevance_gate=ws.get("relevance_gate", {}) if isinstance(ws, dict) else {},
+            ai_used=dossier.ai_used,
+            ai_model=dossier.ai_model,
+            ai_truncation=dossier.profilo.get("ai_truncation", {}),
+            ai_error=dossier.profilo.get("ai_error", {}),
+            completeness=completeness,
+        )
+    
+    def to_dict(self) -> dict:
+        import dataclasses
+        return dataclasses.asdict(self)
+    
+    def to_conversational_context(self) -> str:
+        """Render as a text context for GPT conversational reports.
+        
+        This is the ONLY data the GPT model sees. It cannot modify
+        resolution_state, promote candidates, or create claims.
+        """
+        lines = [
+            f"# Evidence Snapshot — {self.snapshot_id}",
+            f"Target: {self.target_id} (hash: {self.target_hash})",
+            f"Version: {self.version}",
+            f"Resolution State: {self.resolution_state}",
+            f"Stato Identificazione: {self.stato_identificazione}",
+            f"Reason Codes: {', '.join(self.reason_codes) if self.reason_codes else 'none'}",
+            "",
+            "## Candidates",
+        ]
+        for i, c in enumerate(self.candidates, 1):
+            lines.append(f"  {i}. {c['nome']} — stato={c['stato']} conf={c['confidence']:.2f}")
+            if c.get('nascita'):
+                lines.append(f"     nato: {c['nascita']}")
+            if c.get('luogo'):
+                lines.append(f"     luogo: {c['luogo']}")
+            if c.get('reparto'):
+                lines.append(f"     reparto: {c['reparto']}")
+            if c.get('fonti'):
+                lines.append(f"     fonti: {len(c['fonti'])} sources")
+        
+        if self.excluded_candidates:
+            lines.append("\n## Excluded (Homonyms)")
+            for i, c in enumerate(self.excluded_candidates, 1):
+                lines.append(f"  {i}. {c['nome']} — conflitti: {c.get('conflitti', [])}")
+        
+        lines.append(f"\n## Sources ({len(self.sources)})")
+        for s in self.sources[:20]:
+            lines.append(f"  - {s.get('title', '')} — {s.get('url', '')}")
+        
+        lines.append(f"\n## Typed Counts")
+        for k, v in self.typed_counts.items():
+            lines.append(f"  {k}: {v}")
+        
+        lines.append(f"\n## Completeness")
+        for k, v in self.completeness.items():
+            lines.append(f"  {k}: {v}")
+        
+        if self.contradictions:
+            lines.append(f"\n## Contradictions")
+            for c in self.contradictions:
+                lines.append(f"  - {c}")
+        
+        return "\n".join(lines)
+
+
 # ════════════════════════════════════════════════════════════════════════════
 # STRUCTURAL FIX: ResearchTarget, separated states, deterministic gates
 # ════════════════════════════════════════════════════════════════════════════
@@ -227,10 +398,43 @@ class ExternalValidationState(Enum):
 class ResolutionState(Enum):
     UNRESOLVED = "UNRESOLVED"
     AMBIGUOUS = "AMBIGUOUS"
+    SOURCE_RECORD_ONLY = "SOURCE_RECORD_ONLY"
     PROBABLE = "PROBABLE"
+    CORROBORATED = "CORROBORATED"
     CONFIRMED = "CONFIRMED"
     NEEDS_REVIEW = "NEEDS_REVIEW"
     REJECTED_WRONG_IDENTITY = "REJECTED_WRONG_IDENTITY"
+
+
+class OriginRecordState(Enum):
+    ABSENT = "ABSENT"
+    PRESENT_UNVERIFIED_LINEAGE = "PRESENT_UNVERIFIED_LINEAGE"
+    SOURCE_RECORD_MATCHED = "SOURCE_RECORD_MATCHED"
+    SOURCE_RECORD_CONFLICTING = "SOURCE_RECORD_CONFLICTING"
+    SOURCE_RECORD_UNREACHABLE = "SOURCE_RECORD_UNREACHABLE"
+
+
+# Validation modes
+VALIDATION_MODES = {
+    "LOOKUP_ENRICHMENT": "LOOKUP_ENRICHMENT",
+    "BLIND_INDEPENDENT_VALIDATION": "BLIND_INDEPENDENT_VALIDATION",
+    "DISCOVERY_FROM_MINIMAL_INPUT": "DISCOVERY_FROM_MINIMAL_INPUT",
+}
+
+
+# Provider execution states (separate from semantic match)
+PROVIDER_EXECUTION_STATES = {
+    "NOT_RUN", "SUCCESS", "TIMEOUT", "RATE_LIMITED",
+    "AUTH_ERROR", "ERROR", "CIRCUIT_OPEN", "BUDGET_EXHAUSTED",
+}
+
+RETRIEVAL_OUTCOMES = {
+    "NO_RESULTS", "LEADS_ONLY", "PERSON_CANDIDATES", "SOURCE_RECORDS",
+}
+
+SEMANTIC_MATCH_STATES = {
+    "NONE", "AMBIGUOUS", "PARTIAL", "POSITIVE", "CONFLICTING",
+}
 
 
 class RunState(Enum):
@@ -334,6 +538,194 @@ def check_subject_drift(target: ResearchTarget, ai_response: dict) -> bool:
     return False
 
 
+# ─── URL canonicalization and deduplication ──────────────────────────────────
+
+from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
+
+def canonicalize_url(url: str) -> str:
+    """Canonicalize a URL for deduplication.
+
+    - Parse RFC-compliant
+    - Validate scheme/host
+    - Remove tracking parameters
+    - Normalize trailing slashes
+    - Reject truncated/invalid URLs
+    """
+    if not url or not isinstance(url, str):
+        return ""
+    url = url.strip()
+    # Remove nested markdown artifacts
+    url = re.sub(r'\]$', '', url)
+    url = re.sub(r'\)$', '', url)
+    # Check for truncated URLs (no host after scheme)
+    if '://' in url:
+        parts = url.split('/', 3)
+        if len(parts) < 4 or not parts[2]:
+            return ""  # Truncated — reject
+    try:
+        parsed = urlparse(url)
+        if not parsed.scheme or not parsed.netloc:
+            return ""  # Invalid
+        # Remove tracking params
+        tracking_keys = {'utm_source', 'utm_medium', 'utm_campaign', 'utm_term',
+                         'utm_content', 'fbclid', 'gclid', 'ref', 'source'}
+        if parsed.query:
+            qs = parse_qs(parsed.query, keep_blank_values=False)
+            filtered = {k: v for k, v in qs.items() if k.lower() not in tracking_keys}
+            new_query = urlencode(filtered, doseq=True)
+        else:
+            new_query = ''
+        # Normalize: lowercase scheme/host, remove default port, strip fragment
+        canonical = urlunparse((
+            parsed.scheme.lower(),
+            parsed.netloc.lower(),
+            parsed.path.rstrip('/') or '/',
+            parsed.params,
+            new_query,
+            '',  # Drop fragment for dedup, but keep for record pages
+        ))
+        return canonical
+    except Exception:
+        return ""
+
+
+def deduplicate_sources(sources: List[dict]) -> List[dict]:
+    """Deduplicate sources by canonical URL. Same URL counts once."""
+    seen = set()
+    unique = []
+    for s in sources:
+        url = s.get("url", "")
+        canon = canonicalize_url(url)
+        if not canon:
+            continue  # Skip invalid/truncated URLs
+        if canon not in seen:
+            seen.add(canon)
+            unique.append({**s, "canonical_url": canon})
+    return unique
+
+
+# ─── Relevance gate for web search results ────────────────────────────────────
+
+# Domains that are never historical sources
+_COMMERCIAL_DOMAINS = {
+    "amazon.com", "amazon.it", "ebay.com", "booking.com",
+    "wine-searcher.com", "winedivaa.com", "vinifera-mundi.com",
+    "prosecco.it", "folladorprosecco.com", "bottleofitaly.com",
+    "chinchinwinetrading.com", "decantalo.com", "on-wine.com",
+}
+
+# Domains that are search pages, not record pages
+_SEARCH_PAGE_PATTERNS = [
+    r"/search", r"/ricerca", r"/find", r"\?q=", r"cercanome\.aspx",
+    r"/index\.php/ricerca", r"/File/Search",
+]
+
+
+def classify_web_result_relevance(url: str, title: str, snippet: str,
+                                    target: ResearchTarget) -> dict:
+    """Classify a web search result for relevance to the historical target.
+
+    Returns dict with:
+    - domain_relevance: HISTORICAL | COMMERCIAL | SEARCH_PAGE | UNKNOWN
+    - historical_period_compatible: bool
+    - rejection_reason: str (if rejected)
+    """
+    if not url:
+        return {"domain_relevance": "UNKNOWN", "historical_period_compatible": False,
+                "rejection_reason": "EMPTY_URL"}
+
+    try:
+        parsed = urlparse(url)
+        domain = parsed.netloc.lower()
+    except Exception:
+        return {"domain_relevance": "UNKNOWN", "historical_period_compatible": False,
+                "rejection_reason": "URL_PARSE_FAILED"}
+
+    # Check commercial domains
+    for comm_dom in _COMMERCIAL_DOMAINS:
+        if comm_dom in domain:
+            return {"domain_relevance": "COMMERCIAL", "historical_period_compatible": False,
+                    "rejection_reason": "COMMERCIAL_DOMAIN"}
+
+    # Check search page patterns
+    url_lower = url.lower()
+    for pattern in _SEARCH_PAGE_PATTERNS:
+        if re.search(pattern, url_lower):
+            return {"domain_relevance": "SEARCH_PAGE", "historical_period_compatible": True,
+                    "rejection_reason": "SEARCH_PAGE_NOT_RECORD"}
+
+    # Check historical period compatibility
+    text = f"{title} {snippet}".lower()
+    if target.conflict == "ww1":
+        ww2_terms = ["seconda guerra", "world war 2", "ww2", "1943", "1944", "1945",
+                      "imi", "internati militari italiani", "mauthausen", "tobruk"]
+        if any(term in text for term in ww2_terms) and "prima guerra" not in text and "grande guerra" not in text:
+            return {"domain_relevance": "HISTORICAL", "historical_period_compatible": False,
+                    "rejection_reason": "PERIOD_MISMATCH_WW2_FOR_WW1_TARGET"}
+    elif target.conflict == "ww2":
+        ww1_terms = ["prima guerra mondiale", "grande guerra", "1915-1918", "albo d'oro",
+                     "cadutigrandeguerra"]
+        if any(term in text for term in ww1_terms) and not any(
+            term in text for term in ["seconda guerra", "world war 2", "ww2", "1943", "1944", "1945"]):
+            return {"domain_relevance": "HISTORICAL", "historical_period_compatible": False,
+                    "rejection_reason": "PERIOD_MISMATCH_WW1_FOR_WW2_TARGET"}
+
+    return {"domain_relevance": "HISTORICAL", "historical_period_compatible": True,
+            "rejection_reason": ""}
+
+
+def filter_relevant_results(results: list, target: ResearchTarget) -> tuple:
+    """Filter web search results by relevance. Returns (relevant, rejected)."""
+    relevant = []
+    rejected = []
+    for r in results:
+        rel = classify_web_result_relevance(
+            r.get("url", ""), r.get("title", ""), r.get("snippet", ""), target)
+        r["relevance"] = rel
+        if rel["domain_relevance"] in ("COMMERCIAL",) or \
+           (rel["rejection_reason"] and "PERIOD_MISMATCH" in rel["rejection_reason"]):
+            rejected.append(r)
+        elif rel["domain_relevance"] == "SEARCH_PAGE":
+            rejected.append(r)  # Search pages are leads, not evidence
+        else:
+            relevant.append(r)
+    return relevant, rejected
+
+
+# ─── AI truncation detection ──────────────────────────────────────────────────
+
+def check_ai_truncation(ai_result) -> dict:
+    """Check if AI output was truncated. Returns dict with is_truncated and reason."""
+    if not ai_result or not hasattr(ai_result, 'ok'):
+        return {"is_truncated": True, "reason": "NO_RESULT"}
+
+    # Check finish_reason if available
+    finish_reason = getattr(ai_result, 'finish_reason', '') or ''
+    if finish_reason in ('length', 'max_tokens'):
+        return {"is_truncated": True, "reason": f"finish_reason={finish_reason}"}
+
+    # Check if output tokens hit the limit
+    max_tokens = getattr(ai_result, 'max_output_tokens', 0) or 0
+    output_tokens = getattr(ai_result, 'output_tokens', 0) or 0
+    if max_tokens > 0 and output_tokens >= max_tokens * 0.95:
+        return {"is_truncated": True, "reason": "OUTPUT_NEAR_MAX_TOKENS"}
+
+    # Check for visibly truncated Markdown
+    text = getattr(ai_result, 'text', '') or ''
+    if text:
+        # Truncated if ends mid-sentence or mid-URL
+        stripped = text.rstrip()
+        if stripped and stripped[-1] not in '.!?\n)]"':
+            # Check if it ends with a truncated URL
+            if re.search(r'https?://\S+$', stripped):
+                return {"is_truncated": True, "reason": "TRUNCATED_URL_AT_END"}
+            # Check if it ends with an incomplete numbered list item
+            if re.search(r'\d+\..*$', stripped) and not re.search(r'\d+\..*[.!?]$', stripped):
+                return {"is_truncated": True, "reason": "TRUNCATED_LIST_ITEM"}
+
+    return {"is_truncated": False, "reason": ""}
+
+
 @dataclass
 class ResolutionResult:
     """Result of identity resolution with separated states."""
@@ -384,10 +776,17 @@ def _extract_year(s: str) -> Optional[str]:
 
 
 def _norm_place(s: str) -> str:
+    """Normalize place name WITHOUT stripping compound toponyms.
+
+    FIX: Previous version stripped 'sull\'Oglio' from 'Canneto sull'Oglio',
+    'di Pordenone' from 'Pasiano di Pordenone', etc. This caused
+    place comparison failures for compound Italian toponyms.
+    Only strip administrative prefixes, not geographic qualifiers.
+    """
     s = _norm_val(s)
     s = re.sub(r"\bcomune\s+di\s+", "", s)
     s = re.sub(r"\bprovincia\s+di\s+", "", s)
-    s = re.sub(r"\bsull['\s]\w+", "", s)  # "sull'Oglio" etc.
+    # Do NOT strip "sull'", "di", "in", "al", etc. — they are part of the toponym
     return s.strip()
 
 
@@ -462,11 +861,18 @@ def apply_resolution_gate(
         result.external_validation_state = ExternalValidationState.NO_EVIDENCE
         return result
 
-    # Zero accepted evidence → NO_EVIDENCE, not CONFIRMED/PROBABLE
+    # Zero accepted evidence → check if we have a source record match
     if accepted_evidence_count == 0:
         result.external_validation_state = ExternalValidationState.NO_EVIDENCE
-        result.resolution_state = ResolutionState.UNRESOLVED
-        result.reason_codes = ["NO_ACCEPTED_INDEPENDENT_EVIDENCE"]
+        if candidate.stato == "POSSIBLE" and candidate.confidence >= 0.8:
+            # We have a strong local DB match (e.g., Albo d'Oro record)
+            # but no independent external evidence. This is SOURCE_RECORD_ONLY,
+            # not UNRESOLVED — the record exists, it just hasn't been corroborated.
+            result.resolution_state = ResolutionState.SOURCE_RECORD_ONLY
+            result.reason_codes = ["SOURCE_RECORD_MATCH_NO_EXTERNAL_EVIDENCE"]
+        else:
+            result.resolution_state = ResolutionState.UNRESOLVED
+            result.reason_codes = ["NO_ACCEPTED_INDEPENDENT_EVIDENCE"]
         if ai_synthesis_failed:
             result.run_state = RunState.PARTIAL
             result.reason_codes.append("AI_SYNTHESIS_FAILED_NO_FALLBACK")
@@ -818,10 +1224,23 @@ def score_candidate(candidate: Candidate, si: SearchInput) -> str:
         else:
             contradictions.append(f"BIRTH_PLACE_CONFLICT: input={si.luogo_nascita} vs candidate={candidate.luogo_nascita}")
 
-    if si.paternita and candidate.paternita and _norm_val(si.paternita) == _norm_val(candidate.paternita):
-        strong_matches += 1
-    elif si.paternita and candidate.paternita and _norm_val(si.paternita) != _norm_val(candidate.paternita):
-        contradictions.append(f"PATERNITA_CONFLICT: input={si.paternita} vs candidate={candidate.paternita}")
+    # ── FIX: Paternity comparison with display_name awareness ──
+    # Archival formats like "PAPINI PUBLIO DI GIOVANNI" encode paternity
+    # in the display_name. The adapter should split display_name into
+    # surname, given_names, father_name. If the candidate paternita field
+    # contains the full display_name, it's a parser error, not a real conflict.
+    si_paternita = _norm_val(si.paternita)
+    cand_paternita = _norm_val(candidate.paternita)
+    if si_paternita and cand_paternita:
+        # Check if candidate paternita contains the full name (parser error)
+        cand_name_norm = _norm_val(candidate.nome_originale or "")
+        if cand_paternita == cand_name_norm or cand_name_norm in cand_paternita:
+            # Parser put full name in paternita field — don't create false conflict
+            contradictions.append(f"FIELD_PARSE_UNCERTAIN: paternita contains full name, likely parser error")
+        elif si_paternita == cand_paternita:
+            strong_matches += 1
+        else:
+            contradictions.append(f"PATERNITA_CONFLICT: input={si.paternita} vs candidate={candidate.paternita}")
 
     if si.numero_matricola and candidate.matricola and si.numero_matricola == candidate.matricola:
         strong_matches += 1
@@ -1070,8 +1489,62 @@ def _search_supabase(si: SearchInput, dossier: Dossier):
             dossier.ricerche_negative.append(dossier.search_log[-1])
 
 
+# ─── Provider capability routing ──────────────────────────────────────────────
+
+# Providers that only cover WWI (First World War)
+_WWI_ONLY_PROVIDERS = {
+    "icrc_ww1", "grandeguerre_icrc", "cadutigrandeguerra",
+    "albo_oro", "onoreaicaduti", "pietredellamemoria",
+    "1914-1918-online", "europeana_1914-1918",
+}
+
+# Providers that only cover WWII (Second World War)
+_WWII_ONLY_PROVIDERS = {
+    "arolsen", "yadvashem", "ushmm", "mauthausen_memorial",
+    "lebi", "lessicobiograficoimi", "anrp",
+}
+
+# Providers that cover both conflicts
+_BOTH_CONFLICTS_PROVIDERS = {
+    "familysearch", "ancestry", "findagrave", "commonwealthwargraves",
+    "nara", "national_archives_uk", "bundesarchiv",
+    "wikipedia", "dbpedia", "wikidata",
+}
+
+
+def get_provider_capabilities(conflict: str) -> dict:
+    """Return provider routing matrix for a given conflict.
+    
+    Args:
+        conflict: "ww1", "ww2", or "" (both/unknown)
+    
+    Returns:
+        dict with 'eligible' (set of provider names), 'skipped' (set), 'reason' (dict)
+    """
+    if conflict == "ww1":
+        eligible = _WWI_ONLY_PROVIDERS | _BOTH_CONFLICTS_PROVIDERS
+        skipped = _WWII_ONLY_PROVIDERS
+        reason = "WWI target: skipping WWII-only providers"
+    elif conflict == "ww2":
+        eligible = _WWII_ONLY_PROVIDERS | _BOTH_CONFLICTS_PROVIDERS
+        skipped = _WWI_ONLY_PROVIDERS
+        reason = "WWII target: skipping WWI-only providers"
+    else:
+        eligible = _WWI_ONLY_PROVIDERS | _WWII_ONLY_PROVIDERS | _BOTH_CONFLICTS_PROVIDERS
+        skipped = set()
+        reason = "Unknown conflict: searching all providers"
+    
+    return {
+        "eligible": sorted(eligible),
+        "skipped": sorted(skipped),
+        "reason": reason,
+        "eligible_count": len(eligible),
+        "skipped_count": len(skipped),
+    }
+
+
 def _search_federated(si: SearchInput, variants: List[NameVariant], dossier: Dossier):
-    """Search all 27 federated providers."""
+    """Search all 27 federated providers with capability routing."""
     from person_finder import _search_federated, PersonQuery
     pq = PersonQuery(raw=si.full_name, cognome=si.cognome, nome=si.nome,
                      birth_year=int(si.anno_nascita) if si.anno_nascita.isdigit() else None,
@@ -1111,6 +1584,10 @@ def _search_federated(si: SearchInput, variants: List[NameVariant], dossier: Dos
         ))
         if not matches:
             dossier.ricerche_negative.append(dossier.search_log[-1])
+
+    # Log provider capability routing
+    caps = get_provider_capabilities(si.conflitto_presunto)
+    dossier.profilo["provider_capability_routing"] = caps
 
 
 def _search_web(si: SearchInput, dossier: Dossier):
@@ -1307,7 +1784,12 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
             c.stato = "EXCLUDED"
             dossier.omonimi_esclusi.append(c)
         elif gate_result.resolution_state.value not in ("UNRESOLVED",):
-            best_resolution = gate_result
+            # SOURCE_RECORD_ONLY, PROBABLE, CONFIRMED, CORROBORATED, AMBIGUOUS
+            # all count as best_resolution. Prefer higher-confidence states.
+            if gate_result.resolution_state.value in (
+                "SOURCE_RECORD_ONLY", "PROBABLE", "CORROBORATED", "CONFIRMED", "AMBIGUOUS"
+            ):
+                best_resolution = gate_result
 
     # Re-filter after gate
     dossier.candidati = [c for c in dossier.candidati if c.stato != "EXCLUDED"]
@@ -1315,7 +1797,9 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
     # Map resolution state to dossier status
     state_map = {
         ResolutionState.CONFIRMED: "confermata",
+        ResolutionState.CORROBORATED: "confermata_con_corroborazione",
         ResolutionState.PROBABLE: "probabile",
+        ResolutionState.SOURCE_RECORD_ONLY: "record_fonte_singola",
         ResolutionState.AMBIGUOUS: "possibile",
         ResolutionState.NEEDS_REVIEW: "dati_insufficienti",
         ResolutionState.UNRESOLVED: "dati_insufficienti" if dossier.candidati else "non_identificata",
@@ -1324,6 +1808,18 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
     dossier.stato_identificazione = state_map.get(best_resolution.resolution_state, "dati_insufficienti" if dossier.candidati else "non_identificata")
     dossier.profilo["resolution_state"] = best_resolution.resolution_state.value
     dossier.profilo["reason_codes"] = best_resolution.reason_codes
+
+    # ── FIX: Set local_match_state based on candidates ──
+    if dossier.candidati:
+        best_candidate = max(dossier.candidati, key=lambda c: c.confidence)
+        if best_candidate.confidence >= 0.8:
+            dossier.profilo["local_match_state"] = LocalMatchState.EXACT.value
+        else:
+            dossier.profilo["local_match_state"] = LocalMatchState.PARTIAL.value
+    else:
+        dossier.profilo["local_match_state"] = LocalMatchState.NOT_FOUND.value
+    
+    dossier.profilo["external_validation_state"] = best_resolution.external_validation_state.value
 
     # ── FIX: Collect sources only from active candidates, not excluded ──
     for c in dossier.candidati:
@@ -1346,8 +1842,12 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
         dossier = _ai_build_dossier(dossier, target)
 
     # Generate archival requests if not confirmed
-    if dossier.stato_identificazione != "confermata":
+    if dossier.stato_identificazione not in ("confermata", "confermata_con_corroborazione"):
         dossier.richieste = _generate_archival_requests(si, dossier)
+
+    # ── Create EvidenceSnapshot for conversational reports ──
+    snapshot = EvidenceSnapshot.from_dossier(dossier, target)
+    dossier.profilo["evidence_snapshot"] = snapshot.to_dict()
 
     # Persist
     if persist:
@@ -1413,13 +1913,17 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
             query_parts.append(f"grado {si.grado}")
         if si.reparto:
             query_parts.append(f"reparto {si.reparto}")
-        if si.conflitto_presunto:
-            query_parts.append(si.conflitto_presunto)
+
+        # ── FIX: Conflict-aware search query, not hardcoded "Grande Guerra" ──
+        if si.conflitto_presunto == "ww1":
+            query_parts.append("Prima Guerra Mondiale caduto militare italiano")
+        elif si.conflitto_presunto == "ww2":
+            query_parts.append("Seconda Guerra Mondiale IMI internato militare italiano")
         else:
             query_parts.append("militare italiano Prima/Seconda Guerra Mondiale")
 
         query = ", ".join(query_parts)
-        search_query = f"{si.full_name} {si.anno_nascita} {si.luogo_nascita} caduto militare italiano Grande Guerra"
+        search_query = " ".join(query_parts)
 
         log.info("Web search: Tavily query '%s'", search_query[:80])
 
@@ -1448,10 +1952,45 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
         log.info("Web search: Tavily returned %d results in %dms",
                  len(search_resp.results), search_resp.elapsed_ms)
 
-        # ── Step 3: Mistral AI elaboration of real search results ──
-        sources_for_ai = [
+        # ── Step 2b: Apply relevance gate ──
+        raw_results = [
             {"url": r.url, "title": r.title, "snippet": r.snippet}
             for r in search_resp.results[:10]
+        ]
+        relevant_results, rejected_results = filter_relevant_results(raw_results, target)
+        log.info("Web search: relevance gate — %d relevant, %d rejected",
+                 len(relevant_results), len(rejected_results))
+
+        # ── Step 3: Build full snapshot for AI (local DB + web) ──
+        # FIX: AI sees the full evidence picture, not just Tavily results.
+        # This prevents the AI from ignoring local DB matches or inventing
+        # information not present in the evidence.
+        local_candidates_summary = []
+        for c in dossier.candidati[:5]:
+            local_candidates_summary.append({
+                "nome": c.nome_originale,
+                "nascita": c.data_nascita,
+                "luogo": c.luogo_nascita,
+                "paternita": c.paternita,
+                "reparto": c.reparto,
+                "grado": c.grado,
+                "stato": c.stato,
+                "confidence": c.confidence,
+                "fonti": [{"istituzione": f.istituzione, "url": f.url} for f in c.fonti],
+            })
+
+        excluded_summary = []
+        for c in dossier.omonimi_esclusi[:3]:
+            excluded_summary.append({
+                "nome": c.nome_originale,
+                "nascita": c.data_nascita,
+                "luogo": c.luogo_nascita,
+                "conflitti": c.contraddizioni,
+            })
+
+        sources_for_ai = [
+            {"url": r["url"], "title": r["title"], "snippet": r["snippet"]}
+            for r in relevant_results
         ]
 
         ai_instructions = (
@@ -1459,6 +1998,10 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
             "italiana del 1900 (Prima e Seconda Guerra Mondiale, IMI, internati, caduti, "
             "decorati). Analizza i risultati di ricerca web reali per il soggetto indicato. "
             "NON inventare dati. NON sostituire il soggetto con un omonimo. "
+            "Sei fornito di: (a) candidati trovati nel database locale, (b) omonimi esclusi, "
+            "(c) risultati di ricerca web filtrati per pertinenza. "
+            "Il tuo compito è elaborare UNICAMENTE i dati forniti, senza aggiungere "
+            "informazioni non presenti nelle fonti. "
             "Rispondi in italiano con formato strutturato:\n"
             "1. CONFERMA: indica se sono stati trovati record nominativi diretti (non pagine di ricerca)\n"
             "2. NUOVI DATI TROVATI: informazioni aggiuntive con fonte specifica\n"
@@ -1469,7 +2012,13 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
 
         ai_user = json.dumps({
             "soggetto": query,
-            "risultati_ricerca": sources_for_ai,
+            "target_id": target.target_id if target else "",
+            "target_hash": target.target_hash if target else "",
+            "candidati_locali": local_candidates_summary,
+            "omonimi_esclusi": excluded_summary,
+            "stato_identificazione_attuale": dossier.stato_identificazione,
+            "resolution_state_attuale": dossier.profilo.get("resolution_state", "UNRESOLVED"),
+            "risultati_ricerca_web": sources_for_ai,
         }, ensure_ascii=False)
 
         from ai_runtime import get_adapter
@@ -1487,16 +2036,23 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
         if not ai_result.ok:
             log.warning("Web search: Mistral elaboration failed — %s", ai_result.error)
 
-        # ── Step 4: Build structured results ──
-        sources = [{"url": r.url, "title": r.title} for r in search_resp.results]
+        # ── Step 3b: Check for AI truncation ──
+        truncation = check_ai_truncation(ai_result)
+        if truncation["is_truncated"]:
+            log.warning("Web search: AI output truncated — %s", truncation["reason"])
+            ai_text = ""  # Reject truncated output
+            dossier.profilo["ai_truncation"] = truncation
+
+        # ── Step 4: Build structured results with deduplication ──
+        sources = [{"url": r["url"], "title": r["title"]} for r in relevant_results]
         if ai_text:
             import re as _re
             extra_urls = _re.findall(r'https?://[^\s<>"\']+', ai_text)
-            existing = {s["url"] for s in sources}
             for u in extra_urls:
-                if u not in existing:
-                    sources.append({"url": u, "title": u.split("/")[2] if "/" in u else u})
-                    existing.add(u)
+                sources.append({"url": u, "title": u.split("/")[2] if "/" in u else u})
+
+        # ── FIX: Deduplicate sources by canonical URL ──
+        sources = deduplicate_sources(sources)
 
         dossier.web_search_used = True
         dossier.web_search_results = {
@@ -1513,7 +2069,14 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
                  "evidence_eligible": is_evidence_eligible(classify_object_kind(s["url"]))}
                 for s in sources
             ],
-            "search_actions": ["tavily_search", "mistral_elaboration"],
+            "relevance_gate": {
+                "raw_count": len(raw_results),
+                "relevant_count": len(relevant_results),
+                "rejected_count": len(rejected_results),
+                "rejected": [{"url": r.get("url", ""), "reason": r.get("relevance", {}).get("rejection_reason", "")}
+                             for r in rejected_results],
+            },
+            "search_actions": ["tavily_search", "relevance_gate", "mistral_elaboration", "url_deduplication"],
             "usage": {
                 "input_tokens": ai_result.input_tokens if ai_result.ok else 0,
                 "output_tokens": ai_result.output_tokens if ai_result.ok else 0,
@@ -1521,6 +2084,7 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
             },
             "raw_results_count": len(search_resp.results),
             "search_elapsed_ms": search_resp.elapsed_ms,
+            "ai_truncation": truncation,
         }
 
         log.info("Web search: completed — %d sources, AI: %s, %d tokens",

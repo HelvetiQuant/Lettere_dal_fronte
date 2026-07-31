@@ -1,6 +1,6 @@
-# Canary Report — canary_20260731213407
+# Canary Report — canary_20260731223122
 
-**Manifest hash:** `a2027a77d537322f`  
+**Manifest hash:** `752900c8d2a458e1`  
 **Scope:** people-only  
 **Expected targets:** 10  
 **Run state:** `SUCCESS`  
@@ -10,16 +10,16 @@
 
 | # | Target | Target data | Stato | Resolution | Candidates | Omonimi | Web | AI | Elapsed |
 |---|--------|-------------|-------|------------|------------|---------|-----|----|---------|
-| 1 | LARI GIUSEPPE | 1886, Canneto sull'Oglio | dati_insufficienti | UNRESOLVED | 51 | 13 | ✅ | ✅ | 38.5s |
-| 2 | FEDERICO LUIGI | 1885, Longobucco | dati_insufficienti | UNRESOLVED | 89 | 36 | ✅ | ✅ | 29.0s |
-| 3 | GIUNTA GIUSEPPE | 1879, Modica | dati_insufficienti | UNRESOLVED | 36 | 18 | ✅ | ✅ | 32.8s |
-| 4 | VENEZIANO NICOLA | 1898, Lioni | dati_insufficienti | UNRESOLVED | 30 | 1 | ✅ | ✅ | 33.0s |
-| 5 | FANTUZ ANTONIO | 1896, Pasiano di Pordenone | dati_insufficienti | UNRESOLVED | 30 | 1 | ✅ | ✅ | 28.1s |
-| 6 | FEDELE AGOSTINO | 1880, Magnano in Riviera | dati_insufficienti | UNRESOLVED | 34 | 2 | ✅ | ✅ | 30.8s |
-| 7 | RUSSO GAETANO | 1888, Misterbianco | dati_insufficienti | UNRESOLVED | 38 | 29 | ✅ | ✅ | 32.6s |
-| 8 | PAPINI PUBLIO | 1890, Roccalbegna | dati_insufficienti | UNRESOLVED | 30 | 1 | ✅ | ✅ | 28.5s |
-| 9 | FOLLADOR GIOVANNI | 1898, Falcade | dati_insufficienti | UNRESOLVED | 30 | 0 | ✅ | ✅ | 24.5s |
-| 10 | SIFANNO TOMMASO | 1884, Bitonto | dati_insufficienti | UNRESOLVED | 30 | 0 | ✅ | ✅ | 38.7s |
+| 1 | LARI GIUSEPPE | 1886, Canneto sull'Oglio | record_fonte_singola | SOURCE_RECORD_ONLY | 51 | 13 | ✅ | ✅ | 37.9s |
+| 2 | FEDERICO LUIGI | 1885, Longobucco | record_fonte_singola | SOURCE_RECORD_ONLY | 89 | 36 | ✅ | ✅ | 23.4s |
+| 3 | GIUNTA GIUSEPPE | 1879, Modica | record_fonte_singola | SOURCE_RECORD_ONLY | 36 | 18 | ✅ | ✅ | 24.7s |
+| 4 | VENEZIANO NICOLA | 1898, Lioni | record_fonte_singola | SOURCE_RECORD_ONLY | 30 | 1 | ✅ | ✅ | 22.7s |
+| 5 | FANTUZ ANTONIO | 1896, Pasiano di Pordenone | record_fonte_singola | SOURCE_RECORD_ONLY | 30 | 1 | ✅ | ✅ | 29.4s |
+| 6 | FEDELE AGOSTINO | 1880, Magnano in Riviera | record_fonte_singola | SOURCE_RECORD_ONLY | 34 | 2 | ✅ | ✅ | 23.9s |
+| 7 | RUSSO GAETANO | 1888, Misterbianco | record_fonte_singola | SOURCE_RECORD_ONLY | 38 | 29 | ✅ | ✅ | 24.1s |
+| 8 | PAPINI PUBLIO | 1890, Roccalbegna | record_fonte_singola | SOURCE_RECORD_ONLY | 30 | 1 | ✅ | ✅ | 22.6s |
+| 9 | FOLLADOR GIOVANNI | 1898, Falcade | record_fonte_singola | SOURCE_RECORD_ONLY | 30 | 0 | ✅ | ✅ | 25.7s |
+| 10 | SIFANNO TOMMASO | 1884, Bitonto | record_fonte_singola | SOURCE_RECORD_ONLY | 30 | 0 | ✅ | ✅ | 29.7s |
 
 ## Dettaglio per target
 
@@ -27,10 +27,10 @@
 
 **Target:** 1886, Canneto sull'Oglio, 206 Reggimento Fanteria
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -82,12 +82,12 @@
 | 29 | Ricerca in Invenio: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 30 | Open Data / DDB-Bestand: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
 | 31 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 32 | Ricerca LeBI: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 33 | Ricerca CRI Milano: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 34 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
-| 35 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 36 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 37 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 32 | Ricerca CRI Milano: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
+| 33 | Ricerca LeBI: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 34 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 35 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 36 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 37 | Ricerca: LARI GIUSEPPE 1886 Canneto sull'Oglio | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 38 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 39 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 40 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -130,17 +130,17 @@
 | LARI GIUSEPPE | Supabase | PUBLIC_JSON_LOOKUP | 20 | positive |
 | LARI GIUSEPPE | federated_27_providers | OFFICIAL_API | 23 | positive |
 
-**Web search:** ✅ (25 sources)
+**Web search:** ✅ (22 sources)
 
 **Source classifications:**
 
 - `DIGITIZED_DOCUMENT` — https://www.consiglio.regione.toscana.it/upload/eda/pubblicazioni/pub4142.pdf (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.marinaiditalia.com/wp-content/uploads/2014/03/Albo_Oro_Guerra_1915_1 (evidence_eligible: True)
-- `SEARCH_RESULT_LEAD` — https://divisionevicenza.it/index.php/portfolio/i-caduti-della-156/32-caduti/210 (evidence_eligible: False)
-- `DIGITIZED_DOCUMENT` — http://www.frontemacedone.com/uploads/1/5/5/6/15564920/elenco_caduti_salonicco.p (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.storiapatriagenova.it/Docs/Biblioteca_Digitale/SB/aea3eea9baa472fdac (evidence_eligible: True)
+- `SEARCH_RESULT_LEAD` — https://www.familysearch.org/en/wiki/Italy_Military_Records (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://cellelager.com/prigionieri/identificati (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://family-tree-advice.blogspot.com/2023/10/military.html (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://www.lagazzettaitaliana.com/heritage/9120-discovering-la-famiglia-finding (evidence_eligible: False)
 
-**Elapsed:** 38.5s
+**Elapsed:** 37.9s
 
 ---
 
@@ -148,10 +148,10 @@
 
 **Target:** 1885, Longobucco, 138 Reggimento Fanteria
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -243,9 +243,9 @@
 | 69 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
 | 70 | Ricerca CRI Milano: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
 | 71 | Ricerca LeBI: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 72 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
-| 73 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 74 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 72 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 73 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 74 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
 | 75 | Ricerca: FEDERICO LUIGI 1885 Longobucco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 76 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 77 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -312,17 +312,17 @@
 | FEDERICO LUIGI | Supabase | PUBLIC_JSON_LOOKUP | 18 | positive |
 | FEDERICO LUIGI | federated_27_providers | OFFICIAL_API | 26 | positive |
 
-**Web search:** ✅ (26 sources)
+**Web search:** ✅ (13 sources)
 
 **Source classifications:**
 
-- `SEARCH_RESULT_LEAD` — https://www.eugubininelmondo.com/Caduti1518.html (evidence_eligible: False)
-- `DIGITIZED_DOCUMENT` — http://www.frontemacedone.com/uploads/1/5/5/6/15564920/elenco_caduti_salonicco.p (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.pietrigrandeguerra.it/wp-content/uploads/2013/02/Sepolti-Sacrario-Fa (evidence_eligible: True)
-- `SEARCH_RESULT_LEAD` — https://www.researchgate.net/publication/326369188_Il_caduto_dimenticato_-_la_br (evidence_eligible: False)
-- `SEARCH_RESULT_LEAD` — https://it.wikipedia.org/wiki/Luigi_Federico_Menabrea (evidence_eligible: False)
+- `DIGITIZED_DOCUMENT` — https://www.museoresistenzasasso.it/images/Documenti/Libretto_Caduti_1Guerra_Mon (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://ranica-api.municipiumapp.it/s3/5647/allegati/a-cento-anni-dalla-grande-g (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.comune.quartodaltino.ve.it/wp-content/uploads/2025/02/elencocadutigr (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — http://www.anmig.it/wordpress/wp-content/uploads/2020/11/barlettani_caduti_prima (evidence_eligible: True)
+- `SEARCH_RESULT_LEAD` — https://combattentibergamaschi.it/cerca.php?pag=56&mode=&comune= (evidence_eligible: False)
 
-**Elapsed:** 29.0s
+**Elapsed:** 23.4s
 
 ---
 
@@ -330,10 +330,10 @@
 
 **Target:** 1879, Modica, 2 Reggimento Granatieri
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -370,11 +370,11 @@
 | 14 | Ricerca in Invenio: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 15 | Open Data / DDB-Bestand: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
 | 16 | Ricerca CRI Milano: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 17 | Ricerca LeBI: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 18 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 19 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 20 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 21 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 17 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 18 | Ricerca LeBI: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 19 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 20 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 21 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 22 | Ricerca: GIUNTA GIUSEPPE 1879 Modica | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
 | 23 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 24 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -423,17 +423,17 @@
 | GIUNTA GIUSEPPE | Supabase | PUBLIC_JSON_LOOKUP | 0 | negative |
 | GIUNTA GIUSEPPE | federated_27_providers | OFFICIAL_API | 23 | positive |
 
-**Web search:** ✅ (20 sources)
+**Web search:** ✅ (21 sources)
 
 **Source classifications:**
 
-- `DIGITIZED_DOCUMENT` — https://www.baps.it/wp-content/uploads/2021/09/Gli-Iblei-nella-Grande-Guerra.pdf (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.comune.quartodaltino.ve.it/wp-content/uploads/2025/02/elencocadutigr (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.pietrigrandeguerra.it/wp-content/uploads/2013/02/Sepolti-Sacrario-Fa (evidence_eligible: True)
 - `DIGITIZED_DOCUMENT` — https://ranica-api.municipiumapp.it/s3/5647/allegati/a-cento-anni-dalla-grande-g (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://iris.unime.it/retrieve/de3e52b2-4fa6-762d-e053-3705fe0a30e0/Tesi%20di%20 (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.consiglio.regione.toscana.it/upload/eda/pubblicazioni/pub4002.pdf (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.comune.quartodaltino.ve.it/wp-content/uploads/2025/02/elencocadutigr (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.storiapatriagenova.it/Docs/Biblioteca_Digitale/SB/aea3eea9baa472fdac (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.granatieridisardegna.it/ilgranatiere20/Il-Granatiere-1-2020.pdf (evidence_eligible: True)
 
-**Elapsed:** 32.8s
+**Elapsed:** 24.7s
 
 ---
 
@@ -441,10 +441,10 @@
 
 **Target:** 1898, Lioni, 4 Reggimento Fanteria
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -475,12 +475,12 @@
 | 8 | Ricerca in Invenio: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 9 | Open Data / DDB-Bestand: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
 | 10 | Ricerca CRI Milano: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 11 | Ricerca LeBI: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 12 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 13 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 11 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 12 | Ricerca LeBI: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 13 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
 | 14 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 15 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 16 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 16 | Ricerca: VENEZIANO NICOLA 1898 Lioni | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 17 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 18 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 19 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -511,17 +511,17 @@
 | VENEZIANO NICOLA | Supabase | PUBLIC_JSON_LOOKUP | 0 | negative |
 | VENEZIANO NICOLA | federated_27_providers | OFFICIAL_API | 23 | positive |
 
-**Web search:** ✅ (20 sources)
+**Web search:** ✅ (18 sources)
 
 **Source classifications:**
 
-- `DIGITIZED_DOCUMENT` — https://www.comune.quartodaltino.ve.it/wp-content/uploads/2025/02/elencocadutigr (evidence_eligible: True)
 - `DIGITIZED_DOCUMENT` — https://www.museoresistenzasasso.it/images/Documenti/Libretto_Caduti_1Guerra_Mon (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://ascaserta.cultura.gov.it/fileadmin/risorse/Biblioteca_digitale/CASERTA_e (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.storiapatriagenova.it/Docs/Biblioteca_Digitale/SB/aea3eea9baa472fdac (evidence_eligible: True)
-- `SEARCH_RESULT_LEAD` — https://www.academia.edu/35134418/La_Grande_Guerra_caduti_e_onoranze_nel_Macerat (evidence_eligible: False)
+- `DIGITIZED_DOCUMENT` — https://www.archgall.it/caduti/4.pdf (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.pietrigrandeguerra.it/wp-content/uploads/2011/06/Militari-morti-a-Re (evidence_eligible: True)
+- `SEARCH_RESULT_LEAD` — https://sites.google.com/view/geneaindex/strumenti-per-la-ricerca/ricerche-i-e-i (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://www.il900casalese.it/mixer/single-dettaglioDoc.asp?ID=18&KeyWord=PrimaGu (evidence_eligible: False)
 
-**Elapsed:** 33.0s
+**Elapsed:** 22.7s
 
 ---
 
@@ -529,10 +529,10 @@
 
 **Target:** 1896, Pasiano di Pordenone, 228 Reggimento Fanteria
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -563,12 +563,12 @@
 | 8 | Ricerca in Invenio: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 9 | Open Data / DDB-Bestand: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
 | 10 | Ricerca CRI Milano: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 11 | Ricerca LeBI: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 12 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 13 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
-| 14 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 11 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 12 | Ricerca LeBI: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 13 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 14 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 15 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 16 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 16 | Ricerca: FANTUZ ANTONIO 1896 Pasiano di Pordenone | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 17 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 18 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 19 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -599,17 +599,17 @@
 | FANTUZ ANTONIO | Supabase | PUBLIC_JSON_LOOKUP | 0 | negative |
 | FANTUZ ANTONIO | federated_27_providers | OFFICIAL_API | 23 | positive |
 
-**Web search:** ✅ (22 sources)
+**Web search:** ✅ (26 sources)
 
 **Source classifications:**
 
-- `DIGITIZED_DOCUMENT` — https://nilopes.altervista.org/decorati/Decorati_della_provincia_di_Pordenone.pd (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.pietrigrandeguerra.it/wp-content/uploads/2013/02/Sepolti-Sacrario-Fa (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.comune.quartodaltino.ve.it/wp-content/uploads/2025/02/elencocadutigr (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://asbn.cultura.gov.it/wp-content/uploads/2024/10/Caduti/ElaboratiGrafici/P (evidence_eligible: True)
-- `SEARCH_RESULT_LEAD` — https://heyjoe.fbk.eu/index.php/grsr/article/download/11491/11492/11498 (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://cadutivigevano.it/pagina1/vigevano/allombra-dei-cipressi/elenco-dei-cadu (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://www.combattentibergamaschi.it/cerca.php?pag=5&mode=caduti&comune= (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — http://www.gelabeniculturali.it/LISTA%20CADUTI.htm (evidence_eligible: False)
+- `DIGITIZED_DOCUMENT` — http://www.sigecweb.beniculturali.it/images/fullsize/ICCD1035705/ICCD12296421_Ca (evidence_eligible: True)
+- `SEARCH_RESULT_LEAD` — https://favara.biz/personaggi/militari-guerre.htm (evidence_eligible: False)
 
-**Elapsed:** 28.1s
+**Elapsed:** 29.4s
 
 ---
 
@@ -617,10 +617,10 @@
 
 **Target:** 1880, Magnano in Riviera, 128 Battaglione M. T.
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -654,13 +654,13 @@
 | 11 | LO MANTO, GUISEPPE Fedele | INSUFFICIENT_DATA | 0.60 |  |  |  |  |  | Supabase:supabase_external_items |
 | 12 | Ricerca in Invenio: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 13 | Open Data / DDB-Bestand: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 14 | Ricerca CRI Milano: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 15 | Ricerca LeBI: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 16 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 14 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 15 | Ricerca CRI Milano: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
+| 16 | Ricerca LeBI: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
 | 17 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 18 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 19 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
-| 20 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 19 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
+| 20 | Ricerca: FEDELE AGOSTINO 1880 Magnano in Riviera | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
 | 21 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 22 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 23 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -692,17 +692,17 @@
 | FEDELE AGOSTINO | Supabase | PUBLIC_JSON_LOOKUP | 2 | positive |
 | FEDELE AGOSTINO | federated_27_providers | OFFICIAL_API | 23 | positive |
 
-**Web search:** ✅ (20 sources)
+**Web search:** ✅ (21 sources)
 
 **Source classifications:**
 
-- `DIGITIZED_DOCUMENT` — https://www.ana.it/wp-content/uploads/2018/pdf/VALORE%20ALPINO%201917.pdf (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.ana.it/wp-content/uploads/2020/08/Valore-Alpino-1917-NUOVO-828.pdf (evidence_eligible: True)
-- `SEARCH_RESULT_LEAD` — https://archive.org/stream/lepoca-eroica-della-vela-capitani-di-mare-e-bastiment (evidence_eligible: False)
-- `SEARCH_RESULT_LEAD` — https://www.pietredellamemoria.it/pietre/sacrario-militare-di-asiago (evidence_eligible: False)
-- `SEARCH_RESULT_LEAD` — https://cellelager.com/prigionieri/identificati (evidence_eligible: False)
+- `DIGITIZED_DOCUMENT` — https://www.pietrigrandeguerra.it/wp-content/uploads/2018/08/Sepolti-Sacrario-Fa (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.museoresistenzasasso.it/images/Documenti/Libretto_Caduti_1Guerra_Mon (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — http://gruppoalpininoviligure.altervista.org/alterpages/files/decorati_novesi_re (evidence_eligible: True)
+- `SEARCH_RESULT_LEAD` — https://www.worldwar1centennial.org/index.php/back-over-there-database.html (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://www.instagram.com/p/DVK16m8iDyg?hl=en (evidence_eligible: False)
 
-**Elapsed:** 30.8s
+**Elapsed:** 23.9s
 
 ---
 
@@ -710,10 +710,10 @@
 
 **Target:** 1888, Misterbianco, 48 Reggimento Fanteria
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -751,12 +751,12 @@
 | 15 | Francesco Albanese: Canzone Napoletana Vol.1-3 | INSUFFICIENT_DATA | 0.60 |  |  |  |  |  | Supabase:supabase_external_items |
 | 16 | Ricerca in Invenio: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 17 | Open Data / DDB-Bestand: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 18 | Ricerca CRI Milano: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 19 | Ricerca LeBI: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 20 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 21 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 18 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
+| 19 | Ricerca CRI Milano: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
+| 20 | Ricerca LeBI: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 21 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
 | 22 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 23 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 23 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
 | 24 | Ricerca: RUSSO GAETANO 1888 Misterbianco | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 25 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 26 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -816,17 +816,17 @@
 | RUSSO GAETANO | Supabase | PUBLIC_JSON_LOOKUP | 4 | positive |
 | RUSSO GAETANO | federated_27_providers | OFFICIAL_API | 23 | positive |
 
-**Web search:** ✅ (25 sources)
+**Web search:** ✅ (28 sources)
 
 **Source classifications:**
 
-- `DIGITIZED_DOCUMENT` — http://www.frontemacedone.com/uploads/1/5/5/6/15564920/elenco_caduti_salonicco.p (evidence_eligible: True)
-- `SEARCH_RESULT_LEAD` — https://pietrigrandeguerra.it (evidence_eligible: False)
-- `DIGITIZED_DOCUMENT` — https://www.storiaememoriadibologna.it/sites/default/files/2024-01/caduti-budrie (evidence_eligible: True)
-- `SEARCH_RESULT_LEAD` — https://www.facebook.com/giorgiameloni.paginaufficiale/posts/tornano-a-casa-100- (evidence_eligible: False)
+- `DIGITIZED_DOCUMENT` — https://www.archgall.it/caduti/4.pdf (evidence_eligible: True)
 - `DIGITIZED_DOCUMENT` — https://www.consiglio.regione.toscana.it/upload/eda/pubblicazioni/pub4002.pdf (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.pietrigrandeguerra.it/wp-content/uploads/2012/08/Elenco-caduti-Colbr (evidence_eligible: True)
+- `SEARCH_RESULT_LEAD` — https://www.courant.com/obituaries/gaetano-a-russo-hartford-and-waterbury-ct (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://www.il900casalese.it/mixer/single-dettaglioDoc.asp?ID=18&KeyWord=PrimaGu (evidence_eligible: False)
 
-**Elapsed:** 32.6s
+**Elapsed:** 24.1s
 
 ---
 
@@ -834,10 +834,10 @@
 
 **Target:** 1890, Roccalbegna, 351 Batteria Bombardieri
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -870,10 +870,10 @@
 | 10 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
 | 11 | Ricerca CRI Milano: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
 | 12 | Ricerca LeBI: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 13 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 14 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 13 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 14 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
 | 15 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 16 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 16 | Ricerca: PAPINI PUBLIO 1890 Roccalbegna | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 17 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 18 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 19 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -893,7 +893,7 @@
 
 | # | Name | Year | Place | Unit | Paternita | Conflicts |
 |---|------|------|--------|------|-----------|-----------|
-| 1 | PAPINI PUBLIO DI GIOVANNI | 1890 | Roccalbegna |  | PAPINI PUBLIO DI GIOVANNI | PATERNITA_CONFLICT: input=GIOVANNI vs candidate=PAPINI PUBLIO DI GIOVANNI |
+| 1 | PAPINI PUBLIO DI GIOVANNI | 1890 | Roccalbegna |  | PAPINI PUBLIO DI GIOVANNI | FIELD_PARSE_UNCERTAIN: paternita contains full name, likely parser error |
 
 **Search log (4 entries):**
 
@@ -904,17 +904,17 @@
 | PAPINI PUBLIO | Supabase | PUBLIC_JSON_LOOKUP | 0 | negative |
 | PAPINI PUBLIO | federated_27_providers | OFFICIAL_API | 23 | positive |
 
-**Web search:** ✅ (22 sources)
+**Web search:** ✅ (14 sources)
 
 **Source classifications:**
 
-- `DIGITIZED_DOCUMENT` — https://www.consiglio.regione.toscana.it/upload/eda/pubblicazioni/pub4142.pdf (evidence_eligible: True)
+- `SEARCH_RESULT_LEAD` — https://www.ancoraonline.it/2015/06/13/la-prima-guerra-mondiale-come-nessuno-lha (evidence_eligible: False)
 - `SEARCH_RESULT_LEAD` — https://www.academia.edu/11808095/Elenco_di_2_240_Caduti_Militari_liguri_della_G (evidence_eligible: False)
-- `DIGITIZED_DOCUMENT` — https://www.pietrigrandeguerra.it/wp-content/uploads/2013/02/Sepolti-Sacrario-Fa (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://ranica-api.municipiumapp.it/s3/5647/allegati/a-cento-anni-dalla-grande-g (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.unuci.org/images/documenti/rivista/Rivista_2015/Unuci_05_06_2015.pdf (evidence_eligible: True)
+- `HOMEPAGE` — https://www.difesa.it/OnorificenzeEDecorazioni/Pagine/AlbodOro.aspx](https://www (evidence_eligible: False)
+- `SEARCH_PAGE` — https://grandeguerre.icrc.org/en/File/Search#person\|PAPINI%20PUBLIO\|](https:// (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://www.antenati.san.beniculturali.it/?s=PAPINI+PUBLIO](https://www.antenati (evidence_eligible: False)
 
-**Elapsed:** 28.5s
+**Elapsed:** 22.6s
 
 ---
 
@@ -922,10 +922,10 @@
 
 **Target:** 1898, Falcade, 117 Reggimento Fanteria
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -958,10 +958,10 @@
 | 10 | Ricerca CRI Milano: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
 | 11 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
 | 12 | Ricerca LeBI: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
-| 13 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
-| 14 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
-| 15 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
-| 16 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 13 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
+| 14 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
+| 15 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
+| 16 | Ricerca: FOLLADOR GIOVANNI 1898 Falcade | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | internetculturale |
 | 17 | Captain Charles de Gaulle's cards | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 18 | Cards of a French serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
 | 19 | Cards of a German serviceman | INSUFFICIENT_DATA | 0.12 |  |  |  |  |  | icrc_ww1 |
@@ -986,17 +986,17 @@
 | FOLLADOR GIOVANNI | Supabase | PUBLIC_JSON_LOOKUP | 0 | negative |
 | FOLLADOR GIOVANNI | federated_27_providers | OFFICIAL_API | 23 | positive |
 
-**Web search:** ✅ (26 sources)
+**Web search:** ✅ (9 sources)
 
 **Source classifications:**
 
-- `SEARCH_RESULT_LEAD` — https://bottleofitaly.com/en-us/products/prosecco-doc-treviso-extra-dry-farder-f (evidence_eligible: False)
-- `SEARCH_RESULT_LEAD` — https://winedivaa.com/follador-prosecco-budget-bubbles-that-sparkle (evidence_eligible: False)
-- `SEARCH_RESULT_LEAD` — https://chinchinwinetrading.com/en/winery/follador (evidence_eligible: False)
-- `SEARCH_RESULT_LEAD` — https://www.folladorprosecco.com (evidence_eligible: False)
-- `SEARCH_RESULT_LEAD` — https://vinifera-mundi.com/follador-prosecco-revolution (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://ancestors.familysearch.org/pt/GNX2-JFB/giovanni-follador-1861-1926 (evidence_eligible: False)
+- `DIGITIZED_DOCUMENT` — https://www.bosiolibri.com/wp-content/uploads/2021/11/Salone-2021-144dpi-pagine- (evidence_eligible: True)
+- `HOMEPAGE` — https://www.difesa.it/OnorificenzeEDecorazioni/Pagine/AlbodOro.aspx](https://www (evidence_eligible: False)
+- `SEARCH_PAGE` — https://grandeguerre.icrc.org/en/File/Search#person|FOLLADOR%20GIOVANNI|](https: (evidence_eligible: False)
+- `SEARCH_RESULT_LEAD` — https://www.antenati.san.beniculturali.it/?s=FOLLADOR+GIOVANNI](https://www.ante (evidence_eligible: False)
 
-**Elapsed:** 24.5s
+**Elapsed:** 25.7s
 
 ---
 
@@ -1004,10 +1004,10 @@
 
 **Target:** 1884, Bitonto, 139 Reggimento Fanteria
 
-**Stato identificazione:** `dati_insufficienti`  
-**Resolution state:** `UNRESOLVED`  
-**Local match:** `NOT_SEARCHED`  
-**External validation:** `NOT_RUN`
+**Stato identificazione:** `record_fonte_singola`  
+**Resolution state:** `SOURCE_RECORD_ONLY`  
+**Local match:** `EXACT`  
+**External validation:** `NO_EVIDENCE`
 
 **Typed counts:**
 ```json
@@ -1037,9 +1037,9 @@
 | 7 | SIFANNO TOMMASO | POSSIBLE | 1.00 | 1884 | Bitonto | GIUSEPPE | 139 Reggimento Fanteria | Soldato | SQLite:caduti_albooro |
 | 8 | Ricerca in Invenio: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.39 |  |  |  |  |  | bundesarchiv |
 | 9 | Open Data / DDB-Bestand: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.37 |  |  |  |  |  | bundesarchiv |
-| 10 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
-| 11 | Ricerca CRI Milano: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
-| 12 | Ricerca LeBI: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 10 | Ricerca CRI Milano: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | cri_milano |
+| 11 | Ricerca LeBI: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | lebi |
+| 12 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.28 |  |  |  |  |  | arolsen |
 | 13 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | archivportal_d |
 | 14 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | shd |
 | 15 | Ricerca: SIFANNO TOMMASO 1884 Bitonto | INSUFFICIENT_DATA | 0.27 |  |  |  |  |  | lac |
@@ -1068,17 +1068,17 @@
 | SIFANNO TOMMASO | Supabase | PUBLIC_JSON_LOOKUP | 0 | negative |
 | SIFANNO TOMMASO | federated_27_providers | OFFICIAL_API | 23 | positive |
 
-**Web search:** ✅ (19 sources)
+**Web search:** ✅ (27 sources)
 
 **Source classifications:**
 
-- `SEARCH_RESULT_LEAD` — https://www.agi.it/cronaca/news/2022-11-13/grande-guerra-caduto-torna-a-bari-dop (evidence_eligible: False)
-- `DIGITIZED_DOCUMENT` — https://comune.gorlago.bg.it/wp-content/uploads/2023/07/1.-quadro-riassuntivo-da (evidence_eligible: True)
-- `DIGITIZED_DOCUMENT` — https://www.unucilombardia.org/wp-content/uploads/2024/01/MILITE-IGNOTO-e-ALTARE (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.pietrigrandeguerra.it/wp-content/uploads/2013/02/Sepolti-Sacrario-Fa (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.consiglio.regione.toscana.it/upload/eda/pubblicazioni/pub4142.pdf (evidence_eligible: True)
+- `DIGITIZED_DOCUMENT` — https://www.consultamusicale.it/wp-content/uploads/2023/11/Prima-Guerra-Mondiale (evidence_eligible: True)
 - `DIGITIZED_DOCUMENT` — https://asbn.cultura.gov.it/wp-content/uploads/2024/10/Caduti/ElaboratiGrafici/P (evidence_eligible: True)
 - `SEARCH_RESULT_LEAD` — https://www.comune.brenzone.vr.it/it/page/i-caduti-della-prima-guerra-mondiale (evidence_eligible: False)
 
-**Elapsed:** 38.7s
+**Elapsed:** 29.7s
 
 ---
 
@@ -1087,8 +1087,8 @@
 
 ```json
 {
-  "run_id": "canary_20260731213407",
-  "manifest_hash": "a2027a77d537322f",
+  "run_id": "canary_20260731223122",
+  "manifest_hash": "752900c8d2a458e1",
   "state": "SUCCESS",
   "scope": "people-only",
   "expected": 10,
@@ -1112,7 +1112,7 @@
     "WWI-010": "COMPLETED"
   },
   "provider_health": {},
-  "started_at": "2026-07-31T21:34:07.420586",
-  "completed_at": "2026-07-31T21:39:23.900966"
+  "started_at": "2026-07-31T22:31:22.669492",
+  "completed_at": "2026-07-31T22:35:46.759423"
 }
 ```

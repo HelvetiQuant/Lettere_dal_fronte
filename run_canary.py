@@ -279,6 +279,28 @@ def run_canary():
 
     run_status.finalize()
 
+    # ── Manifest completeness verification ──
+    expected_ids = {t["target_id"] for t in CANARY_TARGETS}
+    processed_ids = {r.get("target_id", "") for r in results if "error" not in r}
+    failed_ids = {r.get("target_id", "") for r in results if "error" in r}
+    missing_ids = expected_ids - processed_ids - failed_ids
+    unexpected_ids = processed_ids - expected_ids
+
+    print(f"\n{'='*80}")
+    print(f"MANIFEST COMPLETENESS CHECK")
+    print(f"  Expected: {len(expected_ids)} targets")
+    print(f"  Processed: {len(processed_ids)} targets")
+    print(f"  Failed: {len(failed_ids)} targets")
+    print(f"  Missing: {len(missing_ids)} targets — {missing_ids if missing_ids else 'none'}")
+    print(f"  Unexpected: {len(unexpected_ids)} targets — {unexpected_ids if unexpected_ids else 'none'}")
+    if missing_ids:
+        print(f"  ⚠️ INCOMPLETE RUN: {len(missing_ids)} targets missing from output!")
+    if unexpected_ids:
+        print(f"  ⚠️ SUBJECT DRIFT: {len(unexpected_ids)} unexpected targets in output!")
+    if not missing_ids and not unexpected_ids:
+        print(f"  ✅ Manifest complete — all expected targets processed, no drift")
+    print(f"{'='*80}\n")
+
     # Save results — full JSON with all candidates
     out_json = Path(__file__).parent / "CANARY_RESULTS.json"
     out_json.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
