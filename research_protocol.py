@@ -12,11 +12,12 @@ Usage:
 """
 from __future__ import annotations
 
-import json, logging, re, sqlite3, os, threading
-from dataclasses import dataclass, field
+import json, logging, re, sqlite3, os, threading, hashlib, uuid
+from dataclasses import dataclass, field, asdict
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 log = logging.getLogger(__name__)
 
@@ -202,6 +203,412 @@ class Dossier:
         return dataclasses.asdict(self)
 
 
+# ════════════════════════════════════════════════════════════════════════════
+# STRUCTURAL FIX: ResearchTarget, separated states, deterministic gates
+# ════════════════════════════════════════════════════════════════════════════
+
+class LocalMatchState(Enum):
+    NOT_SEARCHED = "NOT_SEARCHED"
+    NOT_FOUND = "NOT_FOUND"
+    EXACT = "EXACT"
+    PARTIAL = "PARTIAL"
+    CONFLICT = "CONFLICT"
+
+
+class ExternalValidationState(Enum):
+    NOT_RUN = "NOT_RUN"
+    NO_EVIDENCE = "NO_EVIDENCE"
+    CORROBORATED = "CORROBORATED"
+    CONFIRMED = "CONFIRMED"
+    CONFLICTING = "CONFLICTING"
+    ERROR = "ERROR"
+
+
+class ResolutionState(Enum):
+    UNRESOLVED = "UNRESOLVED"
+    AMBIGUOUS = "AMBIGUOUS"
+    PROBABLE = "PROBABLE"
+    CONFIRMED = "CONFIRMED"
+    NEEDS_REVIEW = "NEEDS_REVIEW"
+    REJECTED_WRONG_IDENTITY = "REJECTED_WRONG_IDENTITY"
+
+
+class RunState(Enum):
+    SUCCESS = "SUCCESS"
+    PARTIAL = "PARTIAL"
+    FAILED = "FAILED"
+
+
+class ObjectKind(Enum):
+    PROVIDER_ATTEMPT = "PROVIDER_ATTEMPT"
+    SEARCH_QUERY = "SEARCH_QUERY"
+    SEARCH_RESULT_LEAD = "SEARCH_RESULT_LEAD"
+    HOMEPAGE = "HOMEPAGE"
+    SEARCH_PAGE = "SEARCH_PAGE"
+    CATALOG_RECORD = "CATALOG_RECORD"
+    DIGITIZED_DOCUMENT = "DIGITIZED_DOCUMENT"
+    TRANSCRIPTION = "TRANSCRIPTION"
+    SECONDARY_SOURCE = "SECONDARY_SOURCE"
+
+
+class EvidenceState(Enum):
+    NOT_ELIGIBLE = "NOT_ELIGIBLE"
+    UNFETCHED_LEAD = "UNFETCHED_LEAD"
+    ACCEPTED = "ACCEPTED"
+    REJECTED = "REJECTED"
+    NEEDS_REVIEW = "NEEDS_REVIEW"
+
+
+@dataclass(frozen=True)
+class ResearchTarget:
+    """Immutable research target. Created once per search, never modified."""
+    target_id: str
+    target_type: str
+    raw_input: dict
+    normalized_name: str
+    birth_date_or_year: str
+    birth_place: str
+    parents: str
+    military_unit: str
+    rank: str
+    death_date_or_year: str
+    death_place: str
+    conflict: str
+    origin_dataset: str
+    origin_record_id: str
+    origin_source_lineage_id: str
+    validation_mode: str
+    target_hash: str
+
+    @classmethod
+    def from_search_input(cls, si: SearchInput, origin_dataset: str = "",
+                          origin_record_id: str = "") -> "ResearchTarget":
+        import unicodedata
+        def _norm(s: str) -> str:
+            s = unicodedata.normalize("NFKD", s or "")
+            s = "".join(c for c in s if not unicodedata.combining(c))
+            return s.lower().strip()
+
+        normalized = f"{_norm(si.cognome)} {_norm(si.nome)}".strip()
+        canonical_parts = [
+            normalized,
+            _norm(si.anno_nascita or si.data_nascita),
+            _norm(si.luogo_nascita),
+            _norm(si.paternita),
+            _norm(si.reparto),
+            _norm(si.grado),
+            _norm(si.conflitto_presunto),
+        ]
+        canonical = "|".join(canonical_parts)
+        target_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
+        target_id = f"target_{target_hash}"
+
+        return cls(
+            target_id=target_id,
+            target_type="person",
+            raw_input=asdict(si) if hasattr(si, '__dataclass_fields__') else {},
+            normalized_name=normalized,
+            birth_date_or_year=si.anno_nascita or si.data_nascita,
+            birth_place=si.luogo_nascita,
+            parents=si.paternita,
+            military_unit=si.reparto,
+            rank=si.grado,
+            death_date_or_year="",
+            death_place="",
+            conflict=si.conflitto_presunto,
+            origin_dataset=origin_dataset,
+            origin_record_id=origin_record_id,
+            origin_source_lineage_id=f"{origin_dataset}:{origin_record_id}" if origin_dataset else "",
+            validation_mode="blind_external_validation",
+            target_hash=target_hash,
+        )
+
+
+def check_subject_drift(target: ResearchTarget, ai_response: dict) -> bool:
+    """Check if AI response has a different target_hash (subject drift)."""
+    resp_hash = ai_response.get("target_hash", "")
+    if resp_hash and resp_hash != target.target_hash:
+        log.warning("SUBJECT_DRIFT: target_hash=%s but AI response hash=%s",
+                    target.target_hash, resp_hash)
+        return True
+    return False
+
+
+@dataclass
+class ResolutionResult:
+    """Result of identity resolution with separated states."""
+    local_match_state: LocalMatchState = LocalMatchState.NOT_SEARCHED
+    external_validation_state: ExternalValidationState = ExternalValidationState.NOT_RUN
+    resolution_state: ResolutionState = ResolutionState.UNRESOLVED
+    run_state: RunState = RunState.PARTIAL
+    reason_codes: List[str] = field(default_factory=list)
+    matched_features: List[str] = field(default_factory=list)
+    conflicting_features: List[str] = field(default_factory=list)
+    missing_features: List[str] = field(default_factory=list)
+
+
+@dataclass
+class AIError:
+    """Observable AI error with code, stage, and context."""
+    stage: str = ""
+    error_code: str = ""
+    exception_type: str = ""
+    safe_message: str = ""
+    provider: str = ""
+    model: str = ""
+    request_id: str = ""
+    attempt: int = 1
+    retryable: bool = False
+    timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
+
+
+def format_ai_error(err: AIError) -> str:
+    """Format AI error for display — never empty parentheses."""
+    return f"❌ ({err.error_code}: {err.stage})"
+
+
+# ─── Hard conflict detection ─────────────────────────────────────────────────
+
+def _norm_val(s: str) -> str:
+    import unicodedata
+    s = unicodedata.normalize("NFKD", s or "")
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return s.lower().strip()
+
+
+def _extract_year(s: str) -> Optional[str]:
+    if not s:
+        return None
+    m = re.search(r"\b(18\d{2}|19\d{2}|20\d{2})\b", str(s))
+    return m.group(1) if m else None
+
+
+def _norm_place(s: str) -> str:
+    s = _norm_val(s)
+    s = re.sub(r"\bcomune\s+di\s+", "", s)
+    s = re.sub(r"\bprovincia\s+di\s+", "", s)
+    s = re.sub(r"\bsull['\s]\w+", "", s)  # "sull'Oglio" etc.
+    return s.strip()
+
+
+def _norm_unit(s: str) -> str:
+    s = _norm_val(s)
+    s = re.sub(r"\breggimento\b", "rgt", s)
+    s = re.sub(r"\bfanteria\b", "fan", s)
+    s = re.sub(r"\bbatteria\b", "bat", s)
+    s = re.sub(r"[^\w\s]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def check_hard_conflicts(candidate: Candidate, si: SearchInput) -> List[str]:
+    """Detect hard conflicts that reject a candidate before positive scoring."""
+    conflicts = []
+
+    # Birth year conflict
+    si_year = _extract_year(si.anno_nascita or si.data_nascita)
+    cand_year = _extract_year(candidate.data_nascita)
+    if si_year and cand_year and si_year != cand_year:
+        conflicts.append(f"BIRTH_YEAR_CONFLICT: input={si_year} vs candidate={cand_year}")
+
+    # Birth place conflict (normalized, not substring)
+    si_place = _norm_place(si.luogo_nascita)
+    cand_place = _norm_place(candidate.luogo_nascita)
+    if si_place and cand_place and si_place != cand_place:
+        if si_place not in cand_place and cand_place not in si_place:
+            conflicts.append(f"BIRTH_PLACE_CONFLICT: input={si.luogo_nascita} vs candidate={candidate.luogo_nascita}")
+
+    # Military unit conflict (only if both explicit and clearly different)
+    si_unit = _norm_unit(si.reparto)
+    cand_unit = _norm_unit(candidate.reparto)
+    if si_unit and cand_unit:
+        si_nums = set(re.findall(r"\d+", si_unit))
+        cand_nums = set(re.findall(r"\d+", cand_unit))
+        if si_nums and cand_nums and si_nums != cand_nums:
+            conflicts.append(f"UNIT_CONFLICT: input={si.reparto} vs candidate={candidate.reparto}")
+
+    return conflicts
+
+
+# ─── Deterministic resolution gate ───────────────────────────────────────────
+
+def apply_resolution_gate(
+    candidate: Candidate,
+    accepted_evidence_count: int = 0,
+    independent_lineages: int = 0,
+    hard_conflicts: List[str] = None,
+    ai_synthesis_failed: bool = False,
+) -> ResolutionResult:
+    """Apply deterministic gates to determine resolution state.
+
+    The number of candidates and retrieval score cannot confirm identity.
+    Only accepted independent evidence can.
+    """
+    hard_conflicts = hard_conflicts or []
+    result = ResolutionResult()
+
+    # Hard conflicts → REJECTED_WRONG_IDENTITY
+    if hard_conflicts:
+        result.resolution_state = ResolutionState.REJECTED_WRONG_IDENTITY
+        result.conflicting_features = hard_conflicts
+        result.reason_codes = [fc.split(":")[0] for fc in hard_conflicts]
+        result.run_state = RunState.PARTIAL
+        return result
+
+    # INSUFFICIENT_DATA cannot promote
+    if candidate.stato == "INSUFFICIENT_DATA":
+        result.resolution_state = ResolutionState.UNRESOLVED
+        result.reason_codes = ["INSUFFICIENT_DATA_NO_PROMOTION"]
+        result.external_validation_state = ExternalValidationState.NO_EVIDENCE
+        return result
+
+    # Zero accepted evidence → NO_EVIDENCE, not CONFIRMED/PROBABLE
+    if accepted_evidence_count == 0:
+        result.external_validation_state = ExternalValidationState.NO_EVIDENCE
+        result.resolution_state = ResolutionState.UNRESOLVED
+        result.reason_codes = ["NO_ACCEPTED_INDEPENDENT_EVIDENCE"]
+        if ai_synthesis_failed:
+            result.run_state = RunState.PARTIAL
+            result.reason_codes.append("AI_SYNTHESIS_FAILED_NO_FALLBACK")
+        return result
+
+    # AI synthesis failure does not produce fallback positive
+    if ai_synthesis_failed:
+        result.run_state = RunState.PARTIAL
+        result.reason_codes.append("AI_SYNTHESIS_FAILED")
+        # Keep deterministic state from evidence, don't promote from AI
+        if accepted_evidence_count == 0:
+            result.resolution_state = ResolutionState.UNRESOLVED
+            return result
+
+    # Evidence-based promotion
+    if independent_lineages >= 2 and accepted_evidence_count >= 2:
+        result.external_validation_state = ExternalValidationState.CONFIRMED
+        result.resolution_state = ResolutionState.CONFIRMED
+        result.reason_codes = ["TWO_INDEPENDENT_SOURCES"]
+    elif accepted_evidence_count >= 1 and independent_lineages >= 1:
+        result.external_validation_state = ExternalValidationState.CORROBORATED
+        result.resolution_state = ResolutionState.PROBABLE
+        result.reason_codes = ["ONE_ACCEPTED_EVIDENCE"]
+    else:
+        result.external_validation_state = ExternalValidationState.NO_EVIDENCE
+        result.resolution_state = ResolutionState.UNRESOLVED
+        result.reason_codes = ["INSUFFICIENT_EVIDENCE"]
+
+    return result
+
+
+# ─── Source classification ────────────────────────────────────────────────────
+
+def classify_object_kind(url: str, content_type: str = "",
+                          has_record_id: bool = False,
+                          has_locator: bool = False) -> ObjectKind:
+    """Classify a URL/result into object_kind."""
+    if not url:
+        return ObjectKind.SEARCH_QUERY
+
+    url_lower = url.lower()
+
+    # Homepage detection
+    homepage_patterns = [
+        r"/pagine/", r"/default\.aspx$", r"/index\.(html|php|aspx)$",
+        r"/$", r"/home", r"/about",
+    ]
+    if any(re.search(p, url_lower) for p in homepage_patterns):
+        if not has_record_id:
+            return ObjectKind.HOMEPAGE
+
+    # Search page detection
+    search_patterns = [
+        r"/search", r"/File/Search", r"\?q=", r"#person\|",
+        r"search\.aspx", r"/ricerca", r"/find",
+    ]
+    if any(re.search(p, url_lower) for p in search_patterns):
+        if not has_record_id:
+            return ObjectKind.SEARCH_PAGE
+
+    # Direct record with ID and locator
+    if has_record_id and has_locator:
+        return ObjectKind.CATALOG_RECORD
+
+    # Has record ID but no locator
+    if has_record_id:
+        return ObjectKind.SEARCH_RESULT_LEAD
+
+    # Digitized document
+    if any(ext in url_lower for ext in [".pdf", ".jpg", ".png", ".tiff", "/document/", "/image/"]):
+        return ObjectKind.DIGITIZED_DOCUMENT
+
+    # Default: search result lead
+    return ObjectKind.SEARCH_RESULT_LEAD
+
+
+def is_evidence_eligible(kind: ObjectKind) -> bool:
+    """Check if an object kind is eligible as probative evidence."""
+    eligible = {ObjectKind.CATALOG_RECORD, ObjectKind.DIGITIZED_DOCUMENT,
+                ObjectKind.TRANSCRIPTION}
+    return kind in eligible
+
+
+# ─── Typed counts ────────────────────────────────────────────────────────────
+
+def compute_typed_counts(
+    active_candidates: List[Candidate],
+    excluded_candidates: List[Candidate],
+) -> Dict[str, int]:
+    """Compute typed counts replacing the ambiguous 'fonti_totali'."""
+    counts = {
+        "provider_attempts": 0,
+        "retrieved_items": 0,
+        "person_candidates": len(active_candidates),
+        "rejected_person_candidates": len(excluded_candidates),
+        "search_leads": 0,
+        "source_records": 0,
+        "accepted_evidence_sources": 0,
+        "independent_evidence_lineages": 0,
+        "supported_claims": 0,
+    }
+
+    for c in active_candidates + excluded_candidates:
+        for src in c.fonti:
+            counts["retrieved_items"] += 1
+            kind = classify_object_kind(src.url, has_record_id=bool(src.identificativo_archivistico))
+            if kind in (ObjectKind.HOMEPAGE, ObjectKind.SEARCH_PAGE, ObjectKind.SEARCH_QUERY):
+                counts["search_leads"] += 1
+            elif is_evidence_eligible(kind):
+                counts["source_records"] += 1
+                counts["accepted_evidence_sources"] += 1
+
+    return counts
+
+
+# ─── Name matching (no substring) ────────────────────────────────────────────
+
+def normalize_name_preserve_particles(name: str) -> str:
+    """Normalize name preserving particles (DI, DE, etc.)."""
+    import unicodedata
+    s = unicodedata.normalize("NFKD", name or "")
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return s.lower().strip()
+
+
+def names_match(name1: str, name2: str) -> bool:
+    """Check if two names match using word boundary, not substring."""
+    n1 = normalize_name_preserve_particles(name1)
+    n2 = normalize_name_preserve_particles(name2)
+    if n1 == n2:
+        return True
+    # Word boundary check: all words in shorter must be in longer
+    w1 = set(n1.split())
+    w2 = set(n2.split())
+    if not w1 or not w2:
+        return False
+    # "lana" should not match "castellana" — shorter set must be subset
+    shorter = w1 if len(w1) <= len(w2) else w2
+    longer = w2 if len(w1) <= len(w2) else w1
+    return shorter.issubset(longer) and shorter != longer
+
+
 # ─── Phase 4: Name normalization ─────────────────────────────────────────────
 
 def generate_variants(si: SearchInput) -> List[NameVariant]:
@@ -376,26 +783,45 @@ MEDIUM_IDENTIFIERS = ["anno_nascita", "distretto_militare", "reparto", "grado", 
 WEAK_IDENTIFIERS = ["nome", "cognome", "provincia_nascita"]
 
 def score_candidate(candidate: Candidate, si: SearchInput) -> str:
-    """Score candidate against input per protocol section 12."""
+    """Score candidate against input per protocol section 12.
+
+    FIX: Hard conflicts are checked BEFORE any positive scoring.
+    A candidate with incompatible birth year/place/unit is rejected
+    before it can be promoted to CONFIRMED/PROBABLE.
+    """
+    # ── Hard conflict gate (before any positive scoring) ──
+    hard_conflicts = check_hard_conflicts(candidate, si)
+    if hard_conflicts:
+        candidate.stato = "EXCLUDED"
+        candidate.contraddizioni = hard_conflicts
+        candidate.compatibilita = []
+        return candidate.stato
+
     strong_matches = 0
     medium_matches = 0
     contradictions = []
 
-    # Strong identifiers
-    if si.data_nascita and candidate.data_nascita and si.data_nascita in candidate.data_nascita:
-        strong_matches += 1
-    elif si.data_nascita and candidate.data_nascita and si.data_nascita not in candidate.data_nascita:
-        contradictions.append(f"data_nascita: input={si.data_nascita} vs candidate={candidate.data_nascita}")
+    # Strong identifiers — use normalized comparison, not substring
+    si_year = _extract_year(si.anno_nascita or si.data_nascita)
+    cand_year = _extract_year(candidate.data_nascita)
+    if si_year and cand_year:
+        if si_year == cand_year:
+            strong_matches += 1
+        else:
+            contradictions.append(f"BIRTH_YEAR_CONFLICT: input={si_year} vs candidate={cand_year}")
 
-    if si.luogo_nascita and candidate.luogo_nascita and si.luogo_nascita.lower() in candidate.luogo_nascita.lower():
-        strong_matches += 1
-    elif si.luogo_nascita and candidate.luogo_nascita and si.luogo_nascita.lower() not in candidate.luogo_nascita.lower():
-        contradictions.append(f"luogo_nascita: input={si.luogo_nascita} vs candidate={candidate.luogo_nascita}")
+    si_place = _norm_place(si.luogo_nascita)
+    cand_place = _norm_place(candidate.luogo_nascita)
+    if si_place and cand_place:
+        if si_place == cand_place or si_place in cand_place or cand_place in si_place:
+            strong_matches += 1
+        else:
+            contradictions.append(f"BIRTH_PLACE_CONFLICT: input={si.luogo_nascita} vs candidate={candidate.luogo_nascita}")
 
-    if si.paternita and candidate.paternita and si.paternita.lower() in candidate.paternita.lower():
+    if si.paternita and candidate.paternita and _norm_val(si.paternita) == _norm_val(candidate.paternita):
         strong_matches += 1
-    elif si.paternita and candidate.paternita and si.paternita.lower() not in candidate.paternita.lower():
-        contradictions.append(f"paternita: input={si.paternita} vs candidate={candidate.paternita}")
+    elif si.paternita and candidate.paternita and _norm_val(si.paternita) != _norm_val(candidate.paternita):
+        contradictions.append(f"PATERNITA_CONFLICT: input={si.paternita} vs candidate={candidate.paternita}")
 
     if si.numero_matricola and candidate.matricola and si.numero_matricola == candidate.matricola:
         strong_matches += 1
@@ -405,29 +831,28 @@ def score_candidate(candidate: Candidate, si: SearchInput) -> str:
         input_val = getattr(si, field_name, "")
         cand_val = getattr(candidate, field_name.replace("numero_matricola", "matricola"), "")
         if not cand_val:
-            # Try alternative field names
             alt_map = {"anno_nascita": "data_nascita", "distretto_militare": "distretto", "reparto": "reparto", "grado": "grado"}
             cand_val = getattr(candidate, alt_map.get(field_name, field_name), "")
-        if input_val and cand_val and input_val.lower() in str(cand_val).lower():
+        if input_val and cand_val and _norm_val(str(input_val)) in _norm_val(str(cand_val)):
             medium_matches += 1
 
     candidate.compatibilita = [f"strong_matches={strong_matches}", f"medium_matches={medium_matches}"]
     candidate.contraddizioni = contradictions
 
-    # Decision per protocol section 12
-    if strong_matches >= 1 and not contradictions:
-        candidate.stato = "CONFIRMED"
+    # Decision: hard conflicts already handled above.
+    # Without accepted independent evidence, candidate stays at retrieval-level state.
+    # CONFIRMED/PROBABLE require evidence, not just field matching.
+    if contradictions and not strong_matches:
+        candidate.stato = "EXCLUDED"
+    elif strong_matches >= 1 and not contradictions:
+        candidate.stato = "POSSIBLE"  # Downgraded from CONFIRMED — needs evidence gate
     elif strong_matches >= 1 and contradictions:
-        candidate.stato = "PROBABLE"
+        candidate.stato = "POSSIBLE"  # Downgraded from PROBABLE — needs evidence gate
     elif medium_matches >= 3 and not contradictions:
-        candidate.stato = "PROBABLE"
+        candidate.stato = "POSSIBLE"  # Downgraded from PROBABLE — needs evidence gate
     elif medium_matches >= 1:
         candidate.stato = "POSSIBLE"
-    elif contradictions and not strong_matches:
-        candidate.stato = "EXCLUDED"
     else:
-        # If user provided no strong identifiers, but candidate has data,
-        # mark as POSSIBLE instead of INSUFFICIENT_DATA
         has_si_identifiers = any([si.data_nascita, si.luogo_nascita, si.paternita, si.numero_matricola])
         has_candidate_data = any([candidate.data_nascita, candidate.luogo_nascita,
                                   candidate.paternita, candidate.reparto, candidate.grado,
@@ -468,14 +893,23 @@ Non inventare varianti fonetiche eccessivamente lontane. Basati su grafie storic
     return variants
 
 
-def _ai_build_dossier(dossier: Dossier) -> Dossier:
-    """Use Qwen AI to synthesize the final dossier from collected data."""
+def _ai_build_dossier(dossier: Dossier, target: ResearchTarget = None) -> Dossier:
+    """Use Qwen AI to synthesize the final dossier from collected data.
+
+    FIX: AI cannot override stato_identificazione. AI can only suggest
+    piste and richieste_archivistiche. Errors are stored as structured AIError.
+    """
     try:
         from ai_runtime import get_adapter
         adapter = get_adapter()
         health = adapter.health()
         if not health.healthy:
             log.info("AI not healthy, skipping AI dossier synthesis")
+            dossier.profilo["ai_error"] = asdict(AIError(
+                stage="dossier_synthesis", error_code="ADAPTER_UNHEALTHY",
+                exception_type="HealthCheckFailed", safe_message="Adapter not healthy",
+                provider="lmstudio", model=getattr(health, 'model', 'unknown'),
+            ))
             return dossier
 
         # Prepare summary for AI
@@ -489,16 +923,18 @@ def _ai_build_dossier(dossier: Dossier) -> Dossier:
 
         system = """Sei un ricercatore storico-archivistico. Sintetizza un dossier strutturato dai dati di ricerca.
 NON inventare dati. NON fondere record omonimi. Distingui fatti da ipotesi.
+Lo stato di identificazione è già determinato deterministicamente: NON sovrascriverlo.
 Rispondi in JSON con: {
-  "stato_identificazione": "confermata|probabile|possibile|non_identificata|dati_insufficienti",
-  "profilo": {"dati_accertati": {}, "note": ""},
   "piste": [{"priorita": 1, "azione": "", "fonte": "", "motivazione": ""}],
   "richieste_archivistiche": [{"ente": "", "fondo": "", "documento_richiesto": "", "dati_conosciuti": "", "motivazione": ""}]
 }"""
         user = json.dumps({
+            "target_id": target.target_id if target else "",
+            "target_hash": target.target_hash if target else "",
             "input": dossier.profilo.get("input", {}),
+            "stato_identificazione": dossier.stato_identificazione,
             "candidati": candidates_summary,
-            "fonti_count": len(dossier.fonti),
+            "typed_counts": dossier.profilo.get("typed_counts", {}),
             "contraddizioni": dossier.contraddizioni[:5],
             "ricerche_negative": len(dossier.ricerche_negative),
         }, ensure_ascii=False)
@@ -506,19 +942,41 @@ Rispondi in JSON con: {
         result = adapter.generate_structured(system, user, max_tokens=2048, temperature=0.2, task_type="dossier_synthesis", timeout=60)
         if result.ok and result.text:
             data = json.loads(result.text)
-            if data.get("stato_identificazione"):
-                dossier.stato_identificazione = data["stato_identificazione"]
-            if data.get("profilo"):
-                dossier.profilo.update(data["profilo"])
+            # ── FIX: AI cannot set stato_identificazione ──
+            # Only accept piste and richieste from AI
             if data.get("piste"):
                 dossier.piste = data["piste"]
             if data.get("richieste_archivistiche"):
                 dossier.richieste = data["richieste_archivistiche"]
             dossier.ai_used = True
             dossier.ai_model = health.model
-            log.info("AI dossier synthesized (model=%s)", health.model)
+            log.info("AI dossier synthesized (model=%s) — stato NOT overridden", health.model)
+        else:
+            # ── FIX: Store structured error, never empty parentheses ──
+            err = AIError(
+                stage="dossier_synthesis",
+                error_code="GENERATION_FAILED",
+                exception_type=type(result.error).__name__ if hasattr(result, 'error') and result.error else "Unknown",
+                safe_message=str(getattr(result, 'error', 'Generation failed'))[:200],
+                provider="lmstudio",
+                model=getattr(health, 'model', 'unknown'),
+                retryable=False,
+            )
+            dossier.profilo["ai_error"] = asdict(err)
+            log.warning("AI dossier synthesis failed: %s", err.error_code)
     except Exception as e:
-        log.debug("AI dossier synthesis skipped: %s", e)
+        # ── FIX: Store structured error ──
+        err = AIError(
+            stage="dossier_synthesis",
+            error_code="EXCEPTION",
+            exception_type=type(e).__name__,
+            safe_message=str(e)[:200],
+            provider="lmstudio",
+            model="",
+            retryable=False,
+        )
+        dossier.profilo["ai_error"] = asdict(err)
+        log.warning("AI dossier synthesis error: %s: %s", err.error_code, err.safe_message)
     return dossier
 
 
@@ -686,7 +1144,12 @@ def _search_web(si: SearchInput, dossier: Dossier):
 # ─── Persistence ──────────────────────────────────────────────────────────────
 
 def _persist_dossier(dossier: Dossier, si: SearchInput):
-    """Persist dossier to Supabase for future reference."""
+    """Persist dossier to Supabase for future reference.
+
+    FIX: Only persist candidates with accepted evidence.
+    Candidates without evidence are marked 'unverified', not 'discovered'.
+    Rejected candidates (EXCLUDED/REJECTED_WRONG_IDENTITY) are NOT persisted.
+    """
     try:
         import httpx
         from dotenv import load_dotenv
@@ -699,9 +1162,27 @@ def _persist_dossier(dossier: Dossier, si: SearchInput):
         h = {"apikey": key, "Authorization": f"Bearer {key}", "Content-Type": "application/json"}
 
         stable_id = f"research:{si.cognome.lower()}:{si.nome.lower()}:{si.anno_nascita or 'unk'}"
+        # Use resolution_state to set verification_status
+        resolution = dossier.profilo.get("resolution_state", "UNRESOLVED")
+        typed_counts = dossier.profilo.get("typed_counts", {})
+        accepted_evidence = typed_counts.get("accepted_evidence_sources", 0)
+
+        if resolution == "CONFIRMED":
+            ver_status = "verified"
+            conf = 0.9
+        elif resolution == "PROBABLE":
+            ver_status = "probable"
+            conf = 0.6
+        elif accepted_evidence > 0:
+            ver_status = "candidate"
+            conf = 0.4
+        else:
+            ver_status = "unverified"
+            conf = 0.1
+
         entity_sql = f"""
         INSERT INTO core.entities (stable_id, entity_type, canonical_name, verification_status, confidence, source_system, source_table)
-        SELECT '{stable_id}', 'person', '{si.full_name.replace("'", "''")}', 'candidate', 0.3, 'research_protocol', 'auto_search'
+        SELECT '{stable_id}', 'person', '{si.full_name.replace("'", "''")}', '{ver_status}', {conf}, 'research_protocol', 'auto_search'
         WHERE NOT EXISTS (SELECT 1 FROM core.entities WHERE stable_id = '{stable_id}')
         RETURNING id;
         """
@@ -711,18 +1192,23 @@ def _persist_dossier(dossier: Dossier, si: SearchInput):
             if isinstance(data, list) and data and isinstance(data[0], dict):
                 entity_id = data[0].get("id")
                 if entity_id:
-                    # Save claims for each candidate
+                    # ── FIX: Only persist candidates with evidence, not just POSSIBLE ──
                     for c in dossier.candidati[:20]:
-                        if c.stato in ("CONFIRMED", "PROBABLE", "POSSIBLE"):
-                            claim_sql = f"""
-                            INSERT INTO evidence.claims (subject_entity_id, predicate, object_value, claim_status, source_system)
-                            VALUES ({entity_id}, 'identified_as', '{c.nome_originale.replace("'", "''")}', 'discovered', 'research_protocol')
-                            ON CONFLICT DO NOTHING;
-                            """
-                            try:
-                                httpx.post(rpc, headers=h, json={"query": claim_sql}, timeout=15)
-                            except Exception:
-                                pass
+                        if c.stato in ("CONFIRMED", "PROBABLE"):
+                            claim_status = "verified" if accepted_evidence > 0 else "discovered"
+                        elif c.stato == "POSSIBLE":
+                            claim_status = "unverified"  # Not 'discovered' without evidence
+                        else:
+                            continue  # Don't persist INSUFFICIENT_DATA or EXCLUDED
+                        claim_sql = f"""
+                        INSERT INTO evidence.claims (subject_entity_id, predicate, object_value, claim_status, source_system)
+                        VALUES ({entity_id}, 'identified_as', '{c.nome_originale.replace("'", "''")}', '{claim_status}', 'research_protocol')
+                        ON CONFLICT DO NOTHING;
+                        """
+                        try:
+                            httpx.post(rpc, headers=h, json={"query": claim_sql}, timeout=15)
+                        except Exception:
+                            pass
     except Exception as e:
         log.debug("Persist error: %s", e)
 
@@ -744,8 +1230,14 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
     si = SearchInput.from_dict(input_data)
     log.info("ResearchProtocol: start for '%s'", si.full_name)
 
+    # ── FIX: Create immutable ResearchTarget ──
+    target = ResearchTarget.from_search_input(si)
+    log.info("ResearchProtocol: target_id=%s hash=%s", target.target_id, target.target_hash)
+
     dossier = Dossier(created_at=t_start.isoformat())
     dossier.profilo["input"] = input_data
+    dossier.profilo["target_id"] = target.target_id
+    dossier.profilo["target_hash"] = target.target_hash
 
     # Phase 4: base variants (fast, no AI)
     variants = generate_variants(si)
@@ -799,25 +1291,47 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
     dossier.omonimi_esclusi = [c for c in dossier.candidati if c.stato == "EXCLUDED"]
     dossier.candidati = [c for c in dossier.candidati if c.stato != "EXCLUDED"]
 
-    # Determine overall status
-    confirmed = [c for c in dossier.candidati if c.stato == "CONFIRMED"]
-    probable = [c for c in dossier.candidati if c.stato == "PROBABLE"]
-    possible = [c for c in dossier.candidati if c.stato == "POSSIBLE"]
-    if confirmed:
-        dossier.stato_identificazione = "confermata"
-        dossier.profilo["dati_accertati"] = confirmed[0].raw_data
-    elif probable:
-        dossier.stato_identificazione = "probabile"
-    elif possible:
-        dossier.stato_identificazione = "possibile"
-    elif dossier.candidati:
-        dossier.stato_identificazione = "dati_insufficienti"
-    else:
-        dossier.stato_identificazione = "non_identificata"
+    # ── FIX: Determine overall status via deterministic gate ──
+    # score_candidate now returns POSSIBLE (not CONFIRMED) for field matches.
+    # The resolution gate checks for accepted independent evidence.
+    # Without evidence, status is UNRESOLVED/dati_insufficienti, not confermata.
+    best_resolution = ResolutionResult()
+    for c in dossier.candidati:
+        gate_result = apply_resolution_gate(
+            candidate=c,
+            accepted_evidence_count=0,  # No evidence collection yet — web search may add
+            independent_lineages=0,
+            hard_conflicts=c.contraddizioni if c.contraddizioni else [],
+        )
+        if gate_result.resolution_state == ResolutionState.REJECTED_WRONG_IDENTITY:
+            c.stato = "EXCLUDED"
+            dossier.omonimi_esclusi.append(c)
+        elif gate_result.resolution_state.value not in ("UNRESOLVED",):
+            best_resolution = gate_result
 
-    # Collect all sources
-    for c in dossier.candidati + dossier.omonimi_esclusi:
+    # Re-filter after gate
+    dossier.candidati = [c for c in dossier.candidati if c.stato != "EXCLUDED"]
+
+    # Map resolution state to dossier status
+    state_map = {
+        ResolutionState.CONFIRMED: "confermata",
+        ResolutionState.PROBABLE: "probabile",
+        ResolutionState.AMBIGUOUS: "possibile",
+        ResolutionState.NEEDS_REVIEW: "dati_insufficienti",
+        ResolutionState.UNRESOLVED: "dati_insufficienti" if dossier.candidati else "non_identificata",
+        ResolutionState.REJECTED_WRONG_IDENTITY: "non_identificata",
+    }
+    dossier.stato_identificazione = state_map.get(best_resolution.resolution_state, "dati_insufficienti" if dossier.candidati else "non_identificata")
+    dossier.profilo["resolution_state"] = best_resolution.resolution_state.value
+    dossier.profilo["reason_codes"] = best_resolution.reason_codes
+
+    # ── FIX: Collect sources only from active candidates, not excluded ──
+    for c in dossier.candidati:
         dossier.fonti.extend(c.fonti)
+
+    # ── FIX: Compute typed counts ──
+    typed_counts = compute_typed_counts(dossier.candidati, dossier.omonimi_esclusi)
+    dossier.profilo["typed_counts"] = typed_counts
 
     # Collect contradictions
     for c in dossier.candidati:
@@ -825,11 +1339,11 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
             dossier.contraddizioni.append({"candidato": c.nome_originale, "contraddizione": contra})
 
     # Web search: always run to confirm and expand results with online sources
-    dossier = _web_search_enrich(si, dossier)
+    dossier = _web_search_enrich(si, dossier, target)
 
-    # AI dossier synthesis
+    # AI dossier synthesis — FIX: AI cannot override stato_identificazione
     if use_ai:
-        dossier = _ai_build_dossier(dossier)
+        dossier = _ai_build_dossier(dossier, target)
 
     # Generate archival requests if not confirmed
     if dossier.stato_identificazione != "confermata":
@@ -845,8 +1359,13 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
     return dossier
 
 
-def _web_search_enrich(si: SearchInput, dossier: Dossier) -> Dossier:
-    """Web search con OpenAI: conferma candidati locali e amplia con fonti online certe."""
+def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget = None) -> Dossier:
+    """Web search con OpenAI: conferma candidati locali e amplia con fonti online certe.
+
+    FIX: Query is anchored ONLY to the immutable ResearchTarget.
+    Local candidates are NOT included in the query to prevent subject drift.
+    Sources are classified by object_kind (homepage/search_page vs catalog_record).
+    """
     try:
         import os
         from openai import OpenAI
@@ -860,6 +1379,7 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier) -> Dossier:
 
         client = OpenAI(api_key=api_key)
 
+        # ── FIX: Query built ONLY from immutable target, not from candidates ──
         query_parts = [si.full_name]
         if si.anno_nascita:
             query_parts.append(f"nato nel {si.anno_nascita}")
@@ -878,46 +1398,20 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier) -> Dossier:
 
         query = ", ".join(query_parts)
 
-        # Include local candidates as context for confirmation
-        local_context = ""
-        if dossier.candidati:
-            confirmed_candidates = []
-            for c in dossier.candidati:
-                if c.stato == "INSUFFICIENT_DATA":
-                    continue
-                parts = [c.nome_originale]
-                if c.paternita:
-                    parts.append(f"padre: {c.paternita}")
-                if c.data_nascita:
-                    parts.append(f"nascita: {c.data_nascita}")
-                if c.luogo_nascita:
-                    parts.append(f"luogo: {c.luogo_nascita}")
-                if c.reparto:
-                    parts.append(f"reparto: {c.reparto}")
-                if c.grado:
-                    parts.append(f"grado: {c.grado}")
-                if c.morte:
-                    parts.append(f"sorte: {c.morte}")
-                parts.append(f"stato: {c.stato}")
-                confirmed_candidates.append(" | ".join(parts))
-
-            if confirmed_candidates:
-                local_context = "\n\nCANDIDATI TROVATI NEL DB LOCALE (da confermare):\n" + "\n".join(
-                    f"- {c}" for c in confirmed_candidates[:10]
-                )
-                query += local_context
-                query += "\n\nVerifica se questi candidati corrispondono a record online reali (Albo d'Oro, ICRC, archivi statali). Cerca anche ULTERIORI fonti certe non presenti nel DB locale."
-
+        # ── FIX: NO local candidate context in query — prevents subject drift ──
+        # The query must search for the TARGET, not for candidates that may be wrong.
         query += "\n\nVerifica in: cadutigrandeguerra.it (Albo d'Oro), antenati.cultura.gov.it (ruoli matricolari), Archivi di Stato, ICRC, LeBI, Ministero Difesa, o altri archivi storici italiani online."
+        query += f"\n\nIMPORTANTE: Cerca SOLO per '{si.full_name}' nato nel {si.anno_nascita or '?'} a {si.luogo_nascita or '?'}. NON sostituire con omonimi di altri anni o luoghi."
 
         instructions = (
             "Sei un ricercatore storico-archivistico specializzato in storia militare "
             "italiana del 1900 (Prima e Seconda Guerra Mondiale, IMI, internati, caduti, "
             "decorati). Cerca informazioni reali online negli archivi italiani. "
-            "NON inventare dati. Rispondi in italiano con formato strutturato:\n"
-            "1. CONFERMA CANDIDATI: per ogni candidato locale, indica se confermato online o meno\n"
-            "2. NUOVI DATI TROVATI: informazioni aggiuntive non presenti nel DB locale\n"
-            "3. FONTI CONSULTATE: elenco con URL\n"
+            "NON inventare dati. NON sostituire il soggetto della ricerca con un omonimo. "
+            "Rispondi in italiano con formato strutturato:\n"
+            "1. CONFERMA: indica se sono stati trovati record nominativi diretti (non pagine di ricerca)\n"
+            "2. NUOVI DATI TROVATI: informazioni aggiuntive con fonte specifica\n"
+            "3. FONTI CONSULTATE: elenco con URL diretto al record (non homepage o pagine di ricerca)\n"
             "4. AFFIDABILITA: livello (alta/media/bassa) con motivazione\n"
             "5. SUGGERIMENTI: fonti archivistiche da consultare"
         )
@@ -965,9 +1459,17 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier) -> Dossier:
 
         dossier.web_search_used = True
         dossier.web_search_results = {
+            "target_id": target.target_id if target else "",
+            "target_hash": target.target_hash if target else "",
             "query": query,
             "text": resp.output_text,
             "sources": sources,
+            "source_classifications": [
+                {"url": s["url"], "title": s["title"],
+                 "object_kind": classify_object_kind(s["url"]).value,
+                 "evidence_eligible": is_evidence_eligible(classify_object_kind(s["url"]))}
+                for s in sources
+            ],
             "search_actions": search_actions,
             "usage": usage,
         }
