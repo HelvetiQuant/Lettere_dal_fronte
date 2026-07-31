@@ -1,5 +1,76 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-07-31 — V4 EvidenceSnapshot Reconstruction (12 Defect Categories Fixed)
+
+### Contesto
+Audit completo del backend del protocollo di ricerca. Identificate e corrette 12 categorie di difetti semantici e strutturali. Implementati 7 nuovi moduli, integrate le correzioni in `research_protocol.py`, scritti 149 test (82 V4 + 67 V3), eseguito canary offline su 10 target con 0 violazioni.
+
+### Moduli nuovi (7)
+
+| File | Scopo |
+|------|-------|
+| `evidence_snapshot_v4.py` | DTO unificato e validato con origin_record, accepted_claims, provider_ledger, reconciliation, `to_conversational_context` (source_id only, no URL) |
+| `source_capability_registry.py` | Registry unificato per 25 provider con routing per conflitto (ww1/ww2/both), sostituisce i set hardcoded `_WWI_ONLY_PROVIDERS` / `_WWII_ONLY_PROVIDERS` |
+| `archive_jurisdiction_registry.py` | 11 mapping verificati comune→archivio; comuni non verificati → statement generico, nessun archivio inventato |
+| `relevance_gate_v4.py` | Pipeline multi-stage: result_kind → name_match → period_compatibility → geographic_scope → fetch_status; 4 bucket (evidence, context, leads, rejected) |
+| `name_parser_v4.py` | Parser corretto per pattern `COGNOME NOME DI PADRE`; preserva raw_value, parser_version, field_provenance; flag `needs_field_review` |
+| `ai_output_validator.py` | Validatore post-generazione: detection contraddizioni, URL allucinati, archivi non verificati; fallback deterministico |
+| `report_conversation_provider.py` | Interfaccia conversazionale report — Mistral/local only, OpenAI hardcoded disabled, persistenza SQLite |
+
+### Moduli modificati (2)
+
+- `research_protocol.py`:
+  - Import V4 modules
+  - `_web_search_enrich`: usa V4 relevance gate + invia snapshot unificato ad AI (no candidati grezzi/Tavily results)
+  - `_generate_archival_requests`: usa `ArchiveJurisdictionRegistry` verificata invece di template generation
+  - `apply_resolution_gate`: `SOURCE_RECORD_ONLY` richiede lineage verificata (URL assoluta)
+  - `compute_typed_counts`: URL relative contate come lead, non source_record
+  - `get_provider_capabilities`: delega a `source_capability_registry`
+  - `score_candidate`: usa V4 name parser per paternity extraction da display_name
+  - `research_person`: build V4 snapshot, validate invariants, downgrade su violazione
+  - Post-AI validation con `ai_output_validator` + fallback deterministico
+- `test_research_protocol_v3_master.py`:
+  - 3 test aggiornati per comportamento V4 (routing unknown conflict, SOURCE_RECORD_ONLY con URL verificata, paternity parser V4)
+
+### 12 Difetti corretti
+
+1. **EvidenceSnapshot V4** — DTO unificato con origin_record, claims, provider_ledger, `to_conversational_context` senza URL
+2. **SOURCE_RECORD_ONLY invariants** — richiede URL assoluta verificata; URL relative → lead; `compute_typed_counts` riconciliato
+3. **Relevance gate multi-stage** — sostituisce gate binario V3 con pipeline 6-stage (result_kind, name_match, period, geo, fetch, state)
+4. **False negative proofs** — `CONSULTED_NO_MATCH` richiede `fetch_status=SUCCESS` + nome assente nel content
+5. **URL dedup e rendering** — AI riceve source_id solo; nessuna estrazione URL da AI text; renderer genera link da snapshot
+6. **missing_claims** — computed da `CLAIM_FIELDS` set minus claim accettati/partial
+7. **Unified capability routing** — singolo registry per retrieval, suggestions, report, UI; LeBI skipped per WWI
+8. **ArchiveJurisdictionRegistry** — no template-generated archives; 11 comuni verificati; comuni non mappati → statement generico
+9. **Parser COGNOME NOME DI PADRE** — `PAPINI PUBLIO DI GIOVANNI` correttamente split in surname=PAPINI, given=PUBLIO, father=GIOVANNI
+10. **Post-generation validator** — schema, grounding, contradiction detection, hallucinated URL/archive detection, deterministic fallback
+11. **Conversational report** — `ReportConversationProvider` con SQLite, Mistral/local only, OpenAI disabled
+12. **Tests** — 82 test V4 (fixture-based, property-based, parametrized regression) + 67 test V3 aggiornati = 149 PASS
+
+### Test
+- `test_research_protocol_v4_master.py` — 82 test su 12 categorie + property-based + regression
+- `test_research_protocol_v3_master.py` — 67 test (3 aggiornati per V4)
+- **149/149 PASS** in 0.58s
+
+### Canary V4 Offline
+- `run_canary_v4_offline.py` — 10/10 target completati, 0 violazioni, 0 chiamate OpenAI
+- `CANARY_V4_OFFLINE_RESULTS.json` — risultati strutturati
+- `CANARY_V4_BEFORE_AFTER.md` — report before/after con verifica features
+
+### Vincoli enforceati
+- No OpenAI API calls (hardcoded disabled)
+- No template-generated archives (verified registry only)
+- No false negative proofs without verified fetch
+- No counting suggestion URLs as sources
+- No homonyms from uncertain parser data (`needs_field_review` flag)
+- No URLs in AI conversational context (`source_id` only)
+
+### File generati
+- `CANARY_V4_OFFLINE_RESULTS.json`
+- `CANARY_V4_BEFORE_AFTER.md`
+
+---
+
 ## 2026-07-30 — Discovery Persistence Pipeline (Web Search Archival System)
 
 ### Contesto

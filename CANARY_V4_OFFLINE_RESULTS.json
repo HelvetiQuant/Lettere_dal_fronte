@@ -1,0 +1,1044 @@
+[
+  {
+    "target_id": "WWI-001",
+    "ordinal": 1,
+    "full_name": "LARI GIUSEPPE",
+    "target_data": {
+      "anno_nascita": "1886",
+      "luogo_nascita": "Canneto sull'Oglio",
+      "reparto": "206 Reggimento Fanteria",
+      "paternita": "EMANUELE"
+    },
+    "elapsed_seconds": 20.2,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_a6b73b2e6b33ae70_20260731232538",
+    "snapshot_hash": "77f1d292128d2e8f",
+    "snapshot_version": 4,
+    "accepted_claims_count": 6,
+    "missing_claims": [
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 13,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 0,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 64,
+      "unique_canonical_urls": 0,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 13,
+      "supported_claims": 6,
+      "partial_claims": 0,
+      "missing_claims": 4,
+      "research_leads": 0
+    },
+    "validation_violations": [],
+    "candidates_count": 51,
+    "omonimi_count": 13,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Archivio di Stato di Mantova",
+        "fondo": "Rubriche Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: GIUSEPPE LARI, classe 1886, nato a Canneto sull'Oglio, di EMANUELE",
+        "motivazione": "Ricostruzione percorso militare — distretto di Mantova",
+        "url": "http://www.archiviodistatomantova.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: GIUSEPPE LARI, classe 1886, nato a Canneto sull'Oglio, di EMANUELE",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: GIUSEPPE LARI, classe 1886, nato a Canneto sull'Oglio, di EMANUELE",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: GIUSEPPE LARI, classe 1886, nato a Canneto sull'Oglio, di EMANUELE",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_a6b73b2e6b33ae70\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\n  - LARI GIUSEPPE: BIRTH_YEAR_CONFLICT: input=1886 vs can...",
+    "research_limitations": [
+      "No independent external corroboration found in this session",
+      "Web search error: SEARCH_FAILED"
+    ]
+  },
+  {
+    "target_id": "WWI-002",
+    "ordinal": 2,
+    "full_name": "FEDERICO LUIGI",
+    "target_data": {
+      "anno_nascita": "1885",
+      "luogo_nascita": "Longobucco",
+      "reparto": "138 Reggimento Fanteria",
+      "paternita": "GIUSEPPE"
+    },
+    "elapsed_seconds": 26.9,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_4f2c575c62d3ebaa_20260731232604",
+    "snapshot_hash": "4b655fb7d9becc8e",
+    "snapshot_version": 4,
+    "accepted_claims_count": 6,
+    "missing_claims": [
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 36,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 2,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 98,
+      "unique_canonical_urls": 2,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 36,
+      "supported_claims": 6,
+      "partial_claims": 0,
+      "missing_claims": 4,
+      "research_leads": 2
+    },
+    "validation_violations": [],
+    "candidates_count": 62,
+    "omonimi_count": 36,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Archivio di Stato di Cosenza",
+        "fondo": "Rubriche Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: LUIGI FEDERICO, classe 1885, nato a Longobucco, di GIUSEPPE",
+        "motivazione": "Ricostruzione percorso militare — distretto di Cosenza",
+        "url": "https://archiviodistatocosenza.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: LUIGI FEDERICO, classe 1885, nato a Longobucco, di GIUSEPPE",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: LUIGI FEDERICO, classe 1885, nato a Longobucco, di GIUSEPPE",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: LUIGI FEDERICO, classe 1885, nato a Longobucco, di GIUSEPPE",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_4f2c575c62d3ebaa\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\n  - BEVILACQUA Federico: BIRTH_PLACE_CONFLICT: input=Long...",
+    "research_limitations": [
+      "No independent external corroboration found in this session"
+    ]
+  },
+  {
+    "target_id": "WWI-003",
+    "ordinal": 3,
+    "full_name": "GIUNTA GIUSEPPE",
+    "target_data": {
+      "anno_nascita": "1879",
+      "luogo_nascita": "Modica",
+      "reparto": "2 Reggimento Granatieri",
+      "paternita": "RAFFAELE"
+    },
+    "elapsed_seconds": 19.8,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_7629a9d16c4e1f63_20260731232624",
+    "snapshot_hash": "d284ca0098ca5a41",
+    "snapshot_version": 4,
+    "accepted_claims_count": 6,
+    "missing_claims": [
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 18,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 0,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 54,
+      "unique_canonical_urls": 0,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 18,
+      "supported_claims": 6,
+      "partial_claims": 0,
+      "missing_claims": 4,
+      "research_leads": 0
+    },
+    "validation_violations": [],
+    "candidates_count": 36,
+    "omonimi_count": 18,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Verificare presso l'Archivio di Stato territorialmente competente",
+        "fondo": "Ruoli/Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: GIUSEPPE GIUNTA, classe 1879, nato a Modica, di RAFFAELE",
+        "motivazione": "Verificare il distretto militare competente per il comune di Modica e consultare l'Archivio di Stato corrispondente",
+        "url": "",
+        "verified": false
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: GIUSEPPE GIUNTA, classe 1879, nato a Modica, di RAFFAELE",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: GIUSEPPE GIUNTA, classe 1879, nato a Modica, di RAFFAELE",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: GIUSEPPE GIUNTA, classe 1879, nato a Modica, di RAFFAELE",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_7629a9d16c4e1f63\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\n  - GIUNTA GAETANO: BIRTH_YEAR_CONFLICT: input=1879 vs ca...",
+    "research_limitations": [
+      "No independent external corroboration found in this session"
+    ]
+  },
+  {
+    "target_id": "WWI-004",
+    "ordinal": 4,
+    "full_name": "VENEZIANO NICOLA",
+    "target_data": {
+      "anno_nascita": "1898",
+      "luogo_nascita": "Lioni",
+      "reparto": "4 Reggimento Fanteria",
+      "paternita": "VITO"
+    },
+    "elapsed_seconds": 21.6,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_2d6dcf627ba03b58_20260731232646",
+    "snapshot_hash": "d75b2f3c02ef1d92",
+    "snapshot_version": 4,
+    "accepted_claims_count": 6,
+    "missing_claims": [
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 1,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 2,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 31,
+      "unique_canonical_urls": 2,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 1,
+      "supported_claims": 6,
+      "partial_claims": 0,
+      "missing_claims": 4,
+      "research_leads": 2
+    },
+    "validation_violations": [],
+    "candidates_count": 30,
+    "omonimi_count": 1,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Archivio di Stato di Avellino",
+        "fondo": "Rubriche Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: NICOLA VENEZIANO, classe 1898, nato a Lioni, di VITO",
+        "motivazione": "Ricostruzione percorso militare — distretto di Avellino",
+        "url": "https://archiviodistatoavellino.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: NICOLA VENEZIANO, classe 1898, nato a Lioni, di VITO",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: NICOLA VENEZIANO, classe 1898, nato a Lioni, di VITO",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: NICOLA VENEZIANO, classe 1898, nato a Lioni, di VITO",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_2d6dcf627ba03b58\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\n  - VENEZIANO NICOLA: BIRTH_YEAR_CONFLICT: input=1898 vs ...",
+    "research_limitations": [
+      "No independent external corroboration found in this session"
+    ]
+  },
+  {
+    "target_id": "WWI-005",
+    "ordinal": 5,
+    "full_name": "FANTUZ ANTONIO",
+    "target_data": {
+      "anno_nascita": "1896",
+      "luogo_nascita": "Pasiano di Pordenone",
+      "reparto": "228 Reggimento Fanteria",
+      "paternita": "PIETRO"
+    },
+    "elapsed_seconds": 14.2,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_5c53b948a6c83ddc_20260731232700",
+    "snapshot_hash": "7ed2fb3305067e55",
+    "snapshot_version": 4,
+    "accepted_claims_count": 6,
+    "missing_claims": [
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 1,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 3,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 31,
+      "unique_canonical_urls": 3,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 1,
+      "supported_claims": 6,
+      "partial_claims": 0,
+      "missing_claims": 4,
+      "research_leads": 3
+    },
+    "validation_violations": [],
+    "candidates_count": 30,
+    "omonimi_count": 1,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Archivio di Stato di Pordenone",
+        "fondo": "Rubriche Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: ANTONIO FANTUZ, classe 1896, nato a Pasiano di Pordenone, di PIETRO",
+        "motivazione": "Ricostruzione percorso militare — distretto di Pordenone",
+        "url": "http://www.archiviodistatopordenone.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: ANTONIO FANTUZ, classe 1896, nato a Pasiano di Pordenone, di PIETRO",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: ANTONIO FANTUZ, classe 1896, nato a Pasiano di Pordenone, di PIETRO",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: ANTONIO FANTUZ, classe 1896, nato a Pasiano di Pordenone, di PIETRO",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_5c53b948a6c83ddc\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\n  - FANTUZ ANTONIO: BIRTH_YEAR_CONFLICT: input=1896 vs ca...",
+    "research_limitations": [
+      "No independent external corroboration found in this session"
+    ]
+  },
+  {
+    "target_id": "WWI-006",
+    "ordinal": 6,
+    "full_name": "FEDELE AGOSTINO",
+    "target_data": {
+      "anno_nascita": "1880",
+      "luogo_nascita": "Magnano in Riviera",
+      "reparto": "128 Battaglione M. T.",
+      "paternita": "PIETRO"
+    },
+    "elapsed_seconds": 17.7,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_d846da83a05c2589_20260731232718",
+    "snapshot_hash": "ec9584158fbbd8ea",
+    "snapshot_version": 4,
+    "accepted_claims_count": 6,
+    "missing_claims": [
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 2,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 1,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 36,
+      "unique_canonical_urls": 1,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 2,
+      "supported_claims": 6,
+      "partial_claims": 0,
+      "missing_claims": 4,
+      "research_leads": 1
+    },
+    "validation_violations": [],
+    "candidates_count": 34,
+    "omonimi_count": 2,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Archivio di Stato di Udine",
+        "fondo": "Rubriche Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: AGOSTINO FEDELE, classe 1880, nato a Magnano in Riviera, di PIETRO",
+        "motivazione": "Ricostruzione percorso militare — distretto di Udine",
+        "url": "https://archiviodistatoudine.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: AGOSTINO FEDELE, classe 1880, nato a Magnano in Riviera, di PIETRO",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: AGOSTINO FEDELE, classe 1880, nato a Magnano in Riviera, di PIETRO",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: AGOSTINO FEDELE, classe 1880, nato a Magnano in Riviera, di PIETRO",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_d846da83a05c2589\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\n  - FEDELE AGOSTINO: BIRTH_YEAR_CONFLICT: input=1880 vs c...",
+    "research_limitations": [
+      "No independent external corroboration found in this session"
+    ]
+  },
+  {
+    "target_id": "WWI-007",
+    "ordinal": 7,
+    "full_name": "RUSSO GAETANO",
+    "target_data": {
+      "anno_nascita": "1888",
+      "luogo_nascita": "Misterbianco",
+      "reparto": "48 Reggimento Fanteria",
+      "paternita": "FRANCESCO"
+    },
+    "elapsed_seconds": 16.8,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_095acf8c0a1e04c6_20260731232735",
+    "snapshot_hash": "58bb1bc418d42fbf",
+    "snapshot_version": 4,
+    "accepted_claims_count": 6,
+    "missing_claims": [
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 29,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 4,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 67,
+      "unique_canonical_urls": 4,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 29,
+      "supported_claims": 6,
+      "partial_claims": 0,
+      "missing_claims": 4,
+      "research_leads": 4
+    },
+    "validation_violations": [],
+    "candidates_count": 38,
+    "omonimi_count": 29,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Archivio di Stato di Catania",
+        "fondo": "Rubriche Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: GAETANO RUSSO, classe 1888, nato a Misterbianco, di FRANCESCO",
+        "motivazione": "Ricostruzione percorso militare — distretto di Catania",
+        "url": "https://archiviodistatocatania.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: GAETANO RUSSO, classe 1888, nato a Misterbianco, di FRANCESCO",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: GAETANO RUSSO, classe 1888, nato a Misterbianco, di FRANCESCO",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: GAETANO RUSSO, classe 1888, nato a Misterbianco, di FRANCESCO",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_095acf8c0a1e04c6\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\n  - RUSSO Guido: BIRTH_PLACE_CONFLICT: input=Misterbianco...",
+    "research_limitations": [
+      "No independent external corroboration found in this session"
+    ]
+  },
+  {
+    "target_id": "WWI-008",
+    "ordinal": 8,
+    "full_name": "PAPINI PUBLIO",
+    "target_data": {
+      "anno_nascita": "1890",
+      "luogo_nascita": "Roccalbegna",
+      "reparto": "351 Batteria Bombardieri",
+      "paternita": "GIOVANNI"
+    },
+    "elapsed_seconds": 14.0,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_77a841a56364c933_20260731232749",
+    "snapshot_hash": "7699b721736ffb2a",
+    "snapshot_version": 4,
+    "accepted_claims_count": 6,
+    "missing_claims": [
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 0,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 1,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 31,
+      "unique_canonical_urls": 1,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 0,
+      "supported_claims": 6,
+      "partial_claims": 0,
+      "missing_claims": 4,
+      "research_leads": 1
+    },
+    "validation_violations": [],
+    "candidates_count": 31,
+    "omonimi_count": 0,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Archivio di Stato di Grosseto",
+        "fondo": "Rubriche Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: PUBLIO PAPINI, classe 1890, nato a Roccalbegna, di GIOVANNI",
+        "motivazione": "Ricostruzione percorso militare — distretto di Grosseto",
+        "url": "https://archiviodistatogrosseto.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: PUBLIO PAPINI, classe 1890, nato a Roccalbegna, di GIOVANNI",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: PUBLIO PAPINI, classe 1890, nato a Roccalbegna, di GIOVANNI",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: PUBLIO PAPINI, classe 1890, nato a Roccalbegna, di GIOVANNI",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_77a841a56364c933\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\nNessun omonimo escluso.\n\n## 5. Limiti tecnici della sessi...",
+    "research_limitations": [
+      "No independent external corroboration found in this session"
+    ]
+  },
+  {
+    "target_id": "WWI-009",
+    "ordinal": 9,
+    "full_name": "FOLLADOR GIOVANNI",
+    "target_data": {
+      "anno_nascita": "1898",
+      "luogo_nascita": "Falcade",
+      "reparto": "117 Reggimento Fanteria",
+      "paternita": ""
+    },
+    "elapsed_seconds": 12.9,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_5788bdb70b9f9197_20260731232801",
+    "snapshot_hash": "918f6641c29b1916",
+    "snapshot_version": 4,
+    "accepted_claims_count": 5,
+    "missing_claims": [
+      "paternity",
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 0,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 7,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 30,
+      "unique_canonical_urls": 7,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 0,
+      "supported_claims": 5,
+      "partial_claims": 0,
+      "missing_claims": 5,
+      "research_leads": 7
+    },
+    "validation_violations": [],
+    "candidates_count": 30,
+    "omonimi_count": 0,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Archivio di Stato di Belluno",
+        "fondo": "Rubriche Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: GIOVANNI FOLLADOR, classe 1898, nato a Falcade",
+        "motivazione": "Ricostruzione percorso militare — distretto di Belluno",
+        "url": "https://archiviodistatobelluno.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: GIOVANNI FOLLADOR, classe 1898, nato a Falcade",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: GIOVANNI FOLLADOR, classe 1898, nato a Falcade",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: GIOVANNI FOLLADOR, classe 1898, nato a Falcade",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_5788bdb70b9f9197\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\nNessun omonimo escluso.\n\n## 5. Limiti tecnici della sessi...",
+    "research_limitations": [
+      "No independent external corroboration found in this session"
+    ]
+  },
+  {
+    "target_id": "WWI-010",
+    "ordinal": 10,
+    "full_name": "SIFANNO TOMMASO",
+    "target_data": {
+      "anno_nascita": "1884",
+      "luogo_nascita": "Bitonto",
+      "reparto": "139 Reggimento Fanteria",
+      "paternita": "GIUSEPPE"
+    },
+    "elapsed_seconds": 12.8,
+    "stato_identificazione": "dati_insufficienti",
+    "resolution_state": "UNRESOLVED",
+    "origin_record_state": "ABSENT",
+    "snapshot_id": "snap_v4_target_ea89305cc3672d5b_20260731232814",
+    "snapshot_hash": "de09da3dac0461aa",
+    "snapshot_version": 4,
+    "accepted_claims_count": 6,
+    "missing_claims": [
+      "service_number",
+      "captivity",
+      "burial",
+      "residence"
+    ],
+    "rejected_candidates_count": 0,
+    "origin_evidence_sources": 0,
+    "independent_evidence_sources": 0,
+    "consulted_sources": 0,
+    "research_leads": 4,
+    "reconciliation": {
+      "provider_attempts": 4,
+      "retrieved_items": 30,
+      "unique_canonical_urls": 4,
+      "opened_sources": 0,
+      "consulted_sources": 0,
+      "origin_evidence_sources": 0,
+      "independent_evidence_sources": 0,
+      "context_sources": 0,
+      "rejected_items": 0,
+      "supported_claims": 6,
+      "partial_claims": 0,
+      "missing_claims": 4,
+      "research_leads": 4
+    },
+    "validation_violations": [],
+    "candidates_count": 30,
+    "omonimi_count": 0,
+    "routing": {
+      "eligible_count": 18,
+      "skipped_count": 7,
+      "skipped": [
+        "anrp",
+        "arolsen",
+        "lebi",
+        "lessicobiograficoimi",
+        "mauthausen_memorial",
+        "ushmm",
+        "yadvashem"
+      ]
+    },
+    "archival_suggestions_count": 4,
+    "archival_suggestions": [
+      {
+        "ente": "Archivio di Stato di Bari",
+        "fondo": "Rubriche Fogli Matricolari",
+        "documento_richiesto": "Foglio matricolare",
+        "dati_conosciuti": "Nome: TOMMASO SIFANNO, classe 1884, nato a Bitonto, di GIUSEPPE",
+        "motivazione": "Ricostruzione percorso militare — distretto di Bari",
+        "url": "https://archiviodistatobari.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "Archivio Centrale dello Stato — Roma",
+        "fondo": "Ministero della Guerra — Ruoli Matricolari",
+        "documento_richiesto": "Ruolo matricolare",
+        "dati_conosciuti": "Nome: TOMMASO SIFANNO, classe 1884, nato a Bitonto, di GIUSEPPE",
+        "motivazione": "Verifica matricola e reparto di assegnazione",
+        "url": "https://acs.beniculturali.it/",
+        "verified": true
+      },
+      {
+        "ente": "ICRC — International Committee of the Red Cross",
+        "fondo": "Prisoners of the First World War",
+        "documento_richiesto": "Scheda prigioniero",
+        "dati_conosciuti": "Nome: TOMMASO SIFANNO, classe 1884, nato a Bitonto, di GIUSEPPE",
+        "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
+        "url": "https://grandeguerre.icrc.org/",
+        "verified": true
+      },
+      {
+        "ente": "Ufficio Storico dello Stato Maggiore dell'Esercito (USSME)",
+        "fondo": "Storia e documentazione operativa dei reparti",
+        "documento_richiesto": "Diari storici di reparto (non fascicoli personali)",
+        "dati_conosciuti": "Nome: TOMMASO SIFANNO, classe 1884, nato a Bitonto, di GIUSEPPE",
+        "motivazione": "Documentazione operativa del reparto — non deposito di fascicoli personali",
+        "url": "http://www.esercito.difesa.it/storia/Pagine/default.aspx",
+        "verified": true
+      }
+    ],
+    "deterministic_report": "## 1. Identità ricercata\nTarget ID: target_ea89305cc3672d5b\n\n## 2. Cosa attesta la fonte d'origine\nNessun record d'origine verificato disponibile.\n\n## 3. Corroborazione esterna trovata o non trovata\nLa ricerca esterna eseguita in questa sessione non ha prodotto una seconda fonte nominativa indipendente accettabile. Questo non smentisce il record d'origine e non dimostra l'assenza di altri documenti.\n\n## 4. Contraddizioni e omonimi esclusi\nNessun omonimo escluso.\n\n## 5. Limiti tecnici della sessi...",
+    "research_limitations": [
+      "No independent external corroboration found in this session"
+    ]
+  }
+]

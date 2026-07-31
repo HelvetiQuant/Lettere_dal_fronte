@@ -11,6 +11,7 @@ import hashlib
 import sys
 from pathlib import Path
 from dataclasses import dataclass
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 # Add project root to path
@@ -317,9 +318,14 @@ class TestProviderCapabilityRouting:
         assert "lebi" in caps["eligible"]
 
     def test_unknown_conflict_searches_all(self):
+        # V4: Unknown conflict ("") now uses the unified registry.
+        # The registry classifies providers as ww1-only, ww2-only, or both.
+        # For unknown conflict, only "both" providers are eligible.
         caps = get_provider_capabilities("")
-        assert len(caps["skipped"]) == 0
         assert len(caps["eligible"]) > 0
+        # V4: ww1-only and ww2-only providers are skipped for unknown conflict
+        assert "icrc_ww1" in caps["skipped"]
+        assert "lebi" in caps["skipped"]
 
     def test_both_conflicts_always_eligible(self):
         for conflict in ["ww1", "ww2", ""]:
@@ -340,7 +346,13 @@ class TestProviderCapabilityRouting:
 
 class TestSourceRecordOnly:
     def test_strong_local_match_without_evidence_is_source_record_only(self):
+        # V4: SOURCE_RECORD_ONLY requires verified lineage (absolute URL)
         c = Candidate(stato="POSSIBLE", confidence=0.9)
+        c.fonti.append(SourceRecord(
+            url="https://www.difesa.it/Record/123",
+            istituzione="Albo d'Oro",
+            data_accesso=datetime.now().isoformat(),
+        ))
         result = apply_resolution_gate(candidate=c, accepted_evidence_count=0)
         assert result.resolution_state == ResolutionState.SOURCE_RECORD_ONLY
         assert "SOURCE_RECORD_MATCH_NO_EXTERNAL_EVIDENCE" in result.reason_codes
@@ -426,9 +438,11 @@ class TestPaternityComparison:
                      paternita="PAPINI PUBLIO DI GIOVANNI",
                      data_nascita="1890", luogo_nascita="Roccalbegna")
         score_candidate(c, si)
-        # Should not create a hard PATERNITA_CONFLICT — it's a parser issue
-        assert not any("PATERNITA_CONFLICT" in contra for contra in c.contraddizioni)
-        assert any("FIELD_PARSE_UNCERTAIN" in contra for contra in c.contraddizioni)
+        # V4: The name_parser_v4 correctly extracts GIOVANNI from the display name.
+        # Since input paternita (GIOVANNI) matches extracted father_name (GIOVANNI),
+        # it's a strong match, not a conflict or parse error.
+        # The V4 parser fixes the paternity field on the candidate.
+        assert c.paternita == "GIOVANNI"  # Fixed by V4 parser
 
 
 # ════════════════════════════════════════════════════════════════════════════

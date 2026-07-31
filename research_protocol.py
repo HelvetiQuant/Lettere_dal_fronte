@@ -19,6 +19,14 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+# V4 imports
+from evidence_snapshot_v4 import EvidenceSnapshotV4, build_snapshot_v4_from_dossier, CLAIM_FIELDS
+from source_capability_registry import get_routing_matrix, is_eligible_for_suggestion, get_capability
+from archive_jurisdiction_registry import generate_archival_suggestions as _v4_generate_archival_suggestions
+from relevance_gate_v4 import classify_relevance_v4, filter_relevant_results_v4, RelevanceResult
+from name_parser_v4 import parse_display_name, parse_candidate_fields, PARSER_VERSION
+from ai_output_validator import validate_ai_output, generate_deterministic_report
+
 log = logging.getLogger(__name__)
 
 # ─── Data structures ──────────────────────────────────────────────────────────
@@ -868,8 +876,21 @@ def apply_resolution_gate(
             # We have a strong local DB match (e.g., Albo d'Oro record)
             # but no independent external evidence. This is SOURCE_RECORD_ONLY,
             # not UNRESOLVED — the record exists, it just hasn't been corroborated.
-            result.resolution_state = ResolutionState.SOURCE_RECORD_ONLY
-            result.reason_codes = ["SOURCE_RECORD_MATCH_NO_EXTERNAL_EVIDENCE"]
+            # V4 INVARIANT: SOURCE_RECORD_ONLY requires origin_record.state == VERIFIED
+            # If the candidate's source URL is relative (no http://), lineage is unverified
+            # and the state should be PRESENT_UNVERIFIED_LINEAGE, not SOURCE_RECORD_ONLY.
+            has_verified_lineage = False
+            for f in candidate.fonti:
+                if f.url and f.url.startswith("http"):
+                    has_verified_lineage = True
+                    break
+            if has_verified_lineage:
+                result.resolution_state = ResolutionState.SOURCE_RECORD_ONLY
+                result.reason_codes = ["SOURCE_RECORD_MATCH_NO_EXTERNAL_EVIDENCE"]
+            else:
+                # Lineage not verified — don't claim SOURCE_RECORD_ONLY
+                result.resolution_state = ResolutionState.UNRESOLVED
+                result.reason_codes = ["PRESENT_UNVERIFIED_LINEAGE_NOT_SOURCE_RECORD_ONLY"]
         else:
             result.resolution_state = ResolutionState.UNRESOLVED
             result.reason_codes = ["NO_ACCEPTED_INDEPENDENT_EVIDENCE"]
@@ -979,11 +1000,17 @@ def compute_typed_counts(
         for src in c.fonti:
             counts["retrieved_items"] += 1
             kind = classify_object_kind(src.url, has_record_id=bool(src.identificativo_archivistico))
-            if kind in (ObjectKind.HOMEPAGE, ObjectKind.SEARCH_PAGE, ObjectKind.SEARCH_QUERY):
+            if kind in (ObjectKind.HOMEPAGE, ObjectKind.SEARCH_PAGE, ObjectKind.SEARCH_QUERY,
+                        ObjectKind.SEARCH_RESULT_LEAD):
                 counts["search_leads"] += 1
             elif is_evidence_eligible(kind):
-                counts["source_records"] += 1
-                counts["accepted_evidence_sources"] += 1
+                # V4: Only count as source_record if URL is absolute (verified lineage)
+                if src.url and src.url.startswith("http"):
+                    counts["source_records"] += 1
+                    counts["accepted_evidence_sources"] += 1
+                else:
+                    # Relative URL — unverified lineage, count as lead
+                    counts["search_leads"] += 1
 
     return counts
 
@@ -1224,19 +1251,27 @@ def score_candidate(candidate: Candidate, si: SearchInput) -> str:
         else:
             contradictions.append(f"BIRTH_PLACE_CONFLICT: input={si.luogo_nascita} vs candidate={candidate.luogo_nascita}")
 
-    # ── FIX: Paternity comparison with display_name awareness ──
-    # Archival formats like "PAPINI PUBLIO DI GIOVANNI" encode paternity
-    # in the display_name. The adapter should split display_name into
-    # surname, given_names, father_name. If the candidate paternita field
-    # contains the full display_name, it's a parser error, not a real conflict.
+    # ── FIX V4: Paternity comparison using V4 name parser ──
+    # Use parse_display_name to correctly split COGNOME NOME DI PADRE
+    # instead of raw string comparison that creates false conflicts
     si_paternita = _norm_val(si.paternita)
     cand_paternita = _norm_val(candidate.paternita)
     if si_paternita and cand_paternita:
         # Check if candidate paternita contains the full name (parser error)
         cand_name_norm = _norm_val(candidate.nome_originale or "")
         if cand_paternita == cand_name_norm or cand_name_norm in cand_paternita:
-            # Parser put full name in paternita field — don't create false conflict
-            contradictions.append(f"FIELD_PARSE_UNCERTAIN: paternita contains full name, likely parser error")
+            # V4: Use name_parser_v4 to correctly extract paternity from display_name
+            parsed = parse_display_name(candidate.nome_originale or "")
+            if parsed.father_name:
+                extracted_father = _norm_val(parsed.father_name)
+                if si_paternita == extracted_father:
+                    strong_matches += 1
+                    # Fix the candidate's paternity field
+                    candidate.paternita = parsed.father_name
+                else:
+                    contradictions.append(f"PATERNITA_CONFLICT: input={si.paternita} vs extracted={parsed.father_name}")
+            else:
+                contradictions.append(f"FIELD_PARSE_UNCERTAIN: paternita contains full name, parser could not extract father_name")
         elif si_paternita == cand_paternita:
             strong_matches += 1
         else:
@@ -1515,32 +1550,15 @@ _BOTH_CONFLICTS_PROVIDERS = {
 def get_provider_capabilities(conflict: str) -> dict:
     """Return provider routing matrix for a given conflict.
     
+    V4: Uses unified source_capability_registry instead of hardcoded sets.
+    
     Args:
         conflict: "ww1", "ww2", or "" (both/unknown)
     
     Returns:
         dict with 'eligible' (set of provider names), 'skipped' (set), 'reason' (dict)
     """
-    if conflict == "ww1":
-        eligible = _WWI_ONLY_PROVIDERS | _BOTH_CONFLICTS_PROVIDERS
-        skipped = _WWII_ONLY_PROVIDERS
-        reason = "WWI target: skipping WWII-only providers"
-    elif conflict == "ww2":
-        eligible = _WWII_ONLY_PROVIDERS | _BOTH_CONFLICTS_PROVIDERS
-        skipped = _WWI_ONLY_PROVIDERS
-        reason = "WWII target: skipping WWI-only providers"
-    else:
-        eligible = _WWI_ONLY_PROVIDERS | _WWII_ONLY_PROVIDERS | _BOTH_CONFLICTS_PROVIDERS
-        skipped = set()
-        reason = "Unknown conflict: searching all providers"
-    
-    return {
-        "eligible": sorted(eligible),
-        "skipped": sorted(skipped),
-        "reason": reason,
-        "eligible_count": len(eligible),
-        "skipped_count": len(skipped),
-    }
+    return get_routing_matrix(conflict)
 
 
 def _search_federated(si: SearchInput, variants: List[NameVariant], dossier: Dossier):
@@ -1845,9 +1863,21 @@ def research_person(input_data: dict, *, use_ai: bool = True, persist: bool = Tr
     if dossier.stato_identificazione not in ("confermata", "confermata_con_corroborazione"):
         dossier.richieste = _generate_archival_requests(si, dossier)
 
-    # ── Create EvidenceSnapshot for conversational reports ──
-    snapshot = EvidenceSnapshot.from_dossier(dossier, target)
-    dossier.profilo["evidence_snapshot"] = snapshot.to_dict()
+    # ── Create EvidenceSnapshot V4 for conversational reports ──
+    snapshot = build_snapshot_v4_from_dossier(dossier, target)
+
+    # ── V4: Validate snapshot invariants ──
+    violations = snapshot.validate()
+    if violations:
+        log.warning("EvidenceSnapshot V4 validation violations: %s", violations)
+        # If SOURCE_RECORD_ONLY invariants are violated, downgrade
+        if any("SOURCE_RECORD_ONLY" in v for v in violations):
+            if snapshot.origin_record.get("state") != "VERIFIED":
+                snapshot.resolution_state = "UNRESOLVED"
+                dossier.profilo["resolution_state"] = "UNRESOLVED"
+                dossier.stato_identificazione = "dati_insufficienti"
+                log.warning("Downgraded SOURCE_RECORD_ONLY → UNRESOLVED due to invariant violation")
+    dossier.profilo["evidence_snapshot_v4"] = snapshot.to_dict()
 
     # Persist
     if persist:
@@ -1952,73 +1982,56 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
         log.info("Web search: Tavily returned %d results in %dms",
                  len(search_resp.results), search_resp.elapsed_ms)
 
-        # ── Step 2b: Apply relevance gate ──
+        # ── Step 2b: Apply V4 multi-stage relevance gate ──
         raw_results = [
             {"url": r.url, "title": r.title, "snippet": r.snippet}
             for r in search_resp.results[:10]
         ]
-        relevant_results, rejected_results = filter_relevant_results(raw_results, target)
-        log.info("Web search: relevance gate — %d relevant, %d rejected",
-                 len(relevant_results), len(rejected_results))
+        evidence_results, context_results, lead_results, rejected_results = filter_relevant_results_v4(
+            raw_results,
+            target_name=si.full_name,
+            target_conflict=si.conflitto_presunto or "",
+            target_birth_place=si.luogo_nascita,
+            target_birth_year=si.anno_nascita,
+            target_unit=si.reparto,
+        )
+        log.info("Web search: V4 relevance gate — %d evidence, %d context, %d leads, %d rejected",
+                 len(evidence_results), len(context_results), len(lead_results), len(rejected_results))
 
-        # ── Step 3: Build full snapshot for AI (local DB + web) ──
-        # FIX: AI sees the full evidence picture, not just Tavily results.
-        # This prevents the AI from ignoring local DB matches or inventing
-        # information not present in the evidence.
-        local_candidates_summary = []
-        for c in dossier.candidati[:5]:
-            local_candidates_summary.append({
-                "nome": c.nome_originale,
-                "nascita": c.data_nascita,
-                "luogo": c.luogo_nascita,
-                "paternita": c.paternita,
-                "reparto": c.reparto,
-                "grado": c.grado,
-                "stato": c.stato,
-                "confidence": c.confidence,
-                "fonti": [{"istituzione": f.istituzione, "url": f.url} for f in c.fonti],
-            })
-
-        excluded_summary = []
-        for c in dossier.omonimi_esclusi[:3]:
-            excluded_summary.append({
-                "nome": c.nome_originale,
-                "nascita": c.data_nascita,
-                "luogo": c.luogo_nascita,
-                "conflitti": c.contraddizioni,
-            })
-
-        sources_for_ai = [
-            {"url": r["url"], "title": r["title"], "snippet": r["snippet"]}
-            for r in relevant_results
-        ]
+        # ── Step 3: Build V4 EvidenceSnapshot for AI ──
+        # V4 FIX: AI receives the unified snapshot, not raw candidates or Tavily results.
+        # The snapshot contains origin_record, accepted_claims, rejected_candidates,
+        # and source_ids (not URLs). The model cannot deny verified records.
+        snapshot_v4 = build_snapshot_v4_from_dossier(dossier, target)
+        snapshot_context = snapshot_v4.to_conversational_context()
 
         ai_instructions = (
-            "Sei un ricercatore storico-archivistico specializzato in storia militare "
-            "italiana del 1900 (Prima e Seconda Guerra Mondiale, IMI, internati, caduti, "
-            "decorati). Analizza i risultati di ricerca web reali per il soggetto indicato. "
+            "Sei l'Assistente della ricerca, un ricercatore storico-archivistico specializzato "
+            "in storia militare italiana del 1900 (Prima e Seconda Guerra Mondiale, IMI, "
+            "internati, caduti, decorati). Analizza lo snapshot probatorio fornito per il "
+            "soggetto indicato. "
             "NON inventare dati. NON sostituire il soggetto con un omonimo. "
-            "Sei fornito di: (a) candidati trovati nel database locale, (b) omonimi esclusi, "
-            "(c) risultati di ricerca web filtrati per pertinenza. "
-            "Il tuo compito è elaborare UNICAMENTE i dati forniti, senza aggiungere "
-            "informazioni non presenti nelle fonti. "
+            "NON negare l'esistenza di record verificati presenti nello snapshot. "
+            "NON produrre URL nel testo — usa source_id per citare le fonti. "
+            "NON suggerire archivi non presenti nello snapshot o nel registry verificato. "
+            "Se un dato non è nello snapshot, dichiara che non è disponibile in questa sessione. "
             "Rispondi in italiano con formato strutturato:\n"
-            "1. CONFERMA: indica se sono stati trovati record nominativi diretti (non pagine di ricerca)\n"
-            "2. NUOVI DATI TROVATI: informazioni aggiuntive con fonte specifica\n"
-            "3. FONTI CONSULTATE: elenco con URL diretto al record\n"
+            "1. CONFERMA: indica se il record d'origine è verificato e quali dati attesta\n"
+            "2. CORROBORAZIONE ESTERNA: indica se ci sono fonti indipendenti accettabili\n"
+            "3. DATI TROVATI: informazioni con source_id di riferimento\n"
             "4. AFFIDABILITA: livello (alta/media/bassa) con motivazione\n"
-            "5. SUGGERIMENTI: fonti archivistiche da consultare"
+            "5. SUGGERIMENTI: fonti archivistiche da consultare (solo dal registry verificato)"
         )
 
         ai_user = json.dumps({
+            "snapshot_context": snapshot_context,
             "soggetto": query,
             "target_id": target.target_id if target else "",
             "target_hash": target.target_hash if target else "",
-            "candidati_locali": local_candidates_summary,
-            "omonimi_esclusi": excluded_summary,
-            "stato_identificazione_attuale": dossier.stato_identificazione,
-            "resolution_state_attuale": dossier.profilo.get("resolution_state", "UNRESOLVED"),
-            "risultati_ricerca_web": sources_for_ai,
+            "resolution_state": snapshot_v4.resolution_state,
+            "origin_record_state": snapshot_v4.origin_record_state,
+            "missing_claims": snapshot_v4.missing_claims,
+            "research_limitations": snapshot_v4.research_limitations,
         }, ensure_ascii=False)
 
         from ai_runtime import get_adapter
@@ -2043,13 +2056,36 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
             ai_text = ""  # Reject truncated output
             dossier.profilo["ai_truncation"] = truncation
 
-        # ── Step 4: Build structured results with deduplication ──
-        sources = [{"url": r["url"], "title": r["title"]} for r in relevant_results]
+        # ── Step 3c: V4 Post-generation validation ──
+        # Validate AI output against snapshot: no contradictions, no hallucinated URLs
         if ai_text:
-            import re as _re
-            extra_urls = _re.findall(r'https?://[^\s<>"\']+', ai_text)
-            for u in extra_urls:
-                sources.append({"url": u, "title": u.split("/")[2] if "/" in u else u})
+            validation = validate_ai_output(ai_text, snapshot_v4.to_dict())
+            dossier.profilo["ai_validation"] = {
+                "is_valid": validation.is_valid,
+                "violations": validation.violations,
+                "warnings": validation.warnings,
+                "detected_contradictions": validation.detected_contradictions,
+                "detected_hallucinations": validation.detected_hallucinations,
+                "fallback_used": validation.fallback_used,
+            }
+            if not validation.is_valid:
+                log.warning("Web search: AI output failed validation — %d violations, using deterministic fallback",
+                            len(validation.violations))
+                ai_text = generate_deterministic_report(snapshot_v4.to_dict())
+                dossier.profilo["ai_validation"]["fallback_used"] = True
+        else:
+            # AI failed entirely — use deterministic report
+            ai_text = generate_deterministic_report(snapshot_v4.to_dict())
+            dossier.profilo["ai_validation"] = {"is_valid": False, "fallback_used": True,
+                                                  "violations": ["AI_GENERATION_FAILED"]}
+
+        # ── Step 4: Build structured results with V4 classification ──
+        # V4 FIX: No URL extraction from AI text. Sources come from relevance gate only.
+        # AI emits source_id, not URLs. Renderer generates links from snapshot.
+        all_results = evidence_results + context_results + lead_results
+        sources = [{"url": r["url"], "title": r.get("title", ""),
+                     "relevance_v4": r.get("relevance_v4", {})}
+                   for r in all_results]
 
         # ── FIX: Deduplicate sources by canonical URL ──
         sources = deduplicate_sources(sources)
@@ -2071,12 +2107,20 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
             ],
             "relevance_gate": {
                 "raw_count": len(raw_results),
-                "relevant_count": len(relevant_results),
+                "evidence_count": len(evidence_results),
+                "context_count": len(context_results),
+                "lead_count": len(lead_results),
                 "rejected_count": len(rejected_results),
-                "rejected": [{"url": r.get("url", ""), "reason": r.get("relevance", {}).get("rejection_reason", "")}
+                "rejected": [{"url": r.get("url", ""), "reason_codes": r.get("relevance_v4", {}).get("reason_codes", [])}
                              for r in rejected_results],
+                "evidence": [{"url": r.get("url", ""), "title": r.get("title", "")}
+                             for r in evidence_results],
+                "context": [{"url": r.get("url", ""), "title": r.get("title", "")}
+                            for r in context_results],
+                "leads": [{"url": r.get("url", ""), "title": r.get("title", "")}
+                          for r in lead_results],
             },
-            "search_actions": ["tavily_search", "relevance_gate", "mistral_elaboration", "url_deduplication"],
+            "search_actions": ["tavily_search", "relevance_gate_v4", "mistral_elaboration", "ai_validation", "url_deduplication"],
             "usage": {
                 "input_tokens": ai_result.input_tokens if ai_result.ok else 0,
                 "output_tokens": ai_result.output_tokens if ai_result.ok else 0,
@@ -2159,59 +2203,27 @@ def _web_search_enrich(si: SearchInput, dossier: Dossier, target: ResearchTarget
 
 
 def _generate_archival_requests(si: SearchInput, dossier: Dossier) -> List[dict]:
-    """Generate archival request templates per protocol section 17.N."""
-    requests = []
-    base_data = f"Nome: {si.nome} {si.cognome}"
-    if si.anno_nascita:
-        base_data += f", classe {si.anno_nascita}"
-    if si.luogo_nascita:
-        base_data += f", nato a {si.luogo_nascita}"
-    if si.paternita:
-        base_data += f", di {si.paternita}"
+    """Generate archival requests using verified ArchiveJurisdictionRegistry.
 
-    # Archivio di Stato (foglio matricolare)
-    if si.luogo_nascita or si.distretto_militare:
-        requests.append({
-            "ente": f"Archivio di Stato di {si.provincia_nascita or si.luogo_nascita or '—'}",
-            "fondo": "Rubriche Fogli Matricolari",
-            "documento_richiesto": "Foglio matricolare",
-            "dati_conosciuti": base_data,
-            "motivazione": "Ricostruzione percorso militare",
-            "intervallo_cronologico": si.periodo_presunto or "1915-1945",
-        })
+    V4 FIX: No template-generated archives. Uses verified registry only.
+    LeBI/ANRP suggestions respect capability routing — not suggested for WWI.
+    ICRC only suggested for prisoner/dispersi research goals.
+    """
+    full_name = f"{si.nome} {si.cognome}".strip()
+    research_goal = ""
+    if si.numero_prigioniero or si.stato_presunto in ("prigioniero", "disperso"):
+        research_goal = "prisoners"
+    elif si.stato_presunto in ("caduto", "deceduto"):
+        research_goal = "casualties"
 
-    # Archivio Centrale dello Stato (ruoli matricolari)
-    requests.append({
-        "ente": "Archivio Centrale dello Stato — Roma",
-        "fondo": "Ministero della Guerra — Ruoli Matricolari",
-        "documento_richiesto": "Ruolo matricolare",
-        "dati_conosciuti": base_data + (f", distretto {si.distretto_militare}" if si.distretto_militare else ""),
-        "motivazione": "Verifica matricola e reparto di assegnazione",
-        "intervallo_cronologico": si.periodo_presunto or "1915-1945",
-    })
-
-    # ICRC (prigionieri)
-    if si.conflitto_presunto in ("ww1", "") or si.numero_prigioniero:
-        requests.append({
-            "ente": "ICRC — International Committee of the Red Cross",
-            "fondo": "Prisoners of the First World War" if si.conflitto_presunto == "ww1" else "WW2 Prisoners",
-            "documento_richiesto": "Scheda prigioniero",
-            "dati_conosciuti": base_data + (f", n. prigioniero {si.numero_prigioniero}" if si.numero_prigioniero else ""),
-            "motivazione": "Verifica cattura, campo di prigionia, trasferimenti",
-            "intervallo_cronologico": si.periodo_presunto or "1915-1918",
-        })
-
-    # LeBI/ANRP (internati italiani)
-    requests.append({
-        "ente": "ANRP — Lessico Biografico degli IMI",
-        "fondo": "Schede biografiche internati militari italiani",
-        "documento_richiesto": "Scheda biografica",
-        "dati_conosciuti": base_data,
-        "motivazione": "Verifica internamento, campi attraversati, rimpatrio",
-        "intervallo_cronologico": "1943-1947",
-    })
-
-    return requests
+    return _v4_generate_archival_suggestions(
+        birth_place=si.luogo_nascita,
+        birth_year=si.anno_nascita,
+        full_name=full_name,
+        paternity=si.paternita,
+        conflict=si.conflitto_presunto or "ww1",
+        research_goal=research_goal,
+    )
 
 
 # ─── CLI ──────────────────────────────────────────────────────────────────────
