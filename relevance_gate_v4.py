@@ -560,3 +560,117 @@ def filter_relevant_results_v4(
             leads.append(r)
 
     return evidence, context, leads, rejected
+
+
+# ─── Fetch integration ────────────────────────────────────────────────────────
+
+def _extract_text_from_html(html: str) -> str:
+    """Extract readable text from HTML content."""
+    import re as _re
+    # Remove script and style blocks
+    html = _re.sub(r'<(script|style)[^>]*>.*?</\1>', '', html, flags=_re.DOTALL | _re.IGNORECASE)
+    # Remove HTML tags
+    text = _re.sub(r'<[^>]+>', ' ', html)
+    # Decode common HTML entities
+    import html as _html
+    text = _html.unescape(text)
+    # Collapse whitespace
+    text = _re.sub(r'\s+', ' ', text).strip()
+    return text
+
+
+def fetch_and_classify(
+    url: str,
+    title: str,
+    snippet: str,
+    target_name: str,
+    target_conflict: str,
+    target_birth_place: str = "",
+    target_birth_year: str = "",
+    target_unit: str = "",
+    timeout: int = 15,
+) -> RelevanceResult:
+    """Fetch URL content and classify relevance with full context.
+
+    Performs HTTP GET, extracts text from HTML, then runs classify_relevance_v4
+    with fetch_status=SUCCESS and the extracted content.
+
+    Args:
+        url: URL to fetch
+        title: Result title from search
+        snippet: Result snippet from search
+        target_name: Normalized target name
+        target_conflict: "ww1", "ww2", or ""
+        target_birth_place: Target's birth place
+        target_birth_year: Target's birth year
+        target_unit: Target's military unit
+        timeout: HTTP timeout in seconds
+
+    Returns:
+        RelevanceResult with fetch_status and content-based classification.
+    """
+    import urllib.request
+    import urllib.error
+
+    try:
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (ResearchBot; Historical Archive Verification)",
+                "Accept": "text/html,application/xhtml+xml,text/plain,*/*",
+                "Accept-Language": "it,en;q=0.8",
+            }
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            content_type = resp.headers.get("Content-Type", "")
+            raw = resp.read(max_bytes) if (max_bytes := 500_000) else resp.read()
+
+            # Only process text content
+            if "text" in content_type or "html" in content_type:
+                charset = resp.headers.get_content_charset() or "utf-8"
+                try:
+                    html_text = raw.decode(charset, errors="replace")
+                except (LookupError, UnicodeDecodeError):
+                    html_text = raw.decode("utf-8", errors="replace")
+                extracted = _extract_text_from_html(html_text)
+            elif "application/pdf" in content_type:
+                extracted = f"[PDF document at {url}]"
+            else:
+                extracted = f"[Binary content: {content_type}]"
+
+            return classify_relevance_v4(
+                url=url,
+                title=title,
+                snippet=snippet,
+                target_name=target_name,
+                target_conflict=target_conflict,
+                target_birth_place=target_birth_place,
+                target_birth_year=target_birth_year,
+                target_unit=target_unit,
+                fetch_status="SUCCESS",
+                fetched_content=extracted,
+            )
+
+    except urllib.error.HTTPError as e:
+        result = classify_relevance_v4(
+            url=url, title=title, snippet=snippet,
+            target_name=target_name, target_conflict=target_conflict,
+            target_birth_place=target_birth_place,
+            target_birth_year=target_birth_year,
+            target_unit=target_unit,
+            fetch_status="FETCH_FAILED",
+        )
+        result.notes = f"HTTP {e.code}: {e.reason}"
+        return result
+
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        result = classify_relevance_v4(
+            url=url, title=title, snippet=snippet,
+            target_name=target_name, target_conflict=target_conflict,
+            target_birth_place=target_birth_place,
+            target_birth_year=target_birth_year,
+            target_unit=target_unit,
+            fetch_status="FETCH_FAILED",
+        )
+        result.notes = str(e)[:200]
+        return result

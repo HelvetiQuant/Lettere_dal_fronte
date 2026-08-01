@@ -84,6 +84,7 @@ from ai_runtime_api import router as ai_runtime_router
 from chat_api import router as chat_router
 from linking_v2_api import router as linking_v2_router
 from source_pipeline.admin_dashboard_api import router as admin_dashboard_router
+from report_conversation_api import router as report_conversation_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -140,6 +141,7 @@ app.include_router(ai_runtime_router)
 app.include_router(chat_router)
 app.include_router(linking_v2_router)
 app.include_router(admin_dashboard_router)
+app.include_router(report_conversation_router)
 
 _extraction_lock = threading.Lock()
 _running_letter = None
