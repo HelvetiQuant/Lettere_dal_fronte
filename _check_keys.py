@@ -9,8 +9,9 @@ from pathlib import Path
 
 
 def _load_env() -> dict:
+    """Load env only from project .env — never from Desktop/home."""
     env = {}
-    p = Path.cwd() / ".env"
+    p = Path(__file__).parent / ".env"
     if p.exists():
         for line in p.read_text(encoding="utf-8", errors="ignore").splitlines():
             line = line.strip()
