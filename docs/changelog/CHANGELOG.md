@@ -1,5 +1,59 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-08-01 — V4 Post-Audit: API, Fetch Integration, Archive Expansion, Canary Live
+
+### Contesto
+Dopo il completamento del V4 audit (13/13 task), eseguita integrazione post-audit: API per il conversational report provider, fetch HTTP nel relevance gate, espansione registry archivistico, canary live con Tavily + AI su 10 target.
+
+### Modifiche
+
+**File nuovi (2):**
+- `report_conversation_api.py` — 3 endpoint FastAPI: POST create conversation, POST send message, GET conversation; Pydantic models per request/response
+- `generate_conversational_reports.py` — script per generare report discorsivi per ogni target usando ReportConversationProvider con AI
+
+**File modificati (3):**
+- `app.py`:
+  - Import `report_conversation_api.router`
+  - `app.include_router(report_conversation_router)`
+- `relevance_gate_v4.py`:
+  - `_extract_text_from_html()` — estrazione testo da HTML (rimuove script/style, decodifica entità, collapse whitespace)
+  - `fetch_and_classify()` — HTTP GET con timeout 15s, estrazione contenuto, classificazione con `fetch_status=SUCCESS` + `fetched_content`; gestisce HTTPError, URLError, TimeoutError
+- `archive_jurisdiction_registry.py`:
+  - +5 comuni verificati: Modica (Siracusa), San Lorenzo (Reggio Calabria), Casaluce (Caserta), Brienza (Potenza), Lettere (Napoli)
+  - Totale: 16 comuni mappati (era 11)
+- `run_canary.py`:
+  - Fix encoding Windows cp1252: `sys.stdout.reconfigure(encoding="utf-8", errors="replace")`
+
+### Canary V4 Live (Tavily + AI)
+- 10/10 target completati con `use_ai=True`
+- Tavily web search attiva su 9/10 target (VENEZIANO NICOLA: 0 sources)
+- AI attiva su tutti i 10 target (Mistral)
+- 0 fallimenti, stato: SUCCESS
+- `CANARY_RESULTS.json` + `CANARY_DOSSIERS.json` + `CANARY_REPORT.md` generati
+
+### Risultati canary live
+
+| # | Target | Stato | Candidates | Tavily sources | AI | Elapsed |
+|---|--------|-------|------------|----------------|-----|---------|
+| 1 | LARI GIUSEPPE | dati_insufficienti | 51 | 7 | si | 36.6s |
+| 2 | FEDERICO LUIGI | dati_insufficienti | 89 | 6 | si | 21.4s |
+| 3 | GIUNTA GIUSEPPE | dati_insufficienti | 36 | 6 | si | 22.3s |
+| 4 | VENEZIANO NICOLA | dati_insufficienti | 30 | 0 | si | 22.8s |
+| 5 | FANTUZ ANTONIO | dati_insufficienti | 30 | 6 | si | 24.4s |
+| 6 | FEDELE AGOSTINO | dati_insufficienti | 34 | 4 | si | 24.6s |
+| 7 | RUSSO GAETANO | dati_insufficienti | 38 | 3 | si | 26.3s |
+| 8 | PAPINI PUBLIO | dati_insufficienti | 31 | 1 | si | 25.8s |
+| 9 | FOLLADOR GIOVANNI | dati_insufficienti | 30 | 7 | si | 24.3s |
+| 10 | SIFANNO TOMMASO | dati_insufficienti | 30 | 5 | si | 24.1s |
+
+### Issue note
+- `Discovery persistence failed: no such column: idempotency_key` — colonna mancante nella tabella `source_registry` SQLite, non bloccante
+- `AI provider perplexity failed: 401 Unauthorized` — chiave API Perplexity non valida, fallback a Mistral
+- `AI provider mistral failed: Server disconnected` — intermittente, fallback deterministico attivo
+- Warning `InsecureRequestWarning` su HTTPS senza certificato — non bloccante
+
+---
+
 ## 2026-07-31 — V4 EvidenceSnapshot Reconstruction (12 Defect Categories Fixed)
 
 ### Contesto
@@ -11,7 +65,7 @@ Audit completo del backend del protocollo di ricerca. Identificate e corrette 12
 |------|-------|
 | `evidence_snapshot_v4.py` | DTO unificato e validato con origin_record, accepted_claims, provider_ledger, reconciliation, `to_conversational_context` (source_id only, no URL) |
 | `source_capability_registry.py` | Registry unificato per 25 provider con routing per conflitto (ww1/ww2/both), sostituisce i set hardcoded `_WWI_ONLY_PROVIDERS` / `_WWII_ONLY_PROVIDERS` |
-| `archive_jurisdiction_registry.py` | 11 mapping verificati comune→archivio; comuni non verificati → statement generico, nessun archivio inventato |
+| `archive_jurisdiction_registry.py` | 16 mapping verificati comune→archivio (11 originali + 5 post-audit); comuni non verificati → statement generico, nessun archivio inventato |
 | `relevance_gate_v4.py` | Pipeline multi-stage: result_kind → name_match → period_compatibility → geographic_scope → fetch_status; 4 bucket (evidence, context, leads, rejected) |
 | `name_parser_v4.py` | Parser corretto per pattern `COGNOME NOME DI PADRE`; preserva raw_value, parser_version, field_provenance; flag `needs_field_review` |
 | `ai_output_validator.py` | Validatore post-generazione: detection contraddizioni, URL allucinati, archivi non verificati; fallback deterministico |
@@ -41,7 +95,7 @@ Audit completo del backend del protocollo di ricerca. Identificate e corrette 12
 5. **URL dedup e rendering** — AI riceve source_id solo; nessuna estrazione URL da AI text; renderer genera link da snapshot
 6. **missing_claims** — computed da `CLAIM_FIELDS` set minus claim accettati/partial
 7. **Unified capability routing** — singolo registry per retrieval, suggestions, report, UI; LeBI skipped per WWI
-8. **ArchiveJurisdictionRegistry** — no template-generated archives; 11 comuni verificati; comuni non mappati → statement generico
+8. **ArchiveJurisdictionRegistry** — no template-generated archives; 16 comuni verificati (11 + 5 post-audit); comuni non mappati → statement generico
 9. **Parser COGNOME NOME DI PADRE** — `PAPINI PUBLIO DI GIOVANNI` correttamente split in surname=PAPINI, given=PUBLIO, father=GIOVANNI
 10. **Post-generation validator** — schema, grounding, contradiction detection, hallucinated URL/archive detection, deterministic fallback
 11. **Conversational report** — `ReportConversationProvider` con SQLite, Mistral/local only, OpenAI disabled

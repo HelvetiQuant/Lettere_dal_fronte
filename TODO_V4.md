@@ -1,11 +1,12 @@
 # TODO — V4 Post-Audit Action Items
 
 *Generato: 2026-07-31*
-*Stato: 13/13 task V4 completati, canary offline passato*
+*Aggiornato: 2026-08-01*
+*Stato: 13/13 task V4 + 5/5 post-audit alta priorità completati*
 
 ---
 
-## ✅ Completato (V4 Audit)
+## ✅ Completato (V4 Audit — 13 task)
 
 - [x] A. EvidenceSnapshot V4 — DTO unificato con origin_record, claims, provider_ledger
 - [x] B. SOURCE_RECORD_ONLY invariants — richiede URL verificata, compute_typed_counts riconciliato
@@ -14,7 +15,7 @@
 - [x] E. URL dedup e rendering — AI riceve source_id, no URL in context
 - [x] F. missing_claims — claim-per-field completeness
 - [x] G. Unified capability routing — source_capability_registry con 25 provider
-- [x] H. ArchiveJurisdictionRegistry — 11 comuni verificati, no template
+- [x] H. ArchiveJurisdictionRegistry — 16 comuni verificati (11 + 5 post-audit), no template
 - [x] I. Parser COGNOME NOME DI PADRE — name_parser_v4 con provenance
 - [x] J. Post-generation validator — contradiction/hallucination detection + fallback
 - [x] K. Conversational report — ReportConversationProvider, Mistral/local, no OpenAI
@@ -23,64 +24,51 @@
 
 ---
 
-## 🔲 Pending — Integrazione e Deploy
+## ✅ Completato (Post-Audit — Alta Priorità)
 
-### Priorità alta
+- [x] **Canary V4 con AI live** — `run_canary.py` con `use_ai=True`, 10/10 SUCCESS
+  - Tavily attivo su 9/10, AI Mistral su tutti, fix encoding cp1252
+  - `CANARY_RESULTS.json` + `CANARY_DOSSIERS.json` + `CANARY_REPORT.md`
 
-- [ ] **Canary V4 con AI live** — eseguire `run_canary.py` con `use_ai=True` per testare Mistral + Tavily con il snapshot V4
-  - Verificare che il prompt V4 (snapshot context, no URL) produca output corretto
-  - Verificare che `ai_output_validator` non scarti output validi
-  - Verificare che il fallback deterministico si attivi solo su reali violazioni
+- [x] **Wire ReportConversationProvider in app.py** — `report_conversation_api.py`
+  - 3 endpoint: POST create, POST message, GET conversation
+  - Router registrato in `app.py`
 
-- [ ] **Wire ReportConversationProvider in app.py** — 3 endpoint API
-  - `POST /research/reports/{report_id}/conversations` — crea conversazione bound a snapshot
-  - `POST /research/conversations/{conversation_id}/messages` — invia messaggio
-  - `GET /research/conversations/{conversation_id}` — recupera conversazione
+- [x] **Fetch integration nel relevance gate** — `fetch_and_classify()` in `relevance_gate_v4.py`
+  - HTTP GET + HTML text extraction + classificazione con fetched_content
 
-- [ ] **Fetch integration nel relevance gate** — il pipeline V4 supporta `fetch_status=SUCCESS` + `fetched_content` ma il fetcher non è collegato
-  - Implementare fetch HTTP con timeout e content extraction
-  - Passare `fetched_content` a `classify_relevance_v4` per stage 6 (evidence acceptance)
+- [x] **Espandere ArchiveJurisdictionRegistry** — +5 comuni (Modica, San Lorenzo, Casaluce, Brienza, Lettere)
+  - Totale: 16 comuni mappati
 
-- [ ] **Espandere ArchiveJurisdictionRegistry** — attualmente 11 comuni mappati
-  - Aggiungere comuni dai canary target: Modica, San Lorenzo, Casaluce, Brienza, Lettere
-  - Verificare mapping presso Archivi di Stato competenti
-  - Considerare import da dataset ISTAT → distretto militare storico
+- [x] **Git push** — commit `99b2d6e` su `fix/provenance-linking-v2`
 
-### Priorità media
+---
 
-- [ ] **Renderer link generation** — implementare il renderer che genera link HTML da `source_id` nello snapshot
-  - Il modello emette solo `source_id`, il renderer costruisce `<a href="{canonical_url}">{source_id}</a>`
-  - Integrare nel template RISPOSTE_BACKEND.md
+## 🔲 Pending — Media Priorità
 
-- [ ] **Aggiungere provider mancanti al capability registry** — 25/27 provider registrati
+- [ ] **Report conversazionali per target** — `generate_conversational_reports.py` creato, da eseguire
+  - Output: `CONVERSATIONAL_REPORTS.json` + `CONVERSATIONAL_REPORTS.md`
+
+- [ ] **Renderer link generation** — renderer che genera link HTML da `source_id` nello snapshot
+  - Modello emette source_id, renderer costruisce `<a href="{canonical_url}">{source_id}</a>`
+
+- [ ] **Aggiungere 2 provider mancanti al capability registry** — 25/27 registrati
   - Verificare `federation.py` per provider non in registry
-  - Aggiungere capability declarations mancanti
 
-- [ ] **V4 snapshot in API response** — esporre `evidence_snapshot_v4` nell'endpoint `/api/research-protocol`
-  - Sostituire o affiancare il vecchio `evidence_snapshot` V3
-  - Aggiornare frontend per consumare V4
+- [ ] **V4 snapshot in API response** — esporre `evidence_snapshot_v4` in `/api/research-protocol`
+  - Sostituire/affiancare V3, aggiornare frontend
 
-- [ ] **Property-based tests con hypothesis** — espandere test con generazione automatica
-  - Property: per ogni input, parser preserva raw_value
-  - Property: per ogni conflict, routing matrix non ha overlap
-  - Property: per ogni snapshot, validate() è idempotente
+- [ ] **Property-based tests con hypothesis** — espandere test
+  - Property: parser preserva raw_value; routing no overlap; validate() idempotente
 
-### Priorità bassa
+- [ ] **Fix discovery_persistence `idempotency_key`** — colonna mancante in `source_registry`
+  - Aggiungere colonna SQLite, verificare schema
 
-- [ ] **Documentazione ADR** — Architecture Decision Record per V4
-  - Documentare le 12 decisioni architetturali
-  - Tracciare il flusso: SearchInput → Dossier → EvidenceSnapshotV4 → AI → Validator → Report
+---
 
-- [ ] **Cleanup vecchi EvidenceSnapshot** — rimuovere o deprecare `evidence_snapshot.py` e `EvidenceSnapshot` in `research_protocol.py`
-  - Mantenere backward compatibility con flag `--snapshot-version=v4|v3`
-  - Rimuovere dopo conferma completa migrazione
+## 🔲 Pending — Bassa Priorità
 
-- [ ] **Metriche V4** — dashboard con metriche quality
-  - Tasso di fallback deterministico
-  - Tasso di violazioni per categoria
-  - Distribution dei result_state dal relevance gate
-  - Coverage claims per target
-
-- [ ] **Git push** — committare e pushare tutti i cambiamenti V4
-  - Branch: `v4/evidence-snapshot-reconstruction`
-  - Tag: `v4.0.0-audit`
+- [ ] **Documentazione ADR V4** — 12 decisioni architetturali
+- [ ] **Cleanup vecchi EvidenceSnapshot V3** — deprecare con flag `--snapshot-version`
+- [ ] **Metriche V4** — dashboard quality (fallback rate, violation rate, claim coverage)
+- [ ] **Tag release** — `v4.0.0-audit` dopo merge su main
