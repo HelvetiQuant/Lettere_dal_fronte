@@ -1,0 +1,401 @@
+{
+  "timestamp": "2026-08-03T22:21:13",
+  "version": "7.3.0",
+  "total": 9,
+  "responses": [
+    {
+      "query": "ALTA Antonio",
+      "request_type": "PERSON",
+      "text": "## Profilo di ALTA Antonio\n\nL'identità di ALTA Antonio è in stato di valutazione.\n\nNon sono disponibili informazioni documentate sulla data e il luogo di nascita di ALTA Antonio.\n\n### Cattura e internamento\n\n- Internato a: Brandemburg (probabile, basato su registro archivistico)\n\n### Sorte\n\n- Deceduto: deceduto (probabile, basato su registro archivistico)\n\n### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: CANDIDATE. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola).\n\nPer completare il profilo biografico sarebbe necessario approfondire: Missing critical information: born_at, born_in, captured_at",
+      "blocks": [
+        {
+          "block_id": "opening",
+          "role": "opening",
+          "text": "## Profilo di ALTA Antonio\n\nL'identità di ALTA Antonio è in stato di valutazione."
+        },
+        {
+          "block_id": "bio_gap",
+          "role": "biographical",
+          "text": "Non sono disponibili informazioni documentate sulla data e il luogo di nascita di ALTA Antonio."
+        },
+        {
+          "block_id": "capture",
+          "role": "capture_internment",
+          "text": "### Cattura e internamento\n\n- Internato a: Brandemburg (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "death",
+          "role": "liberation_death",
+          "text": "### Sorte\n\n- Deceduto: deceduto (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "limitations",
+          "role": "limitations",
+          "text": "### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: CANDIDATE. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola)."
+        },
+        {
+          "block_id": "followup",
+          "role": "research_next_step",
+          "text": "Per completare il profilo biografico sarebbe necessario approfondire: Missing critical information: born_at, born_in, captured_at"
+        }
+      ],
+      "coverage_score": 0.11764705882352941,
+      "identity_status": "CANDIDATE",
+      "certainty_summary": {
+        "PROBABLE": 2
+      },
+      "needs_followup": true,
+      "followup_question": "Missing critical information: born_at, born_in, captured_at",
+      "source_count": 0,
+      "claim_count": 2,
+      "validation_issues": []
+    },
+    {
+      "query": "ARMANNO Luigi A",
+      "request_type": "PERSON",
+      "text": "## Profilo di ARMANNO Luigi A\n\n**Nota**: L'identità di ARMANNO Luigi A non è stata pienamente verificata. Sono disponibili solo identificatori deboli (nome e cognome). Le informazioni che seguono sono da considerarsi candidate e non confermate.\n\nNon sono disponibili informazioni documentate sulla data e il luogo di nascita di ARMANNO Luigi A.\n\n### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: interned_at\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: died_at\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: NEEDS_REVIEW. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola).\n\nPer completare il profilo biografico sarebbe necessario approfondire: Missing critical information: interned_at, born_at, born_in, captured_at",
+      "blocks": [
+        {
+          "block_id": "opening",
+          "role": "opening",
+          "text": "## Profilo di ARMANNO Luigi A\n\n**Nota**: L'identità di ARMANNO Luigi A non è stata pienamente verificata. Sono disponibili solo identificatori deboli (nome e cognome). Le informazioni che seguono sono da considerarsi candidate e non confermate."
+        },
+        {
+          "block_id": "bio_gap",
+          "role": "biographical",
+          "text": "Non sono disponibili informazioni documentate sulla data e il luogo di nascita di ARMANNO Luigi A."
+        },
+        {
+          "block_id": "limitations",
+          "role": "limitations",
+          "text": "### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: interned_at\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: died_at\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: NEEDS_REVIEW. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola)."
+        },
+        {
+          "block_id": "followup",
+          "role": "research_next_step",
+          "text": "Per completare il profilo biografico sarebbe necessario approfondire: Missing critical information: interned_at, born_at, born_in, captured_at"
+        }
+      ],
+      "coverage_score": 0.0,
+      "identity_status": "NEEDS_REVIEW",
+      "certainty_summary": {},
+      "needs_followup": true,
+      "followup_question": "Missing critical information: interned_at, born_at, born_in, captured_at",
+      "source_count": 0,
+      "claim_count": 0,
+      "validation_issues": []
+    },
+    {
+      "query": "AMAROTTI Enrico",
+      "request_type": "PERSON",
+      "text": "## Profilo di AMAROTTI Enrico\n\nL'identità di AMAROTTI Enrico è in stato di valutazione.\n\nNon sono disponibili informazioni documentate sulla data e il luogo di nascita di AMAROTTI Enrico.\n\n### Cattura e internamento\n\n- Internato a: Wasungen (probabile, basato su registro archivistico)\n\n### Sorte\n\n- Deceduto: deceduto (probabile, basato su registro archivistico)\n\n### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: CANDIDATE. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola).\n\nPer completare il profilo biografico sarebbe necessario approfondire: Missing critical information: born_at, born_in, captured_at",
+      "blocks": [
+        {
+          "block_id": "opening",
+          "role": "opening",
+          "text": "## Profilo di AMAROTTI Enrico\n\nL'identità di AMAROTTI Enrico è in stato di valutazione."
+        },
+        {
+          "block_id": "bio_gap",
+          "role": "biographical",
+          "text": "Non sono disponibili informazioni documentate sulla data e il luogo di nascita di AMAROTTI Enrico."
+        },
+        {
+          "block_id": "capture",
+          "role": "capture_internment",
+          "text": "### Cattura e internamento\n\n- Internato a: Wasungen (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "death",
+          "role": "liberation_death",
+          "text": "### Sorte\n\n- Deceduto: deceduto (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "limitations",
+          "role": "limitations",
+          "text": "### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: CANDIDATE. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola)."
+        },
+        {
+          "block_id": "followup",
+          "role": "research_next_step",
+          "text": "Per completare il profilo biografico sarebbe necessario approfondire: Missing critical information: born_at, born_in, captured_at"
+        }
+      ],
+      "coverage_score": 0.11764705882352941,
+      "identity_status": "CANDIDATE",
+      "certainty_summary": {
+        "PROBABLE": 2
+      },
+      "needs_followup": true,
+      "followup_question": "Missing critical information: born_at, born_in, captured_at",
+      "source_count": 0,
+      "claim_count": 2,
+      "validation_issues": []
+    },
+    {
+      "query": "ANFOSSO Carlo",
+      "request_type": "PERSON",
+      "text": "## Profilo di ANFOSSO Carlo\n\nL'identità di ANFOSSO Carlo è in stato di valutazione.\n\nNon sono disponibili informazioni documentate sulla data e il luogo di nascita di ANFOSSO Carlo.\n\n### Cattura e internamento\n\n- Internato a: Kiel (probabile, basato su registro archivistico)\n\n### Sorte\n\n- Deceduto: deceduto (probabile, basato su registro archivistico)\n\n### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: CANDIDATE. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola).\n\nPer completare il profilo biografico sarebbe necessario approfondire: Missing critical information: born_at, born_in, captured_at",
+      "blocks": [
+        {
+          "block_id": "opening",
+          "role": "opening",
+          "text": "## Profilo di ANFOSSO Carlo\n\nL'identità di ANFOSSO Carlo è in stato di valutazione."
+        },
+        {
+          "block_id": "bio_gap",
+          "role": "biographical",
+          "text": "Non sono disponibili informazioni documentate sulla data e il luogo di nascita di ANFOSSO Carlo."
+        },
+        {
+          "block_id": "capture",
+          "role": "capture_internment",
+          "text": "### Cattura e internamento\n\n- Internato a: Kiel (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "death",
+          "role": "liberation_death",
+          "text": "### Sorte\n\n- Deceduto: deceduto (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "limitations",
+          "role": "limitations",
+          "text": "### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: CANDIDATE. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola)."
+        },
+        {
+          "block_id": "followup",
+          "role": "research_next_step",
+          "text": "Per completare il profilo biografico sarebbe necessario approfondire: Missing critical information: born_at, born_in, captured_at"
+        }
+      ],
+      "coverage_score": 0.11764705882352941,
+      "identity_status": "CANDIDATE",
+      "certainty_summary": {
+        "PROBABLE": 2
+      },
+      "needs_followup": true,
+      "followup_question": "Missing critical information: born_at, born_in, captured_at",
+      "source_count": 0,
+      "claim_count": 2,
+      "validation_issues": []
+    },
+    {
+      "query": "ARTI Saverio",
+      "request_type": "PERSON",
+      "text": "## Profilo di ARTI Saverio\n\n**Nota**: L'identità di ARTI Saverio non è stata pienamente verificata. Sono disponibili solo identificatori deboli (nome e cognome). Le informazioni che seguono sono da considerarsi candidate e non confermate.\n\nNon sono disponibili informazioni documentate sulla data e il luogo di nascita di ARTI Saverio.\n\n### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: interned_at\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: died_at\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: NEEDS_REVIEW. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola).\n\nPer completare il profilo biografico sarebbe necessario approfondire: Missing critical information: interned_at, born_at, born_in, captured_at",
+      "blocks": [
+        {
+          "block_id": "opening",
+          "role": "opening",
+          "text": "## Profilo di ARTI Saverio\n\n**Nota**: L'identità di ARTI Saverio non è stata pienamente verificata. Sono disponibili solo identificatori deboli (nome e cognome). Le informazioni che seguono sono da considerarsi candidate e non confermate."
+        },
+        {
+          "block_id": "bio_gap",
+          "role": "biographical",
+          "text": "Non sono disponibili informazioni documentate sulla data e il luogo di nascita di ARTI Saverio."
+        },
+        {
+          "block_id": "limitations",
+          "role": "limitations",
+          "text": "### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: interned_at\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: died_at\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: NEEDS_REVIEW. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola)."
+        },
+        {
+          "block_id": "followup",
+          "role": "research_next_step",
+          "text": "Per completare il profilo biografico sarebbe necessario approfondire: Missing critical information: interned_at, born_at, born_in, captured_at"
+        }
+      ],
+      "coverage_score": 0.0,
+      "identity_status": "NEEDS_REVIEW",
+      "certainty_summary": {},
+      "needs_followup": true,
+      "followup_question": "Missing critical information: interned_at, born_at, born_in, captured_at",
+      "source_count": 0,
+      "claim_count": 0,
+      "validation_issues": []
+    },
+    {
+      "query": "ANVISIO Remo",
+      "request_type": "PERSON",
+      "text": "## Profilo di ANVISIO Remo\n\n**Nota**: L'identità di ANVISIO Remo non è stata pienamente verificata. Sono disponibili solo identificatori deboli (nome e cognome). Le informazioni che seguono sono da considerarsi candidate e non confermate.\n\nNon sono disponibili informazioni documentate sulla data e il luogo di nascita di ANVISIO Remo.\n\n### Sorte\n\n- Deceduto: deceduto (probabile, basato su registro archivistico)\n\n### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: interned_at\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: NEEDS_REVIEW. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola).\n\nPer completare il profilo biografico sarebbe necessario approfondire: Missing critical information: interned_at, born_at, born_in, captured_at",
+      "blocks": [
+        {
+          "block_id": "opening",
+          "role": "opening",
+          "text": "## Profilo di ANVISIO Remo\n\n**Nota**: L'identità di ANVISIO Remo non è stata pienamente verificata. Sono disponibili solo identificatori deboli (nome e cognome). Le informazioni che seguono sono da considerarsi candidate e non confermate."
+        },
+        {
+          "block_id": "bio_gap",
+          "role": "biographical",
+          "text": "Non sono disponibili informazioni documentate sulla data e il luogo di nascita di ANVISIO Remo."
+        },
+        {
+          "block_id": "death",
+          "role": "liberation_death",
+          "text": "### Sorte\n\n- Deceduto: deceduto (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "limitations",
+          "role": "limitations",
+          "text": "### Limiti della copertura narrativa\n\nInformazioni critiche mancanti:\n- Missing biographical claim: interned_at\n- Missing biographical claim: born_at\n- Missing biographical claim: born_in\n- Missing biographical claim: captured_at\n\nInformazioni importanti mancanti:\n- Missing biographical claim: worked_at\n- Missing biographical claim: interned_in\n- Missing biographical claim: resided_in\n- Missing biographical claim: transferred_to\n- Missing biographical claim: buried_at\n- Missing biographical claim: served_in\n- Missing biographical claim: decorated_with\n- Missing biographical claim: captured_in\n- Missing biographical claim: enlisted_in\n- Missing biographical claim: liberated_from\n- Missing biographical claim: liberated_at\n- Missing biographical claim: died_in\n\nStato dell'identità: NEEDS_REVIEW. Le informazioni biografiche non sono state verificate attraverso identificatori indipendenti (data di nascita, paternità, matricola)."
+        },
+        {
+          "block_id": "followup",
+          "role": "research_next_step",
+          "text": "Per completare il profilo biografico sarebbe necessario approfondire: Missing critical information: interned_at, born_at, born_in, captured_at"
+        }
+      ],
+      "coverage_score": 0.058823529411764705,
+      "identity_status": "NEEDS_REVIEW",
+      "certainty_summary": {
+        "PROBABLE": 1
+      },
+      "needs_followup": true,
+      "followup_question": "Missing critical information: interned_at, born_at, born_in, captured_at",
+      "source_count": 0,
+      "claim_count": 1,
+      "validation_issues": []
+    },
+    {
+      "query": "Battaglia del Monte Ortigara",
+      "request_type": "EVENT",
+      "text": "## Battaglia del Monte Ortigara\n\nL'evento si colloca nel contesto della prima guerra mondiale, nel periodo 1917-06-10 - 1917-06-25.\n\nNoto anche come: Ortigara, Offensiva di giugno, Monte Ortigara.\n\n### Contesto storico\n\n- Contesto: Offensiva italiana sull'altopiano di Asiago per riconquistare posizioni perse nella Strafexpedition. Attacchi al Monte Ortigara con Alpini. Conquista temporanea, poi persa per contrattacco austro-unga (probabile, basato su registro archivistico)\n\n### Sequenza temporale\n\n- Durata: 1917-06-10 - 1917-06-25 (probabile, basato su registro archivistico)\n\n### Limiti della copertura narrativa\n\nLa narrazione attuale non copre i seguenti aspetti:\n\n- **Fasi dell'evento (preparazione, svolgimento, conclusione)** (critico)\n- **Esito e risultati** (critico)\n- **Significato storico e impatto** (critico)\n- Perdite e vittime (importante)\n- Luogo e geografia dell'evento (importante)\n- Forze in campo (unità, effettivi, schieramento) (importante)\n\nPer una copertura completa sarebbe necessario consultare fonti aggiuntive.\n\nPer completare la copertura dell'evento: Missing critical event coverage: Fasi dell'evento (preparazione, svolgimento, conclusione), Esito e risultati, Significato storico e impatto\n\n### Provenienza\n\nFonte: Ufficio Storico dello Stato Maggiore dell'Esercito, \"L'esercito italiano nella grande guerra 1915-1918\", Roma, 1929-1975",
+      "blocks": [
+        {
+          "block_id": "opening",
+          "role": "direct_answer",
+          "text": "## Battaglia del Monte Ortigara\n\nL'evento si colloca nel contesto della prima guerra mondiale, nel periodo 1917-06-10 - 1917-06-25.\n\nNoto anche come: Ortigara, Offensiva di giugno, Monte Ortigara."
+        },
+        {
+          "block_id": "context",
+          "role": "context",
+          "text": "### Contesto storico\n\n- Contesto: Offensiva italiana sull'altopiano di Asiago per riconquistare posizioni perse nella Strafexpedition. Attacchi al Monte Ortigara con Alpini. Conquista temporanea, poi persa per contrattacco austro-unga (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "duration",
+          "role": "chronology",
+          "text": "### Sequenza temporale\n\n- Durata: 1917-06-10 - 1917-06-25 (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "limitations",
+          "role": "limitations",
+          "text": "### Limiti della copertura narrativa\n\nLa narrazione attuale non copre i seguenti aspetti:\n\n- **Fasi dell'evento (preparazione, svolgimento, conclusione)** (critico)\n- **Esito e risultati** (critico)\n- **Significato storico e impatto** (critico)\n- Perdite e vittime (importante)\n- Luogo e geografia dell'evento (importante)\n- Forze in campo (unità, effettivi, schieramento) (importante)\n\nPer una copertura completa sarebbe necessario consultare fonti aggiuntive."
+        },
+        {
+          "block_id": "followup",
+          "role": "research_next_step",
+          "text": "Per completare la copertura dell'evento: Missing critical event coverage: Fasi dell'evento (preparazione, svolgimento, conclusione), Esito e risultati, Significato storico e impatto"
+        },
+        {
+          "block_id": "provenance",
+          "role": "context",
+          "text": "### Provenienza\n\nFonte: Ufficio Storico dello Stato Maggiore dell'Esercito, \"L'esercito italiano nella grande guerra 1915-1918\", Roma, 1929-1975"
+        }
+      ],
+      "coverage_score": 0.2,
+      "identity_status": "N/A",
+      "certainty_summary": {
+        "PROBABLE": 2
+      },
+      "needs_followup": true,
+      "followup_question": "Missing critical event coverage: Fasi dell'evento (preparazione, svolgimento, conclusione), Esito e risultati, Significato storico e impatto",
+      "source_count": 0,
+      "claim_count": 2,
+      "validation_issues": []
+    },
+    {
+      "query": "Battaglia di Vittorio Veneto",
+      "request_type": "EVENT",
+      "text": "## Battaglia di Vittorio Veneto\n\nL'evento si colloca nel contesto della prima guerra mondiale, nel periodo 1918-10-24 - 1918-11-04.\n\nNoto anche come: Vittorio Veneto, Monte Grappa, Monte Pertica.\n\n### Contesto storico\n\n- Contesto: Offensiva finale italiana ott-nov 1918, sfondamento del fronte. (probabile, basato su registro archivistico)\n\n### Sequenza temporale\n\n- Durata: 1918-10-24 - 1918-11-04 (probabile, basato su registro archivistico)\n\n### Limiti della copertura narrativa\n\nLa narrazione attuale non copre i seguenti aspetti:\n\n- **Fasi dell'evento (preparazione, svolgimento, conclusione)** (critico)\n- **Esito e risultati** (critico)\n- **Significato storico e impatto** (critico)\n- Perdite e vittime (importante)\n- Luogo e geografia dell'evento (importante)\n- Forze in campo (unità, effettivi, schieramento) (importante)\n\nPer una copertura completa sarebbe necessario consultare fonti aggiuntive.\n\nPer completare la copertura dell'evento: Missing critical event coverage: Fasi dell'evento (preparazione, svolgimento, conclusione), Esito e risultati, Significato storico e impatto\n\n### Provenienza\n\nFonte: Ufficio Storico dello Stato Maggiore dell'Esercito, \"L'esercito italiano nella grande guerra 1915-1918\", Roma, 1929-1975",
+      "blocks": [
+        {
+          "block_id": "opening",
+          "role": "direct_answer",
+          "text": "## Battaglia di Vittorio Veneto\n\nL'evento si colloca nel contesto della prima guerra mondiale, nel periodo 1918-10-24 - 1918-11-04.\n\nNoto anche come: Vittorio Veneto, Monte Grappa, Monte Pertica."
+        },
+        {
+          "block_id": "context",
+          "role": "context",
+          "text": "### Contesto storico\n\n- Contesto: Offensiva finale italiana ott-nov 1918, sfondamento del fronte. (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "duration",
+          "role": "chronology",
+          "text": "### Sequenza temporale\n\n- Durata: 1918-10-24 - 1918-11-04 (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "limitations",
+          "role": "limitations",
+          "text": "### Limiti della copertura narrativa\n\nLa narrazione attuale non copre i seguenti aspetti:\n\n- **Fasi dell'evento (preparazione, svolgimento, conclusione)** (critico)\n- **Esito e risultati** (critico)\n- **Significato storico e impatto** (critico)\n- Perdite e vittime (importante)\n- Luogo e geografia dell'evento (importante)\n- Forze in campo (unità, effettivi, schieramento) (importante)\n\nPer una copertura completa sarebbe necessario consultare fonti aggiuntive."
+        },
+        {
+          "block_id": "followup",
+          "role": "research_next_step",
+          "text": "Per completare la copertura dell'evento: Missing critical event coverage: Fasi dell'evento (preparazione, svolgimento, conclusione), Esito e risultati, Significato storico e impatto"
+        },
+        {
+          "block_id": "provenance",
+          "role": "context",
+          "text": "### Provenienza\n\nFonte: Ufficio Storico dello Stato Maggiore dell'Esercito, \"L'esercito italiano nella grande guerra 1915-1918\", Roma, 1929-1975"
+        }
+      ],
+      "coverage_score": 0.2,
+      "identity_status": "N/A",
+      "certainty_summary": {
+        "PROBABLE": 2
+      },
+      "needs_followup": true,
+      "followup_question": "Missing critical event coverage: Fasi dell'evento (preparazione, svolgimento, conclusione), Esito e risultati, Significato storico e impatto",
+      "source_count": 0,
+      "claim_count": 2,
+      "validation_issues": []
+    },
+    {
+      "query": "Guerra bianca",
+      "request_type": "EVENT",
+      "text": "## Guerra bianca\n\nL'evento si colloca nel contesto della prima guerra mondiale, nel periodo 1915-06-23 - 1918-11-04.\n\nNoto anche come: Guerra in alta quota, Guerra sui ghiacciai, White War.\n\n### Contesto storico\n\n- Contesto: Guerra di montagna ad alta quota sulle Alpi tra Italia e Austria-Ungheria. Scontri su ghiacciai oltre i 3000m (Ortles-Cevedale, Adamello, Marmolada). Gallerie nel ghiaccio, condizioni estreme, più vit (probabile, basato su registro archivistico)\n\n### Sequenza temporale\n\n- Durata: 1915-06-23 - 1918-11-04 (probabile, basato su registro archivistico)\n\n### Limiti della copertura narrativa\n\nLa narrazione attuale non copre i seguenti aspetti:\n\n- **Fasi dell'evento (preparazione, svolgimento, conclusione)** (critico)\n- **Esito e risultati** (critico)\n- **Significato storico e impatto** (critico)\n- Perdite e vittime (importante)\n- Luogo e geografia dell'evento (importante)\n- Forze in campo (unità, effettivi, schieramento) (importante)\n\nPer una copertura completa sarebbe necessario consultare fonti aggiuntive.\n\nPer completare la copertura dell'evento: Missing critical event coverage: Fasi dell'evento (preparazione, svolgimento, conclusione), Esito e risultati, Significato storico e impatto\n\n### Provenienza\n\nFonte: Ufficio Storico dello Stato Maggiore dell'Esercito, \"L'esercito italiano nella grande guerra 1915-1918\", Roma, 1929-1975",
+      "blocks": [
+        {
+          "block_id": "opening",
+          "role": "direct_answer",
+          "text": "## Guerra bianca\n\nL'evento si colloca nel contesto della prima guerra mondiale, nel periodo 1915-06-23 - 1918-11-04.\n\nNoto anche come: Guerra in alta quota, Guerra sui ghiacciai, White War."
+        },
+        {
+          "block_id": "context",
+          "role": "context",
+          "text": "### Contesto storico\n\n- Contesto: Guerra di montagna ad alta quota sulle Alpi tra Italia e Austria-Ungheria. Scontri su ghiacciai oltre i 3000m (Ortles-Cevedale, Adamello, Marmolada). Gallerie nel ghiaccio, condizioni estreme, più vit (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "duration",
+          "role": "chronology",
+          "text": "### Sequenza temporale\n\n- Durata: 1915-06-23 - 1918-11-04 (probabile, basato su registro archivistico)"
+        },
+        {
+          "block_id": "limitations",
+          "role": "limitations",
+          "text": "### Limiti della copertura narrativa\n\nLa narrazione attuale non copre i seguenti aspetti:\n\n- **Fasi dell'evento (preparazione, svolgimento, conclusione)** (critico)\n- **Esito e risultati** (critico)\n- **Significato storico e impatto** (critico)\n- Perdite e vittime (importante)\n- Luogo e geografia dell'evento (importante)\n- Forze in campo (unità, effettivi, schieramento) (importante)\n\nPer una copertura completa sarebbe necessario consultare fonti aggiuntive."
+        },
+        {
+          "block_id": "followup",
+          "role": "research_next_step",
+          "text": "Per completare la copertura dell'evento: Missing critical event coverage: Fasi dell'evento (preparazione, svolgimento, conclusione), Esito e risultati, Significato storico e impatto"
+        },
+        {
+          "block_id": "provenance",
+          "role": "context",
+          "text": "### Provenienza\n\nFonte: Ufficio Storico dello Stato Maggiore dell'Esercito, \"L'esercito italiano nella grande guerra 1915-1918\", Roma, 1929-1975"
+        }
+      ],
+      "coverage_score": 0.2,
+      "identity_status": "N/A",
+      "certainty_summary": {
+        "PROBABLE": 2
+      },
+      "needs_followup": true,
+      "followup_question": "Missing critical event coverage: Fasi dell'evento (preparazione, svolgimento, conclusione), Esito e risultati, Significato storico e impatto",
+      "source_count": 0,
+      "claim_count": 2,
+      "validation_issues": []
+    }
+  ]
+}
