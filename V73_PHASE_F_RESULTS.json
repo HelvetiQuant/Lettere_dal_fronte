@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-03T22:17:07",
+  "timestamp": "2026-08-03T22:37:57",
   "version": "7.3.0",
   "total_cases": 9,
   "results": [
@@ -33,15 +33,15 @@
           "covered": 2,
           "missing": 15,
           "critical_gaps": [
+            "born_at",
             "born_in",
-            "captured_at",
-            "born_at"
+            "captured_at"
           ]
         },
         "narration_plan": {
           "blocks": 4,
           "needs_followup": true,
-          "followup_question": "Missing critical information: born_in, captured_at, born_at",
+          "followup_question": "Missing critical information: born_at, born_in, captured_at",
           "block_roles": [
             "biographical",
             "military",
@@ -57,17 +57,17 @@
             {
               "severity": "warning",
               "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: born_in"
             },
             {
               "severity": "warning",
               "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: captured_at"
-            },
-            {
-              "severity": "warning",
-              "category": "coverage",
-              "message": "Missing critical coverage: Missing biographical claim: born_at"
             },
             {
               "severity": "warning",
@@ -125,16 +125,16 @@
           "covered": 0,
           "missing": 17,
           "critical_gaps": [
-            "born_in",
-            "captured_at",
             "interned_at",
-            "born_at"
+            "born_at",
+            "born_in",
+            "captured_at"
           ]
         },
         "narration_plan": {
           "blocks": 4,
           "needs_followup": true,
-          "followup_question": "Missing critical information: born_in, captured_at, interned_at, born_at",
+          "followup_question": "Missing critical information: interned_at, born_at, born_in, captured_at",
           "block_roles": [
             "biographical",
             "military",
@@ -150,22 +150,22 @@
             {
               "severity": "warning",
               "category": "coverage",
-              "message": "Missing critical coverage: Missing biographical claim: born_in"
-            },
-            {
-              "severity": "warning",
-              "category": "coverage",
-              "message": "Missing critical coverage: Missing biographical claim: captured_at"
-            },
-            {
-              "severity": "warning",
-              "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: interned_at"
             },
             {
               "severity": "warning",
               "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_in"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: captured_at"
             },
             {
               "severity": "warning",
@@ -223,15 +223,15 @@
           "covered": 2,
           "missing": 15,
           "critical_gaps": [
+            "born_at",
             "born_in",
-            "captured_at",
-            "born_at"
+            "captured_at"
           ]
         },
         "narration_plan": {
           "blocks": 4,
           "needs_followup": true,
-          "followup_question": "Missing critical information: born_in, captured_at, born_at",
+          "followup_question": "Missing critical information: born_at, born_in, captured_at",
           "block_roles": [
             "biographical",
             "military",
@@ -247,17 +247,17 @@
             {
               "severity": "warning",
               "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: born_in"
             },
             {
               "severity": "warning",
               "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: captured_at"
-            },
-            {
-              "severity": "warning",
-              "category": "coverage",
-              "message": "Missing critical coverage: Missing biographical claim: born_at"
             },
             {
               "severity": "warning",
@@ -315,15 +315,15 @@
           "covered": 2,
           "missing": 15,
           "critical_gaps": [
+            "born_at",
             "born_in",
-            "captured_at",
-            "born_at"
+            "captured_at"
           ]
         },
         "narration_plan": {
           "blocks": 4,
           "needs_followup": true,
-          "followup_question": "Missing critical information: born_in, captured_at, born_at",
+          "followup_question": "Missing critical information: born_at, born_in, captured_at",
           "block_roles": [
             "biographical",
             "military",
@@ -339,17 +339,17 @@
             {
               "severity": "warning",
               "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: born_in"
             },
             {
               "severity": "warning",
               "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: captured_at"
-            },
-            {
-              "severity": "warning",
-              "category": "coverage",
-              "message": "Missing critical coverage: Missing biographical claim: born_at"
             },
             {
               "severity": "warning",
@@ -407,16 +407,16 @@
           "covered": 0,
           "missing": 17,
           "critical_gaps": [
-            "born_in",
-            "captured_at",
             "interned_at",
-            "born_at"
+            "born_at",
+            "born_in",
+            "captured_at"
           ]
         },
         "narration_plan": {
           "blocks": 4,
           "needs_followup": true,
-          "followup_question": "Missing critical information: born_in, captured_at, interned_at, born_at",
+          "followup_question": "Missing critical information: interned_at, born_at, born_in, captured_at",
           "block_roles": [
             "biographical",
             "military",
@@ -432,22 +432,22 @@
             {
               "severity": "warning",
               "category": "coverage",
-              "message": "Missing critical coverage: Missing biographical claim: born_in"
-            },
-            {
-              "severity": "warning",
-              "category": "coverage",
-              "message": "Missing critical coverage: Missing biographical claim: captured_at"
-            },
-            {
-              "severity": "warning",
-              "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: interned_at"
             },
             {
               "severity": "warning",
               "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_in"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: captured_at"
             },
             {
               "severity": "warning",
@@ -505,16 +505,16 @@
           "covered": 1,
           "missing": 16,
           "critical_gaps": [
-            "born_in",
-            "captured_at",
             "interned_at",
-            "born_at"
+            "born_at",
+            "born_in",
+            "captured_at"
           ]
         },
         "narration_plan": {
           "blocks": 4,
           "needs_followup": true,
-          "followup_question": "Missing critical information: born_in, captured_at, interned_at, born_at",
+          "followup_question": "Missing critical information: interned_at, born_at, born_in, captured_at",
           "block_roles": [
             "biographical",
             "military",
@@ -530,22 +530,22 @@
             {
               "severity": "warning",
               "category": "coverage",
-              "message": "Missing critical coverage: Missing biographical claim: born_in"
-            },
-            {
-              "severity": "warning",
-              "category": "coverage",
-              "message": "Missing critical coverage: Missing biographical claim: captured_at"
-            },
-            {
-              "severity": "warning",
-              "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: interned_at"
             },
             {
               "severity": "warning",
               "category": "coverage",
               "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_in"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: captured_at"
             },
             {
               "severity": "warning",
@@ -623,18 +623,18 @@
             "event_context"
           ],
           "missing": [
+            "event_significance",
+            "event_commander",
+            "event_outcome",
+            "event_forces",
             "event_casualties",
             "event_phase",
-            "event_commander",
-            "event_aftermath",
-            "event_outcome",
-            "event_significance",
-            "event_forces"
+            "event_aftermath"
           ],
           "critical_gaps": [
-            "event_phase",
+            "event_significance",
             "event_outcome",
-            "event_significance"
+            "event_phase"
           ]
         },
         "narration_plan": {
@@ -653,7 +653,7 @@
             {
               "severity": "warning",
               "category": "coverage",
-              "message": "Missing critical coverage: Fasi dell'evento (preparazione, svolgimento, conclusione)"
+              "message": "Missing critical coverage: Significato storico e impatto"
             },
             {
               "severity": "warning",
@@ -663,7 +663,7 @@
             {
               "severity": "warning",
               "category": "coverage",
-              "message": "Missing critical coverage: Significato storico e impatto"
+              "message": "Missing critical coverage: Fasi dell'evento (preparazione, svolgimento, conclusione)"
             }
           ]
         }
@@ -734,18 +734,18 @@
             "event_context"
           ],
           "missing": [
+            "event_significance",
+            "event_commander",
+            "event_outcome",
+            "event_forces",
             "event_casualties",
             "event_phase",
-            "event_commander",
-            "event_aftermath",
-            "event_outcome",
-            "event_significance",
-            "event_forces"
+            "event_aftermath"
           ],
           "critical_gaps": [
-            "event_phase",
+            "event_significance",
             "event_outcome",
-            "event_significance"
+            "event_phase"
           ]
         },
         "narration_plan": {
@@ -764,7 +764,7 @@
             {
               "severity": "warning",
               "category": "coverage",
-              "message": "Missing critical coverage: Fasi dell'evento (preparazione, svolgimento, conclusione)"
+              "message": "Missing critical coverage: Significato storico e impatto"
             },
             {
               "severity": "warning",
@@ -774,7 +774,7 @@
             {
               "severity": "warning",
               "category": "coverage",
-              "message": "Missing critical coverage: Significato storico e impatto"
+              "message": "Missing critical coverage: Fasi dell'evento (preparazione, svolgimento, conclusione)"
             }
           ]
         }
@@ -848,18 +848,18 @@
             "event_context"
           ],
           "missing": [
+            "event_significance",
+            "event_commander",
+            "event_outcome",
+            "event_forces",
             "event_casualties",
             "event_phase",
-            "event_commander",
-            "event_aftermath",
-            "event_outcome",
-            "event_significance",
-            "event_forces"
+            "event_aftermath"
           ],
           "critical_gaps": [
-            "event_phase",
+            "event_significance",
             "event_outcome",
-            "event_significance"
+            "event_phase"
           ]
         },
         "narration_plan": {
@@ -878,7 +878,7 @@
             {
               "severity": "warning",
               "category": "coverage",
-              "message": "Missing critical coverage: Fasi dell'evento (preparazione, svolgimento, conclusione)"
+              "message": "Missing critical coverage: Significato storico e impatto"
             },
             {
               "severity": "warning",
@@ -888,7 +888,7 @@
             {
               "severity": "warning",
               "category": "coverage",
-              "message": "Missing critical coverage: Significato storico e impatto"
+              "message": "Missing critical coverage: Fasi dell'evento (preparazione, svolgimento, conclusione)"
             }
           ]
         }

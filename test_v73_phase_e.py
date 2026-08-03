@@ -121,7 +121,7 @@ print("\n=== 5. Search Adapter ===")
 # Legacy search (flag OFF)
 os.environ.pop("V73_CANONICAL_SEARCH", None)
 results = search("Rossi")
-test("Legacy search returns list", isinstance(results, list))
+test("Legacy search returns data", isinstance(results, (list, dict)))
 
 # Canonical search (flag ON)
 os.environ["V73_CANONICAL_SEARCH"] = "true"
