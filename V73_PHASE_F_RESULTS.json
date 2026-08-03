@@ -1,0 +1,920 @@
+{
+  "timestamp": "2026-08-03T22:17:07",
+  "version": "7.3.0",
+  "total_cases": 9,
+  "results": [
+    {
+      "case": "ALTA Antonio",
+      "type": "PERSON",
+      "id": 2344,
+      "steps": {
+        "name_parsing": {
+          "cognome": "ALTA",
+          "nome": "Antonio",
+          "correct": true
+        },
+        "identity": {
+          "status": "CANDIDATE",
+          "strong": 0,
+          "medium": 1,
+          "weak": 2
+        },
+        "claims_created": 2,
+        "evidence_created": 2,
+        "claim_selection": {
+          "selected": 2,
+          "excluded": 0,
+          "warnings": [
+            "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+          ]
+        },
+        "coverage": {
+          "score": 0.12,
+          "covered": 2,
+          "missing": 15,
+          "critical_gaps": [
+            "born_in",
+            "captured_at",
+            "born_at"
+          ]
+        },
+        "narration_plan": {
+          "blocks": 4,
+          "needs_followup": true,
+          "followup_question": "Missing critical information: born_in, captured_at, born_at",
+          "block_roles": [
+            "biographical",
+            "military",
+            "capture_internment",
+            "liberation_death"
+          ]
+        },
+        "validation": {
+          "errors": 0,
+          "warnings": 4,
+          "infos": 0,
+          "issues": [
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_in"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: captured_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "identity",
+              "message": "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+            }
+          ]
+        }
+      },
+      "metrics": {
+        "execution_success": true,
+        "identity_resolved": false,
+        "identity_status": "CANDIDATE",
+        "claims_selected": 2,
+        "coverage_score": 0.12,
+        "narration_blocks": 4,
+        "has_conflicts": false,
+        "needs_followup": true,
+        "validation_errors": 0,
+        "validation_warnings": 4,
+        "legacy_leakage": false,
+        "homonym_leakage": false
+      },
+      "issues": [
+        "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+      ]
+    },
+    {
+      "case": "ARMANNO Luigi A",
+      "type": "PERSON",
+      "id": 2357,
+      "steps": {
+        "name_parsing": {
+          "cognome": "ARMANNO",
+          "nome": "Luigi A",
+          "correct": true
+        },
+        "identity": {
+          "status": "NEEDS_REVIEW",
+          "strong": 0,
+          "medium": 0,
+          "weak": 1
+        },
+        "claims_created": 0,
+        "evidence_created": 0,
+        "claim_selection": {
+          "selected": 0,
+          "excluded": 0,
+          "warnings": [
+            "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+          ]
+        },
+        "coverage": {
+          "score": 0.0,
+          "covered": 0,
+          "missing": 17,
+          "critical_gaps": [
+            "born_in",
+            "captured_at",
+            "interned_at",
+            "born_at"
+          ]
+        },
+        "narration_plan": {
+          "blocks": 4,
+          "needs_followup": true,
+          "followup_question": "Missing critical information: born_in, captured_at, interned_at, born_at",
+          "block_roles": [
+            "biographical",
+            "military",
+            "capture_internment",
+            "liberation_death"
+          ]
+        },
+        "validation": {
+          "errors": 0,
+          "warnings": 5,
+          "infos": 0,
+          "issues": [
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_in"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: captured_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: interned_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "identity",
+              "message": "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+            }
+          ]
+        }
+      },
+      "metrics": {
+        "execution_success": true,
+        "identity_resolved": false,
+        "identity_status": "NEEDS_REVIEW",
+        "claims_selected": 0,
+        "coverage_score": 0.0,
+        "narration_blocks": 4,
+        "has_conflicts": false,
+        "needs_followup": true,
+        "validation_errors": 0,
+        "validation_warnings": 5,
+        "legacy_leakage": false,
+        "homonym_leakage": false
+      },
+      "issues": [
+        "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+      ]
+    },
+    {
+      "case": "AMAROTTI Enrico",
+      "type": "PERSON",
+      "id": 2360,
+      "steps": {
+        "name_parsing": {
+          "cognome": "AMAROTTI",
+          "nome": "Enrico",
+          "correct": true
+        },
+        "identity": {
+          "status": "CANDIDATE",
+          "strong": 0,
+          "medium": 1,
+          "weak": 2
+        },
+        "claims_created": 2,
+        "evidence_created": 2,
+        "claim_selection": {
+          "selected": 2,
+          "excluded": 0,
+          "warnings": [
+            "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+          ]
+        },
+        "coverage": {
+          "score": 0.12,
+          "covered": 2,
+          "missing": 15,
+          "critical_gaps": [
+            "born_in",
+            "captured_at",
+            "born_at"
+          ]
+        },
+        "narration_plan": {
+          "blocks": 4,
+          "needs_followup": true,
+          "followup_question": "Missing critical information: born_in, captured_at, born_at",
+          "block_roles": [
+            "biographical",
+            "military",
+            "capture_internment",
+            "liberation_death"
+          ]
+        },
+        "validation": {
+          "errors": 0,
+          "warnings": 4,
+          "infos": 0,
+          "issues": [
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_in"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: captured_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "identity",
+              "message": "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+            }
+          ]
+        }
+      },
+      "metrics": {
+        "execution_success": true,
+        "identity_resolved": false,
+        "identity_status": "CANDIDATE",
+        "claims_selected": 2,
+        "coverage_score": 0.12,
+        "narration_blocks": 4,
+        "has_conflicts": false,
+        "needs_followup": true,
+        "validation_errors": 0,
+        "validation_warnings": 4,
+        "legacy_leakage": false,
+        "homonym_leakage": false
+      },
+      "issues": [
+        "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+      ]
+    },
+    {
+      "case": "ANFOSSO Carlo",
+      "type": "PERSON",
+      "id": 2353,
+      "steps": {
+        "name_parsing": {
+          "cognome": "ANFOSSO",
+          "nome": "Carlo",
+          "correct": true
+        },
+        "identity": {
+          "status": "CANDIDATE",
+          "strong": 0,
+          "medium": 1,
+          "weak": 2
+        },
+        "claims_created": 2,
+        "evidence_created": 2,
+        "claim_selection": {
+          "selected": 2,
+          "excluded": 0,
+          "warnings": [
+            "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+          ]
+        },
+        "coverage": {
+          "score": 0.12,
+          "covered": 2,
+          "missing": 15,
+          "critical_gaps": [
+            "born_in",
+            "captured_at",
+            "born_at"
+          ]
+        },
+        "narration_plan": {
+          "blocks": 4,
+          "needs_followup": true,
+          "followup_question": "Missing critical information: born_in, captured_at, born_at",
+          "block_roles": [
+            "biographical",
+            "military",
+            "capture_internment",
+            "liberation_death"
+          ]
+        },
+        "validation": {
+          "errors": 0,
+          "warnings": 4,
+          "infos": 0,
+          "issues": [
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_in"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: captured_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "identity",
+              "message": "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+            }
+          ]
+        }
+      },
+      "metrics": {
+        "execution_success": true,
+        "identity_resolved": false,
+        "identity_status": "CANDIDATE",
+        "claims_selected": 2,
+        "coverage_score": 0.12,
+        "narration_blocks": 4,
+        "has_conflicts": false,
+        "needs_followup": true,
+        "validation_errors": 0,
+        "validation_warnings": 4,
+        "legacy_leakage": false,
+        "homonym_leakage": false
+      },
+      "issues": [
+        "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+      ]
+    },
+    {
+      "case": "ARTI Saverio",
+      "type": "PERSON",
+      "id": 2350,
+      "steps": {
+        "name_parsing": {
+          "cognome": "ARTI",
+          "nome": "Saverio",
+          "correct": true
+        },
+        "identity": {
+          "status": "NEEDS_REVIEW",
+          "strong": 0,
+          "medium": 0,
+          "weak": 1
+        },
+        "claims_created": 0,
+        "evidence_created": 0,
+        "claim_selection": {
+          "selected": 0,
+          "excluded": 0,
+          "warnings": [
+            "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+          ]
+        },
+        "coverage": {
+          "score": 0.0,
+          "covered": 0,
+          "missing": 17,
+          "critical_gaps": [
+            "born_in",
+            "captured_at",
+            "interned_at",
+            "born_at"
+          ]
+        },
+        "narration_plan": {
+          "blocks": 4,
+          "needs_followup": true,
+          "followup_question": "Missing critical information: born_in, captured_at, interned_at, born_at",
+          "block_roles": [
+            "biographical",
+            "military",
+            "capture_internment",
+            "liberation_death"
+          ]
+        },
+        "validation": {
+          "errors": 0,
+          "warnings": 5,
+          "infos": 0,
+          "issues": [
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_in"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: captured_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: interned_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "identity",
+              "message": "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+            }
+          ]
+        }
+      },
+      "metrics": {
+        "execution_success": true,
+        "identity_resolved": false,
+        "identity_status": "NEEDS_REVIEW",
+        "claims_selected": 0,
+        "coverage_score": 0.0,
+        "narration_blocks": 4,
+        "has_conflicts": false,
+        "needs_followup": true,
+        "validation_errors": 0,
+        "validation_warnings": 5,
+        "legacy_leakage": false,
+        "homonym_leakage": false
+      },
+      "issues": [
+        "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+      ]
+    },
+    {
+      "case": "ANVISIO Remo",
+      "type": "PERSON",
+      "id": 2356,
+      "steps": {
+        "name_parsing": {
+          "cognome": "ANVISIO",
+          "nome": "Remo",
+          "correct": true
+        },
+        "identity": {
+          "status": "NEEDS_REVIEW",
+          "strong": 0,
+          "medium": 0,
+          "weak": 2
+        },
+        "claims_created": 1,
+        "evidence_created": 1,
+        "claim_selection": {
+          "selected": 1,
+          "excluded": 0,
+          "warnings": [
+            "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+          ]
+        },
+        "coverage": {
+          "score": 0.06,
+          "covered": 1,
+          "missing": 16,
+          "critical_gaps": [
+            "born_in",
+            "captured_at",
+            "interned_at",
+            "born_at"
+          ]
+        },
+        "narration_plan": {
+          "blocks": 4,
+          "needs_followup": true,
+          "followup_question": "Missing critical information: born_in, captured_at, interned_at, born_at",
+          "block_roles": [
+            "biographical",
+            "military",
+            "capture_internment",
+            "liberation_death"
+          ]
+        },
+        "validation": {
+          "errors": 0,
+          "warnings": 5,
+          "infos": 0,
+          "issues": [
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_in"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: captured_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: interned_at"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Missing biographical claim: born_at"
+            },
+            {
+              "severity": "warning",
+              "category": "identity",
+              "message": "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+            }
+          ]
+        }
+      },
+      "metrics": {
+        "execution_success": true,
+        "identity_resolved": false,
+        "identity_status": "NEEDS_REVIEW",
+        "claims_selected": 1,
+        "coverage_score": 0.06,
+        "narration_blocks": 4,
+        "has_conflicts": false,
+        "needs_followup": true,
+        "validation_errors": 0,
+        "validation_warnings": 5,
+        "legacy_leakage": false,
+        "homonym_leakage": false
+      },
+      "issues": [
+        "NO_RESOLVED_IDENTITY: using candidate claims with uncertainty"
+      ]
+    },
+    {
+      "case": "Battaglia del Monte Ortigara",
+      "type": "EVENT",
+      "stable_id": "evt_0051",
+      "steps": {
+        "event_loaded": {
+          "name": "Battaglia del Monte Ortigara",
+          "data_inizio": "1917-06-10",
+          "data_fine": "1917-06-25",
+          "war": "WWI",
+          "aliases": [
+            "Ortigara",
+            "Offensiva di giugno",
+            "Monte Ortigara"
+          ],
+          "keywords": [
+            "Ortigara",
+            "Asiago",
+            "Altipiani",
+            "contraffensiva",
+            "Alpini",
+            "Marmolada"
+          ]
+        },
+        "text_matching": {
+          "total_keywords": 10,
+          "specific_matches": 5,
+          "generic_matches": 0,
+          "has_sufficient_specificity": true
+        },
+        "temporal_barriers": {
+          "cross_war_veto": true,
+          "same_war_compatible": true
+        },
+        "geographic_barriers": {
+          "death_as_event_compatible": false,
+          "birth_as_event_compatible": true
+        },
+        "claims_created": 3,
+        "claim_selection": {
+          "selected": 3
+        },
+        "coverage": {
+          "score": 0.3,
+          "covered": [
+            "event_duration",
+            "event_location",
+            "event_context"
+          ],
+          "missing": [
+            "event_casualties",
+            "event_phase",
+            "event_commander",
+            "event_aftermath",
+            "event_outcome",
+            "event_significance",
+            "event_forces"
+          ],
+          "critical_gaps": [
+            "event_phase",
+            "event_outcome",
+            "event_significance"
+          ]
+        },
+        "narration_plan": {
+          "blocks": 3,
+          "needs_followup": true,
+          "block_roles": [
+            "event_context",
+            "event_location",
+            "event_duration"
+          ]
+        },
+        "validation": {
+          "errors": 0,
+          "warnings": 3,
+          "issues": [
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Fasi dell'evento (preparazione, svolgimento, conclusione)"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Esito e risultati"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Significato storico e impatto"
+            }
+          ]
+        }
+      },
+      "metrics": {
+        "execution_success": true,
+        "text_match_specific": true,
+        "cross_war_temporal_veto": true,
+        "geographic_barrier_death": true,
+        "claims_selected": 3,
+        "coverage_score": 0.3,
+        "narration_blocks": 3,
+        "needs_followup": true,
+        "validation_errors": 0,
+        "validation_warnings": 3,
+        "legacy_leakage": false,
+        "critical_coverage_gaps": 3
+      },
+      "issues": []
+    },
+    {
+      "case": "Battaglia di Vittorio Veneto",
+      "type": "EVENT",
+      "stable_id": "evt_0020",
+      "steps": {
+        "event_loaded": {
+          "name": "Battaglia di Vittorio Veneto",
+          "data_inizio": "1918-10-24",
+          "data_fine": "1918-11-04",
+          "war": "WWI",
+          "aliases": [
+            "Vittorio Veneto",
+            "Monte Grappa",
+            "Monte Pertica"
+          ],
+          "keywords": [
+            "Vittorio Veneto",
+            "Grappa",
+            "Pertica",
+            "Tombea",
+            "Valsugana",
+            "offensiva finale"
+          ]
+        },
+        "text_matching": {
+          "total_keywords": 10,
+          "specific_matches": 2,
+          "generic_matches": 0,
+          "has_sufficient_specificity": true
+        },
+        "temporal_barriers": {
+          "cross_war_veto": true,
+          "same_war_compatible": true
+        },
+        "geographic_barriers": {
+          "death_as_event_compatible": false,
+          "birth_as_event_compatible": true
+        },
+        "claims_created": 3,
+        "claim_selection": {
+          "selected": 3
+        },
+        "coverage": {
+          "score": 0.3,
+          "covered": [
+            "event_duration",
+            "event_location",
+            "event_context"
+          ],
+          "missing": [
+            "event_casualties",
+            "event_phase",
+            "event_commander",
+            "event_aftermath",
+            "event_outcome",
+            "event_significance",
+            "event_forces"
+          ],
+          "critical_gaps": [
+            "event_phase",
+            "event_outcome",
+            "event_significance"
+          ]
+        },
+        "narration_plan": {
+          "blocks": 3,
+          "needs_followup": true,
+          "block_roles": [
+            "event_context",
+            "event_location",
+            "event_duration"
+          ]
+        },
+        "validation": {
+          "errors": 0,
+          "warnings": 3,
+          "issues": [
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Fasi dell'evento (preparazione, svolgimento, conclusione)"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Esito e risultati"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Significato storico e impatto"
+            }
+          ]
+        }
+      },
+      "metrics": {
+        "execution_success": true,
+        "text_match_specific": true,
+        "cross_war_temporal_veto": true,
+        "geographic_barrier_death": true,
+        "claims_selected": 3,
+        "coverage_score": 0.3,
+        "narration_blocks": 3,
+        "needs_followup": true,
+        "validation_errors": 0,
+        "validation_warnings": 3,
+        "legacy_leakage": false,
+        "critical_coverage_gaps": 3
+      },
+      "issues": []
+    },
+    {
+      "case": "Guerra bianca",
+      "type": "EVENT",
+      "stable_id": "evt_0061",
+      "steps": {
+        "event_loaded": {
+          "name": "Guerra bianca",
+          "data_inizio": "1915-06-23",
+          "data_fine": "1918-11-04",
+          "war": "WWI",
+          "aliases": [
+            "Guerra in alta quota",
+            "Guerra sui ghiacciai",
+            "White War"
+          ],
+          "keywords": [
+            "Alpi",
+            "ghiacciai",
+            "Adamello",
+            "Ortles",
+            "Marmolada",
+            "alpini",
+            "alta quota",
+            "gallerie",
+            "ghiaccio"
+          ]
+        },
+        "text_matching": {
+          "total_keywords": 13,
+          "specific_matches": 8,
+          "generic_matches": 1,
+          "has_sufficient_specificity": true
+        },
+        "temporal_barriers": {
+          "cross_war_veto": true,
+          "same_war_compatible": true
+        },
+        "geographic_barriers": {
+          "death_as_event_compatible": false,
+          "birth_as_event_compatible": true
+        },
+        "claims_created": 3,
+        "claim_selection": {
+          "selected": 3
+        },
+        "coverage": {
+          "score": 0.3,
+          "covered": [
+            "event_duration",
+            "event_location",
+            "event_context"
+          ],
+          "missing": [
+            "event_casualties",
+            "event_phase",
+            "event_commander",
+            "event_aftermath",
+            "event_outcome",
+            "event_significance",
+            "event_forces"
+          ],
+          "critical_gaps": [
+            "event_phase",
+            "event_outcome",
+            "event_significance"
+          ]
+        },
+        "narration_plan": {
+          "blocks": 3,
+          "needs_followup": true,
+          "block_roles": [
+            "event_context",
+            "event_location",
+            "event_duration"
+          ]
+        },
+        "validation": {
+          "errors": 0,
+          "warnings": 3,
+          "issues": [
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Fasi dell'evento (preparazione, svolgimento, conclusione)"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Esito e risultati"
+            },
+            {
+              "severity": "warning",
+              "category": "coverage",
+              "message": "Missing critical coverage: Significato storico e impatto"
+            }
+          ]
+        }
+      },
+      "metrics": {
+        "execution_success": true,
+        "text_match_specific": true,
+        "cross_war_temporal_veto": true,
+        "geographic_barrier_death": true,
+        "claims_selected": 3,
+        "coverage_score": 0.3,
+        "narration_blocks": 3,
+        "needs_followup": true,
+        "validation_errors": 0,
+        "validation_warnings": 3,
+        "legacy_leakage": false,
+        "critical_coverage_gaps": 3
+      },
+      "issues": []
+    }
+  ],
+  "aggregate": {
+    "execution_success": 9,
+    "identity_resolved": 3,
+    "no_legacy_leakage": 9,
+    "no_homonym_leakage": 9,
+    "no_validation_errors": 9
+  }
+}
