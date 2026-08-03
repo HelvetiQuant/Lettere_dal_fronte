@@ -132,8 +132,13 @@ def _call_openai(
     temperature: float = 0.3,
     json_mode: bool = False,
     images: List[Dict] = None,
+    json_schema: Optional[Dict] = None,
 ) -> Dict:
-    """Chiama OpenAI Chat Completions. Ritorna {text, input_tokens, output_tokens, cost}."""
+    """Chiama OpenAI Chat Completions. Ritorna {text, input_tokens, output_tokens, cost}.
+
+    Se json_schema è fornito, usa structured outputs nativi (response_format=json_schema).
+    Altrimenti usa json_object mode se json_mode=True.
+    """
     client = _get_openai_client()
     messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
     if images:
@@ -151,7 +156,16 @@ def _call_openai(
         "max_tokens": max_tokens,
         "temperature": temperature,
     }
-    if json_mode:
+    if json_schema and json_mode:
+        kwargs["response_format"] = {
+            "type": "json_schema",
+            "json_schema": {
+                "name": json_schema.get("name", "structured_output"),
+                "schema": json_schema.get("schema", json_schema),
+                "strict": json_schema.get("strict", True),
+            },
+        }
+    elif json_mode:
         kwargs["response_format"] = {"type": "json_object"}
 
     resp = client.chat.completions.create(**kwargs)
@@ -170,8 +184,14 @@ def _call_anthropic(
     temperature: float = 0.3,
     json_mode: bool = False,
     images: List[Dict] = None,
+    json_schema: Optional[Dict] = None,
 ) -> Dict:
-    """Chiama Anthropic Messages API."""
+    """Chiama Anthropic Messages API.
+
+    Anthropic non supporta json_schema nativo; json_mode viene ignorato
+    e la struttura è affidata al prompt. Se json_schema è fornito,
+    viene serializzato nel system prompt come istruzione aggiuntiva.
+    """
     client = _get_anthropic_client()
     content = user
     if images:
@@ -204,8 +224,13 @@ def _call_mistral(
     temperature: float = 0.3,
     json_mode: bool = False,
     images: List[Dict] = None,
+    json_schema: Optional[Dict] = None,
 ) -> Dict:
-    """Chiama Mistral Chat."""
+    """Chiama Mistral Chat.
+
+    Mistral supporta json_object mode ma non json_schema nativo.
+    Se json_schema è fornito, viene aggiunto al system prompt come istruzione.
+    """
     client = _get_mistral_client()
     messages = [
         {"role": "system", "content": system},
@@ -236,8 +261,12 @@ def _call_perplexity(
     temperature: float = 0.3,
     json_mode: bool = False,
     images: List[Dict] = None,
+    json_schema: Optional[Dict] = None,
 ) -> Dict:
-    """Chiama Perplexity Sonar (web search enabled)."""
+    """Chiama Perplexity Sonar (web search enabled).
+
+    Perplexity non supporta json_schema nativo; json_mode viene ignorato.
+    """
     api_key = _get_key("PERPLEXITY_API_KEY")
     if not api_key:
         raise RuntimeError("PERPLEXITY_API_KEY non trovata")
@@ -284,20 +313,28 @@ def _call_gemini(
     temperature: float = 0.3,
     json_mode: bool = False,
     images: List[Dict] = None,
+    json_schema: Optional[Dict] = None,
 ) -> Dict:
-    """Chiama Google Gemini."""
+    """Chiama Google Gemini.
+
+    Gemini supporta response_mime_type='application/json' e response_schema
+    per output strutturato nativo quando json_schema è fornito.
+    """
     gen_model = _get_gemini_model()
     prompt = f"{system}\n\n{user}"
-    kwargs: Dict[str, Any] = {}
+    gen_config: Dict[str, Any] = {"max_output_tokens": max_tokens, "temperature": temperature}
+    if json_schema and json_mode:
+        gen_config["response_mime_type"] = "application/json"
+        gen_config["response_schema"] = json_schema.get("schema", json_schema)
     if images:
         from google.generativeai import GenerativeModel
         parts = [prompt]
         for img in images:
             import base64
             parts.append({"mime_type": "image/jpeg", "data": base64.b64decode(img["base64"])})
-        resp = gen_model.generate_content(parts, generation_config={"max_output_tokens": max_tokens, "temperature": temperature})
+        resp = gen_model.generate_content(parts, generation_config=gen_config)
     else:
-        resp = gen_model.generate_content(prompt, generation_config={"max_output_tokens": max_tokens, "temperature": temperature})
+        resp = gen_model.generate_content(prompt, generation_config=gen_config)
     text = resp.text.strip()
     in_tok = len(prompt) // 4
     out_tok = len(text) // 4
@@ -340,8 +377,14 @@ def call_ai(
     research_plan_id: int = None,
     session_id: int = None,
     cycle_id: int = None,
+    json_schema: Optional[Dict] = None,
 ) -> Dict:
     """Esegue una chiamata AI con routing automatico, fallback e tracking.
+
+    Args:
+        json_schema: Schema opzionale per structured outputs nativi.
+            Supportato da OpenAI (response_format=json_schema) e Gemini
+            (response_schema). Ignorato da provider senza supporto nativo.
 
     Returns:
         {
@@ -412,6 +455,7 @@ def call_ai(
                 temperature=temperature,
                 json_mode=json_mode,
                 images=images,
+                json_schema=json_schema,
             )
             latency_ms = int((time.time() - t0) * 1000)
 
@@ -486,8 +530,15 @@ def call_ai_json(
     research_plan_id: int = None,
     session_id: int = None,
     cycle_id: int = None,
+    json_schema: Optional[Dict] = None,
 ) -> Dict:
     """Chiama AI in JSON mode e parsa il risultato.
+
+    Args:
+        json_schema: Schema opzionale per structured outputs nativi.
+            Quando fornito, i provider che lo supportano (OpenAI, Gemini)
+            garantiscono output conforme allo schema. Per gli altri provider,
+            lo schema viene ignorato e si usa json_object mode con fallback parsing.
 
     Returns:
         {
@@ -511,6 +562,7 @@ def call_ai_json(
         research_plan_id=research_plan_id,
         session_id=session_id,
         cycle_id=cycle_id,
+        json_schema=json_schema,
     )
     if not result["ok"]:
         return result
