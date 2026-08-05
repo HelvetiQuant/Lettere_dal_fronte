@@ -1,0 +1,664 @@
+{
+  "timestamp": "2026-08-02T17:33:42.218806",
+  "backend": "http://127.0.0.1:8000",
+  "nomi": [
+    {
+      "target": {
+        "category": "internati",
+        "id": 2433,
+        "cognome": "ALFORI",
+        "nome": "Divino",
+        "luogo_nascita": "Trento",
+        "grado": "Serg.Magg",
+        "luogo_internamento": "Amburgo",
+        "sorte": "deceduto",
+        "conflict": "WWII",
+        "questions": [
+          "Chi era ALFORI Divino?",
+          "Dove era internato e cosa gli successe?",
+          "Quali fonti possiamo consultare per saperne di piu?"
+        ]
+      },
+      "display": "ALFORI Divino (ID:2433)",
+      "search_results_count": 3,
+      "snapshot_id": "snap_v5_target_internati_2433_20260802173346",
+      "identity_resolution": "PARTIAL",
+      "conditional_gaps_count": 7,
+      "next_steps_count": 6,
+      "conversation": [
+        {
+          "question": "Chi era ALFORI Divino?",
+          "answer": "Non ci sono informazioni disponibili su ALFORI Divino nello snapshot fornito. Per ottenere ulteriori dettagli su questa persona, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Dove era internato e cosa gli successe?",
+          "answer": "Non ci sono informazioni disponibili su dove fosse internato ALFORI Divino o su cosa gli sia successo nello snapshot fornito. Per ottenere ulteriori dettagli su questa persona, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quali fonti possiamo consultare per saperne di piu?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "target": {
+        "category": "internati",
+        "id": 14286,
+        "cognome": "L. NGELLA",
+        "nome": "Maresc. Magg.",
+        "luogo_nascita": "Roma",
+        "grado": "Maresciallo Maggiore",
+        "luogo_internamento": "ospedale",
+        "sorte": "deceduto",
+        "conflict": "WWII",
+        "questions": [
+          "Cosa sappiamo di questo maresciallo?",
+          "Perche era in ospedale?",
+          "Ci sono omonimi da escludere?"
+        ]
+      },
+      "display": "L. NGELLA Maresc. Magg. (ID:14286)",
+      "search_results_count": 0,
+      "snapshot_id": "snap_v5_target_internati_14286_20260802173354",
+      "identity_resolution": "PARTIAL",
+      "conditional_gaps_count": 7,
+      "next_steps_count": 6,
+      "conversation": [
+        {
+          "question": "Cosa sappiamo di questo maresciallo?",
+          "answer": "Purtroppo, non ci sono informazioni disponibili nello snapshot fornito riguardo al maresciallo in questione. Non ci sono dati su nome, data di nascita, luogo di nascita, paternità, grado, unità, numero di servizio, data di morte, luogo di morte, causa della morte, prigionia, sepoltura o residenza. Inoltre, non ci sono fonti aperte o consultate che possano fornire ulteriori dettagli. Per ottenere informazioni su questo maresciallo, sarebbe necessario condurre ulteriori ricerche in archivi storici o altre fonti pertinenti.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Perche era in ospedale?",
+          "answer": "Purtroppo, non ci sono informazioni disponibili nello snapshot fornito riguardo al motivo per cui il maresciallo fosse in ospedale. Non ci sono dati o fonti che possano fornire dettagli su questo aspetto. Per ottenere ulteriori informazioni, sarebbe necessario condurre ulteriori ricerche in archivi storici o altre fonti pertinenti.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Ci sono omonimi da escludere?",
+          "answer": "Purtroppo, nello snapshot fornito non ci sono informazioni disponibili per determinare se ci siano omonimi da escludere riguardo al maresciallo in questione. Non ci sono dati o fonti che possano fornire dettagli su questo aspetto. Per ottenere ulteriori informazioni, sarebbe necessario condurre ulteriori ricerche in archivi storici o altre fonti pertinenti.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "target": {
+        "category": "internati",
+        "id": 21284,
+        "cognome": "TURCONI",
+        "nome": "Paolo",
+        "luogo_nascita": "Como",
+        "grado": "Serg.",
+        "luogo_internamento": "Madenburg",
+        "sorte": "deceduto",
+        "conflict": "WWII",
+        "questions": [
+          "Chi era TURCONI Paolo?",
+          "Dove si trova Madenburg?",
+          "Quali sono i prossimi passi di ricerca?"
+        ]
+      },
+      "display": "TURCONI Paolo (ID:21284)",
+      "search_results_count": 9,
+      "snapshot_id": "snap_v5_target_internati_21284_20260802173401",
+      "identity_resolution": "PARTIAL",
+      "conditional_gaps_count": 7,
+      "next_steps_count": 6,
+      "conversation": [
+        {
+          "question": "Chi era TURCONI Paolo?",
+          "answer": "Non ci sono informazioni disponibili su TURCONI Paolo nello snapshot fornito. Per ottenere ulteriori dettagli, sarebbe necessario consultare altre fonti o archivi storici. suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Dove si trova Madenburg?",
+          "answer": "Non ci sono informazioni disponibili su Madenburg nello snapshot fornito. Per ottenere ulteriori dettagli, sarebbe necessario consultare altre fonti o archivi storici. suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quali sono i prossimi passi di ricerca?",
+          "answer": "Per proseguire con la ricerca, suggerisco i seguenti passi:\n\n1. **Consultare Archivi Storici**: Esplora archivi storici locali o nazionali che potrebbero contenere informazioni su TURCONI Paolo o Madenburg. Questo potrebbe includere archivi militari, anagrafici o di prigionia.\n\n2. **Ricerca Online**: Utilizza motori di ricerca e database online per trovare eventuali riferimenti a TURCONI Paolo o Madenburg. Potrebbero esserci documenti digitalizzati o articoli che menzionano questi soggetti.\n\n3. **Biblioteche e Università**: Contatta biblioteche o istituzioni accademiche che potrebbero avere accesso a risorse o collezioni specializzate.\n\n4. **Interviste o Testimonianze**: Se possibile, cerca di contattare storici locali o esperti che potrebbero avere conoscenze specifiche o accesso a documenti non pubblicamente disponibili.\n\n5. **Società Storiche o Genealogiche**: Queste organizzazioni spesso hanno accesso a risorse uniche e possono offrire assistenza nella ricerca storica.\n\nQuesti passi potrebbero aiutare a trovare le informazioni mancanti o a confermare dettagli specifici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "target": {
+        "category": "caduti_albooro",
+        "id": 1,
+        "nominativo": "ABATE MARIO ANTONIO",
+        "paternita": "FRANCESCO",
+        "classe": "1896",
+        "comune_attuale": "Chieti",
+        "grado": "Soldato",
+        "reparto": "Comando Generale Genio",
+        "anno_morte": "1919",
+        "luogo_morte": "Trieste",
+        "causa_morte": "Infortunio",
+        "conflict": "WWI",
+        "questions": [
+          "Chi era ABATE MARIO ANTONIO?",
+          "Come mori a Trieste nel 1919?",
+          "Quali fonti militari possiamo verificare?"
+        ]
+      },
+      "display": "ABATE MARIO ANTONIO (ID:1)",
+      "search_results_count": 10,
+      "snapshot_id": "snap_v5_target_caduti_albooro_1_20260802173409",
+      "identity_resolution": "UNRESOLVED",
+      "conditional_gaps_count": 4,
+      "next_steps_count": 4,
+      "conversation": [
+        {
+          "question": "Chi era ABATE MARIO ANTONIO?",
+          "answer": "Non ci sono informazioni disponibili su ABATE MARIO ANTONIO nello snapshot fornito. Per ottenere ulteriori dettagli su questa persona, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Come mori a Trieste nel 1919?",
+          "answer": "Non ci sono informazioni disponibili nello snapshot fornito riguardo a eventi specifici avvenuti a Trieste nel 1919, inclusi dettagli su come qualcuno possa essere morto in quell'anno e luogo. Per ottenere ulteriori dettagli, sarebbe necessario consultare altre fonti storiche o archivi.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quali fonti militari possiamo verificare?",
+          "answer": "Non ci sono fonti militari specifiche elencate nello snapshot fornito. Per ottenere informazioni dettagliate su fonti militari, sarebbe necessario consultare archivi storici militari o database specifici che potrebbero contenere registri di servizio, elenchi di caduti o altre informazioni militari pertinenti. suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "target": {
+        "category": "caduti_albooro",
+        "id": 2,
+        "nominativo": "ABBATTISTA ATTILIO",
+        "paternita": "SALVATORE",
+        "classe": "1896",
+        "comune_attuale": "Fossacesia",
+        "grado": "Sotto capo meccanico",
+        "reparto": "RR. equipaggi",
+        "anno_morte": "1916",
+        "luogo_morte": "-",
+        "causa_morte": "Affondamento Di Nave",
+        "conflict": "WWI",
+        "questions": [
+          "Chi era ABBATTISTA ATTILIO?",
+          "In quale nave perse la vita?",
+          "Quali archivi navali possiamo consultare?"
+        ]
+      },
+      "display": "ABBATTISTA ATTILIO (ID:2)",
+      "search_results_count": 0,
+      "snapshot_id": "snap_v5_target_caduti_albooro_2_20260802173416",
+      "identity_resolution": "UNRESOLVED",
+      "conditional_gaps_count": 4,
+      "next_steps_count": 4,
+      "conversation": [
+        {
+          "question": "Chi era ABBATTISTA ATTILIO?",
+          "answer": "Non ci sono informazioni disponibili su ABBATTISTA ATTILIO nello snapshot fornito. Per ottenere ulteriori dettagli su questa persona, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "In quale nave perse la vita?",
+          "answer": "Non ci sono informazioni disponibili nello snapshot fornito riguardo alla nave su cui ABBATTISTA ATTILIO potrebbe aver perso la vita. Per ottenere ulteriori dettagli, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quali archivi navali possiamo consultare?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "target": {
+        "category": "caduti_albooro",
+        "id": 3,
+        "nominativo": "ABBIUSO DOMENICO",
+        "paternita": "ANTONIO",
+        "classe": "1895",
+        "comune_attuale": "San Martino in Pensilis",
+        "grado": "Soldato",
+        "reparto": "12 Reggimento Fanteria",
+        "anno_morte": "1916",
+        "luogo_morte": "Alessandria",
+        "causa_morte": "Ferite Riportate in Combattimento",
+        "conflict": "WWI",
+        "questions": [
+          "Chi era ABBIUSO DOMENICO?",
+          "Perche mori ad Alessandria?",
+          "Il 12 Reggimento Fanteria ha diari di guerra?"
+        ]
+      },
+      "display": "ABBIUSO DOMENICO (ID:3)",
+      "search_results_count": 0,
+      "snapshot_id": "snap_v5_target_caduti_albooro_3_20260802173421",
+      "identity_resolution": "UNRESOLVED",
+      "conditional_gaps_count": 4,
+      "next_steps_count": 4,
+      "conversation": [
+        {
+          "question": "Chi era ABBIUSO DOMENICO?",
+          "answer": "Non ci sono informazioni disponibili su ABBIUSO DOMENICO nello snapshot fornito. Per ottenere ulteriori dettagli, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Perche mori ad Alessandria?",
+          "answer": "Non ci sono informazioni disponibili nello snapshot fornito riguardo al motivo della morte di ABBIUSO DOMENICO ad Alessandria. Per ottenere ulteriori dettagli, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Il 12 Reggimento Fanteria ha diari di guerra?",
+          "answer": "Non ci sono informazioni disponibili nello snapshot fornito riguardo ai diari di guerra del 12 Reggimento Fanteria. Per ottenere ulteriori dettagli, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "target": {
+        "category": "decorati",
+        "id": 1,
+        "cognome": "A",
+        "nome": "GIOVANNI",
+        "anno_decorazione": "1918",
+        "tipo_decorazione": "Promozione per Merito di Guerra",
+        "arma": "Esercito",
+        "conflict": "WWI",
+        "questions": [
+          "Chi era il decorato A GIOVANNI?",
+          "Cosa significa Promozione per Merito di Guerra?",
+          "Come possiamo verificare questa decorazione?"
+        ]
+      },
+      "display": "A GIOVANNI (ID:1)",
+      "search_results_count": 0,
+      "snapshot_id": "snap_v5_target_decorati_1_20260802173426",
+      "identity_resolution": "UNRESOLVED",
+      "conditional_gaps_count": 6,
+      "next_steps_count": 4,
+      "conversation": [
+        {
+          "question": "Chi era il decorato A GIOVANNI?",
+          "answer": "Lo snapshot fornito non contiene informazioni su un individuo decorato di nome \"A GIOVANNI\". Non ci sono dettagli disponibili riguardo alla sua data di nascita, luogo di nascita, paternità, grado, unità, numero di servizio, data di morte, luogo di morte, causa della morte, prigionia, sepoltura o residenza. Per ottenere ulteriori informazioni su questa persona, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Cosa significa Promozione per Merito di Guerra?",
+          "answer": "La \"Promozione per Merito di Guerra\" è un riconoscimento conferito a militari che hanno dimostrato eccezionale valore, coraggio o abilità durante operazioni di guerra. Questo tipo di promozione viene assegnato per meriti acquisiti sul campo di battaglia, piuttosto che per anzianità o esami, e rappresenta un avanzamento di grado come riconoscimento del servizio e delle azioni svolte in contesti bellici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Come possiamo verificare questa decorazione?",
+          "answer": "Per verificare una decorazione come la \"Promozione per Merito di Guerra\", è necessario consultare fonti storiche e archivi militari che documentano i riconoscimenti e le promozioni conferite ai militari. Ecco alcuni passi che potresti seguire:\n\n1. **Archivi Militari Nazionali**: Cerca negli archivi nazionali del paese di interesse, dove potrebbero essere conservati registri ufficiali delle promozioni e delle decorazioni militari.\n\n2. **Registri di Unità Militari**: Controlla i registri delle unità militari specifiche per vedere se ci sono documenti che attestano la promozione o la decorazione di un individuo.\n\n3. **Gazzette Ufficiali**: In molti paesi, le promozioni e le decorazioni militari vengono pubblicate nelle gazzette ufficiali, che possono essere una fonte utile di verifica.\n\n4. **Musei Militari o Associazioni di Veterani**: Queste istituzioni possono avere accesso a documenti storici e archivi che non sono disponibili al pubblico generale.\n\n5. **Biblioteche Nazionali o Universitarie**: Possono avere collezioni di documenti storici e militari che includono informazioni su decorazioni e promozioni.\n\nSe queste fonti non sono disponibili nello snapshot attuale, suggerisco di intraprendere una ricerca più approfondita in archivi e biblioteche storiche.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "target": {
+        "category": "decorati",
+        "id": 2,
+        "cognome": "A RONCH",
+        "nome": "GIOVANNI",
+        "anno_decorazione": "1941",
+        "tipo_decorazione": "Croce di Guerra al Valor Militare",
+        "arma": "Esercito",
+        "conflict": "WWII",
+        "questions": [
+          "Chi era A RONCH GIOVANNI?",
+          "Perche fu decorato con Croce di Guerra nel 1941?",
+          "Quali fonti confermano questa decorazione?"
+        ]
+      },
+      "display": "A RONCH GIOVANNI (ID:2)",
+      "search_results_count": 0,
+      "snapshot_id": "snap_v5_target_decorati_2_20260802173435",
+      "identity_resolution": "UNRESOLVED",
+      "conditional_gaps_count": 7,
+      "next_steps_count": 6,
+      "conversation": [
+        {
+          "question": "Chi era A RONCH GIOVANNI?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Perche fu decorato con Croce di Guerra nel 1941?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quali fonti confermano questa decorazione?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "target": {
+        "category": "decorati",
+        "id": 3,
+        "cognome": "A-PRATO",
+        "nome": "SILVIO",
+        "anno_decorazione": "1922",
+        "tipo_decorazione": "Medaglia di Bronzo",
+        "arma": "Esercito",
+        "conflict": "WWI",
+        "questions": [
+          "Chi era A-PRATO SILVIO?",
+          "Perche la decorazione e del 1922 e non durante la guerra?",
+          "Dove possiamo trovare l'atto di concessione?"
+        ]
+      },
+      "display": "A-PRATO SILVIO (ID:3)",
+      "search_results_count": 10,
+      "snapshot_id": "snap_v5_target_decorati_3_20260802173439",
+      "identity_resolution": "UNRESOLVED",
+      "conditional_gaps_count": 6,
+      "next_steps_count": 4,
+      "conversation": [
+        {
+          "question": "Chi era A-PRATO SILVIO?",
+          "answer": "Lo snapshot fornito non contiene informazioni su A-PRATO SILVIO. Non ci sono dati disponibili riguardo alla sua data di nascita, luogo di nascita, paternità, grado, unità, numero di servizio, data di morte, luogo di morte, causa della morte, prigionia, sepoltura o residenza. Per ottenere ulteriori informazioni su A-PRATO SILVIO, sarebbe necessario consultare altre fonti o archivi storici.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Perche la decorazione e del 1922 e non durante la guerra?",
+          "answer": "Lo snapshot fornito non contiene informazioni specifiche su una decorazione del 1922 o sul motivo per cui potrebbe essere stata assegnata in quell'anno piuttosto che durante la guerra. Per comprendere meglio il contesto di una decorazione assegnata nel 1922, sarebbe necessario consultare altre fonti storiche o archivi che possano fornire dettagli sulle circostanze specifiche di tale riconoscimento.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Dove possiamo trovare l'atto di concessione?",
+          "answer": "Lo snapshot fornito non contiene informazioni su dove trovare l'atto di concessione relativo a una decorazione del 1922. Per localizzare l'atto di concessione, suggerisco di consultare archivi storici militari o nazionali che potrebbero conservare documenti relativi a decorazioni e riconoscimenti. Potrebbe essere utile contattare direttamente tali istituzioni per ottenere indicazioni più precise.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    }
+  ],
+  "eventi": [
+    {
+      "event": {
+        "id": 16,
+        "nome": "Battaglia di Caporetto",
+        "data_inizio": "1917-10-24",
+        "data_fine": "1917-11-12",
+        "luogo": "Isonzo, settore Tolmino-Caporetto",
+        "descrizione": "Sconfitta italiana 24 ott - 12 nov 1917. Rottura del fronte Isonzo, ritirata al Piave.",
+        "conflict": "WWI",
+        "questions": [
+          "Cosa successe a Caporetto nell'ottobre 1917?",
+          "Quanti soldati italiani furono fatti prigionieri?",
+          "Quali fonti d'archivio documentano la ritirata?"
+        ]
+      },
+      "snapshot_id": "snap_v5_event_16_20260802173446",
+      "conversation": [
+        {
+          "question": "Cosa successe a Caporetto nell'ottobre 1917?",
+          "answer": "La battaglia di Caporetto, avvenuta nell'ottobre 1917, fu un'importante offensiva delle forze austro-ungariche e tedesche contro l'esercito italiano durante la Prima Guerra Mondiale. L'attacco iniziò il 24 ottobre 1917 e portò a una grave sconfitta per l'Italia. Le forze italiane furono costrette a ritirarsi di circa 150 chilometri, fino al fiume Piave. Questa ritirata fu accompagnata da pesanti perdite umane e materiali per l'esercito italiano e portò a una crisi politica e militare in Italia. La battaglia di Caporetto è spesso citata come un esempio di una sconfitta militare causata da una combinazione di fattori tattici, strategici e di morale.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quanti soldati italiani furono fatti prigionieri?",
+          "answer": "La battaglia di Caporetto portò alla cattura di circa 275.000 soldati italiani da parte delle forze austro-ungariche e tedesche.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quali fonti d'archivio documentano la ritirata?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "event": {
+        "id": 17,
+        "nome": "Battaglie dell'Isonzo",
+        "data_inizio": "1915-06-23",
+        "data_fine": "1917-09-12",
+        "luogo": "Fronte Isonzo, Carso",
+        "descrizione": "12 offensive italiane sul fiume Isonzo giun-1915 / set-1917.",
+        "conflict": "WWI",
+        "questions": [
+          "Quante battaglie dell'Isonzo ci furono?",
+          "Quali unita italiane combatterono sull'Isonzo?",
+          "Dove si trovano i diari di reparto?"
+        ]
+      },
+      "snapshot_id": "snap_v5_event_17_20260802173452",
+      "conversation": [
+        {
+          "question": "Quante battaglie dell'Isonzo ci furono?",
+          "answer": "Ci furono complessivamente dodici battaglie dell'Isonzo durante la Prima Guerra Mondiale.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quali unita italiane combatterono sull'Isonzo?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Dove si trovano i diari di reparto?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "event": {
+        "id": 18,
+        "nome": "Battaglia del Carso",
+        "data_inizio": "1915-06-23",
+        "data_fine": "1917-11-12",
+        "luogo": "Altopiano del Carso",
+        "descrizione": "Combattimenti sul Carso durante tutte le battaglie dell'Isonzo.",
+        "conflict": "WWI",
+        "questions": [
+          "Cosa fu la battaglia del Carso?",
+          "Quali reparti combatterono sul Carso?",
+          "Esistono fonti fotografiche del Carso?"
+        ]
+      },
+      "snapshot_id": "snap_v5_event_18_20260802173455",
+      "conversation": [
+        {
+          "question": "Cosa fu la battaglia del Carso?",
+          "answer": "La battaglia del Carso fu una serie di scontri combattuti durante la Prima Guerra Mondiale tra le forze italiane e austro-ungariche. Queste battaglie si svolsero sull'altopiano carsico, una regione montuosa situata al confine tra l'Italia e l'attuale Slovenia. Le battaglie del Carso furono parte delle più ampie offensive italiane sul fronte dell'Isonzo, caratterizzate da combattimenti estremamente duri e da un elevato numero di perdite su entrambi i lati. Le condizioni geografiche difficili e le fortificazioni naturali del Carso resero queste battaglie particolarmente impegnative per le truppe coinvolte.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quali reparti combatterono sul Carso?",
+          "answer": "Mi dispiace, ma non ho accesso a informazioni specifiche sui reparti che combatterono sul Carso durante la Prima Guerra Mondiale nello snapshot fornito. Ti consiglio di consultare fonti storiche specializzate o archivi militari per ottenere dettagli sui reparti coinvolti.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Esistono fonti fotografiche del Carso?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    }
+  ],
+  "fatti": [
+    {
+      "fact": {
+        "fact": "IMI deceduti in Germania",
+        "query": "internati deceduti Germania",
+        "questions": [
+          "Quanti internati militari italiani morirono in Germania?",
+          "In quali campi morirono piu soldati?",
+          "Dove sono i registri di sepoltura?"
+        ]
+      },
+      "search_results_count": 0,
+      "conversation": [
+        {
+          "question": "Quanti internati militari italiani morirono in Germania?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "In quali campi morirono piu soldati?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Dove sono i registri di sepoltura?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "fact": {
+        "fact": "Decorati al Valor Militare WWI",
+        "query": "decorati valor militare prima guerra mondiale",
+        "questions": [
+          "Quanti italiani furono decorati al valor militare nella WWI?",
+          "Quali tipi di decorazioni esistevano?",
+          "Dove sono gli atti di concessione?"
+        ]
+      },
+      "search_results_count": 0,
+      "conversation": [
+        {
+          "question": "Quanti italiani furono decorati al valor militare nella WWI?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quali tipi di decorazioni esistevano?",
+          "answer": "I dati dello snapshot non forniscono informazioni sui tipi di decorazioni esistenti durante la Prima Guerra Mondiale. Ti consiglio di consultare fonti storiche o archivi militari specifici per ottenere informazioni dettagliate sui tipi di decorazioni al valor militare conferite durante quel periodo.",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Dove sono gli atti di concessione?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    },
+    {
+      "fact": {
+        "fact": "Caduti per affondamento di nave",
+        "query": "caduti affondamento nave militare",
+        "questions": [
+          "Quali navi militari italiane furono affondate nella WWI?",
+          "Quanti marinai perirono?",
+          "Dove sono i registri della Marina Militare?"
+        ]
+      },
+      "search_results_count": 0,
+      "conversation": [
+        {
+          "question": "Quali navi militari italiane furono affondate nella WWI?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Quanti marinai perirono?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        },
+        {
+          "question": "Dove sono i registri della Marina Militare?",
+          "answer": "suggested_research_action",
+          "validation_state": "valid",
+          "cited_claim_ids": [],
+          "cited_source_ids": []
+        }
+      ]
+    }
+  ]
+}

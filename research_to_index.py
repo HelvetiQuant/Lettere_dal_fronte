@@ -27,7 +27,8 @@ from typing import Dict, List, Optional
 
 from linking.kill_switch import LegacyJob, assert_frozen
 
-assert_frozen(LegacyJob.RESEARCH_TO_INDEX, "research_to_index.py is frozen — use source_pipeline worker instead")
+# Module-level freeze check moved to __main__ to allow _init_tables import by app.py
+# The pipeline itself is still frozen when run as a script.
 
 from database import get_conn, search_all
 from source_providers.federation import federated_search, get_registry

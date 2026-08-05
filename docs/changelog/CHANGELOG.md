@@ -1,5 +1,39 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-08-05 — V7.3-PERSON-FIX: Evidence-Locked Narration, Multi-Table Retrieval, Script Security
+
+### Contesto
+Refactoring completo del pipeline V7: retrieval multi-tabella (5 fonti PERSON), identity resolution cluster-based con identificatori forti, narratore evidence-locked con payload validation e post-generation hallucination detection, migrazioni DB additive (data_corrections + Supabase parity), sicurezza script non-distruttiva (quarantena invece di DELETE), regression benchmark.
+
+### Task completate (14/14)
+1. Diagnosi call graph + baseline 20 nomi
+2. Modelli tipizzati (PersonCandidate, PersonFact, FactEvidence, etc.)
+3. PERSON_SOURCE_SCHEMAS: mapping 5 tabelle con validator/normalizer
+4. Fix retrieval: 5 tabelle queryate, word boundary, normalizzazione nominativo
+5. Fix schema OpenAI + circuit breaker provider AI
+6. Separazione fatti/evidenze/provenance con dedup
+7. Identity resolver cluster-based, no fusione omonimi
+8. Unit test: 43/43 PASS
+9. _gen_record_links.py: quarantena, CLI, pairwise linking
+10. _gen_event_links.py: word boundary, barriere temporali, incremental
+11. Narratore evidence-locked: _validate_payload, _compute_evidence_hash, _post_gen_hallucination_check
+12. Migrazioni DB: data_corrections table, sync_parity_audit, Supabase parity (6/8 OK)
+13. Sicurezza script: _clean_bad_links (DELETE→quarantine), _fix_gaiaschi_db (UPDATE→overlay)
+14. Regression benchmark: 5/5 PASS, 6/6 backend test, 0 errori
+
+### File nuovi (5)
+- `person_source_schemas.py`, `person_pipeline_models.py`, `test_person_v73_fix.py`
+- `migrate_v73_data_corrections.py`, `run_regression_v73.py`
+
+### File modificati (10)
+- `unified_orchestrator_v7.py`, `v7_narrator.py`, `ai_client.py`, `narration_models.py`
+- `v7_identity_model.py`, `_gen_record_links.py`, `_gen_event_links.py`
+- `_clean_bad_links.py`, `_fix_gaiaschi_db.py`
+
+### Dettagli: [CHANGELOG_V73_PERSON_FIX.md](../../CHANGELOG_V73_PERSON_FIX.md)
+
+---
+
 ## 2026-08-01 — V4 Post-Audit: API, Fetch Integration, Archive Expansion, Canary Live
 
 ### Contesto

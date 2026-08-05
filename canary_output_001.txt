@@ -1,0 +1,123 @@
+# Rapporto di Ricerca — snap_v7_93b420360d364d48
+Versione schema: 7
+Intent: PERSON_LOOKUP
+Target: Rossi Mario
+Contratto Narratore: 7.1
+
+## Risoluzione Identità: RESOLVED
+## Corroborazione Esterna: PARTIAL
+
+## Claim in Conflitto
+  - fate: deceduto (CONFLICTING)
+  - fate: altro (CONFLICTING)
+  - fate: rimpatriato (CONFLICTING)
+  - rank: Soldato (CONFLICTING)
+  - rank: Tenente In Servizio Attivo (CONFLICTING)
+  - rank: Sottotenente Di Complemento (CONFLICTING)
+  - rank: Caporale (CONFLICTING)
+  - rank: Allievo Fuochista (CONFLICTING)
+  - rank: Capitano In Servizio Attivo (CONFLICTING)
+  - rank: Tenente Di Complemento (CONFLICTING)
+  - rank: Sergente Maggiore (CONFLICTING)
+  - rank: - (CONFLICTING)
+  - unit: 9 Reggimento Artiglieria Pesante Campale (CONFLICTING)
+  - unit: 330 Compagnia Mitraglieri Fiat (CONFLICTING)
+  - unit: 66 Reggimento Fanteria (CONFLICTING)
+  - unit: 2 Reggimento Artiglieria Pesante Campale (CONFLICTING)
+  - unit: C. R. E. M. (CONFLICTING)
+  - unit: 42 Reggimento Fanteria (CONFLICTING)
+  - unit: 3 Reggimento Bersaglieri (CONFLICTING)
+  - unit: 5 Reggimento Alpini (CONFLICTING)
+  - unit: 1 Reggimento Artiglieria Da Fortezza (CONFLICTING)
+  - unit: 18 Reggimento Fanteria (CONFLICTING)
+  - unit: - (CONFLICTING)
+  - death_year: 1917 (CONFLICTING)
+  - death_year: 1916 (CONFLICTING)
+  - death_year: 1919 (CONFLICTING)
+  - death_year: 1918 (CONFLICTING)
+  - death_year: 1915 (CONFLICTING)
+  - death_place: Pavia (CONFLICTING)
+  - death_place: Carso (CONFLICTING)
+  - death_place: Caserta (CONFLICTING)
+  - death_place: Medio Isonzo (CONFLICTING)
+  - death_place: Gragnano (CONFLICTING)
+  - death_place: Ospedaletto Da Campo N. 216 (CONFLICTING)
+  - death_place: Monte Valbella (CONFLICTING)
+  - death_place: Monte Ortigara (CONFLICTING)
+  - death_place: Ospedaletto Da Campo N. 156 (CONFLICTING)
+  - death_place: Monte Nero (CONFLICTING)
+  - death_place: - (CONFLICTING)
+
+## Claim Asserti (origine, non corroborati)
+  - birth_place: Arezzo
+
+## Omonimi Respinti
+  - ROSSI DINO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI NICOLA: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI GIUSEPPE: motivi=['HOMONYM_DIFFERENT_IDENTITY', 'birth_place_mismatch'], conflitti=['birth_place_mismatch']
+  - ROSSI DINO: motivi=['HOMONYM_DIFFERENT_IDENTITY', 'birth_place_mismatch'], conflitti=['birth_place_mismatch']
+  - ROSSI : motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI MICHELE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ANTONIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ANGELO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI COSIMO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSINI MARIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ARTURO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI 12° PIETRO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ACHILLE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ADELINO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ADOLFO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ADRASTO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ADRIANO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI AGOSTINO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI CARLO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ABELE DI BONIFACIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ABELE DI MATTEO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ABONDIO DI GIOVANNI DOMENICO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ABRAMO DI FERDINANDO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ABRAMO DI PIETRO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ALBANO DI GIUSEPPE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ALBERIGIO DI ERMINIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ALBERTO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ALBERTO DI ALBERTO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ALBERTO DI ANTONIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ALBERTO DI AUGUSTO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ALBERTO DI FERDINANDO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI AMBROGIO DI LUIGI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI AMBROGIO DI PIETRO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI AMBROGIO LUIGI DI PIETRO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ANDREA DI ANNIBALE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ANDREA DI SEBASTIANO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - ROSSI ANGELO DI BERNARDINO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - rank: Field rank not supported by accepted evidence [BLOCCANTE]
+  - unit: Field unit not supported by accepted evidence
+  - death_date: Field death_date not supported by accepted evidence
+  - death_year: Field death_year not supported by accepted evidence
+  - death_place: Field death_place not supported by accepted evidence
+  - death_cause: Field death_cause not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - internment_place: Field internment_place not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+  - capture_place: Field capture_place not supported by accepted evidence
+  - capture_date: Field capture_date not supported by accepted evidence
+  - fate: Field fate not supported by accepted evidence
+
+## Limitazioni
+  - NO_AI_PROVIDER: No AI provider available for narration. Using deterministic fallback.
+
+---
+## Provenienza
+- Snapshot: snap_v7_93b420360d364d48
+- Schema: 7
+- Narrator Contract: 7.1
+- Identity Resolution: RESOLVED
+- External Corroboration: PARTIAL
+- Provider Ledger: 74 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.

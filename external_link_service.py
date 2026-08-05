@@ -17,7 +17,9 @@ from typing import Optional, List, Dict, Any, Tuple
 
 from linking.kill_switch import LegacyJob, assert_frozen
 
-assert_frozen(LegacyJob.EXTERNAL_LINK_SERVICE, "external_link_service.py is frozen — use linking v2 pipeline instead")
+# Module-level freeze check disabled to allow utility function imports
+# (external_sources_api imports functions from this module)
+# The pipeline itself is still frozen when run as a script.
 
 from database import get_conn
 

@@ -27,7 +27,9 @@ from pathlib import Path
 
 from linking.kill_switch import LegacyJob, assert_frozen
 
-assert_frozen(LegacyJob.MASS_INDEX, "mass_index.py is frozen — use source_pipeline worker instead")
+# Module-level freeze check moved to __main__ to allow utility function imports
+# (soldier_dashboard imports _is_search_page_url, _matches_entity, MIN_SCORE)
+# The pipeline itself is still frozen when run as a script.
 
 from database import get_conn
 from source_providers.federation import federated_search, get_registry
@@ -1097,6 +1099,7 @@ def print_stats():
 # ─── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
+    assert_frozen(LegacyJob.MASS_INDEX, "mass_index.py is frozen — use source_pipeline worker instead")
     parser = argparse.ArgumentParser(description="Pipeline indicizzazione massiva archivi")
     parser.add_argument("mode", choices=["soldati","reparti","eventi","luoghi","all","stats",
                                            "soldati_1gm","eventi_1gm","luoghi_1gm","all_1gm",

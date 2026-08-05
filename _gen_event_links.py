@@ -2,11 +2,11 @@
 """
 DEPRECATED — Legacy event-centric linking pipeline.
 
-This script is FROZEN. It has known issues:
-- Mixes WW1/WW2 events with generic keywords (campo, Russia, Africa, Nero, Corno, Lana)
-- Uses non-tokenized substring matching
-- Breaks on first event match (order-dependent)
-- Skips entire processing if any links exist
+V7.3-FIX: Word-boundary matching, temporal barriers (WWI/WWII), no skip-if-exists,
+CLI with --dry-run/--execute. Multi-event matching (no break on first).
+
+Known remaining issues (documented, not fixed here — use linking v2):
+- O(N×M) scan of records × events
 - No provenance, no algorithm version, no evidence
 - Confidence values are not calibrated
 
@@ -14,13 +14,14 @@ Use the new linking v2 pipeline instead:
     python -m linking.cli generate --dry-run
 
 To run this script in audit-only mode:
-    LEGACY_JOB_LEGACY_EVENT_LINKS=true python _gen_event_links.py
+    LEGACY_JOB_LEGACY_EVENT_LINKS=true python _gen_event_links.py --dry-run
 
-To force execution (NOT RECOMMENDED):
-    LEGACY_JOB_LEGACY_EVENT_LINKS=true LEGACY_JOB_FORCE_EXECUTE=true python _gen_event_links.py
+To execute with DB writes:
+    LEGACY_JOB_LEGACY_EVENT_LINKS=true python _gen_event_links.py --execute
 """
 import sys
 import os
+import argparse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from linking.kill_switch import LegacyJob, assert_frozen
@@ -30,6 +31,32 @@ assert_frozen(LegacyJob.EVENT_LINKS, "_gen_event_links.py is deprecated")
 import sqlite3, json, re
 from datetime import datetime
 from pathlib import Path
+
+# V7.3-FIX: War period classification for events
+def _event_war_period(ev):
+    """Classify event as WWI, WWII, or BOTH based on dates."""
+    di = ev.get("data_inizio", "")
+    if not di:
+        return "UNKNOWN"
+    year = int(di[:4])
+    if year >= 1939:
+        return "WWII"
+    elif year >= 1914:
+        return "WWI"
+    return "UNKNOWN"
+
+# V7.3-FIX: Word-boundary matcher
+def _word_boundary_match(keyword, text):
+    """Match keyword as a whole word in text (case-insensitive).
+
+    'Lana' does NOT match 'Castellana'.
+    'Roma' does NOT match 'Romania'.
+    'Nero' does NOT match 'Pinero'.
+    """
+    if not keyword or not text:
+        return False
+    pattern = r'\b' + re.escape(keyword.upper()) + r'\b'
+    return bool(re.search(pattern, text.upper()))
 
 DB = Path(__file__).parent / "imi_internati.db"
 EDB = Path(__file__).parent / "eventi_1gm.db"
@@ -241,6 +268,23 @@ EVENTI_1GM = [
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Legacy event linking (deprecated)")
+    parser.add_argument("--dry-run", action="store_true", default=True,
+                        help="Audit only, no DB writes (default)")
+    parser.add_argument("--execute", action="store_true", default=False,
+                        help="Execute with DB writes")
+    args = parser.parse_args()
+
+    if args.execute:
+        args.dry_run = False
+        print("WARNING: --execute mode. DB will be modified.")
+        confirm = input("Type 'yes' to continue: ")
+        if confirm.strip().lower() != "yes":
+            print("Aborted.")
+            return
+    else:
+        print("[DRY-RUN] No DB writes. Use --execute to apply.")
+
     # Read-only connection to main DB
     conn_ro = sqlite3.connect(str(DB), timeout=30)
     conn_ro.row_factory = sqlite3.Row
@@ -252,6 +296,15 @@ def main():
     conn.row_factory = sqlite3.Row
 
     now = datetime.now().isoformat()
+
+    # V7.3-FIX: Pre-load events with war period classification
+    all_events = []
+    for ev in EVENTI_1GM:
+        ev_copy = dict(ev)
+        ev_copy["war_period"] = _event_war_period(ev)
+        all_events.append(ev_copy)
+    wwi_events = [e for e in all_events if e["war_period"] == "WWI"]
+    wwii_events = [e for e in all_events if e["war_period"] == "WWII"]
 
     # Check if already populated
     existing_events = 0
@@ -298,390 +351,471 @@ def main():
         print(f"[eventi_1gm] {existing_events} eventi gia esistenti, skip creazione")
 
     # ─── 2. Crea tabella event_links (se non esiste) ───────────────────────
-    if existing_links == 0:
-        conn.execute("""CREATE TABLE IF NOT EXISTS event_links (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            evento_id INTEGER NOT NULL,
-            target_table TEXT NOT NULL,
-            target_id INTEGER NOT NULL,
-            link_type TEXT NOT NULL,
-            match_field TEXT,
-            match_value TEXT,
-            confidence REAL DEFAULT 0.5,
-            created_at TEXT,
-            FOREIGN KEY (evento_id) REFERENCES eventi_1gm(id)
-        )""")
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_event_links_evento ON event_links(evento_id)")
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_event_links_target ON event_links(target_table, target_id)")
+    conn.execute("""CREATE TABLE IF NOT EXISTS event_links (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        evento_id INTEGER NOT NULL,
+        target_table TEXT NOT NULL,
+        target_id INTEGER NOT NULL,
+        link_type TEXT NOT NULL,
+        match_field TEXT,
+        match_value TEXT,
+        confidence REAL DEFAULT 0.5,
+        created_at TEXT,
+        FOREIGN KEY (evento_id) REFERENCES eventi_1gm(id)
+    )""")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_event_links_evento ON event_links(evento_id)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_event_links_target ON event_links(target_table, target_id)")
+    # V7.3-FIX: Add quarantine columns (additive, idempotent)
+    for col, default in [("usable_as_evidence", 1), ("quarantined_at", None), ("quarantine_reason", None), ("war_period", None)]:
+        try:
+            if default is not None:
+                conn.execute(f"ALTER TABLE event_links ADD COLUMN {col} INTEGER DEFAULT {default}")
+            else:
+                conn.execute(f"ALTER TABLE event_links ADD COLUMN {col} TEXT")
+        except sqlite3.OperationalError:
+            pass
+    conn.commit()
+
+    # V7.3-FIX: Load existing link keys to avoid duplicates (incremental, not skip-if-exists)
+    existing_link_keys = set()
+    try:
+        for r in conn.execute("SELECT evento_id, target_table, target_id, link_type FROM event_links").fetchall():
+            existing_link_keys.add((r["evento_id"], r["target_table"], r["target_id"], r["link_type"]))
+    except sqlite3.OperationalError:
+        pass
+    print(f"[PRE] event_links esistenti: {len(existing_link_keys)}")
 
     # ─── 3. Collega caduti_albooro a eventi ────────────────────────────────
-    if existing_caduti == 0:
-        print("\n[1/5] Linking caduti_albooro -> eventi (luogo_morte)...")
-        caduti = conn_ro.execute("SELECT id, luogo_morte, anno_morte FROM caduti_albooro").fetchall()
-        print(f"  {len(caduti)} caduti da processare")
-        linked = 0
-        batch = []
+    # V7.3-FIX: Word-boundary match, temporal barrier (WWI only), incremental (no skip-if-exists)
+    print("\n[1/5] Linking caduti_albooro -> eventi (luogo_morte)...")
+    caduti = conn_ro.execute("SELECT id, luogo_morte, anno_morte FROM caduti_albooro").fetchall()
+    print(f"  {len(caduti)} caduti da processare")
+    linked = 0
+    batch = []
 
-        for c in caduti:
-            lm = (c["luogo_morte"] or "").strip()
-            if not lm or lm == "-":
-                continue
-            lm_up = lm.upper()
+    for c in caduti:
+        lm = (c["luogo_morte"] or "").strip()
+        if not lm or lm == "-":
+            continue
 
-            for ev in conn.execute("SELECT id, aliases, keywords FROM eventi_1gm").fetchall():
-                aliases = json.loads(ev["aliases"])
-                matched = False
-                match_alias = None
+        # V7.3-FIX: caduti_albooro is WWII — only match WWII events
+        for ev in wwii_events:
+            aliases = ev["aliases"]
+            matched = False
+            match_alias = None
 
-                for alias in aliases:
-                    if alias.upper() in lm_up or lm_up in alias.upper():
-                        if len(alias) >= 4:
-                            matched = True
-                            match_alias = alias
-                            break
-
-                if matched:
-                    batch.append((
-                        ev["id"], "caduti_albooro", c["id"], "soldato_caduto",
-                        "luogo_morte", lm, 0.9, now
-                    ))
-                    linked += 1
+            for alias in aliases:
+                if len(alias) >= 4 and _word_boundary_match(alias, lm):
+                    matched = True
+                    match_alias = alias
                     break
 
-        if batch:
-            conn.executemany(
-                "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at) "
-                "VALUES (?,?,?,?,?,?,?,?)", batch
-            )
-            conn.commit()
-        print(f"  {linked} caduti collegati a eventi")
-    else:
-        print(f"\n[1/5] caduti_albooro: {existing_caduti} link gia esistenti, skip")
+            if matched:
+                key = (None, "caduti_albooro", c["id"], "soldato_caduto")  # evento_id filled below
+                # V7.3-FIX: No break — allow multi-event matching
+                # But avoid duplicate links
+                dup_key = (ev["nome"], "caduti_albooro", c["id"], "soldato_caduto")
+                # Check against existing by event name → need event ID
+                # We'll check via the batch + existing set
+                batch.append((
+                    ev["nome"], "caduti_albooro", c["id"], "soldato_caduto",
+                    "luogo_morte", lm, 0.9, now, "WWII"
+                ))
+                linked += 1
+
+    # V7.3-FIX: Resolve event names to IDs and filter duplicates
+    event_name_to_id = {ev["nome"]: i+1 for i, ev in enumerate(EVENTI_1GM)}  # 1-based IDs
+    filtered_batch = []
+    for row in batch:
+        ev_name = row[0]
+        ev_id = event_name_to_id.get(ev_name)
+        if not ev_id:
+            continue
+        key = (ev_id, row[1], row[2], row[3])
+        if key in existing_link_keys:
+            continue
+        existing_link_keys.add(key)
+        filtered_batch.append((ev_id, row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+
+    if filtered_batch and not args.dry_run:
+        conn.executemany(
+            "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at, war_period) "
+            "VALUES (?,?,?,?,?,?,?,?,?)", filtered_batch
+        )
+        conn.commit()
+    print(f"  {len(filtered_batch)} caduti collegati a eventi (WWII only, word-boundary)")
 
     # ─── 4. Collega decorati_nastroazzurro a eventi (per anno) ─────────────
-    if existing_decorati == 0:
-        print("\n[2/5] Linking decorati_nastroazzurro -> eventi (anno_decorazione)...")
-        decorati = conn_ro.execute("SELECT id, anno_decorazione FROM decorati_nastroazzurro").fetchall()
-        print(f"  {len(decorati)} decorati da processare")
-        linked_dec = 0
-        batch_dec = []
+    # V7.3-FIX: Temporal barrier — decorati is WWII, only match WWII events
+    print("\n[2/5] Linking decorati_nastroazzurro -> eventi (anno_decorazione)...")
+    decorati = conn_ro.execute("SELECT id, anno_decorazione FROM decorati_nastroazzurro").fetchall()
+    print(f"  {len(decorati)} decorati da processare")
+    linked_dec = 0
+    batch_dec = []
 
-        for d in decorati:
-            anno = (d["anno_decorazione"] or "").strip()
-            if not anno or not re.match(r"^19[0-9]{2}$", anno):
-                continue
-            anno_int = int(anno)
+    for d in decorati:
+        anno = (d["anno_decorazione"] or "").strip()
+        if not anno or not re.match(r"^19[0-9]{2}$", anno):
+            continue
+        anno_int = int(anno)
 
-            for ev in conn.execute("SELECT id, data_inizio, data_fine FROM eventi_1gm").fetchall():
-                di = ev["data_inizio"][:4] if ev["data_inizio"] else ""
-                df = ev["data_fine"][:4] if ev["data_fine"] else ""
-                if di and df:
-                    try:
-                        if int(di) <= anno_int <= int(df):
-                            # Variable confidence: shorter event span = higher confidence
-                            span = int(df) - int(di)
-                            if span <= 1:
-                                conf = 0.6
-                            elif span == 2:
-                                conf = 0.4
-                            else:
-                                conf = 0.3
-                            batch_dec.append((
-                                ev["id"], "decorati_nastroazzurro", d["id"], "soldato_decorato",
-                                "anno_decorazione", anno, conf, now
-                            ))
-                            linked_dec += 1
-                    except ValueError:
-                        pass
+        for ev in wwii_events:
+            di = ev["data_inizio"][:4] if ev["data_inizio"] else ""
+            df = ev["data_fine"][:4] if ev["data_fine"] else ""
+            if di and df:
+                try:
+                    if int(di) <= anno_int <= int(df):
+                        span = int(df) - int(di)
+                        if span <= 1:
+                            conf = 0.6
+                        elif span == 2:
+                            conf = 0.4
+                        else:
+                            conf = 0.3
+                        batch_dec.append((
+                            ev["nome"], "decorati_nastroazzurro", d["id"], "soldato_decorato",
+                            "anno_decorazione", anno, conf, now, "WWII"
+                        ))
+                        linked_dec += 1
+                except ValueError:
+                    pass
 
-        if batch_dec:
-            conn.executemany(
-                "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at) "
-                "VALUES (?,?,?,?,?,?,?,?)", batch_dec
-            )
-            conn.commit()
-        print(f"  {linked_dec} decorati collegati a eventi (match per anno, confidence bassa)")
-    else:
-        print(f"\n[2/5] decorati_nastroazzurro: {existing_decorati} link gia esistenti, skip")
+    filtered_dec = []
+    for row in batch_dec:
+        ev_id = event_name_to_id.get(row[0])
+        if not ev_id:
+            continue
+        key = (ev_id, row[1], row[2], row[3])
+        if key in existing_link_keys:
+            continue
+        existing_link_keys.add(key)
+        filtered_dec.append((ev_id, row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+
+    if filtered_dec and not args.dry_run:
+        conn.executemany(
+            "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at, war_period) "
+            "VALUES (?,?,?,?,?,?,?,?,?)", filtered_dec
+        )
+        conn.commit()
+    print(f"  {len(filtered_dec)} decorati collegati a eventi (WWII only, match per anno)")
 
     # ─── 5. Collega archivio_documenti a eventi (title/description/place/creator/date_text) ──
-    if existing_doc == 0:
-        print("\n[3/5] Linking archivio_documenti -> eventi (text-match esteso)...")
-        docs = conn_ro.execute(
-            "SELECT rowid as id, title, description, provider, doc_type, source_url, "
-            "thumbnail_url, creator, date_text, place, provider_collection "
-            "FROM archivio_documenti"
-        ).fetchall()
-        print(f"  {len(docs)} documenti da processare")
-        linked_doc = 0
-        batch_doc = []
+    # V7.3-FIX: Word-boundary match, temporal barrier by doc year, incremental
+    print("\n[3/5] Linking archivio_documenti -> eventi (text-match esteso)...")
+    docs = conn_ro.execute(
+        "SELECT rowid as id, title, description, provider, doc_type, source_url, "
+        "thumbnail_url, creator, date_text, place, provider_collection "
+        "FROM archivio_documenti"
+    ).fetchall()
+    print(f"  {len(docs)} documenti da processare")
+    linked_doc = 0
+    batch_doc = []
 
-        for d in docs:
-            # Combina tutti i campi testuali per il match
-            text = " ".join(filter(None, [
-                d["title"], d["description"], d["place"],
-                d["creator"], d["date_text"], d["provider_collection"]
-            ])).upper()
-            if not text.strip():
-                continue
+    for d in docs:
+        text = " ".join(filter(None, [
+            d["title"], d["description"], d["place"],
+            d["creator"], d["date_text"], d["provider_collection"]
+        ]))
+        if not text.strip():
+            continue
 
-            for ev in conn.execute("SELECT id, keywords, aliases, nome FROM eventi_1gm").fetchall():
-                keywords = json.loads(ev["keywords"])
-                aliases = json.loads(ev["aliases"])
-                matched = False
-                match_kw = None
-                confidence = 0.8
+        # V7.3-FIX: Determine war period from date_text or year_start
+        doc_year = None
+        dt = (d["date_text"] or "").strip()
+        year_match = re.search(r"(19[0-9]{2})", dt)
+        if year_match:
+            doc_year = int(year_match.group(1))
 
-                for kw in keywords:
-                    kw_up = kw.upper()
-                    if kw_up in text:
+        for ev in all_events:
+            # V7.3-FIX: Temporal barrier — skip events from wrong war period
+            if doc_year:
+                if ev["war_period"] == "WWI" and doc_year >= 1939:
+                    continue
+                if ev["war_period"] == "WWII" and doc_year < 1939:
+                    continue
+
+            keywords = ev["keywords"]
+            aliases = ev["aliases"]
+            matched = False
+            match_kw = None
+            confidence = 0.8
+
+            for kw in keywords:
+                if _word_boundary_match(kw, text):
+                    matched = True
+                    match_kw = kw
+                    if _word_boundary_match(kw, d["title"] or ""):
+                        confidence = 0.9
+                    break
+
+            if not matched:
+                for alias in aliases:
+                    if len(alias) >= 4 and _word_boundary_match(alias, text):
                         matched = True
-                        match_kw = kw
-                        # Higher confidence if match in title
-                        if kw_up in (d["title"] or "").upper():
-                            confidence = 0.9
+                        match_kw = alias
+                        confidence = 0.7
                         break
 
-                if not matched:
-                    for alias in aliases:
-                        if len(alias) >= 4 and alias.upper() in text:
-                            matched = True
-                            match_kw = alias
-                            confidence = 0.7
-                            break
+            if matched:
+                batch_doc.append((
+                    ev["nome"], "archivio_documenti", d["id"], "documento",
+                    "text_match", match_kw, confidence, now, ev["war_period"]
+                ))
+                linked_doc += 1
 
-                if matched:
-                    batch_doc.append((
-                        ev["id"], "archivio_documenti", d["id"], "documento",
-                        "text_match", match_kw, confidence, now
-                    ))
-                    linked_doc += 1
-                    # Non fare break: un documento può matchare più eventi
+    filtered_doc = []
+    for row in batch_doc:
+        ev_id = event_name_to_id.get(row[0])
+        if not ev_id:
+            continue
+        key = (ev_id, row[1], row[2], row[3])
+        if key in existing_link_keys:
+            continue
+        existing_link_keys.add(key)
+        filtered_doc.append((ev_id, row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
 
-        if batch_doc:
-            conn.executemany(
-                "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at) "
-                "VALUES (?,?,?,?,?,?,?,?)", batch_doc
-            )
-            conn.commit()
-        print(f"  {linked_doc} documenti collegati a eventi (match multi-evento)")
-    else:
-        print(f"\n[3/5] archivio_documenti: {existing_doc} link gia esistenti, skip")
+    if filtered_doc and not args.dry_run:
+        conn.executemany(
+            "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at, war_period) "
+            "VALUES (?,?,?,?,?,?,?,?,?)", filtered_doc
+        )
+        conn.commit()
+    print(f"  {len(filtered_doc)} documenti collegati a eventi (word-boundary, temporal barrier)")
 
     # ─── 6. Collega fonti_indice a eventi (titolo/luogo/soggetti) ───────────
-    if existing_fonti == 0:
-        print("\n[4/5] Linking fonti_indice -> eventi (titolo/luogo/soggetti_collegati)...")
-        fonti = conn_ro.execute("SELECT id, titolo, luogo, soggetti_collegati, url_catalogo, url_file, archivio FROM fonti_indice").fetchall()
-        print(f"  {len(fonti)} fonti da processare")
-        linked_fon = 0
-        batch_fon = []
+    # V7.3-FIX: Word-boundary match, no break on first, incremental
+    print("\n[4/5] Linking fonti_indice -> eventi (titolo/luogo/soggetti_collegati)...")
+    fonti = conn_ro.execute("SELECT id, titolo, luogo, soggetti_collegati, url_catalogo, url_file, archivio FROM fonti_indice").fetchall()
+    print(f"  {len(fonti)} fonti da processare")
+    linked_fon = 0
+    batch_fon = []
 
-        for f in fonti:
-            text = " ".join(filter(None, [f["titolo"], f["luogo"], f["soggetti_collegati"]])).upper()
-            if not text.strip():
-                continue
+    for f in fonti:
+        text = " ".join(filter(None, [f["titolo"], f["luogo"], f["soggetti_collegati"]]))
+        if not text.strip():
+            continue
 
-            for ev in conn.execute("SELECT id, keywords, aliases, nome FROM eventi_1gm").fetchall():
-                keywords = json.loads(ev["keywords"])
-                aliases = json.loads(ev["aliases"])
-                matched = False
-                match_kw = None
+        for ev in all_events:
+            keywords = ev["keywords"]
+            aliases = ev["aliases"]
+            matched = False
+            match_kw = None
 
-                for kw in keywords:
-                    if kw.upper() in text:
-                        matched = True
-                        match_kw = kw
-                        break
-
-                if not matched:
-                    for alias in aliases:
-                        if len(alias) >= 4 and alias.upper() in text:
-                            matched = True
-                            match_kw = alias
-                            break
-
-                if matched:
-                    batch_fon.append((
-                        ev["id"], "fonti_indice", f["id"], "fonte_archivistica",
-                        "titolo_luogo_soggetti", match_kw, 0.7, now
-                    ))
-                    linked_fon += 1
+            for kw in keywords:
+                if _word_boundary_match(kw, text):
+                    matched = True
+                    match_kw = kw
                     break
 
-        if batch_fon:
-            conn.executemany(
-                "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at) "
-                "VALUES (?,?,?,?,?,?,?,?)", batch_fon
-            )
-            conn.commit()
-        print(f"  {linked_fon} fonti collegate a eventi")
-    else:
-        print(f"\n[4/5] fonti_indice: {existing_fonti} link gia esistenti, skip")
-
-    # ─── 7. Collega caduti_cwgc WW1 a eventi (cimitero ↔ aliases) ──────────
-    existing_cwgc = 0
-    try:
-        existing_cwgc = conn.execute("SELECT COUNT(*) FROM event_links WHERE link_type='soldato_caduto_cwgc'").fetchone()[0]
-    except sqlite3.OperationalError:
-        pass
-
-    if existing_cwgc == 0:
-        print("\n[5/8] Linking caduti_cwgc WW1 -> eventi (cimitero)...")
-        cwgc = conn_ro.execute(
-            "SELECT id, cimitero, paese_cimitero FROM caduti_cwgc WHERE guerra = 'World War 1'"
-        ).fetchall()
-        print(f"  {len(cwgc)} caduti CWGC WW1 da processare")
-        linked_cwgc = 0
-        batch_cwgc = []
-
-        for c in cwgc:
-            cim = (c["cimitero"] or "").strip()
-            paese = (c["paese_cimitero"] or "").strip()
-            text = (cim + " " + paese).upper()
-            if not text.strip():
-                continue
-
-            for ev in conn.execute("SELECT id, aliases, keywords FROM eventi_1gm").fetchall():
-                aliases = json.loads(ev["aliases"])
-                matched = False
-                match_alias = None
-
+            if not matched:
                 for alias in aliases:
-                    if len(alias) >= 4 and (alias.upper() in text or text in alias.upper()):
+                    if len(alias) >= 4 and _word_boundary_match(alias, text):
                         matched = True
-                        match_alias = alias
+                        match_kw = alias
                         break
 
-                if matched:
-                    batch_cwgc.append((
-                        ev["id"], "caduti_cwgc", c["id"], "soldato_caduto_cwgc",
-                        "cimitero", cim, 0.7, now
-                    ))
-                    linked_cwgc += 1
+            if matched:
+                batch_fon.append((
+                    ev["nome"], "fonti_indice", f["id"], "fonte_archivistica",
+                    "titolo_luogo_soggetti", match_kw, 0.7, now, ev["war_period"]
+                ))
+                linked_fon += 1
+                # V7.3-FIX: No break — allow multi-event matching
+
+    filtered_fon = []
+    for row in batch_fon:
+        ev_id = event_name_to_id.get(row[0])
+        if not ev_id:
+            continue
+        key = (ev_id, row[1], row[2], row[3])
+        if key in existing_link_keys:
+            continue
+        existing_link_keys.add(key)
+        filtered_fon.append((ev_id, row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+
+    if filtered_fon and not args.dry_run:
+        conn.executemany(
+            "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at, war_period) "
+            "VALUES (?,?,?,?,?,?,?,?,?)", filtered_fon
+        )
+        conn.commit()
+    print(f"  {len(filtered_fon)} fonti collegate a eventi (word-boundary, multi-event)")
+
+    # ─── 7. Collega caduti_cwgc WW1 a eventi (cimitero ↔ alias) ──────────
+    # V7.3-FIX: Word-boundary match, WWI events only, incremental
+    print("\n[5/8] Linking caduti_cwgc WW1 -> eventi (cimitero)...")
+    cwgc = conn_ro.execute(
+        "SELECT id, cimitero, paese_cimitero FROM caduti_cwgc WHERE guerra = 'World War 1'"
+    ).fetchall()
+    print(f"  {len(cwgc)} caduti CWGC WW1 da processare")
+    linked_cwgc = 0
+    batch_cwgc = []
+
+    for c in cwgc:
+        cim = (c["cimitero"] or "").strip()
+        paese = (c["paese_cimitero"] or "").strip()
+        text = cim + " " + paese
+        if not text.strip():
+            continue
+
+        # V7.3-FIX: CWGC WW1 → only WWI events
+        for ev in wwi_events:
+            aliases = ev["aliases"]
+            matched = False
+            match_alias = None
+
+            for alias in aliases:
+                if len(alias) >= 4 and _word_boundary_match(alias, text):
+                    matched = True
+                    match_alias = alias
                     break
 
-        if batch_cwgc:
-            conn.executemany(
-                "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at) "
-                "VALUES (?,?,?,?,?,?,?,?)", batch_cwgc
-            )
-            conn.commit()
-        print(f"  {linked_cwgc} caduti CWGC WW1 collegati a eventi")
-    else:
-        print(f"\n[5/8] caduti_cwgc WW1: {existing_cwgc} link gia esistenti, skip")
+            if matched:
+                batch_cwgc.append((
+                    ev["nome"], "caduti_cwgc", c["id"], "soldato_caduto_cwgc",
+                    "cimitero", cim, 0.7, now, "WWI"
+                ))
+                linked_cwgc += 1
+                # V7.3-FIX: No break — allow multi-event
+
+    filtered_cwgc = []
+    for row in batch_cwgc:
+        ev_id = event_name_to_id.get(row[0])
+        if not ev_id:
+            continue
+        key = (ev_id, row[1], row[2], row[3])
+        if key in existing_link_keys:
+            continue
+        existing_link_keys.add(key)
+        filtered_cwgc.append((ev_id, row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+
+    if filtered_cwgc and not args.dry_run:
+        conn.executemany(
+            "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at, war_period) "
+            "VALUES (?,?,?,?,?,?,?,?,?)", filtered_cwgc
+        )
+        conn.commit()
+    print(f"  {len(filtered_cwgc)} caduti CWGC WW1 collegati a eventi (word-boundary, WWI only)")
 
     # ─── 8. Collega caduti_ministero a eventi (luogo_sepoltura/nazione_decesso) ──
-    existing_min = 0
-    try:
-        existing_min = conn.execute("SELECT COUNT(*) FROM event_links WHERE link_type='soldato_caduto_ministero'").fetchone()[0]
-    except sqlite3.OperationalError:
-        pass
+    # V7.3-FIX: Word-boundary match, WWII events only, incremental
+    print("\n[6/8] Linking caduti_ministero -> eventi (luogo_sepoltura/nazione_decesso)...")
+    minist = conn_ro.execute(
+        "SELECT id, luogo_sepoltura, nazione_decesso, data_decesso FROM caduti_ministero"
+    ).fetchall()
+    print(f"  {len(minist)} caduti ministero da processare")
+    linked_min = 0
+    batch_min = []
 
-    if existing_min == 0:
-        print("\n[6/8] Linking caduti_ministero -> eventi (luogo_sepoltura/nazione_decesso)...")
-        minist = conn_ro.execute(
-            "SELECT id, luogo_sepoltura, nazione_decesso, data_decesso FROM caduti_ministero"
-        ).fetchall()
-        print(f"  {len(minist)} caduti ministero da processare")
-        linked_min = 0
-        batch_min = []
+    for c in minist:
+        sep = (c["luogo_sepoltura"] or "").strip()
+        naz = (c["nazione_decesso"] or "").strip()
+        text = sep + " " + naz
+        if not text.strip():
+            continue
 
-        for c in minist:
-            sep = (c["luogo_sepoltura"] or "").strip()
-            naz = (c["nazione_decesso"] or "").strip()
-            text = (sep + " " + naz).upper()
-            if not text.strip():
-                continue
+        # V7.3-FIX: caduti_ministero is WWII — only match WWII events
+        for ev in wwii_events:
+            aliases = ev["aliases"]
+            matched = False
+            match_alias = None
 
-            for ev in conn.execute("SELECT id, aliases, keywords FROM eventi_1gm").fetchall():
-                aliases = json.loads(ev["aliases"])
-                matched = False
-                match_alias = None
-
-                for alias in aliases:
-                    if len(alias) >= 4 and alias.upper() in text:
-                        matched = True
-                        match_alias = alias
-                        break
-
-                if matched:
-                    batch_min.append((
-                        ev["id"], "caduti_ministero", c["id"], "soldato_caduto_ministero",
-                        "luogo_sepoltura", sep or naz, 0.6, now
-                    ))
-                    linked_min += 1
+            for alias in aliases:
+                if len(alias) >= 4 and _word_boundary_match(alias, text):
+                    matched = True
+                    match_alias = alias
                     break
 
-        if batch_min:
-            conn.executemany(
-                "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at) "
-                "VALUES (?,?,?,?,?,?,?,?)", batch_min
-            )
-            conn.commit()
-        print(f"  {linked_min} caduti ministero collegati a eventi")
-    else:
-        print(f"\n[6/8] caduti_ministero: {existing_min} link gia esistenti, skip")
+            if matched:
+                batch_min.append((
+                    ev["nome"], "caduti_ministero", c["id"], "soldato_caduto_ministero",
+                    "luogo_sepoltura", sep or naz, 0.6, now, "WWII"
+                ))
+                linked_min += 1
+
+    filtered_min = []
+    for row in batch_min:
+        ev_id = event_name_to_id.get(row[0])
+        if not ev_id:
+            continue
+        key = (ev_id, row[1], row[2], row[3])
+        if key in existing_link_keys:
+            continue
+        existing_link_keys.add(key)
+        filtered_min.append((ev_id, row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+
+    if filtered_min and not args.dry_run:
+        conn.executemany(
+            "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at, war_period) "
+            "VALUES (?,?,?,?,?,?,?,?,?)", filtered_min
+        )
+        conn.commit()
+    print(f"  {len(filtered_min)} caduti ministero collegati a eventi (word-boundary, WWII only)")
 
     # ─── 9. Collega internati WW2 a eventi (luogo_cattura/luogo_internamento) ──
-    existing_int = 0
-    try:
-        existing_int = conn.execute("SELECT COUNT(*) FROM event_links WHERE link_type='internato_ww2'").fetchone()[0]
-    except sqlite3.OperationalError:
-        pass
+    # V7.3-FIX: Word-boundary match, WWII events only, incremental
+    print("\n[7/8] Linking internati -> eventi WW2 (luogo_cattura/internamento)...")
+    internati = conn_ro.execute(
+        "SELECT id, luogo_cattura, luogo_internamento, arbeitskommando, sorte, raw_text FROM internati"
+    ).fetchall()
+    print(f"  {len(internati)} internati da processare")
+    linked_int = 0
+    batch_int = []
 
-    if existing_int == 0:
-        print("\n[7/8] Linking internati -> eventi WW2 (luogo_cattura/internamento)...")
-        internati = conn_ro.execute(
-            "SELECT id, luogo_cattura, luogo_internamento, arbeitskommando, sorte, raw_text FROM internati"
-        ).fetchall()
-        print(f"  {len(internati)} internati da processare")
-        linked_int = 0
-        batch_int = []
+    for i in internati:
+        text = " ".join(filter(None, [
+            i["luogo_cattura"], i["luogo_internamento"],
+            i["arbeitskommando"], i["sorte"], i["raw_text"]
+        ]))
+        if not text.strip():
+            continue
 
-        for i in internati:
-            text = " ".join(filter(None, [
-                i["luogo_cattura"], i["luogo_internamento"],
-                i["arbeitskommando"], i["sorte"], i["raw_text"]
-            ])).upper()
-            if not text.strip():
-                continue
+        # V7.3-FIX: internati is WWII — only match WWII events
+        for ev in wwii_events:
+            keywords = ev["keywords"]
+            aliases = ev["aliases"]
+            matched = False
+            match_kw = None
 
-            for ev in conn.execute("SELECT id, keywords, aliases, nome FROM eventi_1gm").fetchall():
-                keywords = json.loads(ev["keywords"])
-                aliases = json.loads(ev["aliases"])
-                matched = False
-                match_kw = None
-
-                for kw in keywords:
-                    if len(kw) >= 4 and kw.upper() in text:
-                        matched = True
-                        match_kw = kw
-                        break
-
-                if not matched:
-                    for alias in aliases:
-                        if len(alias) >= 4 and alias.upper() in text:
-                            matched = True
-                            match_kw = alias
-                            break
-
-                if matched:
-                    batch_int.append((
-                        ev["id"], "internati", i["id"], "internato_ww2",
-                        "luogo_text", match_kw, 0.7, now
-                    ))
-                    linked_int += 1
+            for kw in keywords:
+                if len(kw) >= 4 and _word_boundary_match(kw, text):
+                    matched = True
+                    match_kw = kw
                     break
 
-        if batch_int:
-            conn.executemany(
-                "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at) "
-                "VALUES (?,?,?,?,?,?,?,?)", batch_int
-            )
-            conn.commit()
-        print(f"  {linked_int} internati collegati a eventi")
-    else:
-        print(f"\n[7/8] internati: {existing_int} link gia esistenti, skip")
+            if not matched:
+                for alias in aliases:
+                    if len(alias) >= 4 and _word_boundary_match(alias, text):
+                        matched = True
+                        match_kw = alias
+                        break
+
+            if matched:
+                batch_int.append((
+                    ev["nome"], "internati", i["id"], "internato_ww2",
+                    "luogo_text", match_kw, 0.7, now, "WWII"
+                ))
+                linked_int += 1
+                # V7.3-FIX: No break — allow multi-event
+
+    filtered_int = []
+    for row in batch_int:
+        ev_id = event_name_to_id.get(row[0])
+        if not ev_id:
+            continue
+        key = (ev_id, row[1], row[2], row[3])
+        if key in existing_link_keys:
+            continue
+        existing_link_keys.add(key)
+        filtered_int.append((ev_id, row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+
+    if filtered_int and not args.dry_run:
+        conn.executemany(
+            "INSERT INTO event_links (evento_id, target_table, target_id, link_type, match_field, match_value, confidence, created_at, war_period) "
+            "VALUES (?,?,?,?,?,?,?,?,?)", filtered_int
+        )
+        conn.commit()
+    print(f"  {len(filtered_int)} internati collegati a eventi (word-boundary, WWII only)")
 
     # ─── 10. Statistiche finali ────────────────────────────────────────────
     print("\n[8/8] Statistiche finali")

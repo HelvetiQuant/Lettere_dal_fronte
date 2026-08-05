@@ -200,6 +200,9 @@ class UnifiedResearchOrchestratorV7:
         ctx.completed_at = datetime.now().isoformat()
         ctx.stage_timings["total"] = time.time() - t_start
 
+        # V7.3-PERSON: Compute semantic counts
+        semantic_counts = self._compute_semantic_counts(ctx)
+
         return {
             "run_id": run_id,
             "plan_id": plan.plan_id,
@@ -211,6 +214,7 @@ class UnifiedResearchOrchestratorV7:
             "warnings": ctx.warnings,
             "stage_timings": ctx.stage_timings,
             "observation_count": len(ctx.observations),
+            "semantic_counts": semantic_counts,
         }
 
     def get_run(self, run_id: str) -> Optional[RunContext]:
@@ -551,6 +555,213 @@ class UnifiedResearchOrchestratorV7:
                 elif reason_codes:
                     obs.reason_codes.extend(reason_codes)
 
+        # V7.3-PERSON: Extract claims from local DB records
+        self._stage_extract_person_claims(ctx)
+
+    def _stage_extract_person_claims(self, ctx: RunContext):
+        """Extract claims from local DB records for PERSON pipeline.
+
+        V7.3-PERSON-FIX: Uses person_source_schemas registry for mapping
+        across all 5 PERSON tables (internati, caduti_albooro,
+        decorati_nastroazzurro, caduti_cwgc, caduti_ministero).
+        Separates claims from provenance — provenance items are NOT counted
+        as person facts.
+        """
+        from evidence_snapshot_v7 import ClaimV7
+        from person_source_schemas import (
+            PERSON_SOURCE_SCHEMAS, extract_claims_from_record,
+            get_war_period_for_table, get_name_fields_for_table,
+        )
+        from person_pipeline_models import (
+            PersonCandidate, FactEvidence, SourceProvenance, PersonFact,
+            ConflictSet, ConflictEntry,
+        )
+        import hashlib as _hashlib
+
+        person_claims = []
+        context_claims = []
+        provenance_items = []
+        person_candidates = []
+        all_evidence = []
+
+        for obs in ctx.observations:
+            if obs.classification != "SOURCE_CANDIDATE":
+                continue
+
+            meta = obs.provider_metadata
+            if not meta or not isinstance(meta, dict):
+                continue
+
+            raw_record = meta.get("raw_record")
+            if not raw_record or not isinstance(raw_record, dict):
+                continue
+
+            table = meta.get("table", "")
+            record_id = raw_record.get("id", "")
+
+            # Extract from all 5 PERSON DB tables using schema registry
+            if table not in PERSON_SOURCE_SCHEMAS:
+                continue
+
+            source_id = f"local_db:{table}:{record_id}"
+            war_period = get_war_period_for_table(table)
+
+            # Build PersonCandidate
+            name_fields = get_name_fields_for_table(table)
+            cognome_col, nome_col, nominativo_col = name_fields
+            cand_cognome = raw_record.get(cognome_col, "") if cognome_col else ""
+            cand_nome = raw_record.get(nome_col, "") if nome_col else ""
+            cand_nominativo = raw_record.get(nominativo_col, "") if nominativo_col else ""
+
+            candidate = PersonCandidate(
+                candidate_id="",
+                source_table=table,
+                record_id=record_id,
+                cognome=str(cand_cognome or "").strip(),
+                nome=str(cand_nome or "").strip(),
+                nominativo=str(cand_nominativo or "").strip(),
+                war_period=war_period,
+                authority_tier=PERSON_SOURCE_SCHEMAS[table].authority_tier,
+                raw_record=raw_record,
+            )
+            person_candidates.append(candidate)
+
+            # Extract claims and provenance using schema registry
+            extracted_claims, extracted_provenance = extract_claims_from_record(table, raw_record, record_id)
+
+            for ec in extracted_claims:
+                if ec["validation_status"] == "invalid":
+                    context_claims.append(ClaimV7(
+                        claim_id=f"claim_invalid_{_hashlib.sha256((ec['predicate'] + '_' + source_id).encode()).hexdigest()[:12]}",
+                        subject_id=obs.source_record_id or f"{table}_{record_id}",
+                        predicate=ec["predicate"],
+                        value_normalized=ec["value_normalized"],
+                        value_raw=ec["value_raw"],
+                        status="CONTEXT",
+                        confidence=0.3,
+                        source=source_id,
+                        evidence_ids=[obs.observation_id],
+                        evidence_scope="CONTEXT_EVIDENCE",
+                        source_function="person_evidence",
+                        normalization_status="invalid",
+                    ))
+                    continue
+
+                claim_id = f"claim_person_{_hashlib.sha256((ec['predicate'] + '_' + source_id).encode()).hexdigest()[:12]}"
+                person_claims.append(ClaimV7(
+                    claim_id=claim_id,
+                    subject_id=obs.source_record_id or f"{table}_{record_id}",
+                    predicate=ec["predicate"],
+                    value_normalized=ec["value_normalized"],
+                    value_raw=ec["value_raw"],
+                    status="ASSERTED",
+                    confidence=0.85,
+                    source=source_id,
+                    evidence_ids=[obs.observation_id],
+                    evidence_scope="PERSON_EVIDENCE",
+                    source_function="person_evidence",
+                    normalization_status="normalized" if ec["normalizer_note"] else "exact",
+                ))
+
+                # Build FactEvidence
+                ev = FactEvidence(
+                    evidence_id="",
+                    candidate_id=candidate.candidate_id,
+                    source_table=table,
+                    record_id=record_id,
+                    source_field=ec["source_field"],
+                    value_raw=ec["value_raw"],
+                    value_normalized=ec["value_normalized"],
+                    normalizer_note=ec["normalizer_note"],
+                    authority_tier=PERSON_SOURCE_SCHEMAS[table].authority_tier,
+                    war_period=war_period,
+                )
+                all_evidence.append(ev)
+
+            # Extract provenance (separate from claims)
+            for ep in extracted_provenance:
+                prov = SourceProvenance(
+                    provenance_id="",
+                    candidate_id=candidate.candidate_id,
+                    source_table=table,
+                    record_id=record_id,
+                    predicate=ep["predicate"],
+                    value_raw=ep["value_raw"],
+                    value_normalized=ep["value_normalized"],
+                    source_field=ep["source_field"],
+                )
+                provenance_items.append(prov)
+
+                # Also add as context claim for narrator visibility
+                claim_id = f"claim_prov_{_hashlib.sha256((ep['predicate'] + '_' + source_id).encode()).hexdigest()[:12]}"
+                context_claims.append(ClaimV7(
+                    claim_id=claim_id,
+                    subject_id=obs.source_record_id or f"{table}_{record_id}",
+                    predicate=ep["predicate"],
+                    value_normalized=ep["value_normalized"],
+                    value_raw=ep["value_raw"],
+                    status="CONTEXT",
+                    confidence=0.5,
+                    source=source_id,
+                    evidence_ids=[obs.observation_id],
+                    evidence_scope="PROVENANCE",
+                    source_function="provenance",
+                    normalization_status="exact",
+                ))
+
+            # V7.3-PERSON-FIX: raw_text and needs_review (only for internati)
+            raw_text = raw_record.get("raw_text", "")
+            if raw_text and str(raw_text).strip():
+                # Check if record has needs_review flag
+                needs_review = raw_record.get("needs_review", 0)
+                review_reason = raw_record.get("review_reason", "")
+                text_preview = str(raw_text).strip()[:500]
+
+                claim_id = f"claim_raw_{_hashlib.sha256(f'raw_text_{source_id}'.encode()).hexdigest()[:12]}"
+                person_claims.append(ClaimV7(
+                    claim_id=claim_id,
+                    subject_id=obs.source_record_id or f"{table}_{record_id}",
+                    predicate="source_text",
+                    value_normalized=text_preview,
+                    value_raw=str(raw_text).strip()[:1000],
+                    status="ASSERTED" if not needs_review else "NEEDS_REVIEW",
+                    confidence=0.70 if not needs_review else 0.40,
+                    source=source_id,
+                    evidence_ids=[obs.observation_id],
+                    evidence_scope="PERSON_EVIDENCE",
+                    source_function="person_evidence",
+                    normalization_status="raw",
+                ))
+
+                if review_reason:
+                    claim_id = f"claim_review_{_hashlib.sha256(f'review_{source_id}'.encode()).hexdigest()[:12]}"
+                    person_claims.append(ClaimV7(
+                        claim_id=claim_id,
+                        subject_id=obs.source_record_id or f"{table}_{record_id}",
+                        predicate="data_quality_note",
+                        value_normalized=review_reason,
+                        value_raw=review_reason,
+                        status="ASSERTED",
+                        confidence=0.95,
+                        source=source_id,
+                        evidence_ids=[obs.observation_id],
+                        evidence_scope="PERSON_EVIDENCE",
+                        source_function="person_evidence",
+                        normalization_status="exact",
+                    ))
+
+        ctx._person_claims = person_claims
+        ctx._context_claims = context_claims
+        ctx._fused_accepted = []
+        ctx._fused_conflicting = []
+        ctx._fused_asserted = person_claims
+        ctx._source_lineage_groups = []
+        ctx._independence_groups = []
+        # V7.3-PERSON-FIX: Store typed objects for semantic counts
+        ctx._person_candidates = person_candidates
+        ctx._person_evidence = all_evidence
+        ctx._person_provenance = provenance_items
+
     def _stage_extract_events(self, ctx: RunContext):
         """Extract event claims from DB records and web search snippets.
 
@@ -738,10 +949,14 @@ class UnifiedResearchOrchestratorV7:
         Only fuses observations from the resolved identity cluster.
         Other clusters' observations are excluded from person claims.
         V7.2: For EVENT_LOOKUP, fusion is done in _stage_extract_events.
+        V7.3-PERSON: Preserves person claims from local DB extraction.
         """
         # V7.2: Skip fusion for events — claims already extracted
         if ctx.plan.intent == "EVENT_LOOKUP":
             return
+
+        # V7.3-PERSON: Preserve person claims from local DB extraction
+        existing_person_claims = getattr(ctx, '_person_claims', [])
 
         # V7.2: Block fusion if identity is ambiguous
         identity_status = getattr(ctx, 'identity_status_v72', 'UNRESOLVED_IDENTITY')
@@ -749,10 +964,10 @@ class UnifiedResearchOrchestratorV7:
             ctx.warnings.append("FUSE_BLOCKED_AMBIGUOUS_IDENTITY")
             ctx._fused_accepted = []
             ctx._fused_conflicting = []
-            ctx._fused_asserted = []
+            ctx._fused_asserted = existing_person_claims
             ctx._source_lineage_groups = []
             ctx._independence_groups = []
-            ctx._person_claims = []
+            ctx._person_claims = existing_person_claims
             ctx._context_claims = []
             return
 
@@ -815,10 +1030,11 @@ class UnifiedResearchOrchestratorV7:
             claim.evidence_scope = "PERSON_EVIDENCE"
 
         # Store fused claims in context for _build_snapshot
+        # V7.3-PERSON: Merge fused claims with existing local DB person claims
         ctx._fused_accepted = accepted
         ctx._fused_conflicting = conflicting
-        ctx._fused_asserted = asserted
-        ctx._person_claims = list(accepted) + list(asserted)
+        ctx._fused_asserted = list(asserted) + list(existing_person_claims)
+        ctx._person_claims = list(accepted) + list(asserted) + list(existing_person_claims)
         ctx._context_claims = []
         ctx._source_lineage_groups = graph.get_lineage_groups()
 
@@ -888,27 +1104,139 @@ class UnifiedResearchOrchestratorV7:
         # or a new V7 persistence layer. For now, we keep it in-memory.
         pass
 
+    def _compute_semantic_counts(self, ctx: RunContext) -> Dict[str, Any]:
+        """V7.3-PERSON-FIX: Compute semantic counters with fact/evidence/provenance separation.
+
+        Uses typed objects (PersonCandidate, FactEvidence, SourceProvenance)
+        stored during extraction to produce accurate metrics:
+        - unique_person_facts: deduped by predicate+normalized_value
+        - supporting_evidence_records: total evidence items
+        - unique_source_records: distinct candidate records
+        - provenance_items: separate provenance count
+        - conflict_sets: active conflicts
+        - rejected_observations: rejected homonyms + observations
+        """
+        web_candidates = 0
+        person_confirmed = 0
+        person_probable = 0
+        person_ambiguous = 0
+        person_rejected = 0
+        context_sources = 0
+
+        for obs in ctx.observations:
+            if obs.provider == "local_db" and obs.classification == "SOURCE_CANDIDATE":
+                person_confirmed += 1
+            elif obs.classification == "SOURCE_CANDIDATE":
+                person_probable += 1
+            elif obs.classification == "SURNAME_ONLY_NON_CANDIDATE":
+                person_ambiguous += 1
+            elif obs.classification in ("SEARCH_RESULT", "MODEL_LEAD"):
+                web_candidates += 1
+            elif obs.classification == "REJECTED":
+                person_rejected += 1
+            elif obs.classification == "CONTEXT":
+                context_sources += 1
+
+        # V7.3-PERSON-FIX: Use typed objects for accurate counts
+        person_claims = getattr(ctx, '_person_claims', [])
+        candidates = getattr(ctx, '_person_candidates', [])
+        all_evidence = getattr(ctx, '_person_evidence', [])
+        provenance_items = getattr(ctx, '_person_provenance', [])
+
+        # Deduplicate claims by predicate + normalized_value (unique facts)
+        seen_facts = set()
+        unique_person_facts = 0
+        for c in person_claims:
+            if c.status in ("ASSERTED", "ACCEPTED", "VERIFIED"):
+                key = (c.predicate, c.value_normalized)
+                if key not in seen_facts:
+                    seen_facts.add(key)
+                    unique_person_facts += 1
+
+        # Count provenance items separately (not as facts)
+        provenance_count = len(provenance_items)
+
+        # Evidence records (supporting evidence for facts)
+        evidence_count = len(all_evidence)
+
+        # Unique source records (candidates)
+        unique_sources = len(candidates)
+
+        # Rejected homonyms
+        rejected_homonyms = len(getattr(ctx, 'rejected_homonyms', []))
+
+        # Identity status
+        identity_status = getattr(ctx, 'identity_status_v72', 'UNRESOLVED_IDENTITY')
+
+        # War period from candidates
+        war_periods = set(c.war_period for c in candidates if c.war_period)
+        has_cross_war = len(war_periods) > 1
+
+        return {
+            # Observation-level counts (backward compatible)
+            "web_candidates_seen": web_candidates,
+            "person_sources_confirmed": person_confirmed,
+            "person_sources_probable": person_probable,
+            "person_sources_ambiguous": person_ambiguous,
+            "person_candidates_rejected": person_rejected + rejected_homonyms,
+            "context_sources": context_sources,
+            # V7.3-PERSON-FIX: Fact/evidence/provenance separation
+            "unique_person_facts": unique_person_facts,
+            "supporting_evidence_records": evidence_count,
+            "unique_source_records": unique_sources,
+            "provenance_items": provenance_count,
+            "conflict_sets": 0,  # populated after fusion
+            "rejected_observations": person_rejected + rejected_homonyms,
+            "candidate_clusters": len(getattr(ctx, 'candidate_clusters', [])),
+            "identity_status": identity_status,
+            "cross_war_contamination": has_cross_war,
+            # Legacy compat
+            "claims_accepted": unique_person_facts,
+            "claims_rejected": len([c for c in person_claims if c.status == "REJECTED"]),
+        }
+
     # ─── Helpers ────────────────────────────────────────────────────────────
 
     def _query_local_db(self, plan: SemanticQueryPlan) -> List[ProviderObservation]:
-        """Query local SQLite database for initial observations."""
+        """Query local SQLite database for initial observations.
+
+        V7.3-PERSON: Uses exact cognome+nome match (not LIKE prefix).
+        Includes raw_record in provider_metadata so observations get
+        classified by IdentityResolver.classify_observation().
+        """
         observations = []
         try:
             from database import get_conn
             conn = get_conn()
 
             if plan.intent == "PERSON_LOOKUP":
-                name = plan.target.display_name
-                parts = name.split()
+                name = plan.target.display_name.strip()
+                parts = name.split(None, 1)
                 cognome = parts[0] if parts else name
+                nome = parts[1] if len(parts) > 1 else ""
 
-                for table in ["internati", "caduti_albooro", "decorati_nastroazzurro"]:
+                from person_source_schemas import PERSON_SOURCE_SCHEMAS, get_name_fields_for_table
+
+                for table in PERSON_SOURCE_SCHEMAS:
                     try:
-                        rows = conn.execute(
-                            f"SELECT * FROM {table} WHERE "
-                            f"(cognome LIKE ? OR nominativo LIKE ?) LIMIT 20",
-                            (f"{cognome}%", f"{name}%")
-                        ).fetchall()
+                        cognome_col, nome_col, nominativo_col = get_name_fields_for_table(table)
+
+                        if nominativo_col and not cognome_col:
+                            # Table uses single nominativo field (e.g., caduti_albooro)
+                            rows = conn.execute(
+                                f"SELECT * FROM {table} WHERE {nominativo_col} LIKE ? LIMIT 20",
+                                (f"{cognome}%",)
+                            ).fetchall()
+                        elif nome:
+                            rows = conn.execute(
+                                f"SELECT * FROM {table} WHERE {cognome_col}=? AND {nome_col}=? LIMIT 20",
+                                (cognome, nome)
+                            ).fetchall()
+                        else:
+                            rows = conn.execute(
+                                f"SELECT * FROM {table} WHERE {cognome_col}=? LIMIT 20",
+                                (cognome,)
+                            ).fetchall()
                         for r in rows:
                             r = dict(r)
                             obs = ProviderObservation(
@@ -919,7 +1247,11 @@ class UnifiedResearchOrchestratorV7:
                                 snippet=str(r)[:500],
                                 content_state="METADATA_ONLY",
                                 classification="SEARCH_RESULT",
-                                provider_metadata={"table": table, "id": r.get("id")},
+                                provider_metadata={
+                                    "table": table,
+                                    "id": r.get("id"),
+                                    "raw_record": r,
+                                },
                             )
                             observations.append(obs)
                     except Exception:

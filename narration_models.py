@@ -336,7 +336,7 @@ NARRATION_DRAFT_SCHEMA: Dict[str, Any] = {
             "needs_followup": {"type": "boolean"},
             "followup_question": {"type": ["string", "null"]},
         },
-        "required": ["schema_version", "request_type", "blocks", "needs_followup"],
+        "required": ["schema_version", "request_type", "blocks", "needs_followup", "followup_question"],
         "additionalProperties": False,
     },
     "strict": True,

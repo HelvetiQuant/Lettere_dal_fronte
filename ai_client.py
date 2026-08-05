@@ -378,6 +378,7 @@ def call_ai(
     session_id: int = None,
     cycle_id: int = None,
     json_schema: Optional[Dict] = None,
+    skip_providers: Optional[set] = None,
 ) -> Dict:
     """Esegue una chiamata AI con routing automatico, fallback e tracking.
 
@@ -418,14 +419,17 @@ def call_ai(
     provider_code = selection.get("provider_code")
     model_id = selection.get("model_identifier")
 
+    # V7.3-FIX: Skip providers from circuit breaker (caller-level)
+    _skip = skip_providers or set()
+
     # 2. Costruisci lista provider da tentare
-    if provider_code and not _breaker_is_open(provider_code):
+    if provider_code and not _breaker_is_open(provider_code) and provider_code not in _skip:
         order = [provider_code]
         for p in _FALLBACK_ORDER:
-            if p != provider_code and not _breaker_is_open(p):
+            if p != provider_code and not _breaker_is_open(p) and p not in _skip:
                 order.append(p)
     else:
-        order = [p for p in _FALLBACK_ORDER if not _breaker_is_open(p)]
+        order = [p for p in _FALLBACK_ORDER if not _breaker_is_open(p) and p not in _skip]
 
     attempted = []
     t0 = time.time()
@@ -531,6 +535,7 @@ def call_ai_json(
     session_id: int = None,
     cycle_id: int = None,
     json_schema: Optional[Dict] = None,
+    skip_providers: Optional[set] = None,
 ) -> Dict:
     """Chiama AI in JSON mode e parsa il risultato.
 
@@ -563,6 +568,7 @@ def call_ai_json(
         session_id=session_id,
         cycle_id=cycle_id,
         json_schema=json_schema,
+        skip_providers=skip_providers,
     )
     if not result["ok"]:
         return result

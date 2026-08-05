@@ -1,0 +1,342 @@
+
+================================================================================
+EVENTO 1/3: Prima battaglia dell'Isonzo
+================================================================================
+
+Run ID: run_v7_1785776207_00daefe4
+Observations: 70
+Errors: []
+Warnings: ['NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: web_context', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: web_context', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: web_context', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: web_context', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: web_context', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: web_context']
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+REPORT:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+## Rapporto di Ricerca: Prima Battaglia dell'Isonzo
+
+### APPROVED Claims
+- La Prima Battaglia dell'Isonzo fu combattuta dal 23 giugno al 7 luglio 1915 tra l'esercito italiano e quello austro-ungarico [source: web_context].
+- Questa battaglia rappresenta il debutto dell'esercito italiano nella logica delle grandi offensive frontali della Grande Guerra [source: web_context].
+- Le battaglie dell'Isonzo furono una serie di battaglie della Prima Guerra Mondiale combattute lungo la frontiera italo-austriaca, nei pressi del fiume Isonzo [source: web_context].
+
+### PROBABLE Claims
+- Probabilmente, il generale Luigi Cadorna pianificò l'offensiva dal Comando supremo militare italiano, prevedendo azioni contro la testa di ponte di Gorizia [source: web_context].
+- La Prima Battaglia dell'Isonzo vide gli italiani in netta superiorità numerica rispetto agli austro-ungarici [source: web_context].
+- È plausibile che l'obiettivo principale dell'esercito italiano fosse un'avanzata rapida verso Gorizia [source: web_context].
+
+### REJECTED Claims
+- Nessun claim è stato respinto in quanto non ci sono stati claim ASSERTED o non corroborati che necessitano di essere corretti.
+
+### Considerazioni Finali
+La Prima Battaglia dell'Isonzo fu un evento significativo nella Prima Guerra Mondiale, segnando l'inizio di una serie di battaglie lungo il fronte italo-austriaco. Sebbene il piano italiano fosse ambizioso, i risultati furono limitati, e la battaglia si concluse senza un significativo avanzamento territoriale.
+
+---
+
+## Fonti
+
+- **obs_1ff1484737253f96**: Prima battaglia dell'Isonzo — [https://it.wikipedia.org/wiki/Prima_battaglia_dell%27Isonzo](https://it.wikipedia.org/wiki/Prima_battaglia_dell%27Isonzo)
+- **obs_0cd247fec4b4953c**: Le dodici battaglie dell'Isonzo nella Prima guerra mondiale — [https://www.fattiperlastoria.it/battaglie-dell-isonzo](https://www.fattiperlastoria.it/battaglie-dell-isonzo)
+- **obs_4b1f5f109c244510**: Le dodici Battaglie dell'Isonzo [ di Maury Fert ] — [https://www.tuttostoria.net/storia-contemporanea.aspx?code=966](https://www.tuttostoria.net/storia-contemporanea.aspx?code=966)
+- **obs_62b9edb4f1a381d3**: The First Battle of the Isonzo: The End of Cadorna's Illusion — [https://www.youtube.com/watch?v=HDGbD812ldY](https://www.youtube.com/watch?v=HDGbD812ldY)
+- **obs_5b9ba47d592bd038**: Battaglie dell'Isonzo — [https://it.wikipedia.org/wiki/Battaglie_dell%27Isonzo](https://it.wikipedia.org/wiki/Battaglie_dell%27Isonzo)
+- **obs_ed8e8740a36a6eb1**: BATTAGLIE DELL' ISONZO — [https://bersaglierimonfalcone.jimdofree.com/la-guerra/battaglie-dell-isonzo](https://bersaglierimonfalcone.jimdofree.com/la-guerra/battaglie-dell-isonzo)
+- **obs_a5ecd306b0f61b65**: Le 12 battaglie dell'Isonzo: i dodici scontri che segnarono ... — [https://www.montagnadiviaggi.it/2022/09/le-12-battaglie-dell-isonzo-quante-sono-state-riassunto.html](https://www.montagnadiviaggi.it/2022/09/le-12-battaglie-dell-isonzo-quante-sono-state-riassunto.html)
+- **obs_77849cb897910be1**: Grande Guerra ‒ Fronte dellʼIsonzo — [https://www.thewalkofpeace.com/it/ww1-heritage/world-war-i-the-isonzo-front](https://www.thewalkofpeace.com/it/ww1-heritage/world-war-i-the-isonzo-front)
+- **obs_ed332ed600c6428d**: LO SBALZO OFFENSIVO E LE PRIME 4 BATTAGLIE DELL'ISONZO — [https://www.istitutodelnastroazzurro.org/2020/05/01/lo-sbalzo-offensivo-e-le-prime-4-battaglie-dellisonzo](https://www.istitutodelnastroazzurro.org/2020/05/01/lo-sbalzo-offensivo-e-le-prime-4-battaglie-dellisonzo)
+- **obs_1911553c3c1afa62**: Prima battaglia dell'Isonzo: cosa accadde e perché fu l'inizio ... — [https://francescobianchiautore.wordpress.com/2026/05/03/prima-battaglia-dellisonzo-cosa-accadde-e-perche-fu-linizio-di-un-fronte-di-sangue](https://francescobianchiautore.wordpress.com/2026/05/03/prima-battaglia-dellisonzo-cosa-accadde-e-perche-fu-linizio-di-un-fronte-di-sangue)
+- **obs_d89c9ada31f475a4**: La Prima Guerra Mondiale sul fronte dell'Isonzo — [https://museograndeguerra.regione.fvg.it/it/il-fronte-dellisonzo-159644](https://museograndeguerra.regione.fvg.it/it/il-fronte-dellisonzo-159644)
+- **obs_e13793f1c30a20a1**: PRIMA GUERRA MONDIALE LE 12BATTAGLIE DELL'ISONZO — [http://expo.fsfi.it/italia2018_int_lgw/exhibits/20MateraUmU4bVR6.pdf](http://expo.fsfi.it/italia2018_int_lgw/exhibits/20MateraUmU4bVR6.pdf)
+- **obs_07c3999e429ac9cf**: Prima Guerra Mondiale: la carneficina dell'Isonzo - Panorama — [https://www.panorama.it/attualita/opinioni/prima-guerra-mondiale-la-carneficina-dellisonzo](https://www.panorama.it/attualita/opinioni/prima-guerra-mondiale-la-carneficina-dellisonzo)
+- **obs_98ad423892f64cac**: Autunno 1916 (VII, VIII e IX battaglia dell'Isonzo) — [https://www.artegrandeguerra.it/2012/08/la-cosa-piu-demoralizzantequello-che-ti.html](https://www.artegrandeguerra.it/2012/08/la-cosa-piu-demoralizzantequello-che-ti.html)
+- **obs_f896b3414345aa94**: L'undicesima battaglia dell'Isonzo — [http://www.instoria.it/home/isonzo_battaglia_bainsizza.htm](http://www.instoria.it/home/isonzo_battaglia_bainsizza.htm)
+- **obs_bd75eeef5cfa1bbb**: GORIZIA: LA SESTA BATTAGLIA DELL'ISONZO. — [https://www.youtube.com/watch?v=CsKcRFV4eRo](https://www.youtube.com/watch?v=CsKcRFV4eRo)
+- **obs_eaef3355b88925ef**: La Prima battaglia dell'Isonzo. — [https://www.arsmilitaris.org/pubblicazioni/Isonzo.pdf](https://www.arsmilitaris.org/pubblicazioni/Isonzo.pdf)
+- **obs_bb0cd6ed96acc85a**: 1915: Le BATTAGLIE dell'ISONZO — [https://www.youtube.com/shorts/eGHGvUEeJAw](https://www.youtube.com/shorts/eGHGvUEeJAw)
+- **obs_b068de1b099ff089**: Il Monte Santo e l'11^ Battaglia dell'Isonzo #isonzo ... — [https://www.facebook.com/fotografodiguerra.it/videos/il-monte-santo-e-l11-battaglia-dellisonzo/1942086216700863](https://www.facebook.com/fotografodiguerra.it/videos/il-monte-santo-e-l11-battaglia-dellisonzo/1942086216700863)
+- **obs_9f35d80300595ed4**: Prima guerra mondiale - Le pietre raccontano — [https://www.comune.cinisello-balsamo.mi.it/pietre/spip.php?article452=](https://www.comune.cinisello-balsamo.mi.it/pietre/spip.php?article452=)
+- **obs_19b113ba0d6f0b42**: Le dodici battaglie dell'Isonzo nella Prima guerra mondiale — [https://www.fattiperlastoria.it/battaglie-dell-isonzo](https://www.fattiperlastoria.it/battaglie-dell-isonzo)
+- **obs_e8552652ecb48060**: La Prima Battaglia dell’Isonzo: la fine dell’illusione di Cadorna — [https://www.youtube.com/watch?v=HDGbD812ldY](https://www.youtube.com/watch?v=HDGbD812ldY)
+- **obs_74abae1f3351022b**: Prima battaglia dell'Isonzo — [https://it.wikipedia.org/wiki/Prima_battaglia_dell%27Isonzo](https://it.wikipedia.org/wiki/Prima_battaglia_dell%27Isonzo)
+- **obs_b97e637f312de3c6**: Prima battaglia dell'Isonzo: cosa accadde e perché fu l'inizio ... — [https://francescobianchiautore.wordpress.com/2026/05/03/prima-battaglia-dellisonzo-cosa-accadde-e-perche-fu-linizio-di-un-fronte-di-sangue](https://francescobianchiautore.wordpress.com/2026/05/03/prima-battaglia-dellisonzo-cosa-accadde-e-perche-fu-linizio-di-un-fronte-di-sangue)
+- **obs_df92d39c2b4a310b**: PRIMA GUERRA MONDIALE LE 12BATTAGLIE DELL'ISONZO — [http://expo.fsfi.it/italia2018_int_lgw/exhibits/20MateraUmU4bVR6.pdf](http://expo.fsfi.it/italia2018_int_lgw/exhibits/20MateraUmU4bVR6.pdf)
+- **obs_15002c38d772bd1d**: BATTAGLIE DELL' ISONZO — [https://bersaglierimonfalcone.jimdofree.com/la-guerra/battaglie-dell-isonzo](https://bersaglierimonfalcone.jimdofree.com/la-guerra/battaglie-dell-isonzo)
+- **obs_559d0fd9063799c9**: Tutto storia, storia contemporanea: Le dodici Battaglie dell'Isonzo — [https://www.tuttostoria.net/storia-contemporanea.aspx?code=966](https://www.tuttostoria.net/storia-contemporanea.aspx?code=966)
+- **obs_55b0d0b8345eaac4**: Battaglie dell'Isonzo — [https://it.wikipedia.org/wiki/Battaglie_dell%27Isonzo](https://it.wikipedia.org/wiki/Battaglie_dell%27Isonzo)
+- **obs_c919ae12a8d4149c**: Isonzo - Enciclopedia — [https://www.treccani.it/enciclopedia/isonzo_(Dizionario-di-Storia)](https://www.treccani.it/enciclopedia/isonzo_(Dizionario-di-Storia))
+- **obs_ad73f22efd62de45**: Grande Guerra ‒ Fronte dellʼIsonzo — [https://www.thewalkofpeace.com/it/ww1-heritage/world-war-i-the-isonzo-front](https://www.thewalkofpeace.com/it/ww1-heritage/world-war-i-the-isonzo-front)
+- **obs_3fc270bf16a97047**: La Prima battaglia dell'Isonzo. — [https://www.arsmilitaris.org/pubblicazioni/Isonzo.pdf](https://www.arsmilitaris.org/pubblicazioni/Isonzo.pdf)
+- **obs_5baea257d2c2cc58**: La Prima Guerra Mondiale sul fronte dell'Isonzo — [https://museograndeguerra.regione.fvg.it/it/il-fronte-dellisonzo-159644](https://museograndeguerra.regione.fvg.it/it/il-fronte-dellisonzo-159644)
+- **obs_1243a289dab5662a**: 1915: Le BATTAGLIE dell'ISONZO — [https://www.youtube.com/shorts/eGHGvUEeJAw](https://www.youtube.com/shorts/eGHGvUEeJAw)
+- **obs_159712c2936be191**: Alessandro Barbero - Dodicesima battaglia dell'Isonzo — [https://www.youtube.com/watch?v=IAyLkVplv8g](https://www.youtube.com/watch?v=IAyLkVplv8g)
+- **obs_648e664fc8bdbdc9**: L'undicesima battaglia dell'Isonzo — [http://www.instoria.it/home/isonzo_battaglia_bainsizza.htm](http://www.instoria.it/home/isonzo_battaglia_bainsizza.htm)
+- **obs_c66b4f57fb82d18c**: Autunno 1916 (VII, VIII e IX battaglia dell'Isonzo) — [https://www.artegrandeguerra.it/2012/08/la-cosa-piu-demoralizzantequello-che-ti.html](https://www.artegrandeguerra.it/2012/08/la-cosa-piu-demoralizzantequello-che-ti.html)
+- **obs_48526b690ab1cc95**: Prima Guerra Mondiale. Uomini, Soldati, Vittime ed Eroi. Le ... — [https://www.facebook.com/ilsoldatodimenticato/posts/prima-guerra-mondiale-uomini-soldati-vittime-ed-eroi-le-battaglie-simbolo-della-/1166048808878093](https://www.facebook.com/ilsoldatodimenticato/posts/prima-guerra-mondiale-uomini-soldati-vittime-ed-eroi-le-battaglie-simbolo-della-/1166048808878093)
+- **obs_acb2ddbb395b743e**: GORIZIA: LA SESTA BATTAGLIA DELL'ISONZO. — [https://www.youtube.com/watch?v=CsKcRFV4eRo](https://www.youtube.com/watch?v=CsKcRFV4eRo)
+- **obs_96c308d67fa866d5**: Prima battaglia dell'Isonzo — [https://it.wikipedia.org/wiki/Prima_battaglia_dell%27Isonzo](https://it.wikipedia.org/wiki/Prima_battaglia_dell%27Isonzo)
+- **obs_bd77e05aa1e05821**: Battaglie dell'Isonzo — [https://it.wikipedia.org/wiki/Battaglie_dell%27Isonzo](https://it.wikipedia.org/wiki/Battaglie_dell%27Isonzo)
+- **obs_313a449e7efe700d**: Grande Guerra ‒ Fronte dellʼIsonzo — [https://www.thewalkofpeace.com/it/ww1-heritage/world-war-i-the-isonzo-front/](https://www.thewalkofpeace.com/it/ww1-heritage/world-war-i-the-isonzo-front/)
+- **obs_e02177c32e17c056**: Le 12 battaglie dell'Isonzo: i dodici scontri che segnarono ... — [https://www.montagnadiviaggi.it/2022/09/le-12-battaglie-dell-isonzo-quante-sono-state-riassunto.html](https://www.montagnadiviaggi.it/2022/09/le-12-battaglie-dell-isonzo-quante-sono-state-riassunto.html)
+- **obs_bbf012977333a475**: La Prima Guerra Mondiale sul fronte dell'Isonzo — [https://museograndeguerra.regione.fvg.it/it/il-fronte-dellisonzo-159644](https://museograndeguerra.regione.fvg.it/it/il-fronte-dellisonzo-159644)
+- **obs_1bf87574aa50d9d2**: Prima battaglia dell'Isonzo: cosa accadde e perché fu l'inizio ... — [https://francescobianchiautore.wordpress.com/2026/05/03/prima-battaglia-dellisonzo-cosa-accadde-e-perche-fu-linizio-di-un-fronte-di-sangue/](https://francescobianchiautore.wordpress.com/2026/05/03/prima-battaglia-dellisonzo-cosa-accadde-e-perche-fu-linizio-di-un-fronte-di-sangue/)
+- **obs_4b60fa1c77556404**: Le dodici Battaglie dell'Isonzo [ di Maury Fert ] — [https://www.tuttostoria.net/storia-contemporanea.aspx?code=966](https://www.tuttostoria.net/storia-contemporanea.aspx?code=966)
+
+---
+
+## Provenienza
+
+- Snapshot: snap_v7_4cefe7b9368328e8
+- Schema: 7.2
+- Narrator Contract: 7.2
+- Identity Status (V7.2): PARTIAL_IDENTITY
+- Identity Resolution (legacy): PARTIAL
+- Corroboration Status: NONE
+- External Corroboration: NONE
+- Resolved Cluster ID: 
+- Person Claims: 0
+- Context Claims: 45
+- Candidate Identities: 0
+- Provider Ledger: 70 observations
+
+
+Snapshot ID: snap_v7_4cefe7b9368328e8
+Identity status: PARTIAL_IDENTITY
+Corroboration: NONE
+Web leads: 45
+Provider ledger: 70
+
+================================================================================
+EVENTO 2/3: Battaglia di Caporetto
+================================================================================
+
+Run ID: run_v7_1785776254_9eb3f7c5
+Observations: 88
+Errors: []
+Warnings: ['ANOMALY: INCOMPLETE_NAME on eventi_1gm.cognome: Cognome mancante o vuoto', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: local_db:eventi_1gm:1', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: local_db:eventi_1gm:1', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: local_db:eventi_1gm:1', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: local_db:eventi_1gm:1', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: research_lead', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: research_lead']
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+REPORT:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+## Rapporto di Ricerca: Battaglia di Caporetto
+
+### APPROVED Claims
+- **Data di inizio**: La Battaglia di Caporetto iniziò il 24 ottobre 1917. [source: local_db:eventi_1gm:1]
+- **Data di fine**: Si concluse il 12 novembre 1917. [source: local_db:eventi_1gm:1]
+- **Luogo**: La battaglia si svolse lungo il fronte dell'Isonzo, nel settore Tolmino-Caporetto. [source: local_db:eventi_1gm:1]
+- **Descrizione dell'evento**: Fu una sconfitta per l'Italia, con la rottura del fronte dell'Isonzo e una ritirata fino al fiume Piave. [source: local_db:eventi_1gm:1]
+
+### PROBABLE Claims
+- **Contesto storico**: La Battaglia di Caporetto è conosciuta anche come la dodicesima battaglia dell'Isonzo ed è stata uno degli episodi più significativi e drammatici della Prima Guerra Mondiale sul fronte italiano. Le forze italiane affrontarono una coalizione austro-ungarica e tedesca. [source: research_lead]
+- **Conseguenze**: La battaglia è stata la più grave disfatta dell'esercito italiano, con profonde conseguenze militari e politiche per il paese. [source: research_lead]
+
+### REJECTED Claims
+Nessun claim respinto è stato identificato nel contesto dei dati forniti.
+
+### Osservazioni
+La Battaglia di Caporetto è un evento ben documentato nella storia militare italiana, rappresentando un punto di svolta significativo durante la Prima Guerra Mondiale. La sconfitta subita dalle truppe italiane ha avuto un impatto duraturo sulla strategia militare e sulla politica interna del paese.
+
+---
+
+## Fonti
+
+- **obs_0f539ab522f62701**: La battaglia di Caporetto: eventi principali e riassunto — [https://sapere.virgilio.it/scuola/superiori/letteratura-storia-filosofia/novecento/battaglia-caporetto](https://sapere.virgilio.it/scuola/superiori/letteratura-storia-filosofia/novecento/battaglia-caporetto)
+- **obs_969b0ad6d55e4506**: Battaglia di Caporetto — [https://it.wikipedia.org/wiki/Battaglia_di_Caporetto](https://it.wikipedia.org/wiki/Battaglia_di_Caporetto)
+- **obs_191cf7cb13641f5e**: Caporetto, battaglia di - Enciclopedia — [https://www.treccani.it/enciclopedia/battaglia-di-caporetto_(Dizionario-di-Storia)](https://www.treccani.it/enciclopedia/battaglia-di-caporetto_(Dizionario-di-Storia))
+- **obs_827cb625dda22bd6**: Storia in breve della battaglia di Caporetto, una delle ... — [https://www.geopop.it/storia-in-breve-della-battaglia-di-caporetto-una-delle-peggiori-sconfitte-dellesercito-italiano](https://www.geopop.it/storia-in-breve-della-battaglia-di-caporetto-una-delle-peggiori-sconfitte-dellesercito-italiano)
+- **obs_fc20fdf4ea5aec7d**: F06S01 ACCADDE QUEL GIORNO P02 La battaglia di Caporetto — [https://hl.museostorico.it/historylabondemand/episodio/f06s01-accadde-quel-giorno-p02-la-battaglia-di-caporetto](https://hl.museostorico.it/historylabondemand/episodio/f06s01-accadde-quel-giorno-p02-la-battaglia-di-caporetto)
+- **obs_ead866d71e442fd5**: Caporetto, ma fu tutta colpa del maltempo? | Italia e mondo — [https://www.unina.it/-/1335391-caporetto-ma-fu-tutta-colpa-del-maltempo-](https://www.unina.it/-/1335391-caporetto-ma-fu-tutta-colpa-del-maltempo-)
+- **obs_cd7e6100555f9f19**: Caporetto: la disfatta che ha cambiato l'Italia — [https://www.youtube.com/watch?v=ND4Jh8_EGZs](https://www.youtube.com/watch?v=ND4Jh8_EGZs)
+- **obs_b72f8456d3bd7470**: Battle of Caporetto — [https://en.wikipedia.org/wiki/Battle_of_Caporetto](https://en.wikipedia.org/wiki/Battle_of_Caporetto)
+- **obs_f49e314570d21e5f**: La disfatta di Caporetto — [https://www.youtube.com/watch?v=HtAuVw3yv4Q](https://www.youtube.com/watch?v=HtAuVw3yv4Q)
+- **obs_86b5c750e189ba8d**: STORIA D'ITALIA NELLA PRIMA GUERRA MONDIALE Episodio 6: L' ... — [https://www.facebook.com/muremuseorecuperanti/posts/storia-ditalia-nella-prima-guerra-mondiale-episodio-6-litalia-in-guerra-il-1917l/664456159675396](https://www.facebook.com/muremuseorecuperanti/posts/storia-ditalia-nella-prima-guerra-mondiale-episodio-6-litalia-in-guerra-il-1917l/664456159675396)
+- **obs_d1abe67f7adcf60f**: Caporetto, 24 ottobre 1917 — [https://www.trentinograndeguerra.it/gg100_detail.jsp?ID_LINK=320&id_context=11803](https://www.trentinograndeguerra.it/gg100_detail.jsp?ID_LINK=320&id_context=11803)
+- **obs_88a6be8e9dffe140**: Battaglia di Caporetto: la più grande sconfitta dell'Esercito ... — [https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano](https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano)
+- **obs_1921cf70f09432c5**: Nella notte del #24ottobre 1917 si compiva la disfatta di ... — [https://www.facebook.com/raistoria/videos/la-disfatta-di-caporetto/2717781385088870](https://www.facebook.com/raistoria/videos/la-disfatta-di-caporetto/2717781385088870)
+- **obs_371a1a85add6d61b**: Grande Guerra. La rotta di Caporetto — [https://www.raicultura.it/webdoc/grande-guerra/rotta-caporetto/index.html](https://www.raicultura.it/webdoc/grande-guerra/rotta-caporetto/index.html)
+- **obs_6dd2d55866c5aeb4**: Dalla disfatta di Caporetto al Trattato di Versailles — [https://library.weschool.com/lezione/sintesi-prima-guerra-mondiale-luigi-cadorna-armando-diaz-trattato-di-versailles-8184.html](https://library.weschool.com/lezione/sintesi-prima-guerra-mondiale-luigi-cadorna-armando-diaz-trattato-di-versailles-8184.html)
+- **obs_263d00fd0312003c**: La battaglia di Caporetto: eventi principali e riassunto — [https://sapere.virgilio.it/scuola/superiori/letteratura-storia-filosofia/novecento/battaglia-caporetto](https://sapere.virgilio.it/scuola/superiori/letteratura-storia-filosofia/novecento/battaglia-caporetto)
+- **obs_117ff772dbaedae2**: Battaglia di Caporetto — [https://it.wikipedia.org/wiki/Battaglia_di_Caporetto](https://it.wikipedia.org/wiki/Battaglia_di_Caporetto)
+- **obs_f1ce7685ed67de4a**: Caporetto, battaglia di - Enciclopedia — [https://www.treccani.it/enciclopedia/battaglia-di-caporetto_(Dizionario-di-Storia)](https://www.treccani.it/enciclopedia/battaglia-di-caporetto_(Dizionario-di-Storia))
+- **obs_89abb90c5dd6a0fc**: Battaglia di Caporetto: storia, cronologia e protagonisti — [https://www.studenti.it/caporetto-cronologia-battaglia-protagonisti.html](https://www.studenti.it/caporetto-cronologia-battaglia-protagonisti.html)
+- **obs_ca0520224fbd5142**: Storia in breve della battaglia di Caporetto, una delle ... — [https://www.geopop.it/storia-in-breve-della-battaglia-di-caporetto-una-delle-peggiori-sconfitte-dellesercito-italiano](https://www.geopop.it/storia-in-breve-della-battaglia-di-caporetto-una-delle-peggiori-sconfitte-dellesercito-italiano)
+- **obs_e595104fc799ba69**: F06S01 ACCADDE QUEL GIORNO P02 La battaglia di Caporetto — [https://hl.museostorico.it/historylabondemand/episodio/f06s01-accadde-quel-giorno-p02-la-battaglia-di-caporetto](https://hl.museostorico.it/historylabondemand/episodio/f06s01-accadde-quel-giorno-p02-la-battaglia-di-caporetto)
+- **obs_98748217ba9b43af**: Caporetto, ma fu tutta colpa del maltempo? | Italia e mondo — [https://www.unina.it/-/1335391-caporetto-ma-fu-tutta-colpa-del-maltempo-](https://www.unina.it/-/1335391-caporetto-ma-fu-tutta-colpa-del-maltempo-)
+- **obs_9ee3ec8c9b544339**: Battle of Caporetto — [https://en.wikipedia.org/wiki/Battle_of_Caporetto](https://en.wikipedia.org/wiki/Battle_of_Caporetto)
+- **obs_2d9eed82ebf857e1**: STORIA D'ITALIA NELLA PRIMA GUERRA MONDIALE Episodio 6: L' ... — [https://www.facebook.com/muremuseorecuperanti/posts/storia-ditalia-nella-prima-guerra-mondiale-episodio-6-litalia-in-guerra-il-1917l/664456159675396](https://www.facebook.com/muremuseorecuperanti/posts/storia-ditalia-nella-prima-guerra-mondiale-episodio-6-litalia-in-guerra-il-1917l/664456159675396)
+- **obs_5cbb39e31d28e1b8**: Battaglia di Caporetto: la più grande sconfitta dell'Esercito ... — [https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano](https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano)
+- **obs_a3ddbd52c709c0f0**: Trentino Grande Guerra  - Puntata 42 - ottobre 1917 — [https://www.trentinograndeguerra.it/gg100_detail.jsp?ID_LINK=320&id_context=11803](https://www.trentinograndeguerra.it/gg100_detail.jsp?ID_LINK=320&id_context=11803)
+- **obs_e6052ac40e9e3515**: Da Caporetto a Vittorio Veneto. [ di Dario Petucco ] — [https://www.tuttostoria.net/storia-contemporanea.aspx?code=398](https://www.tuttostoria.net/storia-contemporanea.aspx?code=398)
+- **obs_dffb4817192df65a**: Battaglia di Caporetto — [https://it.wikipedia.org/wiki/Battaglia_di_Caporetto](https://it.wikipedia.org/wiki/Battaglia_di_Caporetto)
+- **obs_ab0f0399add5da9c**: Battaglia di Caporetto: la più grande sconfitta dell'Esercito ... — [https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano/?srsltid=AfmBOoqzjA07lPx10VLa1FfVCnmrz7_1rmIonVHaRcWasqrT2A9dHW_A](https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano/?srsltid=AfmBOoqzjA07lPx10VLa1FfVCnmrz7_1rmIonVHaRcWasqrT2A9dHW_A)
+- **obs_812734c42ce7bb87**: Battle of Caporetto — [https://en.wikipedia.org/wiki/Battle_of_Caporetto](https://en.wikipedia.org/wiki/Battle_of_Caporetto)
+- **obs_a5c9aed092590c55**: Caporetto, ma fu tutta colpa del maltempo? | Italia e mondo — [https://www.unina.it/-/1335391-caporetto-ma-fu-tutta-colpa-del-maltempo-](https://www.unina.it/-/1335391-caporetto-ma-fu-tutta-colpa-del-maltempo-)
+- **obs_74e49e7504599e21**: Caporetto. Una disfatta, molte responsabilità. - La guerra di ... — [https://mostre.cab.unipd.it/abele/it/58/caporetto_-una-disfatta-molte-responsabilita_](https://mostre.cab.unipd.it/abele/it/58/caporetto_-una-disfatta-molte-responsabilita_)
+- **obs_a7b83e7c5d09651e**: Passato e Presente 2017/18 - Caporetto: la battaglia - Video — [https://www.raiplay.it/video/2017/10/Cultura-Passato-e-Presente---Caporetto-la-battaglia-900d0412-eda0-4b49-9cb2-4250750034df.html](https://www.raiplay.it/video/2017/10/Cultura-Passato-e-Presente---Caporetto-la-battaglia-900d0412-eda0-4b49-9cb2-4250750034df.html)
+- **obs_15ec0649b76f1e66**: Battaglia di Caporetto — [https://it.wikipedia.org/wiki/Battaglia_di_Caporetto](https://it.wikipedia.org/wiki/Battaglia_di_Caporetto)
+- **obs_be9f53f63ac66051**: Caporetto, battaglia di - Enciclopedia — [https://www.treccani.it/enciclopedia/battaglia-di-caporetto_(Dizionario-di-Storia)](https://www.treccani.it/enciclopedia/battaglia-di-caporetto_(Dizionario-di-Storia))
+- **obs_a6eec3ed764b44ef**: La disfatta di Caporetto — [https://www.youtube.com/watch?v=HtAuVw3yv4Q](https://www.youtube.com/watch?v=HtAuVw3yv4Q)
+- **obs_e8638b50d5e85944**: Battaglia di Caporetto: storia, cronologia e protagonisti — [https://www.studenti.it/caporetto-cronologia-battaglia-protagonisti.html](https://www.studenti.it/caporetto-cronologia-battaglia-protagonisti.html)
+- **obs_d2e5661083d9c92c**: Storia in breve della battaglia di Caporetto, una delle ... — [https://www.geopop.it/storia-in-breve-della-battaglia-di-caporetto-una-delle-peggiori-sconfitte-dellesercito-italiano](https://www.geopop.it/storia-in-breve-della-battaglia-di-caporetto-una-delle-peggiori-sconfitte-dellesercito-italiano)
+- **obs_d165a66688e8bc5a**: Caporetto: la disfatta che ha cambiato l'Italia — [https://www.youtube.com/watch?v=ND4Jh8_EGZs](https://www.youtube.com/watch?v=ND4Jh8_EGZs)
+- **obs_76c145df591f7c4c**: Caporetto, ma fu tutta colpa del maltempo? | Italia e mondo — [https://www.unina.it/-/1335391-caporetto-ma-fu-tutta-colpa-del-maltempo-](https://www.unina.it/-/1335391-caporetto-ma-fu-tutta-colpa-del-maltempo-)
+- **obs_80548d7c363c249e**: Battle of Caporetto — [https://en.wikipedia.org/wiki/Battle_of_Caporetto](https://en.wikipedia.org/wiki/Battle_of_Caporetto)
+- **obs_499969e47fcdb688**: Paolo Pasqualucci - Caporetto mito perverso dell'antinazione — [https://cab.unime.it/journals/index.php/magisterium/article/download/3535/3235](https://cab.unime.it/journals/index.php/magisterium/article/download/3535/3235)
+- **obs_021532e825a68f88**: La DISFATTA di CAPORETTO — [https://www.youtube.com/watch?v=Hr0SF7J1To0](https://www.youtube.com/watch?v=Hr0SF7J1To0)
+- **obs_b00b23c390d71e0c**: Battaglia di Caporetto: la più grande sconfitta dell'Esercito ... — [https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano](https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano)
+- **obs_0596df086529f85b**: Grande Guerra. La rotta di Caporetto — [https://www.raicultura.it/webdoc/grande-guerra/rotta-caporetto/index.html](https://www.raicultura.it/webdoc/grande-guerra/rotta-caporetto/index.html)
+- **obs_185873307814cea3**: Da Caporetto a Vittorio Veneto — [https://natiperlastoria.home.blog/2021/10/24/da-caporetto-a-vittorio-veneto](https://natiperlastoria.home.blog/2021/10/24/da-caporetto-a-vittorio-veneto)
+- **obs_a0c08c44c48958d5**: Caporetto La Sconfitta che Cambiò l'Italia – Alessandro Barbero — [https://www.youtube.com/watch?v=RuXRSVHaLEY](https://www.youtube.com/watch?v=RuXRSVHaLEY)
+- **obs_15dd47d148d43c89**: Battaglia di Caporetto — [https://it.wikipedia.org/wiki/Battaglia_di_Caporetto](https://it.wikipedia.org/wiki/Battaglia_di_Caporetto)
+- **obs_6c17f6c692063610**: Battaglia di Caporetto: la più grande sconfitta dell'Esercito ... — [https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano/?srsltid=AfmBOoqix4WE2El7hOP0eEoLN7gJePsryqx3KnBpk3UOvQj1LklXrTIG](https://www.larmadilloeditore.it/battaglia-di-caporetto-la-piu-grande-sconfitta-dellesercito-italiano/?srsltid=AfmBOoqix4WE2El7hOP0eEoLN7gJePsryqx3KnBpk3UOvQj1LklXrTIG)
+- **obs_261aad4925a3b7aa**: Battle of Caporetto — [https://en.wikipedia.org/wiki/Battle_of_Caporetto](https://en.wikipedia.org/wiki/Battle_of_Caporetto)
+- **obs_0eee7a58daace6e4**: Caporetto. Una disfatta, molte responsabilità. - La guerra di ... — [https://mostre.cab.unipd.it/abele/it/58/caporetto_-una-disfatta-molte-responsabilita_](https://mostre.cab.unipd.it/abele/it/58/caporetto_-una-disfatta-molte-responsabilita_)
+- **obs_26abc66bb343da14**: Caporetto, battaglia di - Enciclopedia — [https://www.treccani.it/enciclopedia/battaglia-di-caporetto_(Dizionario-di-Storia)/](https://www.treccani.it/enciclopedia/battaglia-di-caporetto_(Dizionario-di-Storia)/)
+- **obs_0b228a3f00790890**: Passato e Presente 2017/18 - Caporetto: la battaglia - Video — [https://www.raiplay.it/video/2017/10/Cultura-Passato-e-Presente---Caporetto-la-battaglia-900d0412-eda0-4b49-9cb2-4250750034df.html](https://www.raiplay.it/video/2017/10/Cultura-Passato-e-Presente---Caporetto-la-battaglia-900d0412-eda0-4b49-9cb2-4250750034df.html)
+
+---
+
+## Provenienza
+
+- Snapshot: snap_v7_e4f8b74a1e257144
+- Schema: 7.2
+- Narrator Contract: 7.2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Identity Resolution (legacy): RESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: 
+- Person Claims: 4
+- Context Claims: 53
+- Candidate Identities: 0
+- Provider Ledger: 88 observations
+
+
+Snapshot ID: snap_v7_e4f8b74a1e257144
+Identity status: RESOLVED_IDENTITY
+Corroboration: PARTIAL
+Web leads: 53
+Provider ledger: 88
+
+================================================================================
+EVENTO 3/3: Battaglia del Monte Grappa
+================================================================================
+
+Run ID: run_v7_1785776307_1b299a51
+Observations: 90
+Errors: []
+Warnings: ['NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: obs_7871924fa83a7c3c, obs_d2f7e27b79e3236a', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: obs_17055fdbe58ea296, obs_5d772978a7b3644f', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: obs_17055fdbe58ea296', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: obs_17055fdbe58ea296, obs_6e53ab93ec6d1627', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: obs_17055fdbe58ea296', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: obs_17055fdbe58ea296', 'NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: obs_17055fdbe58ea296']
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+REPORT:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+## Rapporto di Ricerca: Battaglia del Monte Grappa
+
+### Contesto Storico
+La Battaglia del Monte Grappa si inserisce nel contesto della Prima Guerra Mondiale, all'interno del fronte italiano. Questa serie di battaglie si svolse tra le forze dell'Impero Austro-Ungarico e il Regno d'Italia per il controllo del massiccio del Monte Grappa [source: obs_7871924fa83a7c3c, obs_d2f7e27b79e3236a].
+
+### Fasi della Battaglia
+Le battaglie del Monte Grappa furono tre principali scontri:
+1. **Prima Battaglia del Grappa (Battaglia d'Arresto):** Iniziata il 14 novembre 1917, la battaglia si svolse in due fasi principali, dal 14 al 26 novembre e dall'11 al 21 dicembre 1917. Questa fase è stata caratterizzata da un tentativo di arrestare l'avanzata austro-ungarica dopo la rotta di Caporetto [source: obs_17055fdbe58ea296, obs_5d772978a7b3644f].
+2. **Seconda Battaglia del Grappa:** Si svolse tra il 15 e il 23 giugno 1918, conosciuta anche come la Battaglia del Solstizio, dove il generale austriaco Conrad guidò attacchi temerari contro le posizioni italiane [obs_17055fdbe58ea296].
+3. **Terza Battaglia del Grappa:** Iniziata il 24 ottobre 1918, questa fase culminò con la vittoria italiana e fu parte della più ampia offensiva finale che portò alla conclusione della guerra [source: obs_17055fdbe58ea296, obs_6e53ab93ec6d1627].
+
+### Risultati
+La serie di battaglie sul Monte Grappa si concluse con una vittoria italiana. Questo successo fu cruciale per mantenere il controllo della pianura veneta e prevenire un'invasione austro-ungarica più profonda [obs_17055fdbe58ea296].
+
+### Importanza Strategica
+Il Monte Grappa rappresentò un punto strategico fondamentale durante la guerra. La sua difesa impedì alle forze austro-ungariche di dilagare nella pianura veneta, proteggendo così il fronte italiano sul Piave [obs_17055fdbe58ea296].
+
+### Conclusioni
+Le battaglie del Monte Grappa furono tra le più dure e sanguinose del fronte italiano durante la Prima Guerra Mondiale. Le condizioni estreme e la vicinanza delle trincee resero gli scontri particolarmente intensi e significativi per l'esito del conflitto [obs_17055fdbe58ea296].
+
+Questa ricerca si basa su fonti non verificate e non corroborate, e pertanto i dettagli presentati devono essere considerati con cautela.
+
+---
+
+## Fonti
+
+- **obs_7871924fa83a7c3c**: Prima battaglia del Piave - Wikipedia — [https://it.wikipedia.org/wiki/Prima_battaglia_del_Piave](https://it.wikipedia.org/wiki/Prima_battaglia_del_Piave)
+- **obs_d2f7e27b79e3236a**: Battle of Monte Grappa - Wikipedia — [https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa](https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa)
+- **obs_17055fdbe58ea296**: Monte Grappa la grande guerra Sacrario Cima Grappa i luoghi delle battaglie trincee battaglie della Guerra d'Europa Prima Guerra Mondiale, fist world war great war weltkrieg hystory, fotografie photo gallery fotogalerie passeggiate escursioni itinerari naturalistici storici, Pertica Asolone Col Moschin Fenilon Solaroli Prassolan Fontanasecca Tomatico Boccaor Cima della Mandria Palon Monte Tomba Archeson Feltre Bassano Cismon Campo Croce Lepre Finestron Scarpon Romano d'Ezzelino Cavaso del Tomba Crespano Borso Alano fiume Piave Brenta Valle Santa Felicita Dalla Mena Strada Cadorna gen. Giardino Ossario di Cima Grappa Madonnina Solaroli monte Asolone Col Moschin Pertica Tomatico San Liberale — [https://www.magicoveneto.it/grappa/grandeguerra.htm](https://www.magicoveneto.it/grappa/grandeguerra.htm)
+- **obs_22a61a630c494a06**: Escursione sul Monte Grappa: le Grandi Battaglie della Prima Guerra Mondiale — [https://lorisgiuriatti.it/itinerari/escursione-sul-monte-grappa-le-grandi-battaglie](https://lorisgiuriatti.it/itinerari/escursione-sul-monte-grappa-le-grandi-battaglie)
+- **obs_f589b3e1741f0179**: Prima Guerra... - Il Soldato Dimenticato di Claudio Restelli — [https://www.facebook.com/ilsoldatodimenticato/posts/prima-guerra-mondiale-uomini-soldati-vittime-ed-eroi-i-luoghi-simbolo-della-gran/1013389290810713](https://www.facebook.com/ilsoldatodimenticato/posts/prima-guerra-mondiale-uomini-soldati-vittime-ed-eroi-i-luoghi-simbolo-della-gran/1013389290810713)
+- **obs_0054748b3e67489d**: Prima Guerra Mondiale Monte Grappa — [https://www.vivereilgrappa.it/it/prima-guerra-mondiale-monte-grappa.htm](https://www.vivereilgrappa.it/it/prima-guerra-mondiale-monte-grappa.htm)
+- **obs_a1f4aa8265bb0726**: Monte Grappa. L’ultima battaglia, ottobre 1918 | Storia e Memoria di Bologna — [https://www.storiaememoriadibologna.it/archivio/eventi/monte-grappa-lultima-battaglia-ottobre-1918](https://www.storiaememoriadibologna.it/archivio/eventi/monte-grappa-lultima-battaglia-ottobre-1918)
+- **obs_560b0fa9b4a9bad4**: Montegrappa.org Le tre Battaglie — [https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php](https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php)
+- **obs_2fec364292ddd7e7**: 17 dicembre 1917 - Camminando tra il Grappa e l'Asolano — [https://www.vardanega.com/17-dicembre-1917](https://www.vardanega.com/17-dicembre-1917)
+- **obs_8beb99c64c05f972**: Monte Grappa Battaglie — [https://www.montegrappa.net/2023/index.php/monte-grappa/siti-storici](https://www.montegrappa.net/2023/index.php/monte-grappa/siti-storici)
+- **obs_2c659b12b85931db**: Monte Grappa — [https://www.filippin.it/portfolio/monte-grappa](https://www.filippin.it/portfolio/monte-grappa)
+- **obs_fa893470c79028ff**: ﻿Il Monte Grappa durante la Grande Guerra - Restelli Storia — [https://restellistoria.altervista.org/pagine-di-storia/prima-guerra-mondiale-2/%EF%BB%BFil-monte-grappa-durante-la-grande-guerra](https://restellistoria.altervista.org/pagine-di-storia/prima-guerra-mondiale-2/%EF%BB%BFil-monte-grappa-durante-la-grande-guerra)
+- **obs_704c33892b244ca1**: Battaglie, Cime — [https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime](https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime)
+- **obs_66382b783661a34c**: Seconda battaglia del monte Grappa — [https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa](https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa)
+- **obs_7d4629a5c60af5e8**: Bassano e il Monte Grappa - Consorzio Turistico Vicenzaè — [https://www.vicenzae.org/it/turismo/tra-forti-e-trincee-nei-luoghi-della-grande-guerra/bassano-e-il-monte-grappa](https://www.vicenzae.org/it/turismo/tra-forti-e-trincee-nei-luoghi-della-grande-guerra/bassano-e-il-monte-grappa)
+- **obs_082b58be35e0c3be**: MOI{TE GRAPPA — [https://www.difesa.it/assets/allegati/26653/monte_grappa.pdf](https://www.difesa.it/assets/allegati/26653/monte_grappa.pdf)
+- **obs_3bfe99c48629e396**: Prima battaglia del Piave - Wikipedia — [https://it.wikipedia.org/wiki/Prima_battaglia_del_Piave](https://it.wikipedia.org/wiki/Prima_battaglia_del_Piave)
+- **obs_b34ce535bfaacf4d**: Prima guerra mondiale sul monte Grappa — [https://www.volpidelvajolet.it/2023/10/prima-guerra-mondiale-sul-monte-grappa.html](https://www.volpidelvajolet.it/2023/10/prima-guerra-mondiale-sul-monte-grappa.html)
+- **obs_fe4bf94792ebcac8**: Battle of Monte Grappa — [https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa](https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa)
+- **obs_c286cfd34b8eab6e**: Prima Guerra Mondiale. Uomini, Soldati, Vittime ed Eroi. I ... — [https://www.facebook.com/ilsoldatodimenticato/posts/prima-guerra-mondiale-uomini-soldati-vittime-ed-eroi-i-luoghi-simbolo-della-gran/1013389290810713](https://www.facebook.com/ilsoldatodimenticato/posts/prima-guerra-mondiale-uomini-soldati-vittime-ed-eroi-i-luoghi-simbolo-della-gran/1013389290810713)
+- **obs_5d772978a7b3644f**: Monte Grappa. L'ultima battaglia, ottobre 1918 — [https://www.storiaememoriadibologna.it/archivio/eventi/monte-grappa-lultima-battaglia-ottobre-1918](https://www.storiaememoriadibologna.it/archivio/eventi/monte-grappa-lultima-battaglia-ottobre-1918)
+- **obs_6e53ab93ec6d1627**: Prima Guerra Mondiale Monte Grappa — [https://www.vivereilgrappa.it/it/prima-guerra-mondiale-monte-grappa.htm](https://www.vivereilgrappa.it/it/prima-guerra-mondiale-monte-grappa.htm)
+- **obs_3e2cc2febd15597e**: Seconda battaglia del monte Grappa - Wikipedia — [https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa](https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa)
+- **obs_a89933d92e79e862**: Escursione sul Monte Grappa: Le Grandi Battaglie della ... — [https://lorisgiuriatti.it/itinerari/escursione-sul-monte-grappa-le-grandi-battaglie](https://lorisgiuriatti.it/itinerari/escursione-sul-monte-grappa-le-grandi-battaglie)
+- **obs_931612787e43a95d**: Le tre battaglie e le Cime - Massiccio del Grappa — [https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime](https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime)
+- **obs_981d159a956d05b3**: L’ultima battaglia sul Grappa: Vittorio Veneto 1918 — [https://www.youtube.com/watch?v=aMzDbeaX89k](https://www.youtube.com/watch?v=aMzDbeaX89k)
+- **obs_75c6eba52729be44**: Montegrappa.org Le tre Battaglie — [https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php](https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php)
+- **obs_3eafad7d922a14a0**: 17 dicembre 1917 - Camminando tra il Grappa e l'Asolano — [https://www.vardanega.com/17-dicembre-1917](https://www.vardanega.com/17-dicembre-1917)
+- **obs_d03b57a3b097b575**: Monte Grappa, Battle of — [https://encyclopedia.1914-1918-online.net/article/monte-grappa-battle-of](https://encyclopedia.1914-1918-online.net/article/monte-grappa-battle-of)
+- **obs_6cf8630026aebf5f**: Monte Grappa - Istituti Filippin — [https://www.filippin.it/portfolio/monte-grappa](https://www.filippin.it/portfolio/monte-grappa)
+- **obs_31fdf5ad3c7a9e7c**: Dal disastro di Caporetto alla difesa del Monte Grappa — [https://www.youtube.com/watch?v=lEt1nOfUJ9A](https://www.youtube.com/watch?v=lEt1nOfUJ9A)
+- **obs_05c486c4f4b3aa08**: Bassano e il Monte Grappa - Consorzio Turistico Vicenzaè — [https://www.vicenzae.org/it/turismo/tra-forti-e-trincee-nei-luoghi-della-grande-guerra/bassano-e-il-monte-grappa](https://www.vicenzae.org/it/turismo/tra-forti-e-trincee-nei-luoghi-della-grande-guerra/bassano-e-il-monte-grappa)
+- **obs_344b37f5eac22a92**: I Video del Grappa - La Grande Guerra 1915-1918:In alta ... — [https://www.montegrappa.org/_monte/index.php/i-video-del-grappa/video/16-la-grande-guerra-1915-1918-in-alta-quota-documentario](https://www.montegrappa.org/_monte/index.php/i-video-del-grappa/video/16-la-grande-guerra-1915-1918-in-alta-quota-documentario)
+- **obs_f6269983db1d612c**: MOI{TE GRAPPA — [https://www.difesa.it/assets/allegati/26653/monte_grappa.pdf](https://www.difesa.it/assets/allegati/26653/monte_grappa.pdf)
+- **obs_5549409418a71580**: MONTE ASOLONE 1917-1918 | Venerdì Storia 08/11/23 — [https://www.youtube.com/watch?v=XzG1Dk-lYng](https://www.youtube.com/watch?v=XzG1Dk-lYng)
+- **obs_9e247831bd3aeb6f**: Seconda battaglia del monte Grappa — [https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa](https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa)
+- **obs_932acc0832d43707**: Montegrappa.org Le tre Battaglie — [https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php](https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php)
+- **obs_447e0fe037cd3941**: Battle of Monte Grappa — [https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa](https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa)
+- **obs_91abba908985a612**: Monte Grappa Battaglie — [https://www.montegrappa.net/2023/index.php/monte-grappa/siti-storici](https://www.montegrappa.net/2023/index.php/monte-grappa/siti-storici)
+- **obs_af488d4f77a525f8**: Le tre battaglie e le Cime - Massiccio del Grappa — [https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime](https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime)
+- **obs_e0d17b9a097af565**: Monte Grappa. L'ultima battaglia, ottobre 1918 — [https://www.storiaememoriadibologna.it/archivio/eventi/monte-grappa-lultima-battaglia-ottobre-1918](https://www.storiaememoriadibologna.it/archivio/eventi/monte-grappa-lultima-battaglia-ottobre-1918)
+- **obs_1cf97ddf4372b5a3**: Monte Grappa - la grande Guerra d'Europa ei luoghi delle ... — [https://www.magicoveneto.it/grappa/grandeguerra.htm](https://www.magicoveneto.it/grappa/grandeguerra.htm)
+- **obs_218401dc2435a969**: ﻿Il Monte Grappa durante la Grande Guerra - Restelli Storia — [https://restellistoria.altervista.org/pagine-di-storia/prima-guerra-mondiale-2/%EF%BB%BFil-monte-grappa-durante-la-grande-guerra/](https://restellistoria.altervista.org/pagine-di-storia/prima-guerra-mondiale-2/%EF%BB%BFil-monte-grappa-durante-la-grande-guerra/)
+- **obs_18f640095b3de6be**: Prima guerra mondiale sul monte Grappa — [https://www.volpidelvajolet.it/2023/10/prima-guerra-mondiale-sul-monte-grappa.html](https://www.volpidelvajolet.it/2023/10/prima-guerra-mondiale-sul-monte-grappa.html)
+- **obs_08037fcab1de5c90**: Prima Guerra Mondiale Monte Grappa — [https://www.vivereilgrappa.it/it/prima-guerra-mondiale-monte-grappa.htm](https://www.vivereilgrappa.it/it/prima-guerra-mondiale-monte-grappa.htm)
+- **obs_b7450f8119b47757**: Monte Grappa - la grande Guerra d'Europa ei luoghi delle ... — [https://www.magicoveneto.it/grappa/grandeguerra.htm](https://www.magicoveneto.it/grappa/grandeguerra.htm)
+- **obs_ac62fe0a0ba903de**: Monte Grappa Battaglie — [https://www.montegrappa.net/sito/index.php/monte-grappa/siti-storici](https://www.montegrappa.net/sito/index.php/monte-grappa/siti-storici)
+- **obs_e19380817447ecbe**: Battle of Monte Grappa — [https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa](https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa)
+- **obs_288e7121735068c2**: Monte Grappa — [https://www.filippin.it/portfolio/monte-grappa](https://www.filippin.it/portfolio/monte-grappa)
+- **obs_fd718e1c190c4078**: Escursione sul Monte Grappa: Le Grandi Battaglie della ... — [https://lorisgiuriatti.it/itinerari/escursione-sul-monte-grappa-le-grandi-battaglie](https://lorisgiuriatti.it/itinerari/escursione-sul-monte-grappa-le-grandi-battaglie)
+- **obs_2dca48206c482ffe**: ﻿Il Monte Grappa durante la Grande Guerra - Restelli Storia — [https://restellistoria.altervista.org/pagine-di-storia/prima-guerra-mondiale-2/%EF%BB%BFil-monte-grappa-durante-la-grande-guerra](https://restellistoria.altervista.org/pagine-di-storia/prima-guerra-mondiale-2/%EF%BB%BFil-monte-grappa-durante-la-grande-guerra)
+- **obs_f7ef08bcb546b212**: Monte Grappa. L'ultima battaglia, ottobre 1918 — [https://www.storiaememoriadibologna.it/archivio/eventi/monte-grappa-lultima-battaglia-ottobre-1918](https://www.storiaememoriadibologna.it/archivio/eventi/monte-grappa-lultima-battaglia-ottobre-1918)
+- **obs_d0b5d58df809c930**: Seconda battaglia del monte Grappa — [https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa](https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa)
+- **obs_c62c67516d9e2471**: sempre monte grappa prima guerra mondiale — [https://www.facebook.com/groups/2118085605171732/posts/4346791252301145](https://www.facebook.com/groups/2118085605171732/posts/4346791252301145)
+- **obs_6149894ace35cd59**: Montegrappa.org Le tre Battaglie — [https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php](https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php)
+- **obs_133039f35dcbe40c**: Le tre battaglie e le Cime - Massiccio del Grappa — [https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime](https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime)
+- **obs_db9ab462a0f359f5**: Seconda battaglia del monte Grappa — [https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa](https://it.wikipedia.org/wiki/Seconda_battaglia_del_monte_Grappa)
+- **obs_f089593515b1b6f9**: Battle of Monte Grappa — [https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa](https://en.wikipedia.org/wiki/Battle_of_Monte_Grappa)
+- **obs_f51bd7cc2bae800f**: Montegrappa.org Le tre Battaglie — [https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php](https://www.montegrappa.org/storia_del_massiccio/tre_battaglie.php)
+- **obs_f00a53229803f936**: Monte Grappa Battaglie — [https://www.montegrappa.net/sito/index.php/monte-grappa/siti-storici](https://www.montegrappa.net/sito/index.php/monte-grappa/siti-storici)
+- **obs_b3ffa0c90c6108db**: ﻿Il Monte Grappa durante la Grande Guerra - Restelli Storia — [https://restellistoria.altervista.org/pagine-di-storia/prima-guerra-mondiale-2/%EF%BB%BFil-monte-grappa-durante-la-grande-guerra/](https://restellistoria.altervista.org/pagine-di-storia/prima-guerra-mondiale-2/%EF%BB%BFil-monte-grappa-durante-la-grande-guerra/)
+- **obs_414e0766e660dc36**: Le tre battaglie e le Cime - Massiccio del Grappa — [https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime](https://www.massicciodelgrappa.it/it/le-tre-battaglie-e-le-cime)
+- **obs_8be02f455987f7f3**: Bassano e il Monte Grappa - Consorzio Turistico Vicenzaè — [https://www.vicenzae.org/it/turismo/tra-forti-e-trincee-nei-luoghi-della-grande-guerra/bassano-e-il-monte-grappa](https://www.vicenzae.org/it/turismo/tra-forti-e-trincee-nei-luoghi-della-grande-guerra/bassano-e-il-monte-grappa)
+
+---
+
+## Provenienza
+
+- Snapshot: snap_v7_45ff6b7da6c95851
+- Schema: 7.2
+- Narrator Contract: 7.2
+- Identity Status (V7.2): PARTIAL_IDENTITY
+- Identity Resolution (legacy): PARTIAL
+- Corroboration Status: NONE
+- External Corroboration: NONE
+- Resolved Cluster ID: 
+- Person Claims: 0
+- Context Claims: 63
+- Candidate Identities: 0
+- Provider Ledger: 90 observations
+
+
+Snapshot ID: snap_v7_45ff6b7da6c95851
+Identity status: PARTIAL_IDENTITY
+Corroboration: NONE
+Web leads: 63
+Provider ledger: 90

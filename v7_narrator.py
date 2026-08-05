@@ -18,10 +18,11 @@ from __future__ import annotations
 
 import json
 import re
+import hashlib
 import logging
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any, Tuple, Set
 
 from evidence_snapshot_v7 import EvidenceSnapshotV7, ClaimV7, EvidenceItemV7
 from narration_models import (
@@ -785,6 +786,9 @@ class NarratorV7_v2:
       7. Backend computes omitted_claims deterministically
       8. Returns NarrationResult (always, even on failure)
 
+    V7.3-FIX: Includes circuit breaker — failed providers are skipped
+    for the rest of the session to avoid wasting API calls.
+
     Usage:
         narrator = NarratorV7_v2()
         result = narrator.narrate(snapshot)
@@ -792,6 +796,10 @@ class NarratorV7_v2:
     """
 
     NARRATOR_CONTRACT_VERSION = "7.2-narration-v2"
+
+    # Circuit breaker: providers that failed and should be skipped
+    _failed_providers: set = set()
+    _max_provider_failures = 1  # skip after 1 failure (schema error, 401, etc.)
 
     def __init__(
         self,
@@ -850,9 +858,32 @@ class NarratorV7_v2:
             )
 
             if validation.valid:
-                return self._build_result(
-                    draft, validation, selected, snapshot, request_type, gen_info,
+                # V7.3-FIX: Post-generation hallucination check
+                hallucination_warnings = self._post_gen_hallucination_check(
+                    draft, selected, snapshot,
                 )
+                if hallucination_warnings:
+                    logger.warning(
+                        f"NARRATE_V2: Hallucination check found {len(hallucination_warnings)} warnings: "
+                        f"{hallucination_warnings[:3]}"
+                    )
+                    # If severe (>5 warnings), reject and fall back
+                    if len(hallucination_warnings) > 5:
+                        gen_info.fallback_reason = f"hallucination_detected:{len(hallucination_warnings)}_warnings"
+                        logger.warning(
+                            f"NARRATE_V2: Severe hallucination ({len(hallucination_warnings)} warnings), "
+                            f"falling back to deterministic"
+                        )
+                    else:
+                        # Add warnings to validation flags and proceed
+                        return self._build_result(
+                            draft, validation, selected, snapshot, request_type, gen_info,
+                            extra_flags=hallucination_warnings,
+                        )
+                else:
+                    return self._build_result(
+                        draft, validation, selected, snapshot, request_type, gen_info,
+                    )
             else:
                 # Attempt repair
                 repaired = self._validator.repair(
@@ -889,7 +920,11 @@ class NarratorV7_v2:
         request_type: str,
         requested_depth: str,
     ) -> Tuple[Optional[NarrationDraft], GenerationInfo]:
-        """Try to generate a NarrationDraft using an AI provider."""
+        """Try to generate a NarrationDraft using an AI provider.
+
+        V7.3-FIX: Circuit breaker — skips providers that already failed
+        in this session to avoid wasting API calls.
+        """
         gen_info = GenerationInfo(mode="ai")
 
         try:
@@ -907,6 +942,10 @@ class NarratorV7_v2:
             system_prompt = NARRATOR_DRAFT_PROMPT_V2
             user_prompt = narrator_input
 
+            # V7.3-FIX: Circuit breaker — check if all providers are already failed
+            if self._failed_providers:
+                logger.info(f"NARRATE_V2: Skipping {len(self._failed_providers)} failed provider(s): {self._failed_providers}")
+
             response = call_ai_json(
                 task_type="narration",
                 system=system_prompt,
@@ -914,6 +953,7 @@ class NarratorV7_v2:
                 max_tokens=4000,
                 temperature=0.3,
                 json_schema=NARRATION_DRAFT_SCHEMA,
+                skip_providers=self._failed_providers,
             )
 
             if response.get("ok") and response.get("data"):
@@ -942,8 +982,13 @@ class NarratorV7_v2:
             else:
                 err = response.get("error", "unknown") if response else "no response"
                 json_err = response.get("json_error", "")
+                failed_provider = response.get("provider", "") if response else ""
                 gen_info.fallback_reason = f"ai_call_failed: {err}" + (f" ({json_err})" if json_err else "")
                 logger.warning(f"NARRATE_V2: AI call failed: {gen_info.fallback_reason}")
+                # V7.3-FIX: Circuit breaker — record failed provider
+                if failed_provider:
+                    self._failed_providers.add(failed_provider)
+                    logger.info(f"NARRATE_V2: Circuit breaker recorded failure for provider: {failed_provider}")
                 return None, gen_info
 
         except Exception as e:
@@ -959,7 +1004,10 @@ class NarratorV7_v2:
         request_type: str,
         requested_depth: str,
     ) -> str:
-        """Build the JSON input string for the AI model."""
+        """Build the JSON input string for the AI model.
+
+        V7.3-FIX: Evidence-locked — includes payload hash for integrity verification.
+        """
         import json as _json
 
         # Build subjects
@@ -982,17 +1030,183 @@ class NarratorV7_v2:
             "conditional_gaps_count": len(snapshot.conditional_gaps),
         }
 
+        # V7.3-FIX: Validate payload before sending
+        payload_claims = selected.narratable_claims
+        payload_errors = self._validate_payload(payload_claims, snapshot)
+        if payload_errors:
+            logger.warning(f"NARRATE_V2: Payload validation errors: {payload_errors}")
+
+        # V7.3-FIX: Compute evidence hash for integrity
+        evidence_hash = self._compute_evidence_hash(payload_claims)
+
         ai_input = {
             "user_query": user_query,
             "request_type": request_type,
             "requested_depth": requested_depth,
             "subjects": subjects,
-            "claims": selected.narratable_claims,
+            "claims": payload_claims,
             "coverage": coverage,
             "response_language": "it",
+            "evidence_hash": evidence_hash,
         }
 
         return _json.dumps(ai_input, ensure_ascii=False, indent=2)
+
+    def _validate_payload(
+        self,
+        claims: List[Dict[str, Any]],
+        snapshot: EvidenceSnapshotV7,
+    ) -> List[str]:
+        """V7.3-FIX: Validate that all claims in the payload are evidence-backed.
+
+        Checks:
+        - Every claim has a claim_id
+        - Every claim_id exists in the snapshot
+        - No claim has a REJECTED status
+        - Every factual claim has a non-empty value
+        """
+        errors = []
+        # Build set of valid claim IDs from snapshot
+        valid_ids: Set[str] = set()
+        rejected_ids: Set[str] = set()
+        for c in snapshot.person_claims:
+            valid_ids.add(c.claim_id)
+            if hasattr(c, 'status') and c.status == 'REJECTED':
+                rejected_ids.add(c.claim_id)
+        for c in snapshot.accepted_claims:
+            valid_ids.add(c.claim_id)
+        for c in snapshot.asserted_claims:
+            valid_ids.add(c.claim_id)
+
+        for claim in claims:
+            cid = claim.get("claim_id", "")
+            if not cid:
+                errors.append("CLAIM_MISSING_ID")
+                continue
+            if cid not in valid_ids:
+                errors.append(f"CLAIM_NOT_IN_SNAPSHOT:{cid}")
+            if cid in rejected_ids:
+                errors.append(f"REJECTED_CLAIM_IN_PAYLOAD:{cid}")
+            # Check for empty values in factual claims
+            value = claim.get("value_normalized", "") or claim.get("value", "")
+            if not value or str(value).strip() in ("", "-"):
+                errors.append(f"CLAIM_EMPTY_VALUE:{cid}")
+
+        return errors
+
+    def _compute_evidence_hash(self, claims: List[Dict[str, Any]]) -> str:
+        """V7.3-FIX: Compute SHA-256 hash of claim IDs for payload integrity.
+
+        This hash is included in the AI payload and can be verified post-generation
+        to ensure the AI received the correct evidence set.
+        """
+        claim_ids = sorted([c.get("claim_id", "") for c in claims])
+        raw = "|".join(claim_ids)
+        return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    def _post_gen_hallucination_check(
+        self,
+        draft: NarrationDraft,
+        selected: SelectedEvidence,
+        snapshot: EvidenceSnapshotV7,
+    ) -> List[str]:
+        """V7.3-FIX: Post-generation hallucination detection.
+
+        Checks AI-generated text for specific facts (dates, places, names)
+        that are NOT supported by any claim in the evidence set.
+
+        Returns list of warning strings (empty = no hallucination detected).
+        """
+        warnings = []
+
+        # Collect all supported values from claims
+        supported_dates: Set[str] = set()
+        supported_places: Set[str] = set()
+        supported_names: Set[str] = set()
+
+        for c in selected.narratable_claims:
+            predicate = c.get("predicate", "")
+            value = str(c.get("value_normalized", c.get("value", ""))).strip()
+            if not value or value == "-":
+                continue
+            value_lower = value.lower()
+
+            # Collect dates
+            if predicate in ("birth_date", "death_date", "event_start_date", "event_end_date",
+                             "capture_date", "internment_start", "internment_end"):
+                # Extract year from value
+                year_match = re.search(r"(18|19)\d{2}", value)
+                if year_match:
+                    supported_dates.add(year_match.group(0))
+                supported_dates.add(value_lower)
+
+            # Collect places
+            if predicate in ("birth_place", "death_place", "event_location", "capture_place",
+                             "internment_place", "burial", "residence", "municipality"):
+                supported_places.add(value_lower)
+                # Also add individual words for partial matching
+                for word in value_lower.split():
+                    if len(word) >= 4:
+                        supported_places.add(word)
+
+            # Collect names
+            if predicate in ("full_name", "cognome", "nome", "display_name"):
+                supported_names.add(value_lower)
+                for word in value_lower.split():
+                    if len(word) >= 3:
+                        supported_names.add(word)
+
+        # Also add target display name
+        if snapshot.target:
+            dn = snapshot.target.get("display_name", "").lower()
+            if dn:
+                supported_names.add(dn)
+                for word in dn.split():
+                    if len(word) >= 3:
+                        supported_names.add(word)
+
+        # Check each block for unsupported specific facts
+        date_pattern = re.compile(r'\b(18|19)\d{2}\b')
+
+        for block in draft.blocks:
+            text = block.text
+            # Check for dates not in evidence
+            found_dates = date_pattern.findall(text)
+            for d in found_dates:
+                if d not in supported_dates:
+                    # Check if it's a partial match (e.g., 1917 in 1917-10-24)
+                    if not any(d in sd for sd in supported_dates):
+                        warnings.append(
+                            f"HALLUCINATED_DATE:{d} in block {block.block_id} — not in evidence"
+                        )
+
+            # Check for place names not in evidence (capitalized words ≥4 chars)
+            cap_words = re.findall(r'\b[A-Z][a-z]{3,}\b', text)
+            for w in cap_words:
+                w_lower = w.lower()
+                # Skip common Italian words that aren't places
+                if w_lower in ("della", "delle", "nella", "nelle", "della", "sono",
+                               "stato", "stata", "presso", "durante", "dopo", "prima",
+                               "nel", "al", "del", "della", "questo", "questa",
+                               "soldato", "soldati", "battaglia", "battaglie",
+                               "divisione", "reggimento", "brigata", "battaglione",
+                               "capitano", "tenente", "sergente", "maggiore",
+                               "italia", "italiano", "italiani", "esercito",
+                               "guerra", "fronte", "prima", "seconda", "guerra",
+                               "settembre", "ottobre", "novembre", "dicembre",
+                               "gennaio", "febbraio", "marzo", "aprile",
+                               "maggio", "giugno", "luglio", "agosto",
+                               "campo", "campi", "prigionia", "prigioniero",
+                               "militare", "militari", "ufficiale", "ufficiali"):
+                    continue
+                # Check if this capitalized word matches any supported place
+                if w_lower not in supported_places and w_lower not in supported_names:
+                    # Only flag if it looks like a proper noun (not in common words)
+                    warnings.append(
+                        f"HALLUCINATED_PLACE_OR_NAME:{w} in block {block.block_id} — not in evidence"
+                    )
+
+        return warnings
 
     def _salvage_draft(self, data: dict) -> NarrationDraft:
         """Attempt to salvage a partially valid draft."""
@@ -1025,6 +1239,7 @@ class NarratorV7_v2:
         snapshot: EvidenceSnapshotV7,
         request_type: str,
         gen_info: GenerationInfo,
+        extra_flags: List[str] = None,
     ) -> NarrationResult:
         """Build a NarrationResult from a validated draft."""
         # Render answer_markdown from blocks
@@ -1050,6 +1265,9 @@ class NarratorV7_v2:
         flags.extend(validation.global_warnings)
         for bv in validation.block_results:
             flags.extend(bv.warnings)
+        # V7.3-FIX: Add hallucination warnings if present
+        if extra_flags:
+            flags.extend(extra_flags)
 
         return NarrationResult(
             request_type=request_type,

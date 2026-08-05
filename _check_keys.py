@@ -5,20 +5,16 @@ Never prints or logs actual key values.
 """
 import os
 import re
-from pathlib import Path
 
 
 def _load_env() -> dict:
-    """Load env only from project .env — never from Desktop/home."""
-    env = {}
-    p = Path(__file__).parent / ".env"
-    if p.exists():
-        for line in p.read_text(encoding="utf-8", errors="ignore").splitlines():
-            line = line.strip()
-            if "=" in line and not line.startswith("#"):
-                k, v = line.split("=", 1)
-                env[k.strip()] = v.strip().strip('"').strip("'")
-    return env
+    """Return environment variables from os.environ only.
+
+    NEVER reads .env file directly. The .env file must be loaded
+    by the process launcher (e.g. python-dotenv) before the process starts.
+    This module must not open, read, or parse .env.
+    """
+    return dict(os.environ)
 
 
 _KEYS = [
@@ -62,5 +58,7 @@ def check_keys() -> dict:
 if __name__ == "__main__":
     status = check_keys()
     for k in _KEYS:
-        print(f"  {k}={status[k]}")
+        s = status[k]
+        label = "PRESENT" if s == "presente" else ("MISSING" if s == "assente" else "INVALID")
+        print(f"  {k}: {label}")
 

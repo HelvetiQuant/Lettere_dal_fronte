@@ -1,0 +1,41 @@
+# Rapporto di Ricerca — snap_v7_babb3f0b3e10ba2d
+Versione schema: 7
+Intent: AGGREGATE_QUERY
+Target: count_caduti_by_luogo
+Contratto Narratore: 7.1
+
+## Risoluzione Identità: UNRESOLVED
+## Corroborazione Esterna: NONE
+
+## Risultato Aggregato
+  Definizione: agg_4a2174619e513fc7
+  Nome: count_caduti_by_luogo
+  Righe: 50
+  - {'luogo_morte': 'Carso', 'count': 32397}
+  - {'luogo_morte': 'Prigionia', 'count': 30115}
+  - {'luogo_morte': '-', 'count': 16202}
+  - {'luogo_morte': 'Medio Isonzo', 'count': 13068}
+  - {'luogo_morte': 'Monte San Michele', 'count': 11148}
+  - {'luogo_morte': 'Campo', 'count': 10270}
+  - {'luogo_morte': 'Piave', 'count': 6566}
+  - {'luogo_morte': 'Monte Grappa', 'count': 4429}
+  - {'luogo_morte': 'Settore Di Tolmino', 'count': 4000}
+  - {'luogo_morte': 'Altopiano Di Asiago', 'count': 3830}
+  ... e altre 40 righe
+
+## Limitazioni
+  - NO_AI_PROVIDER: No AI provider available for narration. Using deterministic fallback.
+
+---
+## Provenienza
+- Snapshot: snap_v7_babb3f0b3e10ba2d
+- Schema: 7
+- Narrator Contract: 7.1
+- Identity Resolution: UNRESOLVED
+- External Corroboration: NONE
+- Provider Ledger: 0 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.

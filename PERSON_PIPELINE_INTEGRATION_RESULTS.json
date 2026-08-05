@@ -1,0 +1,164 @@
+{
+  "ALTA Antonio": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 90,
+      "person_sources_confirmed": 21,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 1,
+      "context_sources": 0,
+      "claims_accepted": 49,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 49,
+    "has_blocked_narration": false,
+    "errors": [],
+    "warnings_count": 44,
+    "report_preview": "Antonio Alta risulta deceduto nel febbraio 1945 durante la prigionia in Germania.\n\nAntonio Alta era originario di Favara, in provincia di Agrigento.\n\nPrestò servizio come soldato nel 138° Reggimento Fanteria.\n\nLa morte sopraggiunse probabilmente a causa di tubercolosi contratta durante la detenzione"
+  },
+  "ARMANNO Luigi A": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 67,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 5,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 4,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 5,
+    "has_blocked_narration": false,
+    "errors": [],
+    "warnings_count": 10,
+    "report_preview": "Luigi A. Armanno è attestato in un elenco archivistico come persona di cui si conserva traccia documentaria, ma i dati disponibili sono estremamente limitati.\n\nLa documentazione consultata riporta solo il cognome e la lettera iniziale del nome, senza ulteriori dettagli anagrafici o biografici.\n\nNon "
+  },
+  "AMAROTTI Enrico": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 66,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 1,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 8,
+    "has_blocked_narration": false,
+    "errors": [],
+    "warnings_count": 2,
+    "report_preview": "Enrico Amarotti risulta deceduto durante la seconda guerra mondiale, secondo quanto documentato in fonti archivistiche.\n\nEnrico Amarotti era residente ad Alessandria e a Capriate d'Orba, in provincia di Alessandria.\n\nSecondo le registrazioni, morì per tubercolosi nel campo di internamento di Wasunge"
+  },
+  "ANFOSSO Carlo": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 82,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 28,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 8,
+    "has_blocked_narration": false,
+    "errors": [],
+    "warnings_count": 40,
+    "report_preview": "Carlo Anfosso risulta registrato come residente ad Alessandria e Novi Ligure.\n\nSecondo le fonti documentarie, Carlo Anfosso morì durante la prigionia in Germania, probabilmente a Kiel, a causa di una malattia.\n\nLa notizia della sua morte è riportata in un elenco documentario di carattere archivistic"
+  },
+  "ARTI Saverio": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 90,
+      "person_sources_confirmed": 20,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 1,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 42,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 43,
+    "has_blocked_narration": false,
+    "errors": [],
+    "warnings_count": 42,
+    "report_preview": "Saverio Arti risulta documentato come soldato dell'8° Reggimento Alpini.\n\nLa sua presenza è attestata in un elenco di militari conservato in archivio, dove compare con il solo cognome leggibile.\n\nI dati disponibili non permettono di ricostruire ulteriori dettagli biografici o militari su questo sold"
+  },
+  "ANVISIO Remo": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 65,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 9,
+    "has_blocked_narration": false,
+    "errors": [],
+    "warnings_count": 0,
+    "report_preview": "Remo Anvisio risulta deceduto nel 1944, secondo quanto riportato in documenti d'archivio.\n\nRemo Anvisio è attestato come residente ad Alessandria.\n\nLa data di morte è collocata nel mese di aprile 1944.\n\nLe informazioni su Remo Anvisio derivano da un elenco documentale d'archivio, precisamente dal do"
+  },
+  "Battaglia del Monte Ortigara": {
+    "type": "EVENT",
+    "identity_status": "PARTIAL_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 76,
+      "person_sources_confirmed": 0,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 0,
+      "claims_rejected": 0
+    },
+    "event_claims_count": 0,
+    "report_preview": "La battaglia del Monte Ortigara fu uno degli scontri più cruenti della Prima guerra mondiale sul fronte italiano, combattuta tra il 10 e il 25 giugno 1917 sull'Altopiano dei Sette Comuni.\n\nL'offensiva italiana, denominata in codice 'Azione K', fu preceduta da un intenso bombardamento di artiglieria "
+  },
+  "Battaglia di Vittorio Veneto": {
+    "type": "EVENT",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 320,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 4,
+      "claims_rejected": 0
+    },
+    "event_claims_count": 4,
+    "report_preview": "La Battaglia di Vittorio Veneto fu l'offensiva finale dell'esercito italiano durante la Prima Guerra Mondiale, conclusasi con la vittoria e la resa dell'Impero austro-ungarico.\n\nL'azione militare si svolse tra il 24 ottobre e il 4 novembre 1918, con un'offensiva italiana che sfondò il fronte sul Pia"
+  },
+  "Guerra bianca": {
+    "type": "EVENT",
+    "identity_status": "PARTIAL_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 88,
+      "person_sources_confirmed": 0,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 0,
+      "claims_rejected": 0
+    },
+    "event_claims_count": 0,
+    "report_preview": "La Guerra Bianca fu il conflitto combattuto a quote altissime sulle Alpi tra il Regno d'Italia e l'Impero austro-ungarico durante la Prima guerra mondiale, tra il 1915 e il 1918.\n\nGli scontri più aspri si concentrarono in tre aree principali: le Dolomiti, il gruppo Ortles-Cevedale e quello Adamello-"
+  }
+}

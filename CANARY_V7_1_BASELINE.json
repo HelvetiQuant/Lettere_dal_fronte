@@ -1,0 +1,196 @@
+{
+  "CAIS Arduino": {
+    "name": "CAIS Arduino",
+    "intent": "PERSON_LOOKUP",
+    "conflict": "WWII",
+    "elapsed_seconds": 7.26,
+    "run_id": "run_v7_1785769712_79c07505",
+    "plan_id": "plan_v7_c2952422d09a7d2a",
+    "observation_count": 10,
+    "errors": [],
+    "warnings": [
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record"
+    ],
+    "stage_timings": {
+      "discover": 0.27818751335144043,
+      "fetch": 0.0,
+      "extract": 0.000743865966796875,
+      "resolve": 0.0,
+      "fuse": 0.0,
+      "validate": 0.0,
+      "narrate": 6.975168704986572,
+      "persist": 0.0,
+      "total": 7.257483005523682
+    },
+    "snapshot_identity_resolution": "PARTIAL",
+    "snapshot_external_corroboration": "PARTIAL",
+    "snapshot_accepted_claims_count": 0,
+    "snapshot_conflicting_claims_count": 0,
+    "snapshot_asserted_claims_count": 1,
+    "snapshot_rejected_candidates_count": 0,
+    "report": "## Rapporto di Ricerca: CAIS Arduino\n\n### Contesto\nIl soggetto di questo rapporto è CAIS Arduino, associato al periodo della Seconda Guerra Mondiale (WWII). Le informazioni disponibili sono limitate e parzialmente corroborate.\n\n### Stato dell'Identità\nL'identità di CAIS Arduino è classificata come \"PARTIAL_IDENTITY\", il che significa che ci sono informazioni limitate e non completamente verificate su questa persona.\n\n### Dati Disponibili\n- **Fato**: È stato affermato che CAIS Arduino è deceduto. Questa affermazione è presente nel record di origine, ma non è stata corroborata da fonti esterne [source: origin_record].\n\n### Lacune Informative\nCi sono numerose lacune informative riguardanti CAIS Arduino, che includono:\n- **Anno di nascita**: Non supportato da prove accettate.\n- **Luogo di nascita**: Non supportato da prove accettate.\n- **Grado militare**: Non supportato da prove accettate.\n- **Unità militare**: Non supportato da prove accettate.\n- **Data di morte**: Non supportato da prove accettate.\n- **Anno di morte**: Non supportato da prove accettate.\n- **Luogo di morte**: Non supportato da prove accettate.\n- **Causa della morte**: Non supportato da prove accettate.\n- **Cattività**: Non supportato da prove accettate.\n- **Luogo di internamento**: Non supportato da prove accettate.\n- **Sepoltura**: Non supportato da prove accettate.\n- **Luogo di cattura**: Non supportato da prove accettate.\n- **Data di cattura**: Non supportato da prove accettate.\n\n### Fonti e Provenienza\nLe informazioni sono state raccolte da un database locale, con diverse osservazioni classificate come \"SOURCE_CANDIDATE\", che sono state considerate nel processo di verifica. Tuttavia, nessuna di queste fonti ha fornito conferme esterne sufficienti per completare il profilo di CAIS Arduino.\n\n### Conclusioni\nCAIS Arduino rimane una figura con un'identità parzialmente definita nel contesto della Seconda Guerra Mondiale. Le informazioni disponibili sono limitate e non completamente verificate, il che rende difficile tracciare un profilo dettagliato della sua vita e del suo servizio militare. Ulteriori ricerche e fonti potrebbero essere necessarie per colmare le lacune informative esistenti.\n---\n\n## Provenienza\n\n- Snapshot: snap_v7_7e6349ea1e72cd2f\n- Schema: 7.2\n- Narrator Contract: 7.2\n- Identity Resolution: PARTIAL\n- External Corroboration: PARTIAL\n- Provider Ledger: 10 observations\n"
+  },
+  "BROGNARA Cristino": {
+    "name": "BROGNARA Cristino",
+    "intent": "PERSON_LOOKUP",
+    "conflict": "WWII",
+    "elapsed_seconds": 5.96,
+    "run_id": "run_v7_1785769720_5fc89351",
+    "plan_id": "plan_v7_f8563e60f5306972",
+    "observation_count": 11,
+    "errors": [],
+    "warnings": [
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record",
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record"
+    ],
+    "stage_timings": {
+      "discover": 0.24203276634216309,
+      "fetch": 0.0,
+      "extract": 0.0,
+      "resolve": 0.0,
+      "fuse": 0.0,
+      "validate": 0.0,
+      "narrate": 5.714868545532227,
+      "persist": 0.0,
+      "total": 5.95690131187439
+    },
+    "snapshot_identity_resolution": "RESOLVED",
+    "snapshot_external_corroboration": "PARTIAL",
+    "snapshot_accepted_claims_count": 0,
+    "snapshot_conflicting_claims_count": 0,
+    "snapshot_asserted_claims_count": 1,
+    "snapshot_rejected_candidates_count": 0,
+    "report": "## Rapporto di Ricerca: Cristino Brognara nella Seconda Guerra Mondiale\n\n### Identificazione\nCristino Brognara è stato identificato come una persona coinvolta nella Seconda Guerra Mondiale. La sua identità è stata risolta e verificata attraverso fonti affidabili [source: origin_record].\n\n### Stato e Destino\nL'unica informazione confermata riguardante il destino di Cristino Brognara è che è stato \"rimpatriato\" [source: origin_record]. Tuttavia, non ci sono ulteriori dettagli disponibili che possano fornire un contesto più ampio su questo evento.\n\n### Lacune Informative\nNonostante la conferma del suo rimpatrio, ci sono diverse lacune informative riguardanti Cristino Brognara:\n\n- **Anno di Nascita**: Non supportato da evidenze accettate.\n- **Luogo di Nascita**: Non supportato da evidenze accettate.\n- **Grado Militare**: Non supportato da evidenze accettate.\n- **Unità Militare**: Non supportato da evidenze accettate.\n- **Data di Morte**: Non supportato da evidenze accettate.\n- **Anno di Morte**: Non supportato da evidenze accettate.\n- **Luogo di Morte**: Non supportato da evidenze accettate.\n- **Causa della Morte**: Non supportato da evidenze accettate.\n- **Cattività**: Non supportato da evidenze accettate.\n- **Luogo di Internamento**: Non supportato da evidenze accettate.\n- **Sepoltura**: Non supportato da evidenze accettate.\n- **Luogo di Cattura**: Non supportato da evidenze accettate.\n- **Data di Cattura**: Non supportato da evidenze accettate.\n\n### Osservazioni\nLe informazioni disponibili su Cristino Brognara sono limitate e principalmente confermate da un singolo record di origine. La mancanza di dati dettagliati su molti aspetti della sua vita e del suo servizio militare durante la Seconda Guerra Mondiale rende difficile tracciare un quadro completo della sua esperienza.\n\n### Conclusioni\nCristino Brognara è stato identificato come un partecipante alla Seconda Guerra Mondiale, con il suo destino noto di essere stato rimpatriato. Tuttavia, la ricerca è ostacolata da significative lacune informative che richiederebbero ulteriori indagini per essere colmate.\n---\n\n## Provenienza\n\n- Snapshot: snap_v7_3fb0fd17b31bc5fb\n- Schema: 7.2\n- Narrator Contract: 7.2\n- Identity Resolution: RESOLVED\n- External Corroboration: PARTIAL\n- Provider Ledger: 11 observations\n"
+  },
+  "TONIOLI Pasquale": {
+    "name": "TONIOLI Pasquale",
+    "intent": "PERSON_LOOKUP",
+    "conflict": "WWII",
+    "elapsed_seconds": 8.84,
+    "run_id": "run_v7_1785769726_8f4d203a",
+    "plan_id": "plan_v7_c856809a20f46ea2",
+    "observation_count": 4,
+    "errors": [],
+    "warnings": [
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record"
+    ],
+    "stage_timings": {
+      "discover": 0.22046828269958496,
+      "fetch": 0.0,
+      "extract": 0.0,
+      "resolve": 0.0,
+      "fuse": 0.0,
+      "validate": 0.0,
+      "narrate": 8.618833303451538,
+      "persist": 0.0,
+      "total": 8.839301586151123
+    },
+    "snapshot_identity_resolution": "RESOLVED",
+    "snapshot_external_corroboration": "PARTIAL",
+    "snapshot_accepted_claims_count": 0,
+    "snapshot_conflicting_claims_count": 0,
+    "snapshot_asserted_claims_count": 1,
+    "snapshot_rejected_candidates_count": 0,
+    "report": "## Rapporto di Ricerca: TONIOLI Pasquale\n\n### Contesto Storico\n- **Conflitto**: Seconda Guerra Mondiale (WWII)\n\n### Identità e Stato\n- **Nome**: TONIOLI Pasquale\n- **Stato dell'Identità**: Risolta\n- **Stato di Corroborazione**: Parziale\n\n### Informazioni Disponibili\n- **Destino**: Altro (secondo le evidenze disponibili, il destino di Tonioli Pasquale è classificato come \"altro\") [source: origin_record].\n\n### Lacune Informative\nLe seguenti informazioni non sono supportate dalle evidenze accettate e rappresentano delle lacune nel profilo di Tonioli Pasquale:\n- **Anno di Nascita**: Non disponibile\n- **Luogo di Nascita**: Non disponibile\n- **Grado Militare**: Non disponibile\n- **Unità Militare**: Non disponibile\n- **Data di Morte**: Non disponibile\n- **Anno di Morte**: Non disponibile\n- **Luogo di Morte**: Non disponibile\n- **Causa di Morte**: Non disponibile\n- **Cattività**: Non disponibile\n- **Luogo di Internamento**: Non disponibile\n- **Sepoltura**: Non disponibile\n- **Luogo di Cattura**: Non disponibile\n- **Data di Cattura**: Non disponibile\n\n### Provenienza delle Informazioni\nLe informazioni sono state verificate attraverso un database locale, con diverse osservazioni che confermano la presenza del cognome ma non forniscono ulteriori dettagli specifici sulla persona.\n\n### Conclusioni\nIl profilo di Tonioli Pasquale durante la Seconda Guerra Mondiale rimane parzialmente documentato, con informazioni limitate principalmente al destino classificato come \"altro\". Ulteriori ricerche potrebbero essere necessarie per colmare le lacune informative e ottenere un quadro più completo del suo servizio e della sua vita.\n\n### Raccomandazioni\n- **Ricerca Ulteriore**: Si consiglia di consultare archivi militari, registri di prigionia e documenti storici per cercare di ottenere ulteriori dettagli su Tonioli Pasquale.\n- **Collaborazione con Storici**: Coinvolgere storici specializzati nella Seconda Guerra Mondiale potrebbe facilitare l'accesso a fonti non ancora esplorate.\n\nQuesto rapporto si basa esclusivamente sui dati forniti nell'Evidence Snapshot e non include informazioni esterne o non verificate.\n---\n\n## Provenienza\n\n- Snapshot: snap_v7_68233d7d363b540e\n- Schema: 7.2\n- Narrator Contract: 7.2\n- Identity Resolution: RESOLVED\n- External Corroboration: PARTIAL\n- Provider Ledger: 4 observations\n"
+  },
+  "DEVINCENZI GIOVANNI": {
+    "name": "DEVINCENZI GIOVANNI",
+    "intent": "PERSON_LOOKUP",
+    "conflict": "WWI",
+    "elapsed_seconds": 8.52,
+    "run_id": "run_v7_1785769734_1b793332",
+    "plan_id": "plan_v7_a8f3c917006cd043",
+    "observation_count": 9,
+    "errors": [],
+    "warnings": [
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record",
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record",
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record",
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record"
+    ],
+    "stage_timings": {
+      "discover": 0.24591851234436035,
+      "fetch": 0.0,
+      "extract": 0.0,
+      "resolve": 0.0,
+      "fuse": 0.0,
+      "validate": 0.0,
+      "narrate": 8.275546312332153,
+      "persist": 0.0,
+      "total": 8.521464824676514
+    },
+    "snapshot_identity_resolution": "RESOLVED",
+    "snapshot_external_corroboration": "PARTIAL",
+    "snapshot_accepted_claims_count": 0,
+    "snapshot_conflicting_claims_count": 0,
+    "snapshot_asserted_claims_count": 4,
+    "snapshot_rejected_candidates_count": 0,
+    "report": "## Rapporto di Ricerca: Giovanni Devincenzi\n\n### Identità e Servizio Militare\nGiovanni Devincenzi è identificato come un soldato che ha prestato servizio durante la Prima Guerra Mondiale. La sua identità è stata risolta con successo, sebbene alcune informazioni rimangano parzialmente corroborate.\n\n### Dettagli di Servizio\n- **Grado**: Soldato [source: origin_record]\n- **Unità**: 14º Reggimento Fanteria [source: origin_record]\n\n### Dettagli di Morte\n- **Anno di Morte**: 1918 [source: origin_record]\n- **Luogo di Morte**: Ospedaletto Da Campo N. 328 [source: origin_record]\n\n### Lacune Informative\nNonostante le informazioni disponibili, ci sono diverse lacune nei dati riguardanti Giovanni Devincenzi:\n- **Anno di Nascita**: Non supportato da evidenze accettate.\n- **Luogo di Nascita**: Non supportato da evidenze accettate.\n- **Data di Morte**: Non supportato da evidenze accettate.\n- **Causa di Morte**: Non supportato da evidenze accettate.\n- **Cattività e Internamento**: Non ci sono evidenze che supportano informazioni su eventuali periodi di cattività o internamento.\n- **Sepoltura**: Non supportato da evidenze accettate.\n- **Luogo e Data di Cattura**: Non supportato da evidenze accettate.\n- **Destino Finale**: Non supportato da evidenze accettate.\n\n### Conclusioni\nGiovanni Devincenzi è stato un soldato del 14º Reggimento Fanteria durante la Prima Guerra Mondiale, deceduto nel 1918 presso l'Ospedaletto Da Campo N. 328. Tuttavia, ulteriori ricerche potrebbero essere necessarie per colmare le lacune informative riguardanti la sua vita e il suo servizio militare.\n---\n\n## Provenienza\n\n- Snapshot: snap_v7_2ae2ba2ab3c46481\n- Schema: 7.2\n- Narrator Contract: 7.2\n- Identity Resolution: RESOLVED\n- External Corroboration: PARTIAL\n- Provider Ledger: 9 observations\n"
+  },
+  "EGINETI ARTURO": {
+    "name": "EGINETI ARTURO",
+    "intent": "PERSON_LOOKUP",
+    "conflict": "WWI",
+    "elapsed_seconds": 4.3,
+    "run_id": "run_v7_1785769743_8574730a",
+    "plan_id": "plan_v7_c9ca075ab8ec7c33",
+    "observation_count": 1,
+    "errors": [],
+    "warnings": [
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record",
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record",
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record",
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: origin_record"
+    ],
+    "stage_timings": {
+      "discover": 0.22134780883789062,
+      "fetch": 0.0,
+      "extract": 0.0,
+      "resolve": 0.0,
+      "fuse": 0.0,
+      "validate": 0.0,
+      "narrate": 4.073510646820068,
+      "persist": 0.0,
+      "total": 4.2957985401153564
+    },
+    "snapshot_identity_resolution": "RESOLVED",
+    "snapshot_external_corroboration": "PARTIAL",
+    "snapshot_accepted_claims_count": 0,
+    "snapshot_conflicting_claims_count": 0,
+    "snapshot_asserted_claims_count": 4,
+    "snapshot_rejected_candidates_count": 0,
+    "report": "## Rapporto di Ricerca: EGINETI ARTURO\n\n### Identità e Servizio Militare\n- **Nome:** EGINETI ARTURO\n- **Conflitto:** Prima Guerra Mondiale (WWI)\n- **Grado:** Soldato\n- **Unità:** 220° Reggimento Fanteria\n\n### Dettagli di Morte\n- **Anno di Morte:** 1917\n- **Luogo di Morte:** Ripiegamento Al Piave\n\n### Stato dell'Identità\nL'identità di Egineti Arturo è stata risolta con successo, con una presenza verificata nei registri d'origine. Tuttavia, le informazioni sono parzialmente corroborate, indicando che alcune affermazioni non sono state confermate da fonti esterne.\n\n### Affermazioni Verificate\nLe seguenti affermazioni sono state verificate attraverso il record d'origine:\n- **Grado:** Soldato [source: origin_record]\n- **Unità:** 220° Reggimento Fanteria [source: origin_record]\n- **Anno di Morte:** 1917 [source: origin_record]\n- **Luogo di Morte:** Ripiegamento Al Piave [source: origin_record]\n\n### Lacune Condizionali\nEsistono diverse lacune informative che non sono supportate dalle evidenze accettate:\n- **Anno di Nascita**\n- **Luogo di Nascita**\n- **Data di Morte**\n- **Causa di Morte**\n- **Cattività**\n- **Luogo di Internamento**\n- **Sepoltura**\n- **Luogo di Cattura**\n- **Data di Cattura**\n- **Destino Finale**\n\n### Conclusioni\nEgineti Arturo è stato un soldato del 220° Reggimento Fanteria durante la Prima Guerra Mondiale, deceduto nel 1917 durante il ripiegamento al Piave. Mentre le informazioni chiave sulla sua identità e il servizio sono state confermate, rimangono diverse lacune nei dettagli personali e nelle circostanze della sua morte. Ulteriori ricerche potrebbero essere necessarie per colmare queste lacune e ottenere una comprensione più completa della sua storia personale e militare.\n---\n\n## Provenienza\n\n- Snapshot: snap_v7_a3009aba4dfcbd5f\n- Schema: 7.2\n- Narrator Contract: 7.2\n- Identity Resolution: RESOLVED\n- External Corroboration: PARTIAL\n- Provider Ledger: 1 observations\n"
+  },
+  "RIGAMONTI PIETRO": {
+    "name": "RIGAMONTI PIETRO",
+    "intent": "PERSON_LOOKUP",
+    "conflict": "WWI",
+    "elapsed_seconds": 6.82,
+    "run_id": "run_v7_1785769747_3301be71",
+    "plan_id": "plan_v7_ef6921a708b3b07a",
+    "observation_count": 43,
+    "errors": [],
+    "warnings": [
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: rej_0, rej_1, rej_2, rej_3",
+      "NARRATION_WARNING: UNKNOWN_SOURCE_REFERENCE: Source reference not in snapshot: obs_b3b59c3c649194f3, obs_037d4d3009e370dc, obs_3f9360c5cf0ba9bb, obs_3d8c90432b922d0a, obs_4cb12a7c76c5615e, obs_90ca5d16a9d5a1ef"
+    ],
+    "stage_timings": {
+      "discover": 0.1929011344909668,
+      "fetch": 0.0,
+      "extract": 0.0,
+      "resolve": 0.0,
+      "fuse": 0.0,
+      "validate": 0.0,
+      "narrate": 6.6263017654418945,
+      "persist": 0.0,
+      "total": 6.819202899932861
+    },
+    "snapshot_identity_resolution": "RESOLVED",
+    "snapshot_external_corroboration": "PARTIAL",
+    "snapshot_accepted_claims_count": 0,
+    "snapshot_conflicting_claims_count": 0,
+    "snapshot_asserted_claims_count": 4,
+    "snapshot_rejected_candidates_count": 4,
+    "report": "## Rapporto di Ricerca: RIGAMONTI PIETRO nella Prima Guerra Mondiale\n\n### Identificazione e Status\n- **Nome:** Rigamonti Pietro\n- **Conflitto:** Prima Guerra Mondiale\n- **Stato Identità:** Identità risolta\n- **Stato di Corroborazione:** Parziale\n\n### Dati Personali Confermati\n- **Grado:** Soldato\n- **Reparto:** 263º Reggimento Fanteria\n- **Anno di Morte:** 1917\n- **Luogo di Morte:** Milano\n\n### Dati Non Supportati\nNon sono disponibili informazioni riguardanti:\n- Anno di nascita\n- Luogo di nascita\n- Data esatta di morte\n- Causa della morte\n- Eventuale prigionia\n- Luogo di internamento\n- Luogo di sepoltura\n- Luogo e data di cattura\n- Destino finale\n\n### Candidati Rigettati\nSono stati identificati e rigettati diversi omonimi di Rigamonti Pietro, poiché si trattava di identità diverse [source: rej_0, rej_1, rej_2, rej_3].\n\n### Osservazioni\nLe informazioni disponibili sono state verificate attraverso un database locale, che ha fornito conferma parziale delle affermazioni relative a Rigamonti Pietro. Tuttavia, non sono stati trovati dati aggiuntivi per colmare le lacune informative esistenti [source: obs_b3b59c3c649194f3, obs_037d4d3009e370dc, obs_3f9360c5cf0ba9bb, obs_3d8c90432b922d0a, obs_4cb12a7c76c5615e, obs_90ca5d16a9d5a1ef].\n\n### Conclusioni\nRigamonti Pietro è stato confermato come soldato del 263º Reggimento Fanteria durante la Prima Guerra Mondiale, deceduto nel 1917 a Milano. Tuttavia, ulteriori dettagli sulla sua vita e morte rimangono non documentati. La ricerca potrebbe beneficiare di ulteriori fonti per una comprensione più completa del suo servizio e delle circostanze della sua morte.\n---\n\n## Provenienza\n\n- Snapshot: snap_v7_5810ffb02c8d6f59\n- Schema: 7.2\n- Narrator Contract: 7.2\n- Identity Resolution: RESOLVED\n- External Corroboration: PARTIAL\n- Provider Ledger: 43 observations\n"
+  }
+}

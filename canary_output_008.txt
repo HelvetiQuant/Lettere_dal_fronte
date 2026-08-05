@@ -1,0 +1,33 @@
+# Rapporto di Ricerca — snap_v7_3cfd3e2902f7eb08
+Versione schema: 7
+Intent: EVENT_LOOKUP
+Target: Battaglia del Piave
+Contratto Narratore: 7.1
+
+## Risoluzione Identità: UNRESOLVED
+## Corroborazione Esterna: PARTIAL
+
+## Gap Condizionali
+  - event_start_date: Event field event_start_date not supported [BLOCCANTE]
+  - event_end_date: Event field event_end_date not supported [BLOCCANTE]
+  - event_location: Event field event_location not supported
+  - event_description: Event field event_description not supported
+  - event_phase_count: Event field event_phase_count not supported
+  - event_actors: Event field event_actors not supported
+
+## Limitazioni
+  - NO_AI_PROVIDER: No AI provider available for narration. Using deterministic fallback.
+
+---
+## Provenienza
+- Snapshot: snap_v7_3cfd3e2902f7eb08
+- Schema: 7
+- Narrator Contract: 7.1
+- Identity Resolution: UNRESOLVED
+- External Corroboration: PARTIAL
+- Provider Ledger: 1 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.

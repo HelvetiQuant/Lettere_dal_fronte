@@ -93,26 +93,33 @@ def run(dry_run: bool = True, delete_links: bool = False):
     print(f"Marcate {marked} fonti come 'url_ricerca' con confidence=0.0.")
 
     if delete_links:
-        print(">>> Rimozione collegamenti associati (più distruttivo)...")
-        deleted_links = 0
+        # V7.3-FIX: Replace DELETE with quarantine — mark as unusable, never delete
+        print(">>> Quarantine collegamenti associati (non destructivo)...")
+        quarantined_links = 0
         for batch in _in_batches(bad_ids):
             placeholders = ",".join("?" * len(batch))
-            cur.execute(f"DELETE FROM collegamenti WHERE entita_id IN ({placeholders})", batch)
-            deleted_links += cur.rowcount
+            # Mark collegamenti as quarantined instead of deleting
+            try:
+                cur.execute(
+                    f"UPDATE collegamenti SET confidenza=0.0 WHERE entita_id IN ({placeholders})",
+                    batch,
+                )
+                quarantined_links += cur.rowcount
+            except sqlite3.OperationalError:
+                pass
 
-        # Rimuovi fonti orfane (nessun collegamento)
-        orphaned = []
-        for bid in bad_ids:
-            cnt = cur.execute("SELECT COUNT(*) FROM collegamenti WHERE entita_id=?", (bid,)).fetchone()[0]
-            if cnt == 0:
-                orphaned.append(bid)
-        deleted_fonti = 0
-        for batch in _in_batches(orphaned):
+        # Mark fonti as quarantined instead of deleting
+        for batch in _in_batches(bad_ids):
             placeholders = ",".join("?" * len(batch))
-            cur.execute(f"DELETE FROM fonti_indice WHERE id IN ({placeholders})", batch)
-            deleted_fonti += cur.rowcount
-        print(f"Rimossi {deleted_links} collegamenti.")
-        print(f"Eliminate {deleted_fonti} fonti orfane.")
+            try:
+                cur.execute(
+                    f"UPDATE fonti_indice SET confidence=0.0, fetch_status='quarantined' WHERE id IN ({placeholders})",
+                    batch,
+                )
+            except sqlite3.OperationalError:
+                pass
+        print(f"Quarantined {quarantined_links} collegamenti (confidence=0.0).")
+        print(f"Fonti marcate come 'quarantined' (non eliminate).")
 
     conn.commit()
     conn.close()
@@ -120,7 +127,7 @@ def run(dry_run: bool = True, delete_links: bool = False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--execute", action="store_true", help="Esegui davvero la marcatura/pulizia")
-    parser.add_argument("--delete-links", action="store_true", help="Dopo la marcatura, elimina anche i collegamenti (più distruttivo)")
+    parser.add_argument("--execute", action="store_true", help="Esegui davvero la marcatura/quarantena")
+    parser.add_argument("--delete-links", action="store_true", help="Quarantena collegamenti e fonti (non destructivo)")
     args = parser.parse_args()
     run(dry_run=not args.execute, delete_links=args.delete_links)

@@ -1,0 +1,170 @@
+{
+  "schema_version": "7.2",
+  "narrator_contract_version": "7.2",
+  "snapshot_id": "snap_v7_3a6b0a61bf9bb293",
+  "intent": "PERSON_LOOKUP",
+  "target": {
+    "target_id": "id_628fdc3927d91c0f",
+    "display_name": "EGINETI ARTURO",
+    "conflict": "WWI",
+    "target_type": "person"
+  },
+  "identity": {
+    "status": "RESOLVED_IDENTITY",
+    "legacy_resolution": "RESOLVED",
+    "resolved_cluster_id": "cluster_76bd329a6c88",
+    "origin_record_id": "",
+    "origin_presence": "PRESENT",
+    "origin_provenance": "VERIFIED"
+  },
+  "corroboration": {
+    "status": "PARTIAL",
+    "external": "PARTIAL"
+  },
+  "person_claims": [
+    {
+      "claim_id": "claim_rank_94628032",
+      "predicate": "rank",
+      "value": "Soldato",
+      "status": "ASSERTED",
+      "confidence": 0.5,
+      "source": "origin_record",
+      "evidence_scope": "PERSON_EVIDENCE",
+      "identity_cluster_id": "cluster_76bd329a6c88",
+      "evidence_ids": [
+        "obs_b5df643403988534"
+      ]
+    },
+    {
+      "claim_id": "claim_unit_9811a58a",
+      "predicate": "unit",
+      "value": "220 Reggimento Fanteria",
+      "status": "ASSERTED",
+      "confidence": 0.5,
+      "source": "origin_record",
+      "evidence_scope": "PERSON_EVIDENCE",
+      "identity_cluster_id": "cluster_76bd329a6c88",
+      "evidence_ids": [
+        "obs_b5df643403988534"
+      ]
+    },
+    {
+      "claim_id": "claim_death_year_464d14ac",
+      "predicate": "death_year",
+      "value": "1917",
+      "status": "ASSERTED",
+      "confidence": 0.5,
+      "source": "origin_record",
+      "evidence_scope": "PERSON_EVIDENCE",
+      "identity_cluster_id": "cluster_76bd329a6c88",
+      "evidence_ids": [
+        "obs_b5df643403988534"
+      ]
+    },
+    {
+      "claim_id": "claim_death_place_efe3a70d",
+      "predicate": "death_place",
+      "value": "Ripiegamento Al Piave",
+      "status": "ASSERTED",
+      "confidence": 0.5,
+      "source": "origin_record",
+      "evidence_scope": "PERSON_EVIDENCE",
+      "identity_cluster_id": "cluster_76bd329a6c88",
+      "evidence_ids": [
+        "obs_b5df643403988534"
+      ]
+    }
+  ],
+  "context_claims": [],
+  "accepted_claims": [],
+  "conflicting_claims": [],
+  "asserted_claims": [
+    {
+      "claim_id": "claim_rank_94628032",
+      "predicate": "rank",
+      "value": "Soldato",
+      "status": "ASSERTED",
+      "evidence_scope": "PERSON_EVIDENCE"
+    },
+    {
+      "claim_id": "claim_unit_9811a58a",
+      "predicate": "unit",
+      "value": "220 Reggimento Fanteria",
+      "status": "ASSERTED",
+      "evidence_scope": "PERSON_EVIDENCE"
+    },
+    {
+      "claim_id": "claim_death_year_464d14ac",
+      "predicate": "death_year",
+      "value": "1917",
+      "status": "ASSERTED",
+      "evidence_scope": "PERSON_EVIDENCE"
+    },
+    {
+      "claim_id": "claim_death_place_efe3a70d",
+      "predicate": "death_place",
+      "value": "Ripiegamento Al Piave",
+      "status": "ASSERTED",
+      "evidence_scope": "PERSON_EVIDENCE"
+    }
+  ],
+  "candidate_identities": [],
+  "rejected_candidates": [],
+  "conditional_gaps": [
+    {
+      "field_name": "birth_year",
+      "reason": "Field birth_year not supported by accepted evidence",
+      "blocking": true
+    },
+    {
+      "field_name": "birth_place",
+      "reason": "Field birth_place not supported by accepted evidence",
+      "blocking": true
+    },
+    {
+      "field_name": "death_date",
+      "reason": "Field death_date not supported by accepted evidence",
+      "blocking": false
+    },
+    {
+      "field_name": "death_cause",
+      "reason": "Field death_cause not supported by accepted evidence",
+      "blocking": false
+    },
+    {
+      "field_name": "captivity",
+      "reason": "Field captivity not supported by accepted evidence",
+      "blocking": false
+    },
+    {
+      "field_name": "internment_place",
+      "reason": "Field internment_place not supported by accepted evidence",
+      "blocking": false
+    },
+    {
+      "field_name": "burial",
+      "reason": "Field burial not supported by accepted evidence",
+      "blocking": false
+    },
+    {
+      "field_name": "capture_place",
+      "reason": "Field capture_place not supported by accepted evidence",
+      "blocking": false
+    },
+    {
+      "field_name": "capture_date",
+      "reason": "Field capture_date not supported by accepted evidence",
+      "blocking": false
+    },
+    {
+      "field_name": "fate",
+      "reason": "Field fate not supported by accepted evidence",
+      "blocking": false
+    }
+  ],
+  "limitations": [],
+  "provider_ledger_count": 1,
+  "web_leads_count": 0,
+  "source_lineage_groups_count": 0,
+  "independence_groups_count": 0
+}
