@@ -426,6 +426,48 @@ def validate_and_normalize_value(predicate: str, raw_value: str) -> Tuple[str, s
     if normalized != raw_str:
         note = f"normalized_from:{raw_str}"
 
+    # V7.3-FASE4: Typed place normalization
+    if predicate in ("birth_place", "birth_province", "death_place", "death_country",
+                      "internment_place", "capture_place", "burial_place", "burial_country",
+                      "residence", "municipality", "current_municipality"):
+        from linking.normalization import normalize_place, PREDICATE_TO_PLACE_TYPE
+        place_type = PREDICATE_TO_PLACE_TYPE.get(predicate, "unknown")
+        np = normalize_place(raw_str, place_type=place_type)
+        normalized = np.normalized
+        if np.place_type != "unknown":
+            note = f"place_type:{np.place_type}" + (f";normalized_from:{raw_str}" if normalized != raw_str else "")
+
+    # V7.3-FASE4: Paternity parsing — extract structured father name
+    if predicate == "paternity":
+        from linking.normalization import parse_paternity
+        rel = parse_paternity(raw_str)
+        if rel.related_name and rel.confidence >= 0.75:
+            parts = []
+            if rel.related_cognome:
+                parts.append(f"father_cognome:{rel.related_cognome}")
+            if rel.related_nome:
+                parts.append(f"father_nome:{rel.related_nome}")
+            parts.append(f"relation_confidence:{rel.confidence:.2f}")
+            note = ";".join(parts) + (f";normalized_from:{raw_str}" if normalized != raw_str else "")
+
+    # V7.3-FASE6: Military ontology — classify rank/unit as fact vs context
+    if predicate in ("rank", "grado", "military_unit", "reparto", "regiment",
+                      "military_branch", "arma", "assignment", "work_command",
+                      "arbeitskommando"):
+        from military_ontology import enrich_claim_with_ontology
+        ontology = enrich_claim_with_ontology(predicate, raw_str, "person_record")
+        ont_parts = [f"ontology:{ontology.get('ontology_class', '')}"]
+        if "rank_canonical" in ontology:
+            ont_parts.append(f"rank_canonical:{ontology['rank_canonical']}")
+            ont_parts.append(f"rank_category:{ontology.get('rank_category', '')}")
+        if "unit_type" in ontology:
+            ont_parts.append(f"unit_type:{ontology['unit_type']}")
+            if ontology.get("unit_number"):
+                ont_parts.append(f"unit_number:{ontology['unit_number']}")
+            if ontology.get("unit_branch", "unknown") != "unknown":
+                ont_parts.append(f"unit_branch:{ontology['unit_branch']}")
+        note = ";".join(ont_parts) + (f";normalized_from:{raw_str}" if normalized != raw_str else "")
+
     return normalized, "valid", note
 
 def get_identity_fields_for_table(table_name: str) -> List[str]:

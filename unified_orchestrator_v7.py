@@ -704,7 +704,7 @@ class UnifiedResearchOrchestratorV7:
                     confidence=0.5,
                     source=source_id,
                     evidence_ids=[obs.observation_id],
-                    evidence_scope="PROVENANCE",
+                    evidence_scope="CONTEXT_EVIDENCE",
                     source_function="provenance",
                     normalization_status="exact",
                 ))
@@ -823,8 +823,8 @@ class UnifiedResearchOrchestratorV7:
                             confidence=0.85,
                             source=f"local_db:eventi_1gm:{raw.get('id','')}",
                             evidence_ids=[obs.observation_id],
-                            evidence_scope="EVENT_EVIDENCE",
-                            source_function="person_evidence",
+                            evidence_scope="CONTEXT_EVIDENCE",
+                            source_function="event_context",
                             normalization_status="exact",
                         ))
 
@@ -1019,15 +1019,23 @@ class UnifiedResearchOrchestratorV7:
         )
 
         # V7.2: Tag claims with identity_cluster_id and evidence_scope
+        # Only claims from the resolved cluster get PERSON_EVIDENCE.
+        # Claims from other sources/contexts remain CONTEXT_EVIDENCE.
+        existing_context_claims = getattr(ctx, '_context_claims', [])
+        new_context_from_fusion = []
+
         for claim in accepted:
             claim.identity_cluster_id = resolved_cluster_id
-            claim.evidence_scope = "PERSON_EVIDENCE"
+            if not claim.evidence_scope or claim.evidence_scope == "PERSON_EVIDENCE":
+                claim.evidence_scope = "PERSON_EVIDENCE"
         for claim in conflicting:
             claim.identity_cluster_id = resolved_cluster_id
-            claim.evidence_scope = "PERSON_EVIDENCE"
+            if not claim.evidence_scope or claim.evidence_scope == "PERSON_EVIDENCE":
+                claim.evidence_scope = "PERSON_EVIDENCE"
         for claim in asserted:
             claim.identity_cluster_id = resolved_cluster_id
-            claim.evidence_scope = "PERSON_EVIDENCE"
+            if not claim.evidence_scope or claim.evidence_scope == "PERSON_EVIDENCE":
+                claim.evidence_scope = "PERSON_EVIDENCE"
 
         # Store fused claims in context for _build_snapshot
         # V7.3-PERSON: Merge fused claims with existing local DB person claims
@@ -1035,7 +1043,8 @@ class UnifiedResearchOrchestratorV7:
         ctx._fused_conflicting = conflicting
         ctx._fused_asserted = list(asserted) + list(existing_person_claims)
         ctx._person_claims = list(accepted) + list(asserted) + list(existing_person_claims)
-        ctx._context_claims = []
+        # V7.3-FASE3: Preserve context claims from extract stage — do NOT wipe them
+        ctx._context_claims = existing_context_claims
         ctx._source_lineage_groups = graph.get_lineage_groups()
 
         # Build independence groups from source IDs
@@ -1049,6 +1058,22 @@ class UnifiedResearchOrchestratorV7:
 
     def _stage_validate(self, ctx: RunContext):
         """Stage 7: Check invariants, detect contradictions."""
+        # V7.3-FASE3: Enforce PERSON_EVIDENCE vs CONTEXT_EVIDENCE separation
+        person_claims = getattr(ctx, '_person_claims', [])
+        context_claims = getattr(ctx, '_context_claims', [])
+        for claim in person_claims:
+            if claim.evidence_scope == "CONTEXT_EVIDENCE":
+                ctx.errors.append(
+                    f"EVIDENCE_SCOPE_LEAK: claim {claim.claim_id} ({claim.predicate}) "
+                    f"is CONTEXT_EVIDENCE but found in person_claims"
+                )
+        for claim in context_claims:
+            if claim.evidence_scope == "PERSON_EVIDENCE":
+                ctx.errors.append(
+                    f"EVIDENCE_SCOPE_LEAK: claim {claim.claim_id} ({claim.predicate}) "
+                    f"is PERSON_EVIDENCE but found in context_claims"
+                )
+
         if ctx.snapshot:
             violations = ctx.snapshot.validate_invariants()
             for v in violations:
@@ -1325,6 +1350,7 @@ class UnifiedResearchOrchestratorV7:
         legacy_map = {
             "ANCHORED_RECORD": "RESOLVED",
             "RESOLVED_IDENTITY": "RESOLVED",
+            "CONFLICTED_IDENTITY": "PARTIAL",
             "PARTIAL_IDENTITY": "PARTIAL",
             "AMBIGUOUS_IDENTITY": "UNRESOLVED",
             "UNRESOLVED_IDENTITY": "UNRESOLVED",
@@ -1396,7 +1422,23 @@ class UnifiedResearchOrchestratorV7:
 
         # V7.2: Person claims and context claims
         person_claims = getattr(ctx, '_person_claims', [])
-        context_claims = getattr(ctx, '_context_claims', [])
+        raw_context_claims = getattr(ctx, '_context_claims', [])
+
+        # V7.3-FASE3: Convert ClaimV7 context claims to ContextClaimV7
+        from evidence_snapshot_v7 import ContextClaimV7
+        context_claims = []
+        for cc in raw_context_claims:
+            if isinstance(cc, ContextClaimV7):
+                context_claims.append(cc)
+            elif hasattr(cc, 'claim_id'):
+                context_claims.append(ContextClaimV7(
+                    claim_id=cc.claim_id,
+                    scope=cc.context_scope or "EVENT",
+                    predicate=cc.predicate,
+                    value=cc.value_normalized,
+                    source_refs=cc.evidence_ids,
+                    description=cc.source_function or "",
+                ))
 
         # V7.2: Apply claim-level rules (date precision, semantic role, homonym guard, etc.)
         from v7_claim_rules import apply_claim_rules, classify_claim_status

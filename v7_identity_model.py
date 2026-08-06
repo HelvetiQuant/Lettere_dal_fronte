@@ -32,6 +32,7 @@ IDENTITY_STATUS_V72 = [
     "ANCHORED_RECORD",
     "RESOLVED_IDENTITY",
     "AMBIGUOUS_IDENTITY",
+    "CONFLICTED_IDENTITY",
     "PARTIAL_IDENTITY",
     "UNRESOLVED_IDENTITY",
 ]
@@ -320,13 +321,16 @@ class IdentityResolver:
     V7.2: Replaces the single-winner scoring approach with cluster-based identity.
     - Surname-only matches → SURNAME_ONLY_NON_CANDIDATE (hidden from user)
     - Full-name matches → candidate clusters
-    - If 1 cluster + discriminant → RESOLVED_IDENTITY
-    - If 1 cluster, no discriminant → PARTIAL_IDENTITY or ANCHORED_RECORD
+    - If 1 cluster + origin record → ANCHORED_RECORD
+    - If 1 cluster + discriminants, no conflicts → RESOLVED_IDENTITY
+    - If 1 cluster + non-strong conflicts → CONFLICTED_IDENTITY
+    - If 1 cluster + strong conflicts → AMBIGUOUS_IDENTITY
+    - If 1 cluster, no discriminants → PARTIAL_IDENTITY
     - If 2+ clusters with conflicts → AMBIGUOUS_IDENTITY
     - If 0 clusters → UNRESOLVED_IDENTITY
 
     Key principle: identity resolution is decided by the BACKEND,
-    never by the AI model.
+    never by the AI model. No destructive merge — all candidates preserved.
     """
 
     def __init__(self, correction_ledger: Optional[CorrectionLedger] = None):
@@ -434,6 +438,12 @@ class IdentityResolver:
             if strong_conflicts:
                 # Strong identifier conflict = different people
                 return "AMBIGUOUS_IDENTITY", None, candidate_clusters
+
+            # V7.3-FASE5: Non-strong conflicts = CONFLICTED_IDENTITY
+            # (e.g., different reparto but same birth date — same person, conflicting context)
+            non_strong_conflicts = [f for f in cluster.conflicting_fields if f not in STRONG_IDENTIFIERS]
+            if non_strong_conflicts and cluster.has_discriminants:
+                return "CONFLICTED_IDENTITY", cluster, []
 
             if self._origin_record_id:
                 return "ANCHORED_RECORD", cluster, []

@@ -1,0 +1,154 @@
+{
+  "benchmark_id": "v73_benchmark_1786041853",
+  "timestamp": "2026-08-06T20:44:13.242023",
+  "version": "V7.3-Fase17",
+  "source_quality": {
+    "distribution": {
+      "high": 6,
+      "medium": 4,
+      "low": 0,
+      "very_low": 2
+    },
+    "sources": [
+      {
+        "source": "anrp_lebi",
+        "level": "high",
+        "score": 0.84
+      },
+      {
+        "source": "icrc",
+        "level": "high",
+        "score": 0.97
+      },
+      {
+        "source": "ministero_difesa",
+        "level": "high",
+        "score": 0.942
+      },
+      {
+        "source": "albo_oro",
+        "level": "high",
+        "score": 0.836
+      },
+      {
+        "source": "cwgc",
+        "level": "high",
+        "score": 0.9
+      },
+      {
+        "source": "nastro_azzurro",
+        "level": "high",
+        "score": 0.8
+      },
+      {
+        "source": "internati_imi",
+        "level": "medium",
+        "score": 0.723
+      },
+      {
+        "source": "fonti_indice",
+        "level": "medium",
+        "score": 0.542
+      },
+      {
+        "source": "archivio_documenti",
+        "level": "medium",
+        "score": 0.603
+      },
+      {
+        "source": "ocr_lettere",
+        "level": "medium",
+        "score": 0.55
+      },
+      {
+        "source": "web_search",
+        "level": "very_low",
+        "score": 0.268
+      },
+      {
+        "source": "wikipedia",
+        "level": "very_low",
+        "score": 0.258
+      }
+    ]
+  },
+  "link_migration": {
+    "record_links": {
+      "total": 169184,
+      "migrated": 0,
+      "state_distribution": {}
+    },
+    "event_links": {
+      "total": 1539685,
+      "migrated": 0,
+      "state_distribution": {}
+    }
+  },
+  "regression": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "pass_rate": 100.0,
+    "exit_code": 0
+  },
+  "api": {
+    "total_v7_routes": 10,
+    "v73_new_routes": 5,
+    "routes": [
+      "/api/v7/health",
+      "/api/v7/system/capabilities",
+      "/api/v7/research",
+      "/api/v7/research/{run_id}",
+      "/api/v7/narrate",
+      "/api/v7/source-quality/{source_key}",
+      "/api/v7/validate-snapshot",
+      "/api/v7/claim-states",
+      "/api/v7/build-response",
+      "/api/v7/response-schema"
+    ]
+  },
+  "modules": {
+    "total": 7,
+    "importable": 7,
+    "details": {
+      "military_ontology": "OK",
+      "source_quality": "OK",
+      "semantic_validator": "OK",
+      "claim_lifecycle": "OK",
+      "response_structure": "OK",
+      "geo_context": "OK",
+      "migrate_v73_links": "OK"
+    }
+  },
+  "response_structure": {
+    "schema_version": "7.3-response-v1",
+    "section_count": 11,
+    "section_ids": [
+      "sintesi",
+      "identita",
+      "dati_anagrafici",
+      "percorso_militare",
+      "eventi_e_operazioni",
+      "prigionia_e_internazione",
+      "contesto_storico",
+      "conflitti_e_discrepanze",
+      "limiti_e_incertezze",
+      "fonti_e_provenienza",
+      "prossimi_passi"
+    ],
+    "expected_sections": [
+      "sintesi",
+      "identita",
+      "dati_anagrafici",
+      "percorso_militare",
+      "eventi_e_operazioni",
+      "prigionia_e_internazione",
+      "contesto_storico",
+      "conflitti_e_discrepanze",
+      "limiti_e_incertezze",
+      "fonti_e_provenienza",
+      "prossimi_passi"
+    ],
+    "correct": true
+  }
+}

@@ -18,11 +18,13 @@ def main():
         rows = conn.execute("""
             SELECT i.id, i.cognome, i.nome, i.luogo_nascita, i.luogo_internamento,
                    i.sorte, i.grado, i.matricola,
-                   COUNT(DISTINCT r.relation_id) as n_relations
+                   COUNT(DISTINCT r.id) as n_relations
             FROM internati i
             JOIN populate_progress pp ON pp.internato_id = i.id AND pp.status='done'
-            LEFT JOIN relations r ON r.subject_type='internati' AND r.subject_id=i.id
-                AND r.status='accepted'
+            JOIN resource_registry rr ON rr.source_namespace='internati'
+                AND rr.source_record_key=CAST(i.id AS TEXT)
+            LEFT JOIN relations r ON r.source_resource_id=rr.id
+                AND r.status IN ('candidate','confirmed','accepted')
             WHERE i.cognome IS NOT NULL AND i.nome IS NOT NULL
               AND i.luogo_nascita IS NOT NULL
               AND i.sorte IS NOT NULL AND i.sorte != ''

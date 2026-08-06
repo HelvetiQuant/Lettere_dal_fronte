@@ -87,6 +87,10 @@ AMBIGUOUS_KEYWORDS = {
     "campo", "russia", "africa", "nero", "corno", "lana",
     "prigionia", "prigioniero", "lager", "cattura", "captured",
     "fronte", "guerra", "morto", "caduto", "ferito",
+    "armistizio", "offensiva", "trincea", "difesa", "ritirata",
+    "alpini", "concentramento", "internamento", "montagna",
+    "ghiacciai", "bombardamento", "deportazione", "ritirata",
+    "ripiegamento", "riorganizzazione", "disarmo",
 }
 
 

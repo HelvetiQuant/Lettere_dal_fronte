@@ -218,4 +218,20 @@ export const api = {
     get<{ version: string; circuit_breaker_open?: boolean; evidence_locked?: boolean; hallucination_check?: boolean; fallback_deterministic?: boolean; error?: string }>(
       '/api/narrator/status'
     ),
+
+  // ── V7.3 Semantic Pipeline ──
+  v73SourceQuality: (sourceKey: string) =>
+    get<Record<string, unknown>>(`/api/v7/source-quality/${encodeURIComponent(sourceKey)}`),
+  v73ValidateSnapshot: (snapshot: Record<string, unknown>) =>
+    post<Record<string, unknown>>('/api/v7/validate-snapshot', snapshot),
+  v73ClaimStates: (data: { claims: Record<string, unknown>[]; identity_status?: string; evidence_level?: string }) =>
+    post<Record<string, unknown>>('/api/v7/claim-states', data),
+  v73BuildResponse: (data: {
+    request_type?: string; query?: string; identity_status?: string; evidence_level?: string;
+    claims: Record<string, unknown>[]; claim_states?: Record<string, unknown>[];
+    validation_errors?: string[]; caveat_summary?: string;
+  }) =>
+    post<Record<string, unknown>>('/api/v7/build-response', data, undefined, 30_000),
+  v73ResponseSchema: () =>
+    get<{ schema_version: string; sections: { id: string; title: string }[] }>('/api/v7/response-schema'),
 };
