@@ -1,0 +1,762 @@
+﻿python : C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified 
+HTTPS request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+In riga:1 car:32
++ ... THONIOENCODING="utf-8"; python run_5_random_narrative.py 2>&1 | Out-F ...
++                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\eryma\...ml#tls-warnings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.internetculturale.it'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+================================================================================
+RISPOSTE NARRATIVE V7.3 - 5 NOMI CASUALI DAL DB
+Con integrazione: source_quality + claim_lifecycle + response_structure 11 sezioni
++ military_ontology (ruolo) + contesto storico
+================================================================================
+
+--------------------------------------------------------------------------------
+  [1/5] CALANDRINA Luigi  (fonte: internati#6292)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:47:52,035 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_bf239c071e36', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_9cee37de9993', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_dfec834d8e1b']
+2026-08-06 21:47:55,971 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:47:55,992 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:47:55,992 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 5 blocks
+2026-08-06 21:47:55,992 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=5, omitted=0, repair=yes
+  [V7.2 Pipeline] Identity: RESOLVED_IDENTITY | Obs: 60 | Elapsed: 12.0s
+  [V7.2 Counts] Claims: 5 | Evidence: 4 | Sources: 1
+
+  >>> Applicando moduli V7.3 (source_quality, claim_lifecycle, response_structure)...
+
+# Rapporto Narrativo V7.3 - CALANDRINA Luigi
+
+**Schema**: 7.3-response-v1 | **Identity**: RESOLVED_IDENTITY | **Evidence**: possible | **Claims**: 6 | **Pubblicati**: 0 | **Soppresi**: 0 | **In revisione**: 6
+
+---
+
+## Sintesi
+
+Dati trovati ma in attesa di revisione.
+
+## Identit├á
+
+- **Stato identita**: RESOLVED_IDENTITY
+- **Corroborazione**: PARTIAL
+- **Livello evidenza**: possible
+- **Punteggio qualita fonti**: 0.72
+- **Motivo combinazione**: single_medium_quality
+- **Distribuzione claim**: {"REVIEW_PENDING": 6}
+
+## Dati Anagrafici
+
+*Nessun dato disponibile per questa sezione.*
+
+## Percorso Militare
+
+*Nessun dato disponibile per questa sezione.*
+
+## Eventi e Operazioni
+
+*Nessun dato disponibile per questa sezione.*
+
+## Prigionia e Internamento
+
+*Nessun dato disponibile per questa sezione.*
+
+## Contesto Storico
+
+- **Periodo bellico**: Seconda Guerra Mondiale (1940-1945)
+- **Fonte del record**: Internato militare - prigioniero di guerra catturato dopo l'8 settembre 1943
+
+## Conflitti e Discrepanze
+
+*Nessun dato disponibile per questa sezione.*
+
+## Limiti e Incertezze
+
+- 6 affermazioni in attesa di revisione
+
+## Fonti e Provenienza
+
+- **Distribuzione qualita fonti**: {"medium": 6}
+- **Livello evidenza combinato**: possible
+- **Score aggregato**: 0.72
+- **Motivo**: single_medium_quality
+- **Record fonte**: internati#, internati#6292
+
+## Prossimi Passi
+
+- Revisionare le affermazioni in attesa
+- Cercare fonti aggiuntive per corroborazione
+
+
+--------------------------------------------------------------------------------
+  [2/5] VANGELISTI Giorgio  (fonte: internati#22013)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:47:56,133 [INFO] LocalDbAdapter: 19 observations
+2026-08-06 21:47:57,792 [INFO] WebSearchAdapter[tavily]: 19 observations in 1.66s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:47:59,938 [INFO] FederationAdapter: 25 observations
+2026-08-06 21:48:01,648 [INFO] WebSearchAdapter[tavily]: 19 observations in 1.71s
+2026-08-06 21:48:02,474 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_15d5da002ff6', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_202cb1dcb63c', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_7df776c3e0ad']
+2026-08-06 21:48:07,306 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:48:07,329 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 6 blocks
+2026-08-06 21:48:07,330 [WARNING] NARRATE_V2: Hallucination check found 8 warnings: ['HALLUCINATED_DATE:19 in block b1 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Mondiale in block b1 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Firenze in block b2 ÔÇö not in evidence']
+2026-08-06 21:48:07,330 [WARNING] NARRATE_V2: Severe hallucination (8 warnings), falling back to deterministic
+2026-08-06 21:48:07,330 [INFO] NARRATE_V2: mode=deterministic, provider=, status=validated_deterministic, claims_used=12, omitted=0, repair=no
+  [V7.2 Pipeline] Identity: RESOLVED_IDENTITY | Obs: 82 | Elapsed: 11.3s
+  [V7.2 Counts] Claims: 6 | Evidence: 5 | Sources: 1
+
+  >>> Applicando moduli V7.3 (source_quality, claim_lifecycle, response_structure)...
+
+# Rapporto Narrativo V7.3 - VANGELISTI Giorgio
+
+**Schema**: 7.3-response-v1 | **Identity**: RESOLVED_IDENTITY | **Evidence**: possible | **Claims**: 9 | **Pubblicati**: 0 | **Soppresi**: 0 | **In revisione**: 9
+
+---
+
+## Sintesi
+
+Dati trovati ma in attesa di revisione.
+
+## Identit├á
+
+- **Stato identita**: RESOLVED_IDENTITY
+- **Corroborazione**: PARTIAL
+- **Livello evidenza**: possible
+- **Punteggio qualita fonti**: 0.72
+- **Motivo combinazione**: single_medium_quality
+- **Distribuzione claim**: {"REVIEW_PENDING": 9}
+
+## Dati Anagrafici
+
+*Nessun dato disponibile per questa sezione.*
+
+## Percorso Militare
+
+*Nessun dato disponibile per questa sezione.*
+
+## Eventi e Operazioni
+
+*Nessun dato disponibile per questa sezione.*
+
+## Prigionia e Internamento
+
+*Nessun dato disponibile per questa sezione.*
+
+## Contesto Storico
+
+- **Periodo bellico**: Seconda Guerra Mondiale (1940-1945)
+- **Ruolo in combattimento**: Comando di plotone/compagnia
+- **Fonte del record**: Internato militare - prigioniero di guerra catturato dopo l'8 settembre 1943
+
+## Conflitti e Discrepanze
+
+*Nessun dato disponibile per questa sezione.*
+
+## Limiti e Incertezze
+
+- 9 affermazioni in attesa di revisione
+
+## Fonti e Provenienza
+
+- **Distribuzione qualita fonti**: {"medium": 9}
+- **Livello evidenza combinato**: possible
+- **Score aggregato**: 0.72
+- **Motivo**: single_medium_quality
+- **Record fonte**: internati#, internati#22013
+
+## Prossimi Passi
+
+- Revisionare le affermazioni in attesa
+- Cercare fonti aggiuntive per corroborazione
+
+
+  [WARNINGS V7.3]: ['NARRATION_FALLBACK: ai_unavailable_or_failed']
+
+--------------------------------------------------------------------------------
+  [3/5] FAVATA SAVINO  (fonte: caduti_albooro#214615)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:48:07,455 [INFO] LocalDbAdapter: 15 observations
+2026-08-06 21:48:09,038 [INFO] WebSearchAdapter[tavily]: 18 observations in 1.58s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.internetculturale.it'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:48:11,212 [INFO] FederationAdapter: 16 observations
+2026-08-06 21:48:13,580 [INFO] WebSearchAdapter[tavily]: 20 observations in 2.37s
+2026-08-06 21:48:14,404 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_822471af9c48', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_ff0302940463']
+2026-08-06 21:48:20,183 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:48:20,198 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:48:20,198 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 5 blocks
+2026-08-06 21:48:20,198 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=10, omitted=0, repair=yes
+  [V7.2 Pipeline] Identity: RESOLVED_IDENTITY | Obs: 69 | Elapsed: 12.9s
+  [V7.2 Counts] Claims: 9 | Evidence: 8 | Sources: 1
+
+  >>> Applicando moduli V7.3 (source_quality, claim_lifecycle, response_structure)...
+
+# Rapporto Narrativo V7.3 - FAVATA SAVINO
+
+**Schema**: 7.3-response-v1 | **Identity**: RESOLVED_IDENTITY | **Evidence**: verified | **Claims**: 12 | **Pubblicati**: 12 | **Soppresi**: 0 | **In revisione**: 0
+
+---
+
+## Sintesi
+
+Sono state trovate 12 affermazioni pubblicate su 12 totali.
+
+## Identit├á
+
+- **Stato identita**: RESOLVED_IDENTITY
+- **Corroborazione**: PARTIAL
+- **Livello evidenza**: verified
+- **Punteggio qualita fonti**: 0.81
+- **Motivo combinazione**: two_plus_independent_high_quality
+- **Distribuzione claim**: {"PUBLISHED_WITH_CAVEAT": 12}
+
+## Dati Anagrafici
+
+- death_year: 1917
+- death_place: Ospedaletto Da Campo N. 147
+- paternity: SALVATORE
+- draft_class: 1892
+- death_year: 1917
+- death_place: Ospedaletto Da Campo N. 147
+- death_cause: Ferite Riportate In Combattimento
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+## Percorso Militare
+
+- rank: Soldato
+- rank: Soldato
+- military_unit: 129 Reggimento Fanteria
+
+**Ruolo militare**: Soldato (Truppa)
+  - Categoria: truppa
+  - Evidence scope: PERSON_EVIDENCE (rank_fact)
+  - Confidenza: 95%
+
+**Reparto**: 129 regiment fanteria
+  - Tipo unita: regiment
+  - Numero: 129
+  - Arma: fanteria
+  - Evidence scope: PERSON_EVIDENCE (personal_duty)
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+## Eventi e Operazioni
+
+*Nessun dato disponibile per questa sezione.*
+
+## Prigionia e Internamento
+
+*Nessun dato disponibile per questa sezione.*
+
+## Contesto Storico
+
+- **Periodo bellico**: Prima Guerra Mondiale (1915-1918)
+- **Ruolo in combattimento**: Impiego in prima linea
+- **Arma di appartenenza**: Fanteria - forza principale di manovra, impiegata in trincea e assalti
+- **Fonte del record**: Internato militare - prigioniero di guerra catturato dopo l'8 settembre 1943
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+## Conflitti e Discrepanze
+
+*Nessun dato disponibile per questa sezione.*
+
+## Limiti e Incertezze
+
+*Nessun dato disponibile per questa sezione.*
+
+## Fonti e Provenienza
+
+- **Distribuzione qualita fonti**: {"medium": 4, "high": 8}
+- **Livello evidenza combinato**: verified
+- **Score aggregato**: 0.81
+- **Motivo**: two_plus_independent_high_quality
+- **Record fonte**: caduti_albooro#214615, internati#
+
+## Prossimi Passi
+
+- Nessun passo aggiuntivo necessario
+
+
+--------------------------------------------------------------------------------
+  [4/5] MINICILLO RAFFAELE  (fonte: decorati_nastroazzurro#172036)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:48:20,335 [INFO] LocalDbAdapter: 1 observations
+2026-08-06 21:48:22,504 [INFO] WebSearchAdapter[tavily]: 10 observations in 2.17s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:48:24,739 [INFO] FederationAdapter: 16 observations
+2026-08-06 21:48:26,421 [INFO] WebSearchAdapter[tavily]: 19 observations in 1.68s
+2026-08-06 21:48:27,348 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_2effb05702d0']
+2026-08-06 21:48:29,798 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:48:29,828 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 3 blocks
+2026-08-06 21:48:29,828 [WARNING] NARRATE_V2: Hallucination check found 1 warnings: ['HALLUCINATED_DATE:19 in block b1 ÔÇö not in evidence']
+2026-08-06 21:48:29,828 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=3, omitted=0, repair=no
+  [V7.2 Pipeline] Identity: RESOLVED_IDENTITY | Obs: 46 | Elapsed: 9.6s
+  [V7.2 Counts] Claims: 3 | Evidence: 3 | Sources: 1
+
+  >>> Applicando moduli V7.3 (source_quality, claim_lifecycle, response_structure)...
+
+# Rapporto Narrativo V7.3 - MINICILLO RAFFAELE
+
+**Schema**: 7.3-response-v1 | **Identity**: RESOLVED_IDENTITY | **Evidence**: verified | **Claims**: 3 | **Pubblicati**: 3 | **Soppresi**: 0 | **In revisione**: 0
+
+---
+
+## Sintesi
+
+Sono state trovate 3 affermazioni pubblicate su 3 totali.
+
+## Identit├á
+
+- **Stato identita**: RESOLVED_IDENTITY
+- **Corroborazione**: PARTIAL
+- **Livello evidenza**: verified
+- **Punteggio qualita fonti**: 0.80
+- **Motivo combinazione**: two_plus_independent_high_quality
+- **Distribuzione claim**: {"PUBLISHED_WITH_CAVEAT": 3}
+
+## Dati Anagrafici
+
+*Nessun dato disponibile per questa sezione.*
+
+## Percorso Militare
+
+- military_branch: Esercito
+- decoration_type: Croce di Guerra al Valor Militare
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+## Eventi e Operazioni
+
+*Nessun dato disponibile per questa sezione.*
+
+## Prigionia e Internamento
+
+*Nessun dato disponibile per questa sezione.*
+
+## Contesto Storico
+
+- **Periodo bellico**: Seconda Guerra Mondiale (1940-1945)
+- **Fonte del record**: Decorato al valor militare - Nastro Azzurro
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+## Conflitti e Discrepanze
+
+*Nessun dato disponibile per questa sezione.*
+
+## Limiti e Incertezze
+
+*Nessun dato disponibile per questa sezione.*
+
+## Fonti e Provenienza
+
+- **Distribuzione qualita fonti**: {"high": 3}
+- **Livello evidenza combinato**: verified
+- **Score aggregato**: 0.80
+- **Motivo**: two_plus_independent_high_quality
+- **Record fonte**: decorati_nastroazzurro#172036
+
+## Prossimi Passi
+
+- Nessun passo aggiuntivo necessario
+
+
+  [WARNINGS V7.3]: ['NARRATION_FLAG: HALLUCINATED_DATE:19 in block b1 ÔÇö not in evidence']
+
+--------------------------------------------------------------------------------
+  [5/5] PALUCH WLODZIMIERZ MARIAN  (fonte: caduti_cwgc#209392)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:48:29,974 [INFO] LocalDbAdapter: 2 observations
+2026-08-06 21:48:32,234 [INFO] WebSearchAdapter[tavily]: 17 observations in 2.26s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.internetculturale.it'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:48:35,604 [INFO] FederationAdapter: 19 observations
+2026-08-06 21:48:37,780 [INFO] WebSearchAdapter[tavily]: 18 observations in 2.18s
+2026-08-06 21:48:38,711 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_invalid_422ebe4f6f05', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_ba42e9e79304']
+2026-08-06 21:48:43,029 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:48:43,054 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:48:43,054 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 6 blocks
+2026-08-06 21:48:43,054 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=8, omitted=0, repair=yes
+  [V7.2 Pipeline] Identity: RESOLVED_IDENTITY | Obs: 56 | Elapsed: 13.2s
+  [V7.2 Counts] Claims: 8 | Evidence: 8 | Sources: 1
+
+  >>> Applicando moduli V7.3 (source_quality, claim_lifecycle, response_structure)...
+
+# Rapporto Narrativo V7.3 - PALUCH WLODZIMIERZ MARIAN
+
+**Schema**: 7.3-response-v1 | **Identity**: RESOLVED_IDENTITY | **Evidence**: verified | **Claims**: 8 | **Pubblicati**: 8 | **Soppresi**: 0 | **In revisione**: 0
+
+---
+
+## Sintesi
+
+Sono state trovate 8 affermazioni pubblicate su 8 totali.
+
+## Identit├á
+
+- **Stato identita**: RESOLVED_IDENTITY
+- **Corroborazione**: PARTIAL
+- **Livello evidenza**: verified
+- **Punteggio qualita fonti**: 0.90
+- **Motivo combinazione**: two_plus_independent_high_quality
+- **Distribuzione claim**: {"PUBLISHED_WITH_CAVEAT": 8}
+
+## Dati Anagrafici
+
+- death_date: 1943-08-04
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+## Percorso Militare
+
+- rank: Kapral
+- service_number: P/780955
+- military_branch: 3 A.F.U.
+
+**Ruolo militare**: Kapral (Grado non classificato)
+  - Categoria: unknown
+  - Evidence scope: PERSON_EVIDENCE (rank_fact)
+  - Confidenza: 30%
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+## Eventi e Operazioni
+
+*Nessun dato disponibile per questa sezione.*
+
+## Prigionia e Internamento
+
+- burial_place: BIRMINGHAM (BRANDWOOD END) CEMETERY
+- burial_country: United Kingdom
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+## Contesto Storico
+
+- **Periodo bellico**: Seconda Guerra Mondiale (1940-1945)
+- **Fonte del record**: Caduto commemorato dalla Commonwealth War Graves Commission
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+> ÔÜá´©Å Affermazione basata su una sola fonte. Corroborazione necessaria.
+
+## Conflitti e Discrepanze
+
+*Nessun dato disponibile per questa sezione.*
+
+## Limiti e Incertezze
+
+*Nessun dato disponibile per questa sezione.*
+
+## Fonti e Provenienza
+
+- **Distribuzione qualita fonti**: {"high": 8}
+- **Livello evidenza combinato**: verified
+- **Score aggregato**: 0.90
+- **Motivo**: two_plus_independent_high_quality
+- **Record fonte**: caduti_cwgc#209392
+
+## Prossimi Passi
+
+- Nessun passo aggiuntivo necessario
+
+
+================================================================================
+FINE
+================================================================================

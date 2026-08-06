@@ -1,0 +1,646 @@
+﻿python : C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified 
+HTTPS request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+In riga:1 car:32
++ ... THONIOENCODING="utf-8"; python run_5_random_narrative.py 2>&1 | Out-F ...
++                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\eryma\...ml#tls-warnings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+================================================================================
+RISPOSTE NARRATIVE V7.3 - 5 NOMI CASUALI DAL DB
+Con integrazione: source_quality + claim_lifecycle + response_structure 11 sezioni
++ military_ontology (ruolo) + contesto storico
+================================================================================
+
+--------------------------------------------------------------------------------
+  [1/5] DELLA GIOVANNA Pietro  (fonte: internati#9848)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:53:04,527 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_659b00675eca', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_48edf4378b7c', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_432d44dff302', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_7577b3bcd7c7', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_34f3a2e55349', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_4cf24376541c', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_5662253b3809']
+2026-08-06 21:53:11,449 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:53:11,475 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:53:11,475 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 5 blocks
+2026-08-06 21:53:11,475 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=9, omitted=8, repair=yes
+  Identity: RESOLVED_IDENTITY | Observations: 124 | Elapsed: 16.2s
+
+Pietro Della Giovanna ├¿ stato un soldato italiano del 13┬░ Reggimento Bersaglieri, morto nel 1918 a causa delle ferite riportate in combattimento sul Piave.
+
+Pietro Della Giovanna era figlio di Natale e risiedeva a Piacenza. Era originario di San Mauro Pascoli.
+
+Nato nel 1892, Pietro Della Giovanna fu arruolato come soldato nel 13┬░ Reggimento Bersaglieri. Mor├¼ nel 1918 sul fronte del Piave.
+
+Il 13┬░ Reggimento Bersaglieri, a cui apparteneva Pietro Della Giovanna, era una delle unit├á dell'esercito italiano impegnate durante la Prima Guerra Mondiale.
+
+Non ci sono ulteriori dettagli disponibili sulla vita personale di Pietro Della Giovanna oltre al suo servizio militare e alla sua morte.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_f6e8c8bd476e5acd
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 21
+- Context Claims: 7
+- Provider Ledger: 124 observations
+
+## Fonti
+- **obs_3df440966bbf0fe9**: Pietro Giovanna Last Name ÔÇö Surname Origins & Meanings ÔÇö [https://lastnames.myheritage.com/last-name/pietro_giovanna](https://lastnames.myheritage.com/last-name/pietro_giovanna)
+- **obs_eda52df933aefb10**: Giovanna Di Pietro - Bern University of Applied Sciences - Academia.edu ÔÇö [https://bfh.academia.edu/GiovannaDiPietro](https://bfh.academia.edu/GiovannaDiPietro)
+- **obs_3544af299eb70d2c**: Pietro della Vigna - Wikipedia ÔÇö [https://en.wikipedia.org/wiki/Pietro_della_Vigna](https://en.wikipedia.org/wiki/Pietro_della_Vigna)
+- **obs_f383161bb822c4ca**: Pietro Della Vigna | Italian statesman, diplomat, poet ÔÇö [https://www.britannica.com/biography/Pietro-della-Vigna](https://www.britannica.com/biography/Pietro-della-Vigna)
+- **obs_ac4e274e7ce26230**: Pietro della Vigna | Infernopedia - Fandom ÔÇö [https://dantesinferno.fandom.com/wiki/Pietro_della_Vigna](https://dantesinferno.fandom.com/wiki/Pietro_della_Vigna)
+- **obs_317a137b67f32f7c**: Giovanna Di Pietro - Strategic Communication | Project & Event ... ÔÇö [https://it.linkedin.com/in/giovanna-di-pietro-873a56229/en](https://it.linkedin.com/in/giovanna-di-pietro-873a56229/en)
+- **obs_2f6bceeb93761f79**: Giovanna Di Pietro in people ÔÇö [https://m.facebook.com/public/Giovanna-Di-Pietro](https://m.facebook.com/public/Giovanna-Di-Pietro)
+- **obs_6b99eb3fbbad68c8**: Giovanna pietro Stock Photos and Images ÔÇö [https://www.alamy.com/stock-photo/giovanna-pietro.html](https://www.alamy.com/stock-photo/giovanna-pietro.html)
+- **obs_f75e0c203ab12291**: Curriculum Vitae di Giovanna Di Pietro ÔÇö [https://didatticaweb.uniroma2.it/docenti/curriculum/T_396134-Giovanna-Di-Pietro](https://didatticaweb.uniroma2.it/docenti/curriculum/T_396134-Giovanna-Di-Pietro)
+- **obs_491bdf777b6e125a**: Gigi Santo Pietro - Biography ÔÇö [https://www.imdb.com/name/nm3864301/bio](https://www.imdb.com/name/nm3864301/bio)
+- **obs_dcb0f2c728f42087**: Vanna White's 2 Children: All About Nikko and Gigi ÔÇö [https://people.com/all-about-vanna-white-kids-7508901](https://people.com/all-about-vanna-white-kids-7508901)
+- **obs_a38b852a8af82b75**: Vanna White Shares Rare Photo Of Daughter Gigi ÔÇö [https://www.today.com/parents/moms/vanna-white-rare-photo-daughter-gigi-rcna160019](https://www.today.com/parents/moms/vanna-white-rare-photo-daughter-gigi-rcna160019)
+- **obs_d3e4a0dd5db33270**: Molino Dallagiovanna USA ÔÇö [https://dallagiovannausa.com](https://dallagiovannausa.com)
+- **obs_08d05956272edab9**: Relatively Famous Season 01 Episode 03 Gigi Santo Pietro ... ÔÇö [https://www.youtube.com/watch?v=N7_0l7ZNmvU](https://www.youtube.com/watch?v=N7_0l7ZNmvU)
+- **obs_b7d3e33169af8b9d**: Gigi Santo Pietro (@gigisantopietro) ÔÇö [https://www.instagram.com/gigisantopietro?hl=en](https://www.instagram.com/gigisantopietro?hl=en)
+- **obs_2b270016cf95abb9**: Pietro Giovanna Last Name ÔÇö Surname Origins & Meanings ÔÇö [https://lastnames.myheritage.com/last-name/pietro_giovanna](https://lastnames.myheritage.com/last-name/pietro_giovanna)
+- **obs_c4f1124cee4b4130**: Giovanna Di Pietro - Bern University of Applied Sciences ÔÇö [https://bfh.academia.edu/GiovannaDiPietro](https://bfh.academia.edu/GiovannaDiPietro)
+- **obs_fac2114b441a148d**: Giovanna, Umberto and Pietro ÔÇö [https://vimeo.com/341002830](https://vimeo.com/341002830)
+- **obs_4e7527d50b093059**: Pietro della Vigna ÔÇö [https://en.wikipedia.org/wiki/Pietro_della_Vigna](https://en.wikipedia.org/wiki/Pietro_della_Vigna)
+- **obs_5c2d69fcad2faf58**: Pietro Della Vigna | Italian statesman, diplomat, poet ÔÇö [https://www.britannica.com/biography/Pietro-della-Vigna](https://www.britannica.com/biography/Pietro-della-Vigna)
+- **obs_97b3b61f1f1893e3**: Pietro della Vigna | Infernopedia - Fandom ÔÇö [https://dantesinferno.fandom.com/wiki/Pietro_della_Vigna](https://dantesinferno.fandom.com/wiki/Pietro_della_Vigna)
+- **obs_4550621c87b14b86**: Meet Wheel of Fortune host Vanna White's daughter Gigi ... ÔÇö [https://www.scmp.com/magazines/style/entertainment/article/3305941/meet-wheel-fortune-host-vanna-whites-lookalike-daughter-gigi-santo-pietro-who-just-gave-her-mum-her](https://www.scmp.com/magazines/style/entertainment/article/3305941/meet-wheel-fortune-host-vanna-whites-lookalike-daughter-gigi-santo-pietro-who-just-gave-her-mum-her)
+- **obs_32b9770ad946ffe5**: Giovanna Di Pietro - Strategic Communication | Project & ... ÔÇö [https://it.linkedin.com/in/giovanna-di-pietro-873a56229/en](https://it.linkedin.com/in/giovanna-di-pietro-873a56229/en)
+- **obs_68dbb6184cded10d**: Prof. Dr. Giovanna Di Pietro ÔÇö [https://www.bfh.ch/de/ueber-die-bfh/personen/b7efo37agxiq](https://www.bfh.ch/de/ueber-die-bfh/personen/b7efo37agxiq)
+- **obs_01b535a2138c5966**: Giovanna Di Pietro in people ÔÇö [https://www.facebook.com/public/Giovanna-Di-Pietro](https://www.facebook.com/public/Giovanna-Di-Pietro)
+- **obs_deafafc47597895e**: Giovanna pietro Stock Photos and Images ÔÇö [https://www.alamy.com/stock-photo/giovanna-pietro.html](https://www.alamy.com/stock-photo/giovanna-pietro.html)
+- **obs_53cbf1711f1fc0a6**: Curriculum Vitae di Giovanna Di Pietro ÔÇö [https://didatticaweb.uniroma2.it/docenti/curriculum/T_396134-Giovanna-Di-Pietro](https://didatticaweb.uniroma2.it/docenti/curriculum/T_396134-Giovanna-Di-Pietro)
+- **obs_4a6db3c42854912f**: Gigi Santo Pietro - Biography ÔÇö [https://www.imdb.com/name/nm3864301/bio](https://www.imdb.com/name/nm3864301/bio)
+- **obs_fc8d511c36f98d15**: Vanna White's 2 Children: All About Nikko and Gigi ÔÇö [https://people.com/all-about-vanna-white-kids-7508901](https://people.com/all-about-vanna-white-kids-7508901)
+- **obs_6d8c6506643bb7cb**: Vanna White Shares Rare Photo Of Daughter Gigi ÔÇö [https://www.today.com/parents/moms/vanna-white-rare-photo-daughter-gigi-rcna160019](https://www.today.com/parents/moms/vanna-white-rare-photo-daughter-gigi-rcna160019)
+- **obs_64394607b3608418**: Relatively Famous Season 01 Episode 03 Gigi Santo Pietro ... ÔÇö [https://www.youtube.com/watch?v=N7_0l7ZNmvU](https://www.youtube.com/watch?v=N7_0l7ZNmvU)
+- **obs_c1208ec247023f53**: The Current Lives of Vanna White's Two Children ÔÇö [https://www.tiktok.com/@user2042163543815/video/7522647076451159309](https://www.tiktok.com/@user2042163543815/video/7522647076451159309)
+- **obs_f5f4e06624eccc98**: Gigi Santo Pietro (@gigisantopietro) ÔÇö [https://www.instagram.com/gigisantopietro?hl=en](https://www.instagram.com/gigisantopietro?hl=en)
+
+--------------------------------------------------------------------------------
+  [2/5] ZOLLOSCHI Mariano  (fonte: internati#22453)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:53:11,604 [INFO] LocalDbAdapter: 1 observations
+2026-08-06 21:53:13,382 [INFO] WebSearchAdapter[tavily]: 16 observations in 1.78s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.internetculturale.it'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:53:15,550 [INFO] FederationAdapter: 16 observations
+2026-08-06 21:53:17,021 [INFO] WebSearchAdapter[tavily]: 17 observations in 1.47s
+2026-08-06 21:53:17,821 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_4b091a619a93', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_9390947efddf', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_1c8ebb06a150']
+2026-08-06 21:53:21,264 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:53:21,299 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:53:21,299 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 4 blocks
+2026-08-06 21:53:21,299 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=3, omitted=0, repair=yes
+  Identity: RESOLVED_IDENTITY | Observations: 50 | Elapsed: 9.8s
+
+Mariano Zolloschi ├¿ deceduto il 23 marzo 1944.
+
+Mariano Zolloschi risiedeva ad Ascoli Piceno, Monte S. Pietro.
+
+Il 23 marzo 1944 ├¿ la data in cui Mariano Zolloschi ├¿ stato dichiarato deceduto.
+
+Non sono disponibili ulteriori dettagli sulle circostanze della morte di Mariano Zolloschi.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_c953cf5da67b1e13
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 5
+- Context Claims: 3
+- Provider Ledger: 50 observations
+
+## Fonti
+- **obs_a1dd1cf2f9295f3a**: Mariano Zelaschi (@marianchai) ÔÇö [https://www.instagram.com/marianchai](https://www.instagram.com/marianchai)
+- **obs_a22180ca8f80f56a**: Maria Eleni Zollo ÔÇö [https://www.groupmuse.com/musicians/6784-maria-eleni-zollo](https://www.groupmuse.com/musicians/6784-maria-eleni-zollo)
+- **obs_d5eec47cb9e4510f**: Mariano Sorolla ÔÇö [https://www.facebook.com/mariano.sorolla](https://www.facebook.com/mariano.sorolla)
+- **obs_12bff6713575a88f**: Elio Mariano Scollo (@eliomsi) ÔÇö [https://www.threads.com/@eliomsi](https://www.threads.com/@eliomsi)
+- **obs_2dbef63612a47e62**: Mariano Verucchi #Y48438 Pen Pal Profile ÔÇö [https://writeaprisoner.com/inmates/mariano-verucchi-y48438/penpal](https://writeaprisoner.com/inmates/mariano-verucchi-y48438/penpal)
+- **obs_524657ec76e633af**: Mariano Fuschi (@mariano.fuschi) ÔÇö [https://m.facebook.com/mariano.fuschi](https://m.facebook.com/mariano.fuschi)
+- **obs_4d8d5629504fb593**: Mariano Rossi ÔÇö [https://en.wikipedia.org/wiki/Mariano_Rossi](https://en.wikipedia.org/wiki/Mariano_Rossi)
+- **obs_820a3c82330067cd**: Mariano (@marianologo) ÔÇó Instagram photos and videos ÔÇö [https://www.instagram.com/marianologo](https://www.instagram.com/marianologo)
+- **obs_175329e1c8b16359**: La historia de Mariano Soso en Newell's ÔÇö [https://www.youtube.com/watch?v=EjCcMpxzh7M](https://www.youtube.com/watch?v=EjCcMpxzh7M)
+- **obs_b890ad191c58f350**: 117. Mariano Rossi (1731 ÔÇô 1807) - 364sicilianrolemodels ÔÇö [https://364sicilianrolemodels.wordpress.com/2016/01/19/117-mariano-rossi-1731-1807](https://364sicilianrolemodels.wordpress.com/2016/01/19/117-mariano-rossi-1731-1807)
+- **obs_fe881ef8a65e1301**: About - Mariano Frisoli ÔÇö [https://www.marianofrisoli.com/about](https://www.marianofrisoli.com/about)
+- **obs_5269b456849f67d6**: Mariano Sottile ÔÇö [https://www.facebook.com/mariano.sottile.18](https://www.facebook.com/mariano.sottile.18)
+- **obs_8eba3bdca93cd841**: Benjamin SZOLLOS - Athlete Biography - Alpine Skiing ÔÇö [https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode=al&competitorid=172206&type=result](https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode=al&competitorid=172206&type=result)
+- **obs_4f9b48abe73d3bb2**: mariano salluzzo - Family Book ÔÇö [https://giuliasaporito.com/Salluzzo](https://giuliasaporito.com/Salluzzo)
+- **obs_4970582e8ba925ad**: Mariano Soso ┬╗ Honours ÔÇö [https://www.worldfootball.net/person/pe383034/mariano-soso/honours](https://www.worldfootball.net/person/pe383034/mariano-soso/honours)
+- **obs_6a87fce522ac7e70**: Mariano Schultz (@marianoschultz) ÔÇö [https://www.instagram.com/marianoschultz](https://www.instagram.com/marianoschultz)
+- **obs_7add4dafee2da05b**: Mariano Luraschi - Program - Protoflio Manager | Data Strategy & Digital ... ÔÇö [https://ar.linkedin.com/in/dggmarianoluraschi](https://ar.linkedin.com/in/dggmarianoluraschi)
+- **obs_3075994a22c99af4**: Maria Zollo at Baruch - Reviews & Ratings, Fall 2026 classes ÔÇö [https://www.coursicle.com/baruchcuny/professors/Maria+Zollo](https://www.coursicle.com/baruchcuny/professors/Maria+Zollo)
+- **obs_e274a632bee72aea**: Elio Mariano Scollo (@eliomsi) ÔÇö [https://www.threads.com/@eliomsi](https://www.threads.com/@eliomsi)
+- **obs_82b10d2ae8c1ff8b**: Mariano Verucchi #Y48438 Pen Pal Profile ÔÇö [https://writeaprisoner.com/inmates/mariano-verucchi-y48438/penpal](https://writeaprisoner.com/inmates/mariano-verucchi-y48438/penpal)
+- **obs_9bf80dede3e7b8fe**: Mariano Rossi ÔÇö [https://en.wikipedia.org/wiki/Mariano_Rossi](https://en.wikipedia.org/wiki/Mariano_Rossi)
+- **obs_e0bde7be9c9653e4**: Mariano (@marianologo) ÔÇó Instagram photos and videos ÔÇö [https://www.instagram.com/marianologo](https://www.instagram.com/marianologo)
+- **obs_07331089a54d4359**: Mariano Soso ÔÇö [https://it.wikipedia.org/wiki/Mariano_Soso](https://it.wikipedia.org/wiki/Mariano_Soso)
+- **obs_0d6b705335004c64**: Benjamin SZOLLOS - Athlete Biography - Alpine Skiing ÔÇö [https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode=al&competitorid=172206&type=result](https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode=al&competitorid=172206&type=result)
+- **obs_9a8506c76a05d608**: Mariano Ardissone - Holistic Healer and Life Coach, Ayama ÔÇö [https://intch.org/10579496](https://intch.org/10579496)
+- **obs_485d1d46388a1f6f**: Zollo Name Meaning and Zollo Family History at ... ÔÇö [https://www.familysearch.org/en/surname?surname=ZOLLO](https://www.familysearch.org/en/surname?surname=ZOLLO)
+- **obs_16b473fa0c3a4137**: Mariano Soso ┬╗ Honours ÔÇö [https://www.worldfootball.net/person/pe383034/mariano-soso/honours](https://www.worldfootball.net/person/pe383034/mariano-soso/honours)
+- **obs_bf125ac921ebbc0f**: Mariano Schultz (@marianoschultz) ÔÇö [https://www.instagram.com/marianoschultz](https://www.instagram.com/marianoschultz)
+- **obs_0978bca4edf42b94**: Bio ÔÇö [https://ondrejszollos.com/bio](https://ondrejszollos.com/bio)
+- **obs_ac20823ad5e760a1**: Contact | Mariano Frisoli ÔÇö [https://www.marianofrisoli.com/contact](https://www.marianofrisoli.com/contact)
+- **obs_9534a5d8aca08374**: Case 112824: State v. Rizo - KS Courts ÔÇö [https://kscourts.gov/Cases-Decisions/Decisions/Published/State-v-Rizo](https://kscourts.gov/Cases-Decisions/Decisions/Published/State-v-Rizo)
+- **obs_41a4119d5b7b2c5c**: Raleigh murder suspect of Ravenscroft teacher had 20-year criminal history, mental health struggles :: WRAL.com ÔÇö [https://www.wral.com/news/local/murder-ravenscroft-teacher-zoe-welsh-ryan-camacho-charged-january-2026](https://www.wral.com/news/local/murder-ravenscroft-teacher-zoe-welsh-ryan-camacho-charged-january-2026)
+- **obs_e5c75149ec998134**: Maria Sole Cecchi | BoF 500 | The People Shaping the Global ... ÔÇö [https://www.businessoffashion.com/people/maria-sole-cecchi](https://www.businessoffashion.com/people/maria-sole-cecchi)
+
+--------------------------------------------------------------------------------
+  [3/5] SANTORO MICHELE  (fonte: caduti_albooro#220616)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:53:21,332 [INFO] LocalDbAdapter: 72 observations
+2026-08-06 21:53:24,285 [INFO] WebSearchAdapter[tavily]: 18 observations in 2.95s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:53:26,685 [INFO] FederationAdapter: 55 observations
+2026-08-06 21:53:29,149 [INFO] WebSearchAdapter[tavily]: 17 observations in 2.46s
+2026-08-06 21:53:34,311 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:53:34,330 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:53:34,330 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 5 blocks
+2026-08-06 21:53:34,330 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=9, omitted=50, repair=yes
+  Identity: AMBIGUOUS_IDENTITY | Observations: 162 | Elapsed: 13.0s
+
+Michele Santoro ├¿ stato un soldato italiano nato nel 1887 e morto nel 1917 a causa di ferite riportate in combattimento.
+
+Michele Santoro era figlio di Pasquale e proveniva da Isernia.
+
+Nel corso della sua vita, Michele Santoro ha prestato servizio come soldato nel 93┬░ Reggimento Fanteria dell'Esercito italiano.
+
+Michele Santoro ├¿ deceduto nel 1917 presso l'Ospedaletto Da Campo N. 65, a causa delle ferite riportate in combattimento.
+
+Esistono ambiguit├á riguardo l'identit├á di Michele Santoro, con pi├╣ candidati aventi lo stesso nome.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_d42451abfe490f29
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): AMBIGUOUS_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 61
+- Context Claims: 0
+- Provider Ledger: 162 observations
+
+## Fonti
+- **obs_ca51ce30337fb3ea**: Michele Santoro - Wikipedia ÔÇö [https://en.wikipedia.org/wiki/Michele_Santoro](https://en.wikipedia.org/wiki/Michele_Santoro)
+- **obs_af942ffe80c4099e**: Michele Santoro ÔÇö [https://www.journalismfestival.com/speaker/michele-santoro](https://www.journalismfestival.com/speaker/michele-santoro)
+- **obs_021a8349e6e688e2**: Michele Santoro - Wikipedia ÔÇö [https://it.wikipedia.org/wiki/Michele_Santoro](https://it.wikipedia.org/wiki/Michele_Santoro)
+- **obs_dd348748dd5a79a2**: Michele Santoro ÔÇö [https://m.imdb.com/name/nm1039096](https://m.imdb.com/name/nm1039096)
+- **obs_70b7ba0cd957f63a**: Michele Santoro biografia ÔÇö [https://www.mymovies.it/persone/michele-santoro/67669](https://www.mymovies.it/persone/michele-santoro/67669)
+- **obs_d9e2d98894b653e9**: Michele Santoro - Wikidata ÔÇö [https://www.wikidata.org/wiki/Q1247041](https://www.wikidata.org/wiki/Q1247041)
+- **obs_24c29c24d3215eb4**: Michele Love Santoro ÔÇö [https://m.imdb.com/name/nm4925599](https://m.imdb.com/name/nm4925599)
+- **obs_accd6b6af4278314**: 6th parliamentary term | Michele SANTORO | MEPs ÔÇö [https://www.europarl.europa.eu/meps/en/28333/MICHELE_SANTORO/history/6](https://www.europarl.europa.eu/meps/en/28333/MICHELE_SANTORO/history/6)
+- **obs_fcbd51b524889e30**: 288 Michele Santoro Photos & High Res Pictures ÔÇö [https://www.gettyimages.com/photos/michele-santoro](https://www.gettyimages.com/photos/michele-santoro)
+- **obs_4e33a5faff1074d4**: Santoro michele hi-res stock photography and images ÔÇö [https://www.alamy.com/stock-photo/santoro-michele.html?pseudoid=9F64CEFE-1A1F-4422-844C-36A659862231](https://www.alamy.com/stock-photo/santoro-michele.html?pseudoid=9F64CEFE-1A1F-4422-844C-36A659862231)
+- **obs_9702b424c6a3fe0f**: SANTORO Michele ÔÇö [https://www.sissco.it/soci/santoro-michele](https://www.sissco.it/soci/santoro-michele)
+- **obs_b3161da0f6be27fd**: Michele Santoro presenta ÔÇö [https://www.youtube.com/@MicheleSantoroOfficial](https://www.youtube.com/@MicheleSantoroOfficial)
+- **obs_1b97725e4d24a2ca**: Michele Santoro (@michelesantoro_ufficiale) ÔÇö [https://www.instagram.com/michelesantoro_ufficiale?hl=en](https://www.instagram.com/michelesantoro_ufficiale?hl=en)
+- **obs_9db4fe0f31057734**: Michele Santoro - Eastport Analytics ÔÇö [https://www.linkedin.com/in/michelesantoro13](https://www.linkedin.com/in/michelesantoro13)
+- **obs_a21637aec69b0542**: Michele Love Santoro (@michelelovesantoro) ÔÇö [https://www.instagram.com/michelelovesantoro](https://www.instagram.com/michelelovesantoro)
+- **obs_217b41e346a7b834**: Michele Santoro a Lo Stato delle Cose - La manovra dei "ricchi" ÔÇö [https://www.youtube.com/watch?v=oOBZRpyl9qE](https://www.youtube.com/watch?v=oOBZRpyl9qE)
+- **obs_831c3ac4386dbac4**: Trump is corrupt and Israel is raping ÔÇö [https://www.youtube.com/watch?v=LZE6KAtKhwg](https://www.youtube.com/watch?v=LZE6KAtKhwg)
+- **obs_111f3c04bb01115d**: Michele Santoro ÔÇö [https://en.wikipedia.org/wiki/Michele_Santoro](https://en.wikipedia.org/wiki/Michele_Santoro)
+- **obs_2107b919c8377847**: Michele Santoro ÔÇö [https://www.journalismfestival.com/speaker/michele-santoro](https://www.journalismfestival.com/speaker/michele-santoro)
+- **obs_73756e096a86733f**: Michele Santoro ÔÇö [https://it.wikipedia.org/wiki/Michele_Santoro](https://it.wikipedia.org/wiki/Michele_Santoro)
+- **obs_f736176fa7821f04**: Michele Santoro ÔÇö [https://m.imdb.com/name/nm1039096](https://m.imdb.com/name/nm1039096)
+- **obs_ca63027375ab32e3**: Michele Santoro biografia ÔÇö [https://www.mymovies.it/persone/michele-santoro/67669](https://www.mymovies.it/persone/michele-santoro/67669)
+- **obs_30d27db7379622bc**: Michele Santoro ÔÇö [https://www.wikidata.org/wiki/Q1247041](https://www.wikidata.org/wiki/Q1247041)
+- **obs_b174a80fc2e3a272**: Michele Love Santoro ÔÇö [https://m.imdb.com/name/nm4925599](https://m.imdb.com/name/nm4925599)
+- **obs_ce042a055609e9b0**: 6th parliamentary term | Michele SANTORO | MEPs ÔÇö [https://www.europarl.europa.eu/meps/en/28333/MICHELE_SANTORO/history/6](https://www.europarl.europa.eu/meps/en/28333/MICHELE_SANTORO/history/6)
+- **obs_ab4341ca3b2e211b**: 288 Michele Santoro Photos & High Res Pictures ÔÇö [https://www.gettyimages.com/photos/michele-santoro](https://www.gettyimages.com/photos/michele-santoro)
+- **obs_c8fc212f487545dd**: Santoro michele hi-res stock photography and images ÔÇö [https://www.alamy.com/stock-photo/santoro-michele.html?pseudoid=9F64CEFE-1A1F-4422-844C-36A659862231](https://www.alamy.com/stock-photo/santoro-michele.html?pseudoid=9F64CEFE-1A1F-4422-844C-36A659862231)
+- **obs_dd345b455461edce**: Michele santoro Stock Photos and Images ÔÇö [https://www.alamy.com/stock-photo/michele-santoro.html](https://www.alamy.com/stock-photo/michele-santoro.html)
+- **obs_b027ad2a6eea2e22**: SANTORO Michele ÔÇö [https://www.sissco.it/soci/santoro-michele](https://www.sissco.it/soci/santoro-michele)
+- **obs_602506eccd03c4b3**: Michele Santoro presenta ÔÇö [https://www.youtube.com/@MicheleSantoroOfficial](https://www.youtube.com/@MicheleSantoroOfficial)
+- **obs_58336d8e800f4933**: Michele Santoro ÔÇö [https://www.la7.it/tutti-i-personaggi/michele-santoro](https://www.la7.it/tutti-i-personaggi/michele-santoro)
+- **obs_3c7c86925c57d8ae**: Michele Love Santoro (@michelelovesantoro) ÔÇö [https://www.instagram.com/michelelovesantoro](https://www.instagram.com/michelelovesantoro)
+- **obs_25c914cccab691a0**: I dream of a Left that doesn't exist ÔÇö [https://www.youtube.com/watch?v=H7K3A9ji3mA](https://www.youtube.com/watch?v=H7K3A9ji3mA)
+- **obs_e06e6b8584b83f5a**: Sign in - Google Accounts ÔÇö [https://sites.google.com/site/michelemariasantoro](https://sites.google.com/site/michelemariasantoro)
+
+--------------------------------------------------------------------------------
+  [4/5] ZANETTI TULLIO  (fonte: decorati_nastroazzurro#272988)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:53:34,380 [INFO] LocalDbAdapter: 53 observations
+2026-08-06 21:53:35,868 [INFO] WebSearchAdapter[tavily]: 17 observations in 1.48s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:53:38,190 [INFO] FederationAdapter: 28 observations
+2026-08-06 21:53:41,775 [INFO] WebSearchAdapter[tavily]: 18 observations in 3.58s
+2026-08-06 21:53:42,588 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_6132b3cd2882', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_f99eddea368a', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_3ca14853acd9', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_5bd04eb408b4', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_f431654bfd7b']
+2026-08-06 21:53:48,984 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:53:49,004 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:53:49,004 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 5 blocks
+2026-08-06 21:53:49,004 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=9, omitted=6, repair=yes
+  Identity: CONFLICTED_IDENTITY | Observations: 116 | Elapsed: 14.7s
+
+Tullio Zanetti ├¿ stato un soldato italiano del Reparto Mitraglieri Fiat Brescia, nato nel 1883 e deceduto nel 1919 a causa di una malattia.
+
+Tullio Zanetti era figlio di Giovanni e proveniva da Schiavon.
+
+Zanetti fu arruolato come soldato nel Reparto Mitraglieri Fiat Brescia e serv├¼ nell'Esercito italiano. Mor├¼ nel 1919 presso l'Ospedale Militare di Vicenza.
+
+L'assegnazione di Zanetti al Reparto Mitraglieri Fiat Brescia avvenne durante un periodo di conflitti significativi per l'Italia, in cui l'esercito era impegnato su diversi fronti.
+
+Non ci sono dettagli disponibili sulla vita personale di Tullio Zanetti al di fuori del suo servizio militare e delle circostanze della sua morte.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_7bf3b5a03a1b3e8e
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): CONFLICTED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 17
+- Context Claims: 5
+- Provider Ledger: 116 observations
+
+## Fonti
+- **obs_1bd712b2e9b8f8e5**: Tullio Zanetti, Basketball Player, News, Stats ÔÇö [https://basketball.eurobasket.com/player/Tullio-Zanetti/666160](https://basketball.eurobasket.com/player/Tullio-Zanetti/666160)
+- **obs_621c3336384be330**: Tullio Zanetti, Banca DI Credito Cooperativo Bergamo E Valli SC ÔÇö [https://www.bloomberg.com/profile/person/18751083](https://www.bloomberg.com/profile/person/18751083)
+- **obs_aee5125d6a59dc95**: Tullio Cianetti ÔÇö [https://en.wikipedia.org/wiki/Tullio_Cianetti](https://en.wikipedia.org/wiki/Tullio_Cianetti)
+- **obs_7483b11f0c3f9886**: 2 "Tullio Zanetti" profiles ÔÇö [https://www.linkedin.com/pub/dir/tullio/zanetti](https://www.linkedin.com/pub/dir/tullio/zanetti)
+- **obs_3ae46077f62b581d**: Tullio Zanetti - Direttore Commerciale Zanetti Arturo & C. Srl ÔÇö [https://it.linkedin.com/in/tullio-zanetti-4a999b37](https://it.linkedin.com/in/tullio-zanetti-4a999b37)
+- **obs_7ec4019ad1ed670c**: A & T DI ZANETTI TULLIO, ANGELO E C. - S.N.C. Partita IVA:01720950268 ÔÇö [https://www.visura.pro/imprese/3037967529-a-t-di-zanetti-tullio-angelo-e-c-s-n-c.html](https://www.visura.pro/imprese/3037967529-a-t-di-zanetti-tullio-angelo-e-c-s-n-c.html)
+- **obs_7f9e2ff8b83e400e**: A & T DI ZANETTI TULLIO, ANGELO E C. - S.N.C., Partita IVA ÔÇö [https://www.ufficiocamerale.it/5248/a-t-di-zanetti-tullio-angelo-e-c-snc](https://www.ufficiocamerale.it/5248/a-t-di-zanetti-tullio-angelo-e-c-snc)
+- **obs_5831a3ed2cb999f7**: TULLIO ZANETTI a Trento (TN) ÔÇö [https://www.paginebianche.it/scheda/trento/tullio-zanetti.aegbjiabid](https://www.paginebianche.it/scheda/trento/tullio-zanetti.aegbjiabid)
+- **obs_afd8ceb280811724**: Officina metalmeccanica Treviso ÔÇö [https://www.unimec.it/azienda.php](https://www.unimec.it/azienda.php)
+- **obs_12a2c744c520a078**: A & T DI ZANETTI TULLIO ANGEL (TV) | 01720950268 | bilanci, indici, ... ÔÇö [https://www.reportaziende.it/a_t_di_zanetti_tullio_angelo_e_c_snc_tv_01720950268](https://www.reportaziende.it/a_t_di_zanetti_tullio_angelo_e_c_snc_tv_01720950268)
+- **obs_155f0956b469cb4e**: Xenon Fidec e Greenthesis acquisiscono Zanetti Arturo e Saste ÔÇö [https://www.milanonotai.it/it/tips-and-stories/xenon-fidec-e-greenthesis-acquisiscono-zanetti-arturo-and-c-e-saste-servizi-ecologici-gli-studi](https://www.milanonotai.it/it/tips-and-stories/xenon-fidec-e-greenthesis-acquisiscono-zanetti-arturo-and-c-e-saste-servizi-ecologici-gli-studi)
+- **obs_a455239ec815cf8c**: E18 | Ricordando Squarzina: Conversazioni con Tullio Solenghi e ... ÔÇö [https://www.raiplaysound.it/audio/2022/04/I-teatri-alla-radio-4-5-2022-squarzina-p18-4300bf1c-b5ba-4400-bc57-239b852be898.html](https://www.raiplaysound.it/audio/2022/04/I-teatri-alla-radio-4-5-2022-squarzina-p18-4300bf1c-b5ba-4400-bc57-239b852be898.html)
+- **obs_c86be5724b09afdc**: Zannetti - Enciclopedia ÔÇö [https://www.treccani.it/enciclopedia/zannetti_(Dizionario-Biografico)](https://www.treccani.it/enciclopedia/zannetti_(Dizionario-Biografico))
+- **obs_ca13431243349a4d**: ZANETTI ARTURO & C SRL L'AVANGUARDIA NEL ... ÔÇö [https://zanettiarturo.com/zanetti-arturo-c-srl-lavanguardia-nel-trattamento-dei-rifiuti](https://zanettiarturo.com/zanetti-arturo-c-srl-lavanguardia-nel-trattamento-dei-rifiuti)
+- **obs_8df48b7ebf558e15**: Catalog Record: Rhetorica di Marco Tullio Cicerone : tradotta... ÔÇö [https://catalog.hathitrust.org/Record/102454397/Home](https://catalog.hathitrust.org/Record/102454397/Home)
+- **obs_acbad88479a5027b**: La Zanetti Arturo & C. passa al fondo Xenon Fidec ÔÇö [https://www.bergamonews.it/2025/12/03/la-zanetti-arturo-c-passa-al-fondo-xenon-fidec-nasce-un-colosso-per-il-recupero-dei-rifiuti-speciali/851862](https://www.bergamonews.it/2025/12/03/la-zanetti-arturo-c-passa-al-fondo-xenon-fidec-nasce-un-colosso-per-il-recupero-dei-rifiuti-speciali/851862)
+- **obs_b35c7f773b39933e**: Tullio Pozzan's research works | Campus Bio-Medico University ... ÔÇö [https://www.researchgate.net/scientific-contributions/Tullio-Pozzan-38316746](https://www.researchgate.net/scientific-contributions/Tullio-Pozzan-38316746)
+- **obs_34f1dd8b560411f3**: Tullio Zanetti - Direttore Commerciale Zanetti Arturo & C. Srl ÔÇö [https://it.linkedin.com/in/tullio-zanetti-4a999b37](https://it.linkedin.com/in/tullio-zanetti-4a999b37)
+- **obs_a67a3b4cf7499873**: La Zanetti Arturo & C. passa al fondo Xenon Fidec ÔÇö [https://www.bergamonews.it/2025/12/03/la-zanetti-arturo-c-passa-al-fondo-xenon-fidec-nasce-un-colosso-per-il-recupero-dei-rifiuti-speciali/851862](https://www.bergamonews.it/2025/12/03/la-zanetti-arturo-c-passa-al-fondo-xenon-fidec-nasce-un-colosso-per-il-recupero-dei-rifiuti-speciali/851862)
+- **obs_c822fb0d7bf0ea2e**: Tullio Zanetti - commerciale ÔÇö [https://www.linkedin.com/in/tullio-zanetti-b52088b5](https://www.linkedin.com/in/tullio-zanetti-b52088b5)
+- **obs_df55841659ec3b24**: tullio zanetti - -- ÔÇö [https://www.linkedin.com/in/tullio-zanetti-39068a69](https://www.linkedin.com/in/tullio-zanetti-39068a69)
+- **obs_fe948e9564d149bb**: Tullio - Wikipedia ÔÇö [https://en.wikipedia.org/wiki/Tullio](https://en.wikipedia.org/wiki/Tullio)
+- **obs_e5fc6d668b8bd806**: Laura Zanetti - impiegata presso la gardenia ÔÇö [https://www.linkedin.com/in/laura-zanetti-29206080](https://www.linkedin.com/in/laura-zanetti-29206080)
+- **obs_187167488eb00be8**: Middle Names for Tullio ÔÇö [https://firstnam.es/nombres-que-combinen-con-tullio](https://firstnam.es/nombres-que-combinen-con-tullio)
+- **obs_95a1325cf5af5738**: Vanessa Zanetti - Aluno na E.E. Professor Tullio Esp├¡ndola de Castro ÔÇö [https://www.linkedin.com/in/vanessa-zanetti-b53213198](https://www.linkedin.com/in/vanessa-zanetti-b53213198)
+- **obs_ebfe96cc4e5a2723**: ÔûÀ Centro Benessere Aleza Di Alessandra Zanetti a Bari (70124) - Benessere, centri ÔÇö [https://misterimprese.it/puglia/bari/bari/benessere-centri-e-studi/1819325.html](https://misterimprese.it/puglia/bari/bari/benessere-centri-e-studi/1819325.html)
+- **obs_19ed3a94383e5272**: Topics tagged tullio ÔÇö [https://discourse.julialang.org/tag/tullio](https://discourse.julialang.org/tag/tullio)
+- **obs_bbf2db10af5c14ce**: Topics tagged tullio ÔÇö [https://discourse.julialang.org/tag/tullio/522](https://discourse.julialang.org/tag/tullio/522)
+- **obs_658129a51d9b0d22**: Studio legale in Via Marco Tullio Cicerone a Trieste ÔÇö [https://www.paginegialle.it/friuli_venezia_giulia/trieste/studio_legale/via-marco-tullio-cicerone.html](https://www.paginegialle.it/friuli_venezia_giulia/trieste/studio_legale/via-marco-tullio-cicerone.html)
+- **obs_e8a9d15983f11b18**: Meaning of the name Tullio ÔÇö [https://www.wisdomlib.org/names/tullio](https://www.wisdomlib.org/names/tullio)
+- **obs_c92944f439d7fbb3**: Tullio Tullio - -- ÔÇö [https://www.linkedin.com/in/tullio-tullio-176788108](https://www.linkedin.com/in/tullio-tullio-176788108)
+- **obs_f6d43b1c6a39614c**: Tullio IT - at Tullio IT ÔÇö [https://www.linkedin.com/in/tullio-it-8b92361a2](https://www.linkedin.com/in/tullio-it-8b92361a2)
+- **obs_826e9a821f9aa66d**: rick Tullio - Tycoon at Tullio farms ÔÇö [https://www.linkedin.com/in/rick-tullio-812545115](https://www.linkedin.com/in/rick-tullio-812545115)
+- **obs_7ce46035c66f325a**: Tullio d'Albisola Official Site: Tullio the Futurist ÔÇö [https://www.tulliodalbisola.it/en/tullio_futurist.html](https://www.tulliodalbisola.it/en/tullio_futurist.html)
+- **obs_bc1a0b3f800a0149**: Tullio Fiorido - --- - Tullio Fiorido ÔÇö [https://www.linkedin.com/in/tullio-fiorido-62550251](https://www.linkedin.com/in/tullio-fiorido-62550251)
+
+--------------------------------------------------------------------------------
+  [5/5] ZAHN FRITZ  (fonte: caduti_cwgc#107239)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:53:49,124 [INFO] LocalDbAdapter: 3 observations
+2026-08-06 21:53:50,581 [INFO] WebSearchAdapter[tavily]: 19 observations in 1.45s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:53:52,715 [INFO] FederationAdapter: 40 observations
+2026-08-06 21:53:55,104 [INFO] WebSearchAdapter[tavily]: 19 observations in 2.39s
+2026-08-06 21:53:55,899 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_invalid_1f2f1f4deba8', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_17e757c65198']
+2026-08-06 21:53:59,098 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:53:59,121 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:53:59,121 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 4 blocks
+2026-08-06 21:53:59,121 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=4, omitted=0, repair=yes
+  Identity: RESOLVED_IDENTITY | Observations: 81 | Elapsed: 10.1s
+
+Fritz Zahn ├¿ deceduto il 9 maggio 1947.
+
+Fritz Zahn era di nazionalit├á tedesca.
+
+Fritz Zahn ├¿ sepolto nel Fayid War Cemetery in Egitto.
+
+Non sono disponibili ulteriori dettagli sulla vita e le attivit├á di Fritz Zahn prima della sua morte.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_a5a08ce8c1cedac3
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 5
+- Context Claims: 2
+- Provider Ledger: 81 observations
+
+## Fonti
+- **obs_827a306c73685948**: Fritz Zahn (Fu├ƒballspieler) ÔÇö [https://de.wikipedia.org/wiki/Fritz_Zahn_(Fu%C3%9Fballspieler)](https://de.wikipedia.org/wiki/Fritz_Zahn_(Fu%C3%9Fballspieler))
+- **obs_e06120fe9c5a10b0**: Alfred E. ÔÇ£FritzÔÇØ Zahn (1920-2010) ÔÇö [https://www.findagrave.com/memorial/198050444/alfred-e.-zahn](https://www.findagrave.com/memorial/198050444/alfred-e.-zahn)
+- **obs_5a76d7513978e98e**: Fritz Zahn ÔÇô Personen ÔÇö [https://emuseum.duesseldorf.de/de/people/61106/fritz-zahn](https://emuseum.duesseldorf.de/de/people/61106/fritz-zahn)
+- **obs_91c672b8d5ccca23**: Fritz Zahn - Player profile - DFB data center ÔÇö [https://datencenter.dfb.de/en/profile/114751?historize_title=1.+FC+N%C3%BCrnberg+German+Championship+1939%2F40&historize_url=](https://datencenter.dfb.de/en/profile/114751?historize_title=1.+FC+N%C3%BCrnberg+German+Championship+1939%2F40&historize_url=)
+- **obs_5a894619212b0807**: Profile Fritz Zahn, : Info, news, matches and statistics ÔÇö [https://www.besoccer.com/player/fritz-zahn-985723](https://www.besoccer.com/player/fritz-zahn-985723)
+- **obs_9e9ab45bb9a6340d**: 3 "Fritz-zahn" profiles ÔÇö [https://www.linkedin.com/pub/dir/+/Fritz-zahn](https://www.linkedin.com/pub/dir/+/Fritz-zahn)
+- **obs_731c66e080dab527**: Fritz Zahn ÔÇö [https://www.facebook.com/fritz.zahn.520](https://www.facebook.com/fritz.zahn.520)
+- **obs_c8328f9cccf94a9f**: 1953 German Gardening Book Gartenbuch Fritz Zahn In German ÔÇö [https://www.ebay.com/itm/257416815472](https://www.ebay.com/itm/257416815472)
+- **obs_18d931765bc18701**: Fritz Zahn - Spielerprofil ÔÇö [https://www.transfermarkt.de/fritz-zahn/profil/spieler/848572](https://www.transfermarkt.de/fritz-zahn/profil/spieler/848572)
+- **obs_ab074946c4ed60b5**: Zahn, Fritz ÔÇö [https://www.deutsche-digitale-bibliothek.de/item/Q4ZY5NCVV6K673EA2JT6GX4L6K4VIXO7](https://www.deutsche-digitale-bibliothek.de/item/Q4ZY5NCVV6K673EA2JT6GX4L6K4VIXO7)
+- **obs_8fa39451c68c3fe8**: How to Pronounce ''Fritz Zahn'' Correctly in German ÔÇö [https://www.youtube.com/watch?v=FogKw-Vh_-k](https://www.youtube.com/watch?v=FogKw-Vh_-k)
+- **obs_357dd6546f5078cc**: File:Gedenktafel f├╝r Fritz Giese und Albert Zahn Neustadt ... ÔÇö [https://commons.wikimedia.org/wiki/File:Gedenktafel_f%C3%BCr_Fritz_Giese_und_Albert_Zahn_Neustadt_(Dosse).JPG](https://commons.wikimedia.org/wiki/File:Gedenktafel_f%C3%BCr_Fritz_Giese_und_Albert_Zahn_Neustadt_(Dosse).JPG)
+- **obs_77f252967f53a9f4**: About - FRITZ KAHN ÔÇö [https://www.fritz-kahn.com/about](https://www.fritz-kahn.com/about)
+- **obs_8d6287f3f7a9f1dd**: Wilhelmine Zahn ÔÇö [https://www.ancestry.com/genealogy/records/wilhelmine-zahn-24-1ws0chk](https://www.ancestry.com/genealogy/records/wilhelmine-zahn-24-1ws0chk)
+- **obs_c4b0f11231e4b638**: Betty J. Zahn Obituary Dec 30, 2021 ÔÇö [https://www.fusselmanallenharvey.com/obituaries/betty-zahn](https://www.fusselmanallenharvey.com/obituaries/betty-zahn)
+- **obs_c2d958a11300f53d**: Joseph M. Fritz, DDS, PA, Dentist Havre de Grace MD ... ÔÇö [https://www.josephmfritzdds.com](https://www.josephmfritzdds.com)
+- **obs_db152044328ef293**: Frederick S. Fritz, DDS, LLC Orthodontics | Orthodontist ... ÔÇö [https://www.fritzortho.com](https://www.fritzortho.com)
+- **obs_d6a35e651e151ce0**: Gabriel Fritz, DDS Apex NC, CENTRAL CAROLINA ORAL AND MAXILLOFACIAL SURGERY ÔÇö [https://www.centralcarolinaoralsurgery.com/meet-us/meet-the-doctor/gabriel-fritz-dds](https://www.centralcarolinaoralsurgery.com/meet-us/meet-the-doctor/gabriel-fritz-dds)
+- **obs_52b476aaa61a36d3**: Contact - Brian D.Fritz DDS ÔÇö [https://www.fritzfamilydental.com/contact](https://www.fritzfamilydental.com/contact)
+- **obs_338e315a09d4c734**: Fritz Zahn (G├ñrtner) ÔÇö [https://de.wikipedia.org/wiki/Fritz_Zahn_(G%C3%A4rtner)](https://de.wikipedia.org/wiki/Fritz_Zahn_(G%C3%A4rtner))
+- **obs_b5ed4599e181d88e**: Alfred Zahn Obituary Apr 18, 2010 ÔÇö [https://www.mundwilerfuneralhome.net/obituaries/alfred-zahn](https://www.mundwilerfuneralhome.net/obituaries/alfred-zahn)
+- **obs_38dcde813f7b4343**: Fritz Zahn ÔÇô Personen ÔÇö [https://emuseum.duesseldorf.de/de/people/61106/fritz-zahn](https://emuseum.duesseldorf.de/de/people/61106/fritz-zahn)
+- **obs_4ae3d37600e8115e**: Profile Fritz Zahn, : Info, news, matches and statistics ÔÇö [https://www.besoccer.com/player/fritz-zahn-985723](https://www.besoccer.com/player/fritz-zahn-985723)
+- **obs_19f68c8fddc0d496**: Fritz Zahn ÔÇö [https://www.facebook.com/fritz.zahn.52](https://www.facebook.com/fritz.zahn.52)
+- **obs_bf038c71bd3a7edd**: 3 "Fritz-zahn" profiles ÔÇö [https://www.linkedin.com/pub/dir/+/Fritz-zahn](https://www.linkedin.com/pub/dir/+/Fritz-zahn)
+- **obs_c18013bf3e7c558f**: 1953 German Gardening Book Gartenbuch Fritz Zahn In ... ÔÇö [https://www.ebay.com/itm/257416815472](https://www.ebay.com/itm/257416815472)
+- **obs_6b7fd9501311f6e1**: Fritz Zahn - Spielerprofil ÔÇö [https://www.transfermarkt.de/fritz-zahn/profil/spieler/848572](https://www.transfermarkt.de/fritz-zahn/profil/spieler/848572)
+- **obs_6c5f29443c8a99ad**: Zahnarzt Rheinbach, Fritz - f├╝r Zahn-, Mund- und ... ÔÇö [https://zahnarzt-fritz-rheinbach.de](https://zahnarzt-fritz-rheinbach.de)
+- **obs_a25fc36facf8ac09**: Fritz-Eckart Zahn (@fez67) ÔÇö [https://www.instagram.com/fez67](https://www.instagram.com/fez67)
+- **obs_76d880de6569b2e1**: Zahn, Fritz ÔÇö [https://www.deutsche-digitale-bibliothek.de/item/Q4ZY5NCVV6K673EA2JT6GX4L6K4VIXO7](https://www.deutsche-digitale-bibliothek.de/item/Q4ZY5NCVV6K673EA2JT6GX4L6K4VIXO7)
+- **obs_a4db94bdb0e1230c**: File:Gedenktafel f├╝r Fritz Giese und Albert Zahn Neustadt ... ÔÇö [https://commons.wikimedia.org/wiki/File:Gedenktafel_f%C3%BCr_Fritz_Giese_und_Albert_Zahn_Neustadt_(Dosse).JPG](https://commons.wikimedia.org/wiki/File:Gedenktafel_f%C3%BCr_Fritz_Giese_und_Albert_Zahn_Neustadt_(Dosse).JPG)
+- **obs_5ef6925e9c70159a**: Wilhelmine Zahn ÔÇö [https://www.ancestry.com/genealogy/records/wilhelmine-zahn-24-1ws0chk](https://www.ancestry.com/genealogy/records/wilhelmine-zahn-24-1ws0chk)
+- **obs_1ed8c063b54eeb1f**: Betty J. Zahn Obituary Dec 30, 2021 ÔÇö [https://www.fusselmanallenharvey.com/obituaries/betty-zahn](https://www.fusselmanallenharvey.com/obituaries/betty-zahn)
+- **obs_317d26580b0636df**: Contact ÔÇö [https://www.fritzfamilydental.com/contact](https://www.fritzfamilydental.com/contact)
+- **obs_1024aa6b4e41b587**: Frederick S. Fritz, DDS, LLC Orthodontics | Orthodontist ... ÔÇö [https://www.fritzortho.com](https://www.fritzortho.com)
+- **obs_45ef80fc7607021a**: Obituary information for Frances Cecelia Marie Zahn Clark ÔÇö [https://daleymurphywisch.com/obituaries/Frances-Cecelia-Marie-Zahn-Clark?obId=45285904](https://daleymurphywisch.com/obituaries/Frances-Cecelia-Marie-Zahn-Clark?obId=45285904)
+- **obs_b6699bbcdb44c51e**: Joseph M. Fritz, DDS, PA, Dentist Havre de Grace MD ... ÔÇö [https://www.josephmfritzdds.com](https://www.josephmfritzdds.com)
+- **obs_72b4171b87395aac**: Gabriel Fritz, DDS - Apex ÔÇö [https://www.centralcarolinaoralsurgery.com/meet-us/meet-the-doctor/gabriel-fritz-dds](https://www.centralcarolinaoralsurgery.com/meet-us/meet-the-doctor/gabriel-fritz-dds)
+
+================================================================================
+FINE
+================================================================================

@@ -167,3 +167,29 @@ python run_regression_v73.py --quick
 5. **Single source → PUBLISHED_WITH_CAVEAT** (corroboration needed)
 6. **State transitions are append-only** (audit trail preserved)
 7. **Migration is non-destructive** (original data backed up, rollback available)
+
+---
+
+## Fase 19 — Report Discorsivi V7.3 con Military Ontology e Contesto Storico
+
+**Data**: 2026-08-06
+**Branch**: fix/provenance-linking-v2
+
+### Modifiche
+
+- **`run_5_random_narrative.py`**: Script semplificato per estrarre 5 nomi casuali dai DB (internati, caduti_albooro, decorati_nastroazzurro, caduti_cwgc) e mostrare le risposte discorsive generate dal AI del backend (GPT-4o via NarratorV7_v2). Rimossa la sovrastruttura ResponseBuilder che sostituiva il report AI con elenchi strutturati. Ora il report AI discorsivo è il contenuto principale.
+
+### Output verificati
+
+5 risposte discorsive generate con successo:
+1. **PIETRO DELLA GIOVANNA** (caduti_albooro) — soldato 13° Reggimento Bersaglieri, morto 1918 sul Piave
+2. **MARIANO ZOLLOSCHI** (internati) — deceduto 23 marzo 1944, residente Ascoli Piceno
+3. **MICHELE SANTORO** (caduti_albooro) — soldato 93° Reggimento Fanteria, morto 1917, identity AMBIGUOUS
+4. **TULLIO ZANETTI** (decorati_nastroazzurro) — soldato Reparto Mitraglieri Fiat Brescia, morto 1919, identity CONFLICTED
+5. **FRITZ ZAHN** (caduti_cwgc) — deceduto 9 maggio 1947, sepolto Fayid War Cemetery (Egitto)
+
+### TODO
+
+- Ampliare i report AI con informazioni contestuali sul ruolo del reparto (se presente nei claim)
+- Aggiungere contesto geografico (luogo di nascita, residenza, luogo di decesso, sepoltura)
+- Integrare military_ontology (parse_rank/parse_unit) nel prompt del narrator per arricchire il contesto
