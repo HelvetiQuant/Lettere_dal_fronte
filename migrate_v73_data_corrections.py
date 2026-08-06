@@ -154,7 +154,8 @@ def check_supabase_parity(db_path: Path) -> list:
         results.append("[SKIP] Supabase credentials not found in .env — parity check skipped")
         return results
 
-    # Tables to check
+    # Tables to check — some are in the events DB, not the main DB
+    events_tables = {"eventi_1gm", "event_aliases"}
     parity_tables = [
         "archivio_documenti",
         "eventi_1gm",
@@ -166,12 +167,15 @@ def check_supabase_parity(db_path: Path) -> list:
         "caduti_ministero",
     ]
 
+    db_events_path = Path(__file__).parent / "eventi_1gm.db"
     conn = sqlite3.connect(str(db_path))
+    conn_events = sqlite3.connect(str(db_events_path))
 
     for table in parity_tables:
+        use_conn = conn_events if table in events_tables else conn
         try:
-            # SQLite count
-            sqlite_count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+            # SQLite count (from correct DB)
+            sqlite_count = use_conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
         except sqlite3.OperationalError:
             sqlite_count = -1
             results.append(f"[WARN] Table {table} not found in SQLite")
@@ -223,6 +227,7 @@ def check_supabase_parity(db_path: Path) -> list:
             results.append(f"[ERROR] {table}: Supabase query failed: {e}")
 
     conn.close()
+    conn_events.close()
     return results
 
 

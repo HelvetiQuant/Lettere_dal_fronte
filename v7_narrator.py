@@ -1150,7 +1150,9 @@ class NarratorV7_v2:
                         supported_places.add(word)
 
             # Collect names
-            if predicate in ("full_name", "cognome", "nome", "display_name"):
+            if predicate in ("full_name", "cognome", "nome", "display_name",
+                             "decoration", "award", "medal", "rank", "unit",
+                             "military_unit", "branch"):
                 supported_names.add(value_lower)
                 for word in value_lower.split():
                     if len(word) >= 3:
@@ -1197,7 +1199,15 @@ class NarratorV7_v2:
                                "gennaio", "febbraio", "marzo", "aprile",
                                "maggio", "giugno", "luglio", "agosto",
                                "campo", "campi", "prigionia", "prigioniero",
-                               "militare", "militari", "ufficiale", "ufficiali"):
+                               "militare", "militari", "ufficiale", "ufficiali",
+                               # Decoration / award terms (not hallucination)
+                               "croce", "valor", "medaglia", "bronzo", "argento",
+                               "guerra", "merito", "cavaliere", "ordine",
+                               "decorato", "decorazione", "insegna", "distintivo",
+                               "nastro", "azzurro", "stella", "corona",
+                               "savoia", "casa", "real", "reale",
+                               "alpini", "artiglieria", "fanteria", "cavalleria",
+                               "genio", "marina", "aviazione"):
                     continue
                 # Check if this capitalized word matches any supported place
                 if w_lower not in supported_places and w_lower not in supported_names:

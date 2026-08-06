@@ -280,6 +280,9 @@ def _select_route(cues: dict) -> list:
         route.append("sql_exact")
         route.append("fts")
         route.append("graph")
+        # LeBI: attiva per ricerche su persone IMI
+        if cues.get("guerra") == "ww2" or cues.get("evento") in ("achse", "lavoro_forzato"):
+            route.append("lebi")
     elif cues["luogo"] or cues["data"]:
         route.append("fts")
         route.append("graph")
@@ -506,6 +509,65 @@ def _search_event_sources(cues: dict) -> list:
     return results
 
 
+def _search_lebi(cues: dict) -> list:
+    """Layer LeBI — ricerca biografica IMI su lessicobiograficoimi.it."""
+    persona = cues.get("persona", "")
+    if not persona:
+        return []
+
+    parts = persona.split()
+    cognome = parts[0] if parts else ""
+    nome = parts[1] if len(parts) > 1 else ""
+
+    results = []
+    try:
+        from sources_external_lebi import LeBIAdapter
+        adapter = LeBIAdapter()
+        search_url = f"{adapter.base_url}/frontend_prodimi.php/caduti/search"
+        full_url = f"{search_url}?d=0&q={cognome}&n={nome}&l=&y=&page=1"
+        html, status = adapter.fetch_page(full_url)
+        if not html or status >= 400:
+            return []
+
+        from bs4 import BeautifulSoup
+        import re as _re
+        soup = BeautifulSoup(html, "html.parser")
+        links = soup.find_all("a", href=_re.compile(r"/caduti/show/\d+"))
+
+        seen_ids = set()
+        for link in links[:10]:
+            href = link.get("href", "")
+            match = _re.search(r"/caduti/show/(\d+)", href)
+            if not match:
+                continue
+            record_id = match.group(1)
+            if record_id in seen_ids:
+                continue
+            seen_ids.add(record_id)
+
+            from urllib.parse import urljoin
+            full_record_url = urljoin(adapter.base_url, href)
+            display_text = link.get_text(strip=True)
+
+            results.append({
+                "source": "lebi",
+                "table": "lebi",
+                "data": {
+                    "external_id": record_id,
+                    "url": full_record_url,
+                    "label": display_text,
+                    "provider": "lebi",
+                    "archive": "ANRP — LeBI",
+                    "pdf_url": f"{adapter.base_url}/frontend_prodimi.php/caduti/showpdf/{record_id}",
+                },
+                "score": 0.75,
+            })
+    except Exception as e:
+        print(f"  LeBI search error: {e}")
+
+    return results
+
+
 # ─── Scoring e merge ───────────────────────────────────────────────────────────
 
 def _score_and_merge(all_results: list, cues: dict) -> list:
@@ -674,7 +736,7 @@ def _build_local_context_summary(scored: list, cues: dict) -> str:
 
     lines.append(
         "\nIntegra con fonti esterne attendibili (NARA, TNA, Bundesarchiv, AUSSME, "
-        "Commonwealth War Graves, MDH Francia, Ancestry, Fold3) cercando informazioni "
+        "Commonwealth War Graves, MDH Francia, Ancestry, Fold3, LeBI/ANRP) cercando informazioni "
         "storiche verificate. NON inventare dati. Cita le fonti."
     )
     return "\n".join(lines)
@@ -729,6 +791,11 @@ def route_query(query: str, depth: int = None, use_cloud_fallback: bool = True) 
     if "event_sources" in route:
         ev_hits = _search_event_sources(cues)
         all_results.extend(ev_hits)
+
+    # Layer 6 — LeBI (Lessico Biografico degli IMI)
+    if "lebi" in route:
+        lebi_hits = _search_lebi(cues)
+        all_results.extend(lebi_hits)
 
     # Scoring e merge
     scored = _score_and_merge(all_results, cues)

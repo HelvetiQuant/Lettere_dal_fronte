@@ -293,6 +293,27 @@ def retrieve(
         except Exception as e:
             log.warning("Supabase retrieval failed: %s", e)
 
+    # Semantic retrieval via embeddings (optional, falls back gracefully)
+    try:
+        from embeddings_pipeline import semantic_search as _semantic_search
+        sem_results = _semantic_search(query, limit=limit // 3, threshold=0.25)
+        for sr in sem_results:
+            cid = f"{sr['source_table']}:{sr['source_id']}"
+            if cid not in seen:
+                seen.add(cid)
+                unique.append(RetrievedChunk(
+                    chunk_id=cid,
+                    source_table=sr["source_table"],
+                    source_id=sr["source_id"],
+                    title=sr["chunk_text"][:80],
+                    text=sr["chunk_text"],
+                    score=sr["score"],
+                    retrieval_method="semantic",
+                    metadata={},
+                ))
+    except Exception as e:
+        log.debug("Semantic retrieval skipped: %s", e)
+
     return unique[:limit]
 
 

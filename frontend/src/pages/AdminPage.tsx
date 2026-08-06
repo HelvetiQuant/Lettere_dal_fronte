@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Activity, Database, FileText, Download, Link2, Globe, StopCircle } from 'lucide-react';
+import { Activity, Database, FileText, Download, Link2, Globe, StopCircle, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
 import { api } from '@/api/client';
 import { ApiError } from '@/api/errors';
 import type { StatusResponse, SourceStatsResponse } from '@/api/types';
@@ -10,18 +10,22 @@ import { OperationConfirm } from '@/components/forms/OperationConfirm';
 export function AdminPage() {
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [sourceStats, setSourceStats] = useState<SourceStatsResponse | null>(null);
+  const [corrections, setCorrections] = useState<{ total: number; corrections: Record<string, unknown>[] } | null>(null);
+  const [narrator, setNarrator] = useState<{ version: string; circuit_breaker_open?: boolean; evidence_locked?: boolean; hallucination_check?: boolean; error?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ApiError | null>(null);
   const [partial, setPartial] = useState(false);
 
   const refresh = () => {
     setLoading(true);
-    Promise.allSettled([api.status(), api.sourceStats()])
-      .then(([statusRes, srcRes]) => {
+    Promise.allSettled([api.status(), api.sourceStats(), api.corrections(10), api.narratorStatus()])
+      .then(([statusRes, srcRes, corrRes, narrRes]) => {
         if (statusRes.status === 'fulfilled') setStatus(statusRes.value);
         else setPartial(true);
         if (srcRes.status === 'fulfilled') setSourceStats(srcRes.value);
         else setPartial(true);
+        if (corrRes.status === 'fulfilled') setCorrections(corrRes.value);
+        if (narrRes.status === 'fulfilled') setNarrator(narrRes.value);
       })
       .finally(() => setLoading(false));
   };
@@ -121,6 +125,108 @@ export function AdminPage() {
               />
             </div>
           </Section>
+
+          {narrator && (
+            <Section title="Narratore V7.3">
+              <Card>
+                <div className="flex flex--center mb-3" style={{ gap: 'var(--s-2)' }}>
+                  <Shield size={18} aria-hidden="true" />
+                  <span className="text-sm">
+                    <Tag variant="accent">Versione {narrator.version}</Tag>
+                  </span>
+                </div>
+                <div className="grid grid--2">
+                  <div>
+                    <strong>Circuit Breaker:</strong>{' '}
+                    {narrator.error ? (
+                      <Tag variant="warning">Errore</Tag>
+                    ) : narrator.circuit_breaker_open ? (
+                      <Tag variant="warning">Aperto (AI non disponibile)</Tag>
+                    ) : (
+                      <Tag variant="success">Chiuso (AI operativa)</Tag>
+                    )}
+                  </div>
+                  <div>
+                    <strong>Evidence-Locked:</strong>{' '}
+                    {narrator.evidence_locked ? (
+                      <Tag variant="success"><CheckCircle size={12} /> Attivo</Tag>
+                    ) : (
+                      <Tag variant="neutral">Non attivo</Tag>
+                    )}
+                  </div>
+                  <div>
+                    <strong>Hallucination Check:</strong>{' '}
+                    {narrator.hallucination_check ? (
+                      <Tag variant="success"><CheckCircle size={12} /> Attivo</Tag>
+                    ) : (
+                      <Tag variant="neutral">Non attivo</Tag>
+                    )}
+                  </div>
+                  <div>
+                    <strong>Fallback deterministico:</strong>{' '}
+                    <Tag variant="success"><CheckCircle size={12} /> Attivo</Tag>
+                  </div>
+                </div>
+                {narrator.error && (
+                  <div className="mt-2 text-sm" style={{ color: 'var(--c-warning)' }}>
+                    <AlertTriangle size={12} /> {narrator.error}
+                  </div>
+                )}
+              </Card>
+            </Section>
+          )}
+
+          {corrections && (
+            <Section title="Correzioni dati (V7.3 overlay)">
+              <Card>
+                <div className="flex flex--center mb-3" style={{ gap: 'var(--s-2)' }}>
+                  <FileText size={18} aria-hidden="true" />
+                  <span className="text-sm">
+                    <Tag variant="accent">{corrections.total} correzioni totali</Tag>
+                  </span>
+                </div>
+                {corrections.corrections.length > 0 ? (
+                  <div className="mt-2">
+                    <table className="table" style={{ width: '100%', fontSize: '0.875rem' }}>
+                      <thead>
+                        <tr>
+                          <th>Tabella</th>
+                          <th>Record</th>
+                          <th>Campo</th>
+                          <th>Valore originale</th>
+                          <th>Valore corretto</th>
+                          <th>Fonte</th>
+                          <th>Data</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {corrections.corrections.map((c, i) => (
+                          <tr key={i}>
+                            <td>{String(c.table_name || '—')}</td>
+                            <td>{String(c.record_id || '—')}</td>
+                            <td>{String(c.field_name || '—')}</td>
+                            <td style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {String(c.old_value || '—')}
+                            </td>
+                            <td style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              <strong>{String(c.new_value || '—')}</strong>
+                            </td>
+                            <td>{String(c.source || '—')}</td>
+                            <td style={{ fontSize: '0.75rem' }}>{String(c.created_at || '—').slice(0, 10)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-sm" style={{ color: 'var(--c-text-muted)' }}>
+                    Nessuna correzione registrata. Le correzioni sono overlay non distruttivi
+                    (i dati originali non vengono mai modificati direttamente).
+                  </p>
+                )}
+              </Card>
+            </Section>
+          )}
 
           <Section title="Azioni rapide">
             <div className="flex flex--wrap" style={{ gap: 'var(--s-2)' }}>

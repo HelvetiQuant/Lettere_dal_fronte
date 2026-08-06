@@ -101,6 +101,9 @@ AUTHORIZED_DOMAINS = {
     "quirinale.it",
     "www.archivioluce.com",
     "archivioluce.com",
+    # LeBI — Lessico Biografico degli IMI (ANRP)
+    "www.lessicobiograficoimi.it",
+    "lessicobiograficoimi.it",
 }
 
 ACCESS_TYPES = ("online", "login", "richiesta", "locale")

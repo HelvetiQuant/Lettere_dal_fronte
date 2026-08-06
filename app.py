@@ -1497,6 +1497,75 @@ def api_source_reindex(body: dict = Body(...)):
     return {"query": q, "found": len(results), "registered": registered}
 
 
+# ─── Data Corrections (V7.3) ───
+
+@app.get("/api/corrections")
+def api_corrections(limit: int = 50, offset: int = 0):
+    """Lista data_corrections overlay (V7.3)."""
+    from database import get_conn
+    conn = get_conn()
+    try:
+        conn.row_factory = lambda c, r: dict(zip([col[0] for col in c.description], r))
+        try:
+            total = conn.execute("SELECT COUNT(*) FROM data_corrections").fetchone()[0]
+            rows = conn.execute(
+                "SELECT id, table_name, record_id, field_name, old_value, new_value, "
+                "correction_type, source, reason, created_at "
+                "FROM data_corrections ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                (limit, offset)
+            ).fetchall()
+        except sqlite3.OperationalError:
+            total = 0
+            rows = []
+        return {"total": total, "corrections": rows, "limit": limit, "offset": offset}
+    finally:
+        conn.close()
+
+
+@app.get("/api/corrections/stats")
+def api_corrections_stats():
+    """Statistiche aggregate data_corrections."""
+    from database import get_conn
+    conn = get_conn()
+    try:
+        try:
+            total = conn.execute("SELECT COUNT(*) FROM data_corrections").fetchone()[0]
+            by_table = conn.execute(
+                "SELECT table_name, COUNT(*) as cnt FROM data_corrections GROUP BY table_name"
+            ).fetchall()
+            by_type = conn.execute(
+                "SELECT correction_type, COUNT(*) as cnt FROM data_corrections GROUP BY correction_type"
+            ).fetchall()
+        except sqlite3.OperationalError:
+            total = 0
+            by_table = []
+            by_type = []
+        return {
+            "total": total,
+            "by_table": [{"table": r[0], "count": r[1]} for r in by_table] if by_table else [],
+            "by_type": [{"type": r[0], "count": r[1]} for r in by_type] if by_type else [],
+        }
+    finally:
+        conn.close()
+
+
+@app.get("/api/narrator/status")
+def api_narrator_status():
+    """Stato del narratore V7 (circuit breaker, provider availability)."""
+    try:
+        from v7_narrator import NarratorV7
+        narrator = NarratorV7()
+        return {
+            "version": "7.3",
+            "circuit_breaker_open": getattr(narrator, '_circuit_open', False),
+            "evidence_locked": True,
+            "hallucination_check": True,
+            "fallback_deterministic": True,
+        }
+    except Exception as e:
+        return {"version": "7.3", "error": str(e)}
+
+
 # ─── Soldier Dashboard ───
 
 @app.get("/api/soldiers/{soldier_id}/dashboard")

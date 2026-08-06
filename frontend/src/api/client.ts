@@ -204,4 +204,18 @@ export const api = {
     post<{ status: string; fonte_id: number; url: string }>('/api/fonti-risorse/scrape', { fonte_id: fonteId, url }),
   fondiAvailable: () => get<Record<string, unknown>>('/api/fondi/available'),
   fondiDownloadAll: () => post<Record<string, unknown>>('/api/fondi/download-all'),
+
+  // ── Corrections & Narrator (V7.3) ──
+  corrections: (limit = 50, offset = 0) =>
+    get<{ total: number; corrections: Record<string, unknown>[]; limit: number; offset: number }>(
+      '/api/corrections', { limit, offset }
+    ),
+  correctionsStats: () =>
+    get<{ total: number; by_table: { table: string; count: number }[]; by_type: { type: string; count: number }[] }>(
+      '/api/corrections/stats'
+    ),
+  narratorStatus: () =>
+    get<{ version: string; circuit_breaker_open?: boolean; evidence_locked?: boolean; hallucination_check?: boolean; fallback_deterministic?: boolean; error?: string }>(
+      '/api/narrator/status'
+    ),
 };
