@@ -190,6 +190,69 @@ python run_regression_v73.py --quick
 
 ### TODO
 
-- Ampliare i report AI con informazioni contestuali sul ruolo del reparto (se presente nei claim)
+- ~~Ampliare i report AI con informazioni contestuali sul ruolo del reparto (se presente nei claim)~~ — **FATTO (Fase 20-22)**
 - Aggiungere contesto geografico (luogo di nascita, residenza, luogo di decesso, sepoltura)
 - Integrare military_ontology (parse_rank/parse_unit) nel prompt del narrator per arricchire il contesto
+- Ampliare lista internati IMI (DB attuale: 20.465 record da ASBZ, ~3% dei ~600K IMI totali)
+
+---
+
+## Fase 20 — Military Context Enrichment nel Narrator AI
+
+**Data**: 2026-08-09
+**Branch**: fix/provenance-linking-v2
+
+### Modifiche
+
+- **`military_ontology.py`**: Aggiunta `UNIT_BRANCH_DESCRIPTIONS` (16 descrizioni per fanteria, artiglieria, bersaglieri, alpini, granatieri, cavalleria, genio, trasmissioni, sanita, intendenza, carabinieri, aviazione, marina, fucilieri, mitraglieri, paracadutisti) e `UNIT_TYPE_DESCRIPTIONS` (15 descrizioni per tipi di unita). Aggiunta funzione `build_military_context()` che estrae grado e reparto dai claim e genera contesto narrativo. Nuove keyword: `reparto`/`unita` come `unit_generic`, `mitraglieri` come branch.
+- **`v7_narrator.py`**: `_build_ai_input` ora inietta `military_context` nel payload AI (campo separato con rank, unit, summary).
+- **`v7_narrator_prompt_v2.py`**: Prompt aggiornato con sezione "CONTESTO MILITARE" che istruisce l'AI a usare `military_context` per arricchire i blocchi `context` con descrizioni del ruolo del reparto, senza attribuire fatti non supportati dai claim.
+
+### Output verificato
+
+Test su **ZANETTI TULLIO** (decorati_nastroazzurro, CONFLICTED_IDENTITY):
+- AI: GPT-4o, 5 blocchi, validated_ai
+- Prima: "Il Reparto Mitraglieri Fiat Brescia era parte dell'Esercito italiano" (generico)
+- Dopo: "un'unita specializzata nell'uso delle mitragliatrici, armi fondamentali per la difesa di trincea e il fuoco di soppressione. Queste unita erano organizzate in reparti autonomi o aggregati a reggimenti di fanteria" (contesto arricchito da military_ontology)
+
+---
+
+## Fase 21 — Rank Role Descriptions nel Narrator AI
+
+**Data**: 2026-08-09
+**Branch**: fix/provenance-linking-v2
+
+### Modifiche
+
+- **`military_ontology.py`**: Aggiunta `RANK_ROLE_DESCRIPTIONS` (27 voci: soldato, fante, caporale, caporale maggiore, bersagliere, alpino, artigliere, granatiere, fuciliere, marinaio, aviere, sergente, sergente maggiore, sergente capo, maresciallo, maresciallo maggiore, sottotenente, tenente, primo tenente, capitano, maggiore, tenente colonnello, colonnello, generale di brigata/divisione/corpo d'armata). Aggiunta `RANK_CATEGORY_DESCRIPTIONS` (6 fallback per categoria). `build_military_context` ora include `rank.role_description` nel payload.
+- **`v7_narrator_prompt_v2.py`**: Prompt aggiornato — l'AI deve usare `rank.role_description` per spiegare le funzioni del grado nel reparto (es. "comandava un plotone di 30-40 uomini"), non solo il nome del grado.
+
+### Output verificato
+
+- Sergente + Granatieri → "comandava un plotone di 30-40 uomini... guidava personalmente il plotone negli assalti"
+- Tenente + Fanteria → "comandava un plotone o... vice-comandante di compagnia... in combattimento era al fronte con i suoi uomini"
+- Caporale + Bersaglieri → "comandava una squadra di 8-12 uomini... guidava la squadra in combattimento"
+
+---
+
+## Fase 22 — Web Context Tavily con Validazione Storica
+
+**Data**: 2026-08-09
+**Branch**: fix/provenance-linking-v2
+
+### Modifiche
+
+- **`military_ontology.py`**: Nuove funzioni:
+  - `_infer_war_period(claims)`: inferisce WWI/WWII dai claim (date 1915-1918, keyword "Isonzo/Piave/Caporetto" = WWI; 1940-1945, "Stalag/IMI/Arbeitskommando" = WWII)
+  - `_validate_unit_snippet(snippet, title, unit_info, war_period)`: valida che lo snippet Tavily si riferisca allo stesso reparto (match numero reggimento) e stesso periodo bellico. Restituisce `match_confidence`: `high` (numero + branch + periodo confermati), `medium` (parziale), `low` (numero non trovato), `rejected` (periodo bellico diverso)
+  - `_search_unit_history(unit_info, war_period)`: ricerca Tavily scoped al periodo bellico, filtra snippet con `_validate_unit_snippet`, ordina per confidence, restituisce top-3
+  - `build_military_context` ora inferisce il war period e passa snippet validati come `unit.web_context`
+- **`v7_narrator_prompt_v2.py`**: Prompt aggiornato — l'AI usa snippet `high`/`medium` come fatto storico, snippet `low` solo con marcatori di incertezza ("potrebbe aver partecipato")
+
+### Output verificato
+
+Test su **ZANETTI TULLIO** (WWI, GPT-4o, 6 blocchi, validated_ai):
+- 64° Fanteria WWI → 3/3 snippet `high` (Brigata Cagliari, Isonzo 1915)
+- Mitraglieri Fiat Brescia WWI → 3/3 snippet `high` (scuola 1916, WW1)
+- Snippet WWII contro unita WWI → `rejected` (scartato)
+- L'AI ha parafrasato: "La scuola dei mitraglieri Fiat fu inaugurata a Brescia nel 1916"

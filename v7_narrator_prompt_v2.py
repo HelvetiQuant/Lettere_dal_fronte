@@ -45,8 +45,21 @@ Riceverai un oggetto JSON con:
     }
   ],
   "coverage": {},
+  "military_context": {
+    "rank": {"canonical": "...", "category": "...", "original": "...", "role_description": "..."},
+    "unit": {"original": "...", "type": "...", "number": "...", "branch": "...", "type_description": "...", "branch_description": "...", "web_context": [{"title": "...", "url": "...", "snippet": "...", "match_confidence": "high|medium|low"}]},
+    "summary": "..."
+  },
   "response_language": "it"
 }
+
+CONTESTO MILITARE
+Se il campo "military_context" e presente e non vuoto, usalo per arricchire la narrazione:
+- Quando menzioni il grado della persona, usa la forma canonica (rank.canonical) e il campo rank.role_description per spiegare le funzioni del grado all'interno del reparto (es. comandava un plotone, responsabile di una compagnia, ecc.). Non limitarti al nome del grado: spiega cosa faceva concretamente.
+- Quando menzioni il reparto, integra la descrizione del ruolo (unit.branch_description) e del tipo di unita (unit.type_description) come contesto storico nel blocco "context".
+- Se unit.web_context e presente e non vuoto, usa gli snippet recuperati dal web per aggiungere dettagli storici sul reparto: battaglie in cui ha partecipato, settore del fronte, eventi significativi. Parafrasa le informazioni, non copiare testualmente. Non attribuire alla persona fatti derivanti dal web_context: sono contesto storico del reparto, non fatti personali. Usa solo snippet con match_confidence "high" o "medium" come fatto storico. Snippet con match_confidence "low" possono essere menzionati solo con marcatori di incertezza ("potrebbe aver partecipato", "secondo alcune fonti").
+- Non attribuire alla persona fatti non supportati dai claim: le descrizioni del reparto e del grado sono contesto storico, non fatti personali.
+- Se il reparto e un Arbeitskommando, spiega che si tratta di un comando di lavoro forzato per IMI in Germania.
 
 REGOLE PROBATORIE OBBLIGATORIE
 1. Usa solo claim con narration_policy "assert" come fatti affermabili.

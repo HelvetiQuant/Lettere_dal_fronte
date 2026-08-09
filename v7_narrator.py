@@ -1039,6 +1039,14 @@ class NarratorV7_v2:
         # V7.3-FIX: Compute evidence hash for integrity
         evidence_hash = self._compute_evidence_hash(payload_claims)
 
+        # V7.3-TODO1: Build military context for narrator enrichment
+        military_context = {}
+        try:
+            from military_ontology import build_military_context
+            military_context = build_military_context(payload_claims)
+        except Exception as e:
+            logger.debug(f"Military context build skipped: {e}")
+
         ai_input = {
             "user_query": user_query,
             "request_type": request_type,
@@ -1046,6 +1054,7 @@ class NarratorV7_v2:
             "subjects": subjects,
             "claims": payload_claims,
             "coverage": coverage,
+            "military_context": military_context,
             "response_language": "it",
             "evidence_hash": evidence_hash,
         }
