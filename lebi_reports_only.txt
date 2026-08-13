@@ -1,0 +1,325 @@
+﻿
+Dario Guerzoni ├¿ stato insignito della Medaglia d'Argento nel 1957 per il suo servizio nell'Esercito italiano.
+
+Dario Guerzoni ├¿ associato all'Esercito italiano, dove ha prestato servizio e ricevuto riconoscimenti.
+
+L'Esercito italiano, durante la Prima Guerra Mondiale, ha visto un'espansione significativa, passando da meno di 300.000 effettivi a oltre 5,9 milioni di mobilitati. Questo contesto storico evidenzia l'importanza e la scala delle operazioni militari italiane nel periodo.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_8c6cc73b936b4ee7
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 3
+- Context Claims: 1
+- Provider Ledger: 62 observations
+
+## Fonti
+- **obs_39eada7aef0c66a7**: 2 "Dario Guerzoni" profiles ÔÇö [https://www.linkedin.com/pub/dir/Dario/Guerzoni](https://www.linkedin.com/pub/dir/Dario/Guerzoni)
+- **obs_080437b5300fa42d**: Foto: Monumento cimitero Dario Guerzoni ÔÇö [https://www.anpimirandola.it/home/pagine-di-storia/cippi-partigiani/cippi-partigiani/cavezzo/monumento-ciimitero-cavezzo/monumento-cimitero-dario-guerzoni-800-1289](https://www.anpimirandola.it/home/pagine-di-storia/cippi-partigiani/cippi-partigiani/cavezzo/monumento-ciimitero-cavezzo/monumento-cimitero-dario-guerzoni-800-1289)
+- **obs_e8bbdec368651349**: Fabio Montella - Il cavezzese Dario Guerzoni - L'Enrico Toti ... ÔÇö [https://albarnardon.it/fabio-montella-il-cavezzese-dario-guerzoni-lenrico-toti-della-divisione-acqui](https://albarnardon.it/fabio-montella-il-cavezzese-dario-guerzoni-lenrico-toti-della-divisione-acqui)
+- **obs_f078d0a46f852754**: Dario Guerzoni - Memoriale della Resistenza Digitale ÔÇö [https://memorialedigitale.it/partigiani/dario-guerzoni](https://memorialedigitale.it/partigiani/dario-guerzoni)
+- **obs_52a39f12c1cdca51**: Via Dario Guerzoni, 4 ÔÇö [https://www.waze.com/live-map/directions/it/emilia-romagna/cavezzo/via-dario-guerzoni,-4?to=place.ChIJUx-IxwGUf0cRhUs4oRuGl_A](https://www.waze.com/live-map/directions/it/emilia-romagna/cavezzo/via-dario-guerzoni,-4?to=place.ChIJUx-IxwGUf0cRhUs4oRuGl_A)
+- **obs_06cf708f5042f244**: Mappa di Via Guerzoni Dario a Cavezzo ÔÇö [https://www.tuttocitta.it/mappa/cavezzo/via-dario-guerzoni](https://www.tuttocitta.it/mappa/cavezzo/via-dario-guerzoni)
+- **obs_0f86da44c4e407a3**: Adamello: new route Cuore di Zucca and first winter ascent ... ÔÇö [https://www.planetmountain.com/en/news/alpinism/adamello-new-route-cuore-di-zucca-and-first-winter-ascent-of-dottor-gore-tex-e-mr-pile-by-guerzoni-and-sandrini.html](https://www.planetmountain.com/en/news/alpinism/adamello-new-route-cuore-di-zucca-and-first-winter-ascent-of-dottor-gore-tex-e-mr-pile-by-guerzoni-and-sandrini.html)
+- **obs_f24a7e2144eb6ded**: Marco Guerzoni ÔÇö [https://ideas.repec.org/e/pgu164.html](https://ideas.repec.org/e/pgu164.html)
+- **obs_3495acff9629dd2b**: Guido Guerzoni | Bocconi University ÔÇö [https://www.unibocconi.it/en/faculty/guido-guerzoni](https://www.unibocconi.it/en/faculty/guido-guerzoni)
+- **obs_e5c9c5c25997622d**: Dario Libero Lorenzoni ÔÇö [https://inspirehep.net/authors/2777019](https://inspirehep.net/authors/2777019)
+- **obs_3a32ba42a2904890**: Fabio Montella - Il cavezzese Dario Guerzoni - L'Enrico Toti ... ÔÇö [https://albarnardon.it/fabio-montella-il-cavezzese-dario-guerzoni-lenrico-toti-della-divisione-acqui](https://albarnardon.it/fabio-montella-il-cavezzese-dario-guerzoni-lenrico-toti-della-divisione-acqui)
+- **obs_e41da11262c73465**: Dario Guerzoni posted on LinkedIn ÔÇö [https://www.linkedin.com/posts/dario-guerzoni-b49b67112_publicspeaking-entrepreneurship-lifejourney-activity-7069018204827770881-pfrd](https://www.linkedin.com/posts/dario-guerzoni-b49b67112_publicspeaking-entrepreneurship-lifejourney-activity-7069018204827770881-pfrd)
+- **obs_285fcd2ec538d190**: Dario Guerzoni posted on LinkedIn ÔÇö [https://www.linkedin.com/posts/dario-guerzoni-b49b67112_statistiche-e-lezioni-di-vita-ma-non-activity-6592353156619870208-l0f3](https://www.linkedin.com/posts/dario-guerzoni-b49b67112_statistiche-e-lezioni-di-vita-ma-non-activity-6592353156619870208-l0f3)
+- **obs_9fbca24a253c5b3c**: Dario Black Guerzoni - Facebook ÔÇö [https://www.facebook.com/blackdarios](https://www.facebook.com/blackdarios)
+- **obs_db7c4cedb8122396**: Dario Guerzoni posted on LinkedIn ÔÇö [https://www.linkedin.com/posts/dario-guerzoni-b49b67112_funziona-cos%C3%AC-unassociazione-o-un-gruppo-activity-6653037465261137921-E_nj](https://www.linkedin.com/posts/dario-guerzoni-b49b67112_funziona-cos%C3%AC-unassociazione-o-un-gruppo-activity-6653037465261137921-E_nj)
+- **obs_2c5f9da430ab7858**: Dario Guerzoni - YPF SA | LinkedIn ÔÇö [https://ar.linkedin.com/in/dario-guerzoni-a5b959156](https://ar.linkedin.com/in/dario-guerzoni-a5b959156)
+- **obs_9982279523617852**: Dario Guerzoni - Facebook ÔÇö [https://www.facebook.com/dario.guerzoni](https://www.facebook.com/dario.guerzoni)
+- **obs_3e8c5ea290b744b6**: 2 "Dario Guerzoni" profiles | LinkedIn ÔÇö [https://www.linkedin.com/pub/dir/Dario/Guerzoni](https://www.linkedin.com/pub/dir/Dario/Guerzoni)
+- **obs_d220a3ab1fe0a472**: Via Guerzoni 43 - 45, le cosiddette "Case del Pater", si ... ÔÇö [https://www.facebook.com/100063788793188/posts/1668480116673516](https://www.facebook.com/100063788793188/posts/1668480116673516)
+- **obs_9cd91435b8f9dd4d**: Dario Guerzoni - Memoriale della Resistenza Digitale ÔÇö [https://memorialedigitale.it/partigiani/dario-guerzoni](https://memorialedigitale.it/partigiani/dario-guerzoni)
+- **obs_0a8e0fec278c4cc8**: Dario Guerzoni (@dario.guerzoni) ÔÇó Instagram photos and videos ÔÇö [https://www.instagram.com/dario.guerzoni](https://www.instagram.com/dario.guerzoni)
+- **obs_38383a51e0be6737**: Dario Guerzoni - VECA s.p.a | LinkedIn ÔÇö [https://it.linkedin.com/in/dario-guerzoni-b49b67112](https://it.linkedin.com/in/dario-guerzoni-b49b67112)
+- **obs_24b7eed403fa0b64**: Mappa di Via Guerzoni Dario a Cavezzo ÔÇö [https://www.tuttocitta.it/mappa/cavezzo/via-dario-guerzoni](https://www.tuttocitta.it/mappa/cavezzo/via-dario-guerzoni)
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 2/5: FRANCI MICHELE
+======================================================================
+2026-08-09 22:46:24,442 [INFO] LocalDbAdapter: 45 observations
+2026-08-09 22:46:26,768 [INFO] WebSearchAdapter[tavily]: 15 observations in 2.32s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+# Rapporto di Ricerca ÔÇö snap_v7_1a81edb08ff3cb2a
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: FRANCI MICHELE
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: UNRESOLVED_IDENTITY
+## Corroborazione: PARTIAL
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - paternity: GIO BATTA
+  - draft_class: 1895
+  - current_municipality: Montenars
+  - rank: Soldato
+  - military_unit: 40 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Ospedale Militare Di Bologna
+  - death_cause: Malattia
+  - paternity: PIETRO
+  - draft_class: 1894
+  - current_municipality: Palazzo San Gervasio
+  - rank: Soldato
+  - military_unit: 47 Compagnia B Presidiaria
+  - death_year: 1918
+  - death_place: Firenze
+  - death_cause: Malattia
+  - paternity: FRANCESCO NICOLA
+  - draft_class: 1892
+  - current_municipality: Irsina
+  - rank: Soldato
+  - military_unit: 30 Reggimento Fanteria
+  - death_year: 1916
+  - death_place: ospedaletto Da Campo N. 239
+  - death_cause: Azione Di Gas Asfissianti
+  - paternity: PASQUALE
+  - draft_class: 1892
+  - current_municipality: Melfi
+  - rank: Soldato
+  - military_unit: 272 Reggimento Fanteria
+  - death_year: 1919
+  - death_place: Genova
+  - death_cause: Malattia
+  - paternity: VINCENZO
+  - draft_class: 1882
+  - current_municipality: Melfi
+  - rank: Soldato
+  - military_unit: 150 Reggimento Fanteria
+  - death_year: 1917
+  - death_cause: Combattimento
+  - paternity: VINCENZO
+  - draft_class: 1894
+  - current_municipality: Melfi
+  - rank: Soldato
+  - military_unit: 222 Reggimento Fanteria
+  - death_year: 1916
+  - death_place: Sul Campo
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: ANTONIO
+  - draft_class: 1890
+  - current_municipality: Melfi
+  - rank: Soldato
+  - military_unit: 128 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Zagora
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: CANIO
+  - draft_class: 1897
+  - current_municipality: Melfi
+  - rank: Soldato
+  - military_unit: 1 Reggimento Genio
+  - death_year: 1919
+  - death_place: Melfi
+  - death_cause: Malattia
+  - paternity: FILIPPO
+  - draft_class: 1881
+  - current_municipality: Briatico
+  - rank: Soldato
+  - military_unit: 252 Reggimento Fanteria
+  - death_year: 1917
+
+Tommaso Di Toro ├¿ stato un tenente di complemento nella 62┬¬ compagnia mitraglieri durante la Prima Guerra Mondiale.
+
+Tommaso Di Toro era il padre di Luciano e apparteneva alla classe di leva del 1891.
+
+Di Toro ├¿ morto nel 1918 a Montello a causa delle ferite riportate in combattimento.
+
+Il tenente era un ufficiale subalterno che comandava un plotone o poteva essere vice-comandante di compagnia. Era responsabile dell'impiego tattico del suo plotone, della disciplina e dell'addestramento, e in combattimento era al fronte con i suoi uomini. La 62┬¬ compagnia mitraglieri era specializzata nell'uso delle mitragliatrici, fondamentali per la difesa di trincea e il fuoco di soppressione, e operava sul fronte gestendo postazioni fisse e mobili.
+
+La 62┬¬ compagnia mitraglieri faceva parte di reparti autonomi o era aggregata a reggimenti di fanteria, come indicato in documenti storici e fonti web.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_6873cea106917365
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): UNRESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 71
+- Context Claims: 19
+- Provider Ledger: 111 observations
+
+## Fonti
+- **obs_d43fbdc6907641df**: DI TORO TOMMASO Partita IVA:02527900696 - Visura PRO ÔÇö [https://www.visura.pro/imprese/1715956202-di-toro-tommaso.html](https://www.visura.pro/imprese/1715956202-di-toro-tommaso.html)
+- **obs_c06bc25d044d8803**: Tommaso Starace with Michele Di Toro | Review - The Jazz Mann ÔÇö [https://www.thejazzmann.com/reviews/review/tommaso-starace-michele-di-toro-duo-the-hive-music-media-centre-shrewsbury-](https://www.thejazzmann.com/reviews/review/tommaso-starace-michele-di-toro-duo-the-hive-music-media-centre-shrewsbury-)
+- **obs_9edf0a2def2c0e98**: Tommaso Starace with Michele Di Toro: From a Distant Past ÔÇö [https://www.allaboutjazz.com/from-a-distant-past-tommaso-starace-emarcy-review-by-neri-pollastri](https://www.allaboutjazz.com/from-a-distant-past-tommaso-starace-emarcy-review-by-neri-pollastri)
+- **obs_6ea536b9117ab7b4**: Tommaso Starace With Michele Di Toro ÔÇô From A Distant Past - Discogs ÔÇö [https://www.discogs.com/master/1539037-Tommaso-Starace-With-Michele-Di-Toro-From-A-Distant-Past](https://www.discogs.com/master/1539037-Tommaso-Starace-With-Michele-Di-Toro-From-A-Distant-Past)
+- **obs_3d25f2f458b68071**: TOMMASO STARACE / MICHELE DI TORO "Little Peace in C for You" By ... ÔÇö [https://www.youtube.com/watch?v=PAYM97dY3Kw](https://www.youtube.com/watch?v=PAYM97dY3Kw)
+- **obs_f644d77d72b7ccd6**: Soundtrack (feat. Michele Di Toro) - Tommaso Starace - Shazam ÔÇö [https://www.shazam.com/song/1442568700/soundtrack-feat-michele-di-toro](https://www.shazam.com/song/1442568700/soundtrack-feat-michele-di-toro)
+- **obs_b59b607c2d615efb**: CD Review: Tommaso Starace/Michele Di Toro ÔÇö [https://lance-bebopspokenhere.blogspot.com/2016/03/cd-review-tommaso-staracemichele-di.html](https://lance-bebopspokenhere.blogspot.com/2016/03/cd-review-tommaso-staracemichele-di.html)
+- **obs_e42e78483ab1d019**: A Trust Betrayed - Tommaso Starace ÔÇö [https://rateyourmusic.com/song/tommaso-starace-michele-di-toro/a-trust-betrayed](https://rateyourmusic.com/song/tommaso-starace-michele-di-toro/a-trust-betrayed)
+- **obs_c5e696e7aca203b2**: A Trust Betrayed (feat. Michele Di Toro) - SoundCloud ÔÇö [https://soundcloud.com/tommaso-starace-official/a-trust-betrayed](https://soundcloud.com/tommaso-starace-official/a-trust-betrayed)
+- **obs_98f3b5de11cf8006**: Concerto Tommaso Starace - 23 Marzo 2016 - Milano ÔÇö [https://www.bluenotemilano.com/en/evento/concerto-tommaso-starace-23-marzo-2016-milano](https://www.bluenotemilano.com/en/evento/concerto-tommaso-starace-23-marzo-2016-milano)
+- **obs_217aabbfa24c3001**: Tommaso Toro - Highlights 2025/26 ÔÇö [https://www.youtube.com/watch?v=npgGlyuYKMg](https://www.youtube.com/watch?v=npgGlyuYKMg)
+- **obs_679e5bc7b099e10d**: Where The Mountain Meets The Moon - song and lyrics by ... - Spotify ÔÇö [https://open.spotify.com/track/2cjZJjtPNxD7txPgupH5Vn](https://open.spotify.com/track/2cjZJjtPNxD7txPgupH5Vn)
+- **obs_fb90e885cb5a310e**: Di tommaso Family History - Ancestry.com ÔÇö [https://www.ancestry.com/last-name-meaning/di%20tommaso](https://www.ancestry.com/last-name-meaning/di%20tommaso)
+- **obs_7a0c1cdd916b00a9**: Michele Di Toro ÔÇö [http://www.tommasostarace.com/projects/italian-job/michele-di-toro](http://www.tommasostarace.com/projects/italian-job/michele-di-toro)
+- **obs_5fd4e6b471291044**: Freddie De Tommaso - Biography ÔÇö [https://www.deccaclassics.com/en/artists/freddie-de-tommaso/biography](https://www.deccaclassics.com/en/artists/freddie-de-tommaso/biography)
+- **obs_bcd286dc5a8e0896**: Pietro Di Tommaso Auction Results ÔÇö [https://www.mutualart.com/Artist/Pietro-Di-Tommaso/B7BCB5FC20D42A72/auction-results](https://www.mutualart.com/Artist/Pietro-Di-Tommaso/B7BCB5FC20D42A72/auction-results)
+- **obs_6d1f088232e4b1c8**: Dominic Di Tommaso is on another level : r/holdmyredbull ÔÇö [https://www.reddit.com/r/holdmyredbull/comments/1lxcvty/dominic_di_tommaso_is_on_another_level](https://www.reddit.com/r/holdmyredbull/comments/1lxcvty/dominic_di_tommaso_is_on_another_level)
+- **obs_b43089f3642fff87**: Freddie De Tommaso (@freddiedetommaso) ÔÇö [https://www.facebook.com/freddiedetommaso](https://www.facebook.com/freddiedetommaso)
+- **obs_aeb76e222b91ba72**: Di Toro Tommaso a Sant'eusanio Del Sangro ÔÇö [https://www.informazione-aziende.it/Azienda_DI-TORO-TOMMASO](https://www.informazione-aziende.it/Azienda_DI-TORO-TOMMASO)
+- **obs_98cf58473623fe52**: Read all the news in the Tommaso Di Toro's profile ÔÇö [https://www.treedom.net/en/user/tommaso-di-toro](https://www.treedom.net/en/user/tommaso-di-toro)
+- **obs_b3068e2e71d14441**: Tommaso Di Toro Profiles - Facebook ÔÇö [https://www.facebook.com/public/Tommaso-Di-Toro](https://www.facebook.com/public/Tommaso-Di-Toro)
+- **obs_da2995e847fdf343**: Di Toro Tommaso 059244666 Via Debussy Claudio Achille, 4 ÔÇö [https://inelenco.com?dir=vedi&id=12143409-privati&nome=Di_Toro_Tommaso](https://inelenco.com?dir=vedi&id=12143409-privati&nome=Di_Toro_Tommaso)
+- **obs_e59b9665d67b7695**: Calciatore Tommaso TORO - Centrocampista - Calcio Marche ÔÇö [https://www.calciomarche.it/calciatore/27961/tommaso-toro](https://www.calciomarche.it/calciatore/27961/tommaso-toro)
+- **obs_1c156256a4e98644**: Simone Di Tommaso | MMA Fighter Page | Tapology ÔÇö [https://www.tapology.com/fightcenter/fighters/473974-simone-di-tommaso](https://www.tapology.com/fightcenter/fighters/473974-simone-di-tommaso)
+- **obs_173793c1d470a7f5**: Riccardo Di Tommaso (@_riccardino__toro_di_tommaso ... ÔÇö [https://www.instagram.com/_riccardino__toro_di_tommaso__](https://www.instagram.com/_riccardino__toro_di_tommaso__)
+- **obs_c22d5ab9cd6e22eb**: Tommaso Di Toro - Facebook ÔÇö [https://www.facebook.com/tommaso.ditoro](https://www.facebook.com/tommaso.ditoro)
+- **obs_a63ee7aad180e971**: Di Tommaso Family History - FamilySearch ÔÇö [https://www.familysearch.org/en/surname?surname=di+tommaso](https://www.familysearch.org/en/surname?surname=di+tommaso)
+- **obs_7e32dc3fcb043b6b**: Tommaso Di Donato - italian landscape photographer ÔÇö [https://www.tommasodidonato.com](https://www.tommasodidonato.com)
+- **obs_0624e87564469ae9**: Tommaso Di Noto - Medical Image Analysis Laboratory ÔÇö [https://wp.unil.ch/mial/team/tommaso-di-noto](https://wp.unil.ch/mial/team/tommaso-di-noto)
+- **obs_c8f0302a4a8dee0a**: Dominic Di Tommaso. This guy fuckin did it. He actually did the hay bale ... ÔÇö [https://www.reddit.com/r/morningsomewhere/comments/1lz18ua/dominic_di_tommaso_this_guy_fuckin_did_it_he](https://www.reddit.com/r/morningsomewhere/comments/1lz18ua/dominic_di_tommaso_this_guy_fuckin_did_it_he)
+- **obs_e8e5a1b08f3ad6e5**: ÔÇ¬Maria Laura Di TommasoÔÇ¼ - ÔÇ¬Google ScholarÔÇ¼ ÔÇö [https://scholar.google.com/citations?user=T4DVKVcAAAAJ&hl=it](https://scholar.google.com/citations?user=T4DVKVcAAAAJ&hl=it)
+- **obs_03dc24da47061075**: Home [www.tommasostarace.com] ÔÇö [http://www.tommasostarace.com](http://www.tommasostarace.com)
+- **obs_f0d54b8f2e0cd3ab**: Tommaso Di Marco Phd University of Florence - ResearchGate ÔÇö [https://www.researchgate.net/profile/Tommaso-Di-Marco](https://www.researchgate.net/profile/Tommaso-Di-Marco)
+- **obs_c59f0699e7b57618**: Maria Laura Di Tommaso - Collegio Carlo Alberto ÔÇö [https://www.carloalberto.org/person/maria-laura-di-tommaso](https://www.carloalberto.org/person/maria-laura-di-tommaso)
+- **obs_e8a77cf30bf74d2d**: Tommaso Giuliodoro - Seeger Center for Hellenic Studies ÔÇö [https://hellenic.princeton.edu/people/tommaso-giuliodoro](https://hellenic.princeton.edu/people/tommaso-giuliodoro)
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 4/5: TROVATO GIUSEPPE
+======================================================================
+2026-08-09 22:47:06,131 [INFO] LocalDbAdapter: 65 observations
+2026-08-09 22:47:09,151 [INFO] WebSearchAdapter[tavily]: 16 observations in 3.02s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+Giuseppe Trovato era un soldato del 222┬░ Reggimento Fanteria durante la Prima Guerra Mondiale.
+
+Giuseppe Trovato, originario di Alcamo, era figlio di Damiano. Fu arruolato nella classe di leva del 1895.
+
+Giuseppe Trovato mor├¼ nel 1916 a causa delle ferite riportate in combattimento, mentre si trovava presso l'Ospedale Chirurgico Mobile Citt├á di Milano.
+
+Il 222┬░ Reggimento Fanteria, parte della Brigata Ionio, era impegnato in prima linea durante la Prima Guerra Mondiale, sostenendo il peso delle perdite nelle trincee del Carso e del Piave.
+
+Non ci sono ulteriori informazioni disponibili su altri aspetti della vita di Giuseppe Trovato oltre a quelli documentati.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_d9970d729b9c04a7
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): AMBIGUOUS_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 64
+- Context Claims: 0
+- Provider Ledger: 141 observations
+
+## Fonti
+- **obs_bf25b0fb95236a2b**: Trovato Giuseppe ÔÇö [https://www.ciels.it/chi-siamo/professori/trovato-giuseppe](https://www.ciels.it/chi-siamo/professori/trovato-giuseppe)
+- **obs_3fdbcec693f85051**: Giuseppe Trovato ÔÇö [https://centroformazionemusicale.net/trovato](https://centroformazionemusicale.net/trovato)
+- **obs_a0b0d4e64ee637b4**: Giuseppe TROVATO | Professor (Associate) ÔÇö [https://www.researchgate.net/profile/Giuseppe-Trovato-2](https://www.researchgate.net/profile/Giuseppe-Trovato-2)
+- **obs_321406f919b2b9d4**: Giuseppe Trovato - Consulta la disponibilit├á e i prezzi ÔÇö [https://www.matrimonio.com/fotografo-matrimonio/giuseppe-trovato--e377920](https://www.matrimonio.com/fotografo-matrimonio/giuseppe-trovato--e377920)
+- **obs_ac4257b88460da8c**: Giuseppe TROVATO - Unive ÔÇö [https://www.unive.it/people/giuseppe.trovato](https://www.unive.it/people/giuseppe.trovato)
+- **obs_b6ec968a79064e25**: trovato giuseppe ÔÇö [https://odcec.ct.it/albo-odcecct-iscritto/giuseppe-trovato](https://odcec.ct.it/albo-odcecct-iscritto/giuseppe-trovato)
+- **obs_c867b8ab2eb4ee38**: Giuseppe Trovato - Founder & CEO Customer 1st ÔÇö [https://it.linkedin.com/in/giuseppe-trovato-628905](https://it.linkedin.com/in/giuseppe-trovato-628905)
+- **obs_c4edbf321b53b299**: Giuseppe Trovato ÔÇö [https://giuseppetrovato.net](https://giuseppetrovato.net)
+- **obs_ed093d05add88355**: Giuseppe Trovato in people ÔÇö [https://www.facebook.com/public/Giuseppe-Trovato](https://www.facebook.com/public/Giuseppe-Trovato)
+- **obs_6624e30bc4682bfd**: Giuseppe Trovato - Profilo, recensioni e prezzi ÔÇö [https://www.letuelezioni.it/insegnanti/giuseppe-trovato.htm](https://www.letuelezioni.it/insegnanti/giuseppe-trovato.htm)
+- **obs_61e064c5b18348a0**: Giuseppe Trovato (@giuseppetrovatoo) ÔÇö [https://www.instagram.com/giuseppetrovatoo](https://www.instagram.com/giuseppetrovatoo)
+- **obs_f390da9013190db8**: Giuseppe TROVATO - Catania - Disum ÔÇö [https://www.disum.unict.it/corsi/l-11/docenti/giuseppe.trovato](https://www.disum.unict.it/corsi/l-11/docenti/giuseppe.trovato)
+- **obs_c276b0e6d21a1346**: Giuseppe G Trovato (@Giuseppetrovato123) ÔÇö [https://www.facebook.com/Giuseppetrovato123](https://www.facebook.com/Giuseppetrovato123)
+- **obs_2353146322ab4ff8**: Giuseppe TROVATO ÔÇö [https://aiti.org/it/profilo/giuseppe-trovato](https://aiti.org/it/profilo/giuseppe-trovato)
+- **obs_a75277478e26dc85**: Giuseppe Trovato notizie e video ÔÇö [https://www.viterbotoday.it/persone/giuseppe-trovato](https://www.viterbotoday.it/persone/giuseppe-trovato)
+- **obs_52fa5a938cd509eb**: Giuseppe Trovato ÔÇö [https://scholar.google.com/citations?user=mqsSLG0AAAAJ&hl=it](https://scholar.google.com/citations?user=mqsSLG0AAAAJ&hl=it)
+- **obs_cd0609f12148afc7**: Giuseppe TROVATO - Unive ÔÇö [https://www.unive.it/data/persone/20120801/curriculum](https://www.unive.it/data/persone/20120801/curriculum)
+- **obs_ac9811c8f1509beb**: Trovato Giuseppe ÔÇö [https://www.ciels.it/chi-siamo/professori/trovato-giuseppe](https://www.ciels.it/chi-siamo/professori/trovato-giuseppe)
+- **obs_c6bcb1efb021f333**: Giuseppe Trovato ÔÇö [https://centroformazionemusicale.net/trovato](https://centroformazionemusicale.net/trovato)
+- **obs_86f0c432eddb47cc**: Giuseppe TROVATO | Professor (Associate) ÔÇö [https://www.researchgate.net/profile/Giuseppe-Trovato-2](https://www.researchgate.net/profile/Giuseppe-Trovato-2)
+- **obs_a298a8b42f580252**: TROVATO GIUSEPPE ÔÇö [https://www.odcecmessina.it/albo/trovato-giuseppe](https://www.odcecmessina.it/albo/trovato-giuseppe)
+- **obs_585bcb1117b07916**: Giuseppe TROVATO - Unive ÔÇö [https://www.unive.it/people/giuseppe.trovato](https://www.unive.it/people/giuseppe.trovato)
+- **obs_871ee24a090e3601**: Giuseppe Trovato - Founder & CEO Customer 1st ÔÇö [https://it.linkedin.com/in/giuseppe-trovato-628905](https://it.linkedin.com/in/giuseppe-trovato-628905)
+- **obs_c0d8031c874e21a5**: Giuseppe Trovato (@giuseppetrovatoo) ÔÇö [https://www.instagram.com/giuseppetrovatoo](https://www.instagram.com/giuseppetrovatoo)
+- **obs_e9e27f7d26bc9619**: Giuseppe G Trovato (@Giuseppetrovato123) ÔÇö [https://www.facebook.com/Giuseppetrovato123](https://www.facebook.com/Giuseppetrovato123)
+- **obs_6256d4399ff9d588**: Giuseppe Trovato ÔÇö [https://scholar.google.com/citations?user=mqsSLG0AAAAJ&hl=it](https://scholar.google.com/citations?user=mqsSLG0AAAAJ&hl=it)
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 5/5: CARRASSI MICHELE
+======================================================================
+2026-08-09 22:47:18,942 [INFO] LocalDbAdapter: 2 observations
+2026-08-09 22:47:20,168 [INFO] WebSearchAdapter[tavily]: 10 observations in 1.22s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+
+I dati disponibili non consentono di fornire una risposta verificabile. Motivo: Nessun claim narrabile disponibile dopo la selezione
+
+--- END REPORT ---
+

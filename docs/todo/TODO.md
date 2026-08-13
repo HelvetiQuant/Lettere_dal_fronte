@@ -1,6 +1,88 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 30 luglio 2026 — Discovery Persistence Pipeline, web search archival system.
+Aggiornato: 11 agosto 2026 (sera) — V7.5.1 anti-duplicazione narrazione + AMBIGUOUS_IDENTITY fix.
+
+---
+
+## V7.5.1 Anti-Duplicazione Narrazione — COMPLETATO (2026-08-11)
+
+### Completato
+- [x] **Prompt anti-duplicazione**: sezione "REGOLA ANTI-DUPLICAZIONE OBBLIGATORIA" in `v7_narrator_prompt_v2.py:130-137` con esempi corretti/errati
+- [x] **Dedup renderer**: token overlap + n-gram filtering in `_render_blocks_to_markdown` (`v7_narrator.py:1533-1571`)
+- [x] **AMBIGUOUS_IDENTITY block**: forza deterministic quando cluster conflittuali (`v7_narrator.py:851-865`)
+- [x] **Bug RIZZA GIOVANNI**: root cause = 3 omonimi WWI/WWII mescolati, 132 claim da cluster diversi inviati all'AI
+- [x] **Test ALBERINI ANTONIO**: 2 blocchi puliti, nessuna duplicazione
+- [x] **Test RIZZA GIOVANNI**: deterministic fallback, 3 cluster separati, nessuna contaminazione
+- [x] **Test 20 nomi casuali**: 15/20 AI senza duplicazioni, 3/20 deterministic (AMBIGUOUS), 0 errori
+- [x] **Test 5 eventi**: 3/5 AI (Caporetto, Asiago, Fronte Macedone), 2/5 blocked
+
+### Pending
+- [ ] **CONFLICTED_IDENTITY**: valutare se bloccare AI anche per CONFLICTED (es. CONFALONIERI FRANCESCO usa AI con identity conflittuale)
+- [ ] **Event blocked**: indagare "Prima battaglia del Piave" (0 claim narrabili) e "Battaglia di Tobruk" (WWII, non in eventi_1gm)
+- [ ] **NarrationEvidenceSelector cluster filter**: filtrare claim per `identity_cluster_id` del cluster risolto, non solo bloccare AI
+- [ ] **Dedup threshold tuning**: valutare se 0.55 token overlap è ottimale o troppo aggressivo
+- [ ] **Test su soldati WWI**: verificare che un soldato WWI non generi contesto WWII
+- [ ] **Test su `war_period=unknown`**: verificare comportamento narratore senza periodo bellico
+
+---
+
+## V7.5 OpenAI Primary — COMPLETATO (2026-08-11)
+
+## Temporal Contamination Fix — COMPLETATO (2026-08-10)
+
+### Completato (V7.5)
+- [x] **Sezione AMBITO TEMPORALE OBBLIGATORIO nel prompt**: regole esplicite per scoping temporale del contesto storico (`v7_narrator_prompt_v2.py`)
+- [x] **Validatore post-generazione**: `_post_gen_hallucination_check` rileva `TEMPORAL_CONTAMINATION_WWI_IN_WWII` e `TEMPORAL_CONTAMINATION_WWII_IN_WWI` → fallback deterministico
+- [x] **Test verificato**: BRUTTI ALFIO (WWII) ora genera contesto reparto corretto senza riferimenti WWI
+
+### Pending
+- [ ] **Test su soldati WWI**: verificare che un soldato WWI non generi contesto WWII (es. nome da `caduti_albooro`)
+- [ ] **Test su `war_period=unknown`**: verificare che il narratore non aggiunga contesto di alcun conflitto
+- [ ] **Threshold tuning**: valutare se 5 warning è la soglia corretta per il fallback (temporal contamination potrebbe richiedere soglia più bassa, es. 3)
+- [ ] **Estendere a report deterministici**: il report deterministico attualmente non ha il check temporale (solo AI draft)
+
+---
+
+## LeBI Integration — COMPLETATO (2026-08-09)
+
+### Completato
+- [x] **Bulk import**: 166K+ record da `lessicobiograficoimi.it` → `lebi_records` in `imi_internati.db` (ID 2345–330027, 20 thread, checkpoint/resume)
+- [x] **Supabase sync**: `lebi_records` su Supabase con upsert (`on_conflict=lebi_id`), checkpoint resumable
+- [x] **LocalDbAdapter**: `lebi_records` aggiunto a `PERSON_LOOKUP` in `v7_provider_adapters.py`
+- [x] **PERSON_SOURCE_SCHEMAS**: schema completo `lebi_records` (18 claim_fields, 4 provenance, 7 identity, 6 conflict, WWII, authority_tier=1)
+- [x] **Validatori/normalizzatori**: `capture_front`, `return_date`, `return_place` in `person_source_schemas.py`
+- [x] **Research orchestrator**: `lebi_records` in entity search + direct table search
+- [x] **Fact extractor**: `_LEBI_FIELD_MAP` con 18 mapping, registrato in `field_map` lookup
+- [x] **Unified orchestrator**: docstring aggiornata con `lebi_records`
+- [x] **Test pipeline discorsiva**: 5/5 nomi RESOLVED_IDENTITY, 3 AI Mistral + 2 deterministic, dati LeBI nei report
+
+### Pending
+- [ ] **FTS indexing**: aggiungere `lebi_records` agli indici FTS SQLite per ricerca full-text
+- [ ] **Cross-linking ASBZ ↔ LeBI**: collegare 20.465 `internati` (ASBZ) ai 166K LeBI per arricchimento reciproco (matricola come chiave)
+- [ ] **Frontend dossier**: verificare che il tab LeBI nel dossier mostri anche i dati della pipeline discorsiva
+- [ ] **Supabase query**: verificare che le query Supabase includano `lebi_records` nei filtri PERSON
+- [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare i warning `CLAIM_NOT_IN_SNAPSHOT` nei log narratore (claim provenance non trovati nello snapshot)
+- [ ] **AI provider keys**: ricaricare crediti OpenAI (429) e/o fixare chiave Anthropic (401) per miglior qualità AI
+
+---
+
+## Supabase Sync — STATO (2026-08-09)
+
+### Completato
+- [x] Schema canonico `001_supabase_historical_archive_core.sql`: 6 schemi, 21 tabelle, 40+ indici, RLS, trigger, pgcrypto
+- [x] `archivio_documenti`: 979 rows synced
+- [x] `eventi_1gm`: 49 rows synced
+- [x] `event_aliases`: 161 rows synced
+- [x] `lebi_records`: 166K+ rows synced (upsert con merge-duplicates)
+
+### In corso / Pending
+- [ ] `event_links`: 1.539.685 rows, ~18% synced (background sync in pausa)
+- [ ] `internati`: 20.465 rows da sincronizzare
+- [ ] `decorati`, `caduti_*`: da sincronizzare
+- [ ] `graph_nodes`, `graph_edges`: da sincronizzare
+- [ ] `backfill_canonical.py`: 1M+ rows da migrare a schema canonico
+- [ ] Vector extension in Supabase dashboard per RAG embeddings
+- [ ] Storage buckets per thumbnails/representations
 
 ---
 
@@ -120,8 +202,8 @@ Richiesta originale: bootstrap automatico completo (28 sezioni: job queue, worke
 - [x] **TODO aggiornato**: questa sezione.
 
 ### Da completare (priorità)
-- [ ] **LeBI Fase 5**: Report, FTS, Memory Router, Source Locator, citations.
-- [ ] **LeBI Fase 7**: Test e documentazione — test su provider LeBI, adapter, API endpoint, frontend comparison.
+- [x] **LeBI Fase 5**: Report, FTS, Memory Router, Source Locator, citations — **Pipeline discorsiva integrata (2026-08-09)**, FTS pending
+- [ ] **LeBI Fase 7**: Test e documentazione — test su provider LeBI, adapter, API endpoint, frontend comparison, pipeline discorsiva
 - [ ] **Test conformità automatici**: 20 test Compliance Gate come da specifica.
 - [ ] **Test migrazione PostgreSQL su Supabase**: creare progetto, eseguire `migrate_to_pg.py --full`, verificare conteggi.
 - [ ] **Bulk import Scopri**: selezionare multipli risultati e importarli tutti insieme.

@@ -1566,7 +1566,79 @@ def api_narrator_status():
         return {"version": "7.3", "error": str(e)}
 
 
-# ─── Soldier Dashboard ───
+# ─── Cross-Linking Safe (V7.6) ───
+
+@app.get("/api/cross-link/status")
+def api_cross_link_status():
+    """Stato del cross-linking sicuro con audit trail."""
+    import sqlite3 as _sqlite3
+    DB = "imi_internati.db"
+    conn = _sqlite3.connect(DB)
+    conn.row_factory = _sqlite3.Row
+    try:
+        # Ensure table exists
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS cross_link_audit (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                internati_id INTEGER NOT NULL,
+                column_name TEXT NOT NULL,
+                old_value TEXT,
+                new_value TEXT,
+                source_table TEXT NOT NULL,
+                source_record_id INTEGER,
+                match_method TEXT NOT NULL,
+                match_score INTEGER,
+                reverted INTEGER DEFAULT 0,
+                reverted_at TEXT,
+                created_at TEXT NOT NULL
+            )
+        """)
+        conn.commit()
+
+        total = conn.execute("SELECT COUNT(*) as c FROM cross_link_audit").fetchone()['c']
+        active = conn.execute("SELECT COUNT(*) as c FROM cross_link_audit WHERE reverted=0").fetchone()['c']
+        reverted = conn.execute("SELECT COUNT(*) as c FROM cross_link_audit WHERE reverted=1").fetchone()['c']
+
+        by_method = []
+        for r in conn.execute("""
+            SELECT match_method as method,
+                   SUM(CASE WHEN reverted=0 THEN 1 ELSE 0 END) as active,
+                   SUM(CASE WHEN reverted=1 THEN 1 ELSE 0 END) as reverted
+            FROM cross_link_audit GROUP BY match_method ORDER BY active DESC
+        """).fetchall():
+            by_method.append({"method": r['method'], "active": r['active'], "reverted": r['reverted']})
+
+        by_source_table = []
+        for r in conn.execute("""
+            SELECT source_table as table_name,
+                   SUM(CASE WHEN reverted=0 AND match_method != 'PRE_CROSS_LINK_BASELINE' THEN 1 ELSE 0 END) as active,
+                   SUM(CASE WHEN reverted=1 AND match_method != 'PRE_CROSS_LINK_BASELINE' THEN 1 ELSE 0 END) as reverted
+            FROM cross_link_audit GROUP BY source_table ORDER BY active DESC
+        """).fetchall():
+            by_source_table.append({"table": r['table_name'], "active": r['active'], "reverted": r['reverted']})
+
+        by_column = []
+        for r in conn.execute("""
+            SELECT column_name as column_name,
+                   SUM(CASE WHEN reverted=0 AND match_method != 'PRE_CROSS_LINK_BASELINE' THEN 1 ELSE 0 END) as active,
+                   SUM(CASE WHEN reverted=1 AND match_method != 'PRE_CROSS_LINK_BASELINE' THEN 1 ELSE 0 END) as reverted
+            FROM cross_link_audit GROUP BY column_name ORDER BY active DESC
+        """).fetchall():
+            by_column.append({"column": r['column_name'], "active": r['active'], "reverted": r['reverted']})
+
+        return {
+            "total_audits": total,
+            "active": active,
+            "reverted": reverted,
+            "by_method": by_method,
+            "by_source_table": by_source_table,
+            "by_column": by_column,
+        }
+    except Exception as e:
+        return {"total_audits": 0, "active": 0, "reverted": 0, "error": str(e),
+                "by_method": [], "by_source_table": [], "by_column": []}
+    finally:
+        conn.close()
 
 @app.get("/api/soldiers/{soldier_id}/dashboard")
 def api_soldier_dashboard(soldier_id: int):

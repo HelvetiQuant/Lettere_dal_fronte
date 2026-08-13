@@ -510,6 +510,8 @@ def _seed_ai_providers(conn):
          "unknown", 20.0, 2.0, 4),
         ("gemini", "Google Gemini", '["text","vision","pdf","structured_output","embeddings"]',
          "unknown", 30.0, 3.0, 5),
+        ("ollama", "Ollama (local)", '["text","vision","structured_output"]',
+         "none", 0.0, 0.0, 6),
         ("lmstudio", "LM Studio (local)", '["text","structured_output"]',
          "none", 0.0, 0.0, 10),
     ]

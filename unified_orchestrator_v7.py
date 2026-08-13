@@ -249,18 +249,25 @@ class UnifiedResearchOrchestratorV7:
             conn = get_conn()
             name = target.display_name.strip()
             parts = name.split(None, 1)
-            cognome = parts[0] if parts else name
-            nome = parts[1] if len(parts) > 1 else ""
+            part1 = (parts[0] if parts else name).upper()
+            part2 = (parts[1] if len(parts) > 1 else "").upper()
 
-            if nome:
+            row = None
+            if part2:
+                # Try both orderings: "Cognome Nome" (standard) and "Nome Cognome" (user input)
                 row = conn.execute(
                     "SELECT * FROM internati WHERE cognome=? AND nome=? LIMIT 1",
-                    (cognome, nome),
+                    (part1, part2),
                 ).fetchone()
+                if not row:
+                    row = conn.execute(
+                        "SELECT * FROM internati WHERE cognome=? AND nome=? LIMIT 1",
+                        (part2, part1),
+                    ).fetchone()
             else:
                 row = conn.execute(
                     "SELECT * FROM internati WHERE cognome=? LIMIT 1",
-                    (cognome,),
+                    (part1,),
                 ).fetchone()
 
             conn.close()
@@ -492,10 +499,60 @@ class UnifiedResearchOrchestratorV7:
         plan = ctx.plan
         target_name = plan.target.display_name.strip()
         parts = target_name.split()
-        cognome = parts[0] if parts else target_name
-        nome = " ".join(parts[1:]) if len(parts) > 1 else ""
+        cognome = (parts[0] if parts else target_name).upper()
+        nome = (" ".join(parts[1:]) if len(parts) > 1 else "").upper()
+
+        # V7.3-FIX: Detect correct name ordering by checking the DB.
+        # If standard "Cognome Nome" doesn't match but "Nome Cognome" does, swap.
+        if nome:
+            from database import get_conn
+            try:
+                _conn = get_conn()
+                _row = _conn.execute(
+                    "SELECT 1 FROM internati WHERE cognome=? AND nome=? LIMIT 1", (cognome, nome)
+                ).fetchone()
+                if not _row:
+                    _row = _conn.execute(
+                        "SELECT 1 FROM internati WHERE cognome=? AND nome=? LIMIT 1", (nome, cognome)
+                    ).fetchone()
+                    if _row:
+                        cognome, nome = nome, cognome
+                _conn.close()
+            except Exception:
+                pass
 
         ctx.identity_resolver.set_target(cognome, nome, origin_record_id=getattr(plan.target, 'origin_record_id', ''))
+
+        # V7.3-FIX: War-period filtering for web-sourced observations.
+        # If origin record is from internati (WWII), reject web observations
+        # that contain WWI markers to prevent cross-war contamination.
+        if plan.intent == "PERSON_LOOKUP":
+            origin_record = self._lookup_origin_record(plan.target)
+            origin_war_period = "UNKNOWN"
+            if origin_record and origin_record.get("id"):
+                origin_war_period = "WWII"  # internati table = WWII
+
+            if origin_war_period == "WWII":
+                wwi_markers = [
+                    "1915", "1916", "1917", "1918",
+                    "prima guerra mondiale", "grande guerra",
+                    "caporetto", "isonzo", "piave", "carso",
+                    "albo d'oro", "albo oro", "nastro azzurro",
+                    "caduti della grande", "caduti italiani 1915",
+                ]
+                filtered_obs = []
+                for obs in ctx.observations:
+                    meta = obs.provider_metadata or {}
+                    table = meta.get("table", "")
+                    # Only filter web-sourced observations (no local table)
+                    if not table and obs.content_state not in ("NOT_OPENED", "FAILED"):
+                        text = f"{obs.title or ''} {obs.snippet or ''} {obs.excerpt or ''}".lower()
+                        if any(m in text for m in wwi_markers):
+                            obs.classification = "REJECTED"
+                            obs.reason_codes.append("WWI_CONTENT_FOR_WWII_TARGET")
+                            continue
+                    filtered_obs.append(obs)
+                ctx.observations = filtered_obs
 
         # V7.2: Event claim extraction
         if plan.intent == "EVENT_LOOKUP":
@@ -544,8 +601,14 @@ class UnifiedResearchOrchestratorV7:
             elif classification == "SURNAME_ONLY_NON_CANDIDATE":
                 obs.classification = "SURNAME_ONLY_NON_CANDIDATE"
                 obs.reason_codes.append("SURNAME_ONLY_NON_CANDIDATE")
+            elif plan.intent == "PERSON_LOOKUP":
+                # V7.3-FIX: For PERSON_LOOKUP, IRRELEVANT means the record doesn't
+                # match the target name at all. Don't use legacy fallback which
+                # would create SOURCE_CANDIDATE for any record with a cognome.
+                obs.classification = "REJECTED"
+                obs.reason_codes.append("NAME_MISMATCH")
             else:
-                # Legacy fallback for non-person intents
+                # Legacy fallback for non-person intents only
                 identity, reason_codes = ctx.identity_resolver.resolve_observation(
                     raw_record, provider=obs.provider, table=table,
                 )
@@ -562,7 +625,7 @@ class UnifiedResearchOrchestratorV7:
         """Extract claims from local DB records for PERSON pipeline.
 
         V7.3-PERSON-FIX: Uses person_source_schemas registry for mapping
-        across all 5 PERSON tables (internati, caduti_albooro,
+        across all PERSON tables (internati, lebi_records, caduti_albooro,
         decorati_nastroazzurro, caduti_cwgc, caduti_ministero).
         Separates claims from provenance — provenance items are NOT counted
         as person facts.

@@ -1,0 +1,272 @@
+[
+  {
+    "name": "PALMERI VINCENZO",
+    "table": "lebi_records",
+    "status": "validated_deterministic",
+    "provider": "",
+    "model": "",
+    "claims": 16,
+    "id_status": "AMBIGUOUS_IDENTITY",
+    "elapsed": 13.7,
+    "answer_preview": "# Rapporto di Ricerca — snap_v7_91f1933f1a8465ba\nVersione schema: 7.2\nIntent: PERSON_LOOKUP\nTarget: PALMERI VINCENZO\nContratto Narratore: 7.2-narration-v2\n\n## Stato Identita: AMBIGUOUS_IDENTITY\n## Cor"
+  },
+  {
+    "name": "RAGNINI ZENO",
+    "table": "lebi_records",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 8,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 24.1,
+    "answer_preview": "Zeno Ragnini, nato il 30 aprile 1919 a Panicale, servì come soldato nel 10° Reggimento di Fanteria durante la Seconda guerra mondiale. Morì il 1 marzo 1944 sul fronte jugoslavo.\n\nIl soldato era il gra"
+  },
+  {
+    "name": "MOSCHETTI SEBASTIANO",
+    "table": "lebi_records",
+    "status": "validated_deterministic",
+    "provider": "",
+    "model": "",
+    "claims": 12,
+    "id_status": "AMBIGUOUS_IDENTITY",
+    "elapsed": 19.5,
+    "answer_preview": "# Rapporto di Ricerca — snap_v7_edcddd1fc43ea824\nVersione schema: 7.2\nIntent: PERSON_LOOKUP\nTarget: MOSCHETTI SEBASTIANO\nContratto Narratore: 7.2-narration-v2\n\n## Stato Identita: AMBIGUOUS_IDENTITY\n##"
+  },
+  {
+    "name": "FIORAVANTI SETTIMO",
+    "table": "lebi_records",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 10,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 19.4,
+    "answer_preview": "Fioravanti Settimo nacque il 28 aprile 1916 a Tresana, in provincia di Massa e Carrara. Durante la Prima guerra mondiale, servì come soldato nel 1° Reggimento Alpini.\n\nFioravanti Settimo fu catturato "
+  },
+  {
+    "name": "ZACCHINI Dino",
+    "table": "internati",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 9,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 20.2,
+    "answer_preview": "Dino Zacchini nacque il 5 giugno 1911 a Castello D'argile e servì come soldato nel 3° Reggimento Granatieri durante la Seconda guerra mondiale. Morì il 18 febbraio 1945 sul fronte tedesco.\n\nNon ci son"
+  },
+  {
+    "name": "FABRINI Silvano di Egidio",
+    "table": "internati",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 7,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 19.4,
+    "answer_preview": "Silvano Fabrini, nato nel 1920, è deceduto il 9 aprile 1945 mentre era internato nel lager 38 a Reni, Russia Bessarabia.\n\nSilvano Fabrini nacque il 1 gennaio 1920 e risiedeva a Firenze.\n\nDurante la Se"
+  },
+  {
+    "name": "RUGGERO Donato",
+    "table": "internati",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 9,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 19.7,
+    "answer_preview": "Ruggero Donato fu un soldato italiano che servì nel 7° Reggimento Bersaglieri durante la Prima guerra mondiale. Morì in combattimento in Libia nel 1915.\n\nRuggero Donato era figlio di Gaetano e risiede"
+  },
+  {
+    "name": "MARRA Secondo",
+    "table": "internati",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 8,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 19.2,
+    "answer_preview": "Secondo Marra, nato nel 1892, servì come soldato nel 8° Reggimento Alpini durante la Prima guerra mondiale e morì nel 1915 a Monte Nero a causa delle ferite riportate in combattimento.\n\nSecondo Marra "
+  },
+  {
+    "name": "VERDOSCIA MICHELE DI VINCENZO",
+    "table": "caduti_ministero",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 3,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 15.3,
+    "answer_preview": "Michele di Vincenzo Verdoscia nacque il 17 dicembre 1887 ad Andria.\n\nNon sono disponibili ulteriori dettagli sul contesto militare o sugli eventi specifici legati a Michele di Vincenzo Verdoscia, poic"
+  },
+  {
+    "name": "RAVELLI GIACOMO DI BORTOLO",
+    "table": "caduti_ministero",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 10,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 18.6,
+    "answer_preview": "Giacomo Ravelli di Pietro, nato il 2 marzo 1888 ad Artogne, servì come soldato nel 67° Reggimento Fanteria durante la Prima Guerra Mondiale. Morì in prigionia nel 1918 a causa di una malattia.\n\nNon ci"
+  },
+  {
+    "name": "SABLONE FIORAVANTE DI GIACINTO",
+    "table": "caduti_ministero",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 3,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 16.8,
+    "answer_preview": "Sablone Fioravante di Giacinto nacque il 19 ottobre 1893 a Civitella Casanova.\n\nFioravante Sablone era originario di Civitella Casanova, una località situata nella provincia di Pescara, in Abruzzo. Le"
+  },
+  {
+    "name": "CARPIGNANO GIUSEPPE BATTISTA DI GIACOMO",
+    "table": "caduti_ministero",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 3,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 15.4,
+    "answer_preview": "Giuseppe Battista di Giacomo Carpignano nacque il 17 aprile 1889 a Cortazzone.\n\n---\n\n## Provenienza\n- Snapshot: snap_v7_68aefa69f7c89d22\n- Schema: 7.2\n- Narrator Contract: 7.2-narration-v2\n- Identity "
+  },
+  {
+    "name": "NASINI RINALDO",
+    "table": "caduti_albooro",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 8,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 19.0,
+    "answer_preview": "Rinaldo Nasini, originario di Pieve Santo Stefano, servì come soldato nel 242° Reggimento Fanteria durante la Prima Guerra Mondiale. Morì nel 1917 a causa delle ferite riportate in combattimento, pres"
+  },
+  {
+    "name": "MARCODINI ANGELO BATTISTA",
+    "table": "caduti_albooro",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 8,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 18.4,
+    "answer_preview": "Angelo Battista Marcodini, nato ad Ameno, fu un soldato dell'88° Reggimento Fanteria durante la Prima Guerra Mondiale. Morì nel 1915 a Verona a causa di una malattia.\n\nAngelo Battista Marcodini era fi"
+  },
+  {
+    "name": "VERDONE SALVATORE",
+    "table": "caduti_albooro",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 8,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 18.6,
+    "answer_preview": "Salvatore Verdone, nato nel 1881, servì come soldato nel 39° Reggimento Fanteria durante la Prima Guerra Mondiale.\n\nSalvatore Verdone era figlio di Antonio e proveniva da Caivano.\n\nSalvatore Verdone m"
+  },
+  {
+    "name": "PEDERZINI ATTILIO",
+    "table": "caduti_albooro",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 8,
+    "id_status": "RESOLVED_IDENTITY",
+    "elapsed": 18.1,
+    "answer_preview": "Attilio Pederzini, nato a Sant'Agata Bolognese, fu un soldato del 36° Reggimento Fanteria durante la Prima Guerra Mondiale. Morì nel 1915 a Vicenza a causa di una malattia.\n\nAttilio Pederzini era figl"
+  },
+  {
+    "name": "VOLTOLINA CARLO",
+    "table": "decorati_nastroazzurro",
+    "status": "validated_deterministic",
+    "provider": "",
+    "model": "",
+    "claims": 11,
+    "id_status": "AMBIGUOUS_IDENTITY",
+    "elapsed": 10.5,
+    "answer_preview": "# Rapporto di Ricerca — snap_v7_05c792349e9b4c0c\nVersione schema: 7.2\nIntent: PERSON_LOOKUP\nTarget: VOLTOLINA CARLO\nContratto Narratore: 7.2-narration-v2\n\n## Stato Identita: AMBIGUOUS_IDENTITY\n## Corr"
+  },
+  {
+    "name": "DI RUDINI FRANCO",
+    "table": "decorati_nastroazzurro",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 8,
+    "id_status": "UNRESOLVED_IDENTITY",
+    "elapsed": 19.2,
+    "answer_preview": "Franco Di Rudinì era un tenente di complemento nella 62ª compagnia mitraglieri durante la Prima guerra mondiale. Morì nel 1918 a Montello a causa delle ferite riportate in combattimento.\n\nFranco Di Ru"
+  },
+  {
+    "name": "DE STEFANI LUIGI",
+    "table": "decorati_nastroazzurro",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 11,
+    "id_status": "UNRESOLVED_IDENTITY",
+    "elapsed": 19.6,
+    "answer_preview": "Luigi De Stefani, nato nel 1890, è stato un soldato del 47° reggimento fanteria durante la Prima Guerra Mondiale. Morì nel 1915 sul monte San Michele a causa delle ferite riportate in combattimento.\n\n"
+  },
+  {
+    "name": "CONFALONIERI FRANCESCO",
+    "table": "decorati_nastroazzurro",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 3,
+    "id_status": "CONFLICTED_IDENTITY",
+    "elapsed": 17.9,
+    "answer_preview": "Francesco Confalonieri ricevette la Medaglia d'Oro nel 1943 per il suo servizio nell'Esercito durante la Seconda guerra mondiale.\n\nNel 1943, Francesco Confalonieri fu insignito della Medaglia d'Oro, u"
+  },
+  {
+    "name": "Battaglia di Tobruk",
+    "type": "EVENT",
+    "status": "blocked_evidence_not_validated",
+    "provider": "",
+    "model": "",
+    "claims": 0,
+    "elapsed": 12.7,
+    "answer_preview": "I dati disponibili non consentono di fornire una risposta verificabile. Motivo: Nessun claim narrabile disponibile dopo la selezione"
+  },
+  {
+    "name": "Fronte Macedone",
+    "type": "EVENT",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 4,
+    "elapsed": 46.4,
+    "answer_preview": "Il Fronte Macedone fu un teatro di operazioni della Prima Guerra Mondiale, attivo dal 14 ottobre 1915 al 30 settembre 1918.\n\nLe operazioni sul Fronte Macedone iniziarono il 14 ottobre 1915 e si conclu"
+  },
+  {
+    "name": "Battaglia di Caporetto",
+    "type": "EVENT",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 4,
+    "elapsed": 49.1,
+    "answer_preview": "La Battaglia di Caporetto, svoltasi dal 24 ottobre al 12 novembre 1917, rappresenta una significativa sconfitta per l'esercito italiano durante la Prima guerra mondiale.\n\nLa battaglia iniziò il 24 ott"
+  },
+  {
+    "name": "Altopiano di Asiago",
+    "type": "EVENT",
+    "status": "validated_ai",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "claims": 4,
+    "elapsed": 54.1,
+    "answer_preview": "L'Altopiano di Asiago fu teatro di importanti battaglie durante la Prima guerra mondiale, iniziando con l'offensiva austriaca nota come Strafexpedition nel maggio 1916.\n\nL'offensiva austriaca sull'Alt"
+  },
+  {
+    "name": "Prima battaglia del Piave",
+    "type": "EVENT",
+    "status": "blocked_evidence_not_validated",
+    "provider": "",
+    "model": "",
+    "claims": 0,
+    "elapsed": 10.1,
+    "answer_preview": "I dati disponibili non consentono di fornire una risposta verificabile. Motivo: Nessun claim narrabile disponibile dopo la selezione"
+  }
+]

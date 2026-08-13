@@ -1,5 +1,451 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-08-13 — V7.8: Fix Contaminazione Cross-War e Name Parsing
+
+### Contesto
+La pipeline V7.2 restituiva risultati completamente errati per ricerche di persone WWII (es. "Luigi Gaiaschi"): claim da tabelle WWI (`caduti_albooro`, `decorati_nastroazzurro`) venivano inclusi nei dossier WWII, causando narrazioni storiche inaccurate con dati della Prima Guerra Mondiale attribuiti a internati della Seconda.
+
+### Problemi identificati (6 root cause)
+
+1. **Case sensitivity SQLite** — `v7_provider_adapters.py` e `unified_orchestrator_v7.py` usavano query `=` con nome in case misto ("Gaiaschi") ma il DB memorizza uppercase ("GAIASCHI"). SQLite `=` è case-sensitive per TEXT → nessun match trovato.
+
+2. **Assunzione ordine nome** — Tutti i componenti assumevano `parts[0]=cognome, parts[1:]=nome`. L'utente digita "Luigi Gaiaschi" (nome cognome) ma il DB ha cognome="GAIASCHI", nome="LUIGI" → match mancante.
+
+3. **Legacy fallback per PERSON_LOOKUP** — `unified_orchestrator_v7.py:604-609`: quando `classify_observation` restituiva `IRRELEVANT` (nome non corrisponde), il legacy `resolve_observation` promuoveva comunque il record a `SOURCE_CANDIDATE` se aveva un cognome → claim WWI di omonimi inclusi.
+
+4. **war_period errato in schema** — `person_source_schemas.py`: `caduti_albooro` e `decorati_nastroazzurro` erano classificati `WAR_PERIOD_WWII` invece di `WAR_PERIOD_WWI` → bypass dei filtri temporali.
+
+5. **`lebi_records` mancante in `TABLE_WAR_PERIOD`** — `v7_identity_model.py`: la tabella non era mappata → war_period default "UNKNOWN".
+
+6. **Web observations senza filtro WWI** — Observation da web search contenenti marker WWI (1915-1918, Caporetto, Isonzo, Piave) non venivano filtrate per target WWII.
+
+### Soluzioni applicate
+
+| File | Modifica |
+|------|----------|
+| `v7_provider_adapters.py` | Uppercase di cognome/nome/query; tentativo entrambi ordini (standard + reversed) per full-name e surname match |
+| `unified_orchestrator_v7.py` | Uppercase in `_lookup_origin_record` e `_stage_extract`; rilevamento ordine nome via DB lookup; filtro WWI marker su web obs per target WWII; skip legacy fallback per PERSON_LOOKUP |
+| `v7_identity_model.py` | Aggiunto `lebi_records: WWII` in `TABLE_WAR_PERIOD`; match reversed name in `classify_observation` |
+| `person_source_schemas.py` | Corretto `caduti_albooro` → `WAR_PERIOD_WWI`, `decorati_nastroazzurro` → `WAR_PERIOD_WWI` |
+
+### Risultati verificati (Luigi Gaiaschi)
+- **Before**: 63 person claims da 8 tabelle diverse (WWI+WWII), identity UNRESOLVED, narrazione con dati Caporetto/Isonzo/Piave
+- **After**: 5 person claims esclusivamente da `internati:22808` (WWII), identity RESOLVED_IDENTITY, zero contaminazione WWI
+- **Narrative**: deterministic mode (AI fallback per false-positive hallucination check su date nel source_text — issue separata)
+
+### Issue residua
+Il narratore AI (`v7_narrator.py`) fallisce la hallucination check su "19" (estratto da "1912") e "Grecia" (presente nel `source_text` claim) → fallback a deterministic. Da investigare: il `_post_gen_hallucination_check` non parsa correttamente date e luoghi nei claim `source_text`.
+
+---
+
+## 2026-08-12 — V7.6: Cross-Linking Sicuro con Reversibilità
+
+### Contesto
+I record `internati` (20.465) avevano copertura molto bassa per campi chiave: `data_nascita` 4%, `luogo_nascita` 1%, `grado` 28%, `reparto` 26%. Le tabelle `lebi_records` (166K), `caduti_ministero` (162K) e `decorati_nastroazzurro` (280K) contengono dati militari e biografici completi per le stesse persone. Obiettivo: arricchire `internati` con dati verificabili, senza mescolare omonimi.
+
+### Problema identificato
+Il primo tentativo (`populate_internati_v2.py`) usava match deboli (`fuzzy_first3`, `name_unique` senza validazione anno) che hanno prodotto **278 record con anno di nascita implausibile** (< 1890 o > 1928) — probabili omonimi di altre epoche. Nessun tracciamento delle modifiche: operazione non reversibile.
+
+### Soluzione: cross-linking sicuro con audit table
+
+#### 1. Audit table (`cross_link_audit`)
+Tabella SQLite che traccia ogni singola modifica con:
+- `internati_id`, `column_name`, `old_value`, `new_value`
+- `source_table`, `source_record_id` (provenienza del dato)
+- `match_method`, `match_score` (strategia di matching usata)
+- `reverted`, `reverted_at` (per rollback)
+- `created_at` (timestamp)
+
+#### 2. Script `cross_link_safe.py` — 4 comandi
+```
+python cross_link_safe.py --audit    # Registra baseline (valori pre-cross-link)
+python cross_link_safe.py --run      # Esegue cross-linking sicuro (solo match forti)
+python cross_link_safe.py --revert   # Reverte tutte le modifiche (ripristina old_value)
+python cross_link_safe.py --status   # Mostra stato audit (attivi/revertiti per metodo)
+```
+
+#### 3. Strategie di matching (solo sicure)
+| Metodo | Score | Requisiti |
+|--------|-------|-----------|
+| `name+year` | 100 | Cognome+nome esatto + stesso anno di nascita in entrambe le tabelle |
+| `name+place` | 90 | Cognome+nome esatto + stesso luogo di nascita |
+| `name_unique+year_verified` | 85 | Nome esatto + candidato unico + anno coincide |
+| `name_unique+lebi_year_plausible` | 75 | Nome esatto + candidato unico in LeBI + anno WWII plausibile (1895-1928) |
+| `name_ambiguous+single_plausible_year` | 70 | Nome esatto + multipli candidati ma solo 1 con anno WWII plausibile |
+| `name+deco_year_wwii` | 90 | Nome esatto + anno decorazione 1940-1947 |
+
+**Strategie escluse** (troppo rischiose): `fuzzy_first3`, `name_unique` senza validazione anno, `cognome_single_partial`.
+
+#### 4. Regole anti-mixing
+- **Solo nome esatto**: niente fuzzy matching, niente prefissi parziali
+- **Validazione anno WWII**: filtra omonimi di epoche diverse (WWI vs WWII)
+- **Candidato unico o singolo plausibile**: niente ambiguità nella selezione
+- **Solo campi vuoti popolati**: nessuna sovrascrittura di dati esistenti
+- **Anno di nascita plausibile**: 1895-1928 (internee WWII avevano 15-48 anni nel 1943)
+
+### Reversibilità
+
+#### Revert completo
+```bash
+python cross_link_safe.py --revert
+```
+Ripristina ogni campo al `old_value` registrato in `cross_link_audit`. Marca ogni record come `reverted=1` con timestamp.
+
+#### Revert selettivo (per tabella fonte)
+```sql
+-- Revert solo modifiche da lebi_records
+UPDATE internati SET data_nascita = NULL 
+WHERE id IN (
+  SELECT internati_id FROM cross_link_audit 
+  WHERE source_table='lebi_records' AND reverted=0
+);
+UPDATE cross_link_audit SET reverted=1, reverted_at=datetime('now')
+WHERE source_table='lebi_records' AND reverted=0;
+```
+
+#### Revert per metodo di match
+```sql
+-- Revert solo match deboli (se si vuole stringere ulteriormente)
+UPDATE cross_link_audit SET reverted=1, reverted_at=datetime('now')
+WHERE match_method='name_ambiguous+single_plausible_year' AND reverted=0;
+-- Poi ripristinare i valori:
+SELECT internati_id, column_name, old_value FROM cross_link_audit
+WHERE match_method='name_ambiguous+single_plausible_year' AND reverted=1;
+```
+
+### Risultati
+
+| Metrica | Valore |
+|---------|--------|
+| Record internati arricchiti | 4.438 / 20.465 (21%) |
+| Aggiornamenti totali | 40.587 |
+| Match da lebi_records | 4.438 |
+| Match da caduti_ministero | 13 |
+| Match da decorati_nastroazzurro | 353 |
+
+#### Copertura campi prima → dopo
+| Campo | Prima | Dopo | Delta |
+|-------|-------|------|-------|
+| data_nascita | 2% | 21% | +19% |
+| luogo_nascita | 15% | 21% | +6% |
+| grado | 11% | 19% | +8% |
+| reparto | 9% | 19% | +10% |
+| arma | 18% | 21% | +3% |
+| data_decesso | 0% | 17% | +17% |
+| luogo_morte | 0% | 17% | +17% |
+| luogo_sepoltura | 0% | 14% | +14% |
+| campi_internamento | 0% | 10% | +10% |
+| fronte_cattura | 0% | 8% | +8% |
+| data_cattura | 2% | 8% | +6% |
+| causa_morte | 0% | 7% | +7% |
+| luogo_cattura | 2% | 6% | +4% |
+| data_rientro | 0% | 3% | +3% |
+| decorazione | 0% | 1% | +1% |
+
+### File creati/modificati
+- `cross_link_safe.py` — **NUOVO**: script cross-linking sicuro con audit + revert
+- `cross_link_audit` table — **NUOVA**: tabella SQLite per tracciamento modifiche
+- `internati` table — **MODIFICATA**: 11 nuove colonne aggiunte (data_decesso, causa_morte, luogo_morte, luogo_sepoltura, campi_internamento, fronte_cattura, data_rientro, decorazione, anno_decorazione, anno_morte)
+- `docs/ARCHITETTURA_COMPLETA.md` — **AGGIORNATO**: v4.0 con pipeline V7, cross-linking, pipeline di ragionamento
+
+### File temporanei (da pulire)
+- `_tmp_analyze_rawtext.py` — analisi raw_text OCR
+- `_tmp_reapply_rawtext.py` — re-apply estrazione raw_text
+- `_tmp_check_all_schemas.py` — audit copertura campi
+- `_tmp_audit_crosslink.py` — audit qualità match
+- `_tmp_revert_untracked.py` — revert manuale modifiche non tracciate
+- `parse_internati_rawtext.py` — parser raw_text OCR (primo tentativo, non tracciato)
+- `populate_internati_v2.py` — primo cross-linking non sicuro (sostituito da cross_link_safe.py)
+
+---
+
+## 2026-08-12 (sera) — V7.6.1: Test Pipeline Eventi + Personale su Dati Reali
+
+### Contesto
+Verifica end-to-end del backend discorsivo su eventi storici e persone reali, dopo il cross-linking sicuro V7.6.
+
+### Test 1: 3 eventi via `event_research_engine.research_event()`
+
+| Evento | Provider | Fonti | Tempo | Confidence | Dati disputati | Non verificati |
+|--------|----------|-------|-------|------------|----------------|----------------|
+| Caporetto | gpt | 15 | 59s | ALTA (date/luogo/esito), MEDIA (perdite) | 0 | 2 (perdite, comandanti) |
+| Isonzo | gpt | 16 | 196s | ALTA (cronologia/luogo), MEDIA (perdite) | 1 (11 vs 12 offensive) | 1 (perdite) |
+| Asiago | gpt | 17 | 84s | MEDIA | 2 (comandanti, perdite) | 2 (perdite, comandanti) |
+
+**Risultati**: 3/3 OK. Disambiguazione corretta via `eventi_1gm.db`. Ogni fatto citato con `[ID]` fonte. Dati non verificati esplicitamente dichiarati. Fonti: USSME (archivio militare), OPAC SBN (bibliografiche), Internet Archive, cadutigrandeguerra.it, cadutisardi.it.
+
+### Test 2: 5 nomi casuali via `UnifiedResearchOrchestratorV7.execute()`
+
+| # | Tabella | Nome | Time | Obs | Identity | Claims | Errors |
+|---|---------|------|------|-----|----------|--------|--------|
+| 1 | internati | VILLERA Beniamino | 21.1s | 17 | RESOLVED | 6 | 0 |
+| 2 | lebi_records | DI CARLO Nicola | 15.6s | 101 | UNRESOLVED | 71 | 0 |
+| 3 | caduti_ministero | BERTANO Maurizio | 11.4s | 25 | RESOLVED | 3 | 0 |
+| 4 | decorati_nastroazzurro | RICCIOLI Francesco | 13.8s | 42 | CONFLICTED | 14 | 0 |
+| 5 | caduti_albooro | RAGGI Luigi | 13.3s | 121 | AMBIGUOUS | 96 | 0 |
+
+**Risultati**: 5/5 OK, 0 errori, 0 contaminazioni cross-war. Identity resolution corretta:
+- **RESOLVED** (Villera, Bertano): identità univoca, dati coerenti
+- **UNRESOLVED** (Di Carlo): omonimia non risolvibile con dati disponibili (9 fonti confermate, 34 ambigue)
+- **CONFLICTED** (Riccioli): due omonimi distinti correttamente (caduto WWI 1916 vs. decorato 1937)
+- **AMBIGUOUS** (Raggi): multipli candidati, 1 rigettato per omonimia (12 fonti confermate, 63 ambigue)
+
+### File temporanei (creati e rimossi)
+- `_tmp_test_3events.py` — test 3 eventi (cancellato)
+- `_tmp_print_3events.py` — stampa completa 3 eventi su file (cancellato)
+- `_tmp_3events_output.md` — output 3 eventi (cancellato)
+- `_tmp_test_5persons.py` — test 5 nomi casuali (cancellato)
+- `_tmp_5persons_output.md` — output 5 nomi (cancellato)
+
+### File modificati
+- `docs/ARCHITETTURA_COMPLETA.md` — sezione 5.1b aggiornata con cross-linking sicuro V7.6
+
+---
+
+## 2026-08-11 (sera) — V7.5.1: Anti-Duplicazione Narrazione + AMBIGUOUS_IDENTITY Fix
+
+### Contesto
+L'output narrativo AI presentava due problemi: (1) frasi duplicate tra blocchi narrativi (stesso fatto ripetuto con parole diverse in `direct_answer` e `identity`), e (2) contaminazione cross-persona in casi di omonimia (RIZZA GIOVANNI: 3 persone diverse WWI/WWII mescolate in un unico report AI).
+
+### Fix implementati (3)
+
+1. **Prompt anti-duplicazione** (`v7_narrator_prompt_v2.py:130-137`)
+   - Nuova sezione "REGOLA ANTI-DUPLICAZIONE OBBLIGATORIA" con istruzioni esplicite
+   - Esempi corretti/errati per guidare l'AI a non ripetere fatti tra blocchi
+   - Regola: ogni fatto in UN SOLO blocco; blocchi successivi devono AGGIUNGERE informazioni
+
+2. **Dedup nel renderer** (`v7_narrator.py:1533-1571` — `_render_blocks_to_markdown`)
+   - Token overlap ratio ≥ 0.55 → blocco scartato
+   - Shared 4-gram ≥ 2 → blocco scartato
+   - Safety net programmatico anche se l'AI ignora le istruzioni del prompt
+
+3. **Block AI per AMBIGUOUS_IDENTITY** (`v7_narrator.py:851-865`)
+   - Quando `identity_status == AMBIGUOUS_IDENTITY` con cluster conflittuali → forza deterministic
+   - Previene contaminazione cross-persona: l'AI riceveva 132 claim da 3 persone diverse
+   - `fallback_reason = "ambiguous_identity_conflicting_clusters"`
+
+### Bug RIZZA GIOVANNI — Root Cause Analysis
+- **3 cluster distinti** trovati: WWII (Modica, 9° Rgt Ftr, naufragio Crete 1943), WWI (Caporale, 223° Rgt Ftr, gas 1917), WWI decorato (Medaglia d'Argento)
+- `NarrationEvidenceSelector` non filtra per `identity_cluster_id` → 132 claim da tutti i cluster inviati all'AI
+- L'AI mescolava: "padre Angelo" (cluster WWI) attribuito alla persona WWII
+- **Fix**: bloccare AI quando AMBIGUOUS + cluster conflittuali → deterministic mostra cluster separati
+
+### Test
+- **ALBERINI ANTONIO** (RESOLVED_IDENTITY): 2 blocchi puliti, nessuna duplicazione, AI via openai/gpt-4o
+- **RIZZA GIOVANNI** (AMBIGUOUS_IDENTITY): deterministic fallback, 3 cluster separati, 14.1s (vs 22.7s AI)
+- **20 nomi casuali** (5 tabelle: lebi, internati, caduti_ministero, caduti_albooro, decorati):
+  - 15/20 validated_ai (gpt-4o) — nessuna duplicazione visibile
+  - 3/20 deterministic (AMBIGUOUS_IDENTITY: PALMERI, MOSCHETTI, VOLTOLINA) — correttamente bloccati
+  - 2/20 validated_ai con UNRESOLVED/CONFLICTED identity
+  - 0 errori, 0 duplicazioni
+- **5 eventi** (eventi_1gm): 3/5 validated_ai (Caporetto, Asiago, Fronte Macedone), 2/5 blocked (Tobruk=WWII, Piave=claim non validati)
+
+### File modificati
+- `v7_narrator_prompt_v2.py` — sezione anti-duplicazione
+- `v7_narrator.py` — dedup renderer + AMBIGUOUS_IDENTITY block
+
+---
+
+## 2026-08-11 — V7.5: OpenAI Primary for Report Generation
+
+### Contesto
+Crediti OpenAI ricaricati. Generazione narrativa e reportistica spostata su OpenAI (`gpt-4o`) come provider primario, con Mistral (`mistral-small-latest`) come fallback. Ollama/Gemma escluso esplicitamente dalla generazione reportistica in quanto il modello `gemma4:e2b-it-qat` (3B) su CPU ha dimostrato qualità insufficiente per JSON strutturato con claim_ids e una forte tendenza alle allucinazioni.
+
+### Routing aggiornato
+- **narration** → OpenAI primary, Mistral fallback
+- **generate_biography** → OpenAI primary, Mistral fallback
+- **generate_viewpoints** → OpenAI primary, Mistral fallback
+- **generate_timeline** → OpenAI primary, Mistral fallback
+- **generate_research_plan** → OpenAI primary, Mistral fallback
+- **generate_followup_queries** → OpenAI primary, Mistral fallback
+- **validate_output** → OpenAI primary, Mistral fallback
+- **verify_citations** → OpenAI primary, Mistral fallback
+- Policy version: `v7.5-openai-primary`
+
+### Azioni DB
+- `ai_routing_policies`: primary_model_id='openai', fallback_model_ids_json='["mistral","anthropic","gemini"]'
+- `ai_models`: `gemma4:e2b-it-qat` → status='disabled'
+
+### Test iniziale (ALBERINI ANTONIO)
+- Provider: openai/gpt-4o
+- Tempo: ~40s
+- Blocks: 5
+- Claims: 6
+- Status: validated_ai
+
+---
+
+## 2026-08-10 — V7.4: Ollama Integration + AI Cross-Validation
+
+### Contesto
+Integrazione di Ollama come provider AI locale per generazione narrativa, con modello Gemma 4 (e2b-it-qat, 4.3GB). Ollama sostituisce OpenAI come generatore primario per task di narrazione e generazione biografica. OpenAI diventa validatore primario del output generato, con Mistral come fallback per la validazione. Questo riduce i costi API (generazione locale gratuita) e mantiene un layer di quality assurance via cloud.
+
+### Componenti implementati (5)
+
+1. **Provider Ollama in `ai_client.py`**
+   - Funzione `_call_ollama()`: usa OpenAI-compatible API su `http://localhost:11434`
+   - Registrato in `_PROVIDER_FUNCS` e `_DEFAULT_MODELS`
+   - Timeout 300s (CPU-only, no GPU)
+   - Supporto `json_mode` e `json_schema` nativo via Ollama API
+
+2. **Routing AI con Policy DB in `ai_router.py`**
+   - `select_model()` ora rispetta `primary_model_id` della policy DB (non solo combined score)
+   - `check_budget_before_task()`: skip per provider locali (cost=0, budget=0)
+   - Nuovo task type `narration` aggiunto a `TASK_TYPES` e `_GENERATION_TASKS`
+   - Policy DB aggiornata: Ollama primary per generation, OpenAI primary per validation
+   - Policy version: `v7.4-ollama-e2b`
+
+3. **AI Cross-Validation in `v7_narrator.py`**
+   - Metodo `_ai_cross_validate()`: dopo generazione + hallucination check, valida il testo generato
+   - Usa `validate_ai_output()` da `ai_client.py` (OpenAI primary, Mistral fallback)
+   - Skip del provider generatore (no self-validation)
+   - Severity: minor → flags, major → flags, critical → fallback deterministico
+   - Metadata salvato in `GenerationInfo.ai_validation`
+
+4. **Funzione `validate_ai_output()` in `ai_client.py`**
+   - Valida accuratezza storica, coerenza con claim, allucinazioni residue
+   - Prompt strutturato con claims_context e war_period
+   - Ritorna: `{ok, valid, severity, issues, suggestions, provider, model}`
+
+5. **Modello DB in `narration_models.py`**
+   - `GenerationInfo`: aggiunto campo `ai_validation: Optional[Dict[str, Any]]`
+   - Memorizza provider/modello validatore, severity, issues, suggestions
+
+### Fix di routing (3 bug)
+
+1. **Budget check bloccava Ollama**: `est_cost=0.01` hardcoded > `available=0.0` per Ollama (budget=0, reserve=0). Fix: `est_cost=0.0` per provider locali + `check_budget_before_task` skip quando `estimated_cost=0`.
+
+2. **Policy DB ignorata**: `select_model()` selezionava solo per combined score, ignorando `primary_model_id` della routing policy. Fix: priorità ai candidati del provider primario della policy.
+
+3. **Task type `narration` mancante**: non era registrato in `TASK_TYPES` né `_GENERATION_TASKS`, quindi non veniva mai instradato a Ollama. Fix: aggiunto a entrambi.
+
+### Modelli Ollama
+
+| Modello | Size | Params | Status | Note |
+|---------|------|--------|--------|------|
+| `gemma4:e4b` | 9.6 GB | 8B (Q4_K_M) | disabled | Troppo lento su CPU (170s/196 chars) |
+| `gemma4:e2b-it-qat` | 4.3 GB | ~3B (QAT) | enabled | Primary generatore (95s/991 chars) |
+
+### File modificati (5)
+- `ai_client.py` — `_call_ollama()`, `validate_ai_output()`, budget fix, default model, timeout 300s
+- `ai_router.py` — `select_model()` policy respect, `check_budget_before_task()` zero-cost fix, `narration` task type
+- `v7_narrator.py` — `_ai_cross_validate()`, integrazione in `narrate()`
+- `narration_models.py` — `GenerationInfo.ai_validation` field
+- `research_engine_schema.py` — Ollama provider seed
+
+### File temporanei (test)
+- `_tmp_test_multi.py` — Test pipeline: 2 nomi casuali per tabella DB (10 nomi totali)
+- `_tmp_test_results.json` — Risultati test salvati
+
+### Configurazione DB
+- `ai_providers`: Ollama (id=7, code='ollama', priority=6, budget=0, capabilities=text/vision/structured_output)
+- `ai_models`: gemma4:e2b-it-qat (provider_id=7, quality=0.65, cost=0.0, latency=0.8, context=128K)
+- `ai_routing_policies`: narration → mistral primary, ollama/gemini/anthropic/openai fallback
+- Policy version: `v7.4-mistral-primary`
+
+### Note prestazionali
+- `gemma4:e4b` (8B, 9.6GB) su CPU: 170s/196 chars — impraticabile
+- `gemma4:e2b-it-qat` (3B, 4.3GB) su CPU: 95-280s per generazione — streaming previene timeout
+- Qualità modello 3B: insufficiente per JSON strutturato con claim_ids (0 claims, allucinazioni frequenti)
+- **Routing finale**: Mistral generatore primario (25-35s, 3-15 claims validi), Ollama fallback locale quando API cloud non disponibili
+
+---
+
+## 2026-08-10 — V7.3-FIX: Temporal Contamination Prevention in AI Narration
+
+### Contesto
+Il narratore AI generava contesto storico sui reparti militari mescolando conflitti: per un soldato WWII (Bruti Alfio, 5° Reggimento Genio) citava il fronte dell'Isonzo e la Prima guerra mondiale. Fix strutturale su 3 livelli: prompt AI, payload dati, validatore post-generazione.
+
+### Fix implementati (3)
+
+1. **Payload AI con `war_period`** (`v7_narrator.py:1042-1060`)
+   - `_infer_war_period()` da `military_ontology.py` ora chiamato nel `_build_ai_input`
+   - Il payload AI include `"war_period": "WWI | WWII | unknown"` dedotto dai claim (date, keyword)
+   - Il narratore sa esplicitamente in quale conflitto ha servito la persona
+
+2. **Sezione AMBITO TEMPORALE OBBLIGATORIO nel prompt** (`v7_narrator_prompt_v2.py:57-63`)
+   - Nuova sezione con regole esplicite: TUTTO il contesto storico limitato al `war_period`
+   - Esempi concreti: se WWII → no Isonzo/Caporetto/Piave/1915-1918; se WWI → no 8 settembre/Stalag/IMI/1940-1945
+   - Regola: non usare conoscenze generali sul reparto da addestramento se riguardano altro conflitto
+   - Aggiornata anche sezione CONTESTO MILITARE con riferimento al war_period
+
+3. **Validatore post-generazione con temporal contamination check** (`v7_narrator.py:1232-1263`)
+   - `_post_gen_hallucination_check` ora accetta `war_period` parameter
+   - Rileva marker WWI in testi WWII (`TEMPORAL_CONTAMINATION_WWI_IN_WWII`)
+   - Rileva marker WWII in testi WWI (`TEMPORAL_CONTAMINATION_WWII_IN_WWI`)
+   - Se >5 warning → fallback deterministico (come per hallucination standard)
+   - Eccezione: marker che corrispondono a claim reali (es. capture_date 1943 in report WWI) non vengono flaggati
+
+### File modificati (2)
+- `v7_narrator.py` — `_build_ai_input` (payload + war_period), `narrate` (inferenza war_period), `_post_gen_hallucination_check` (nuovo parametro + temporal check)
+- `v7_narrator_prompt_v2.py` — Schema input (war_period), sezione AMBITO TEMPORALE OBBLIGATORIO, aggiornamento CONTESTO MILITARE
+
+### Verifica
+- Test su BRUTTI ALFIO (WWII, 5° Reggimento Genio): report AI Mistral ora descrive il reparto **esclusivamente nel contesto WWII** ("Durante la Seconda guerra mondiale, il 5º Reggimento Genio era un'unità specializzata nelle costruzioni militari..."). Nessun riferimento a Isonzo/Caporetto/Prima guerra mondiale.
+
+---
+
+## 2026-08-09 — LeBI Bulk Import + Supabase Sync + Narrative Pipeline Integration
+
+### Contesto
+Integrazione completa del database LeBI (Lessico Biografico degli IMI — ANRP) nel sistema: bulk import di 166K+ record dal portale `lessicobiograficoimi.it`, sincronizzazione a Supabase, e integrazione nella pipeline discorsiva V7 per generazione narrazioni AI arricchite.
+
+### Task completate (6/6)
+
+1. **Bulk Import SQLite** (`import_lebi_bulk.py`)
+   - 166K+ record importati (ID range 2345–330027) in `lebi_records` table in `imi_internati.db`
+   - ThreadPoolExecutor (20 thread), BeautifulSoup HTML parsing, checkpoint/resume (`lebi_import_checkpoint.json`)
+   - Fix `sqlite3.OperationalError`: 27 colonne vs 26 placeholder → aggiunto `enriched_at`
+
+2. **Supabase Sync** (`sync_lebi_to_supabase.py`)
+   - Schema `lebi_records` creato su Supabase
+   - Batch upsert con `on_conflict=lebi_id` + `Prefer: return=minimal,resolution=merge-duplicates`
+   - Checkpoint resumable (`sync_lebi_supabase_checkpoint.json`)
+   - Verifica conteggi SQLite ↔ Supabase: match confermato
+
+3. **LocalDbAdapter** (`v7_provider_adapters.py:183-190`)
+   - Aggiunto `("lebi_records", "cognome", "nome")` alla lista tabelle `PERSON_LOOKUP`
+   - LeBI records ora restituiti come `SOURCE_CANDIDATE` observations
+
+4. **PERSON_SOURCE_SCHEMAS** (`person_source_schemas.py:351-392`)
+   - Schema completo `lebi_records`: 18 claim_fields, 4 provenance_fields, 7 identity_fields, 6 conflict_fields
+   - `war_period=WWII`, `authority_tier=1` (fonte ufficiale ANRP)
+   - Nuovi predicate: `capture_front`, `return_date`, `return_place` con validatori/normalizzatori
+
+5. **Research Orchestrator + Fact Extractor**
+   - `research_orchestrator.py:84,505` — `lebi_records` aggiunto a ricerche entità e tabelle dirette
+   - `fact_extractor.py:130-150` — `_LEBI_FIELD_MAP` con 18 mapping field→predicate
+   - `unified_orchestrator_v7.py:565` — docstring aggiornata
+
+6. **Test Pipeline Discorsiva** (5 nomi casuali, 5/5 RESOLVED_IDENTITY)
+   - CURIAZZI GIOVANBATTISTA: 57 obs, 17 claims, deterministic (LeBI: Innsbruck/Stalag III D)
+   - PELLEGRINI GIACOMO: 157 obs, 31 claims, AI Mistral (LeBI: 9° Reggimento Alpini, Stalag X B)
+   - BULGARELLI ERMANNO: 106 obs, 11 claims, AI Mistral (LeBI: Carpi, Stalag XI A, Arb. Kdo. 427)
+   - GERMANO GUIDO: 157 obs, 31 claims, deterministic (LeBI: Castel Del Monte, 9 Rgt. Alp.) + omonimo rilevato
+   - BRUTTI ALFIO: 86 obs, 14 claims, AI Mistral (LeBI: Maiolati Spontini, 5° Reggimento Genio, Halle/Saale)
+
+### File modificati (6)
+- `v7_provider_adapters.py` — LocalDbAdapter PERSON_LOOKUP table list
+- `person_source_schemas.py` — Schema registry + validatori/normalizzatori
+- `unified_orchestrator_v7.py` — Docstring PERSON tables
+- `research_orchestrator.py` — Entity search + direct table search
+- `fact_extractor.py` — _LEBI_FIELD_MAP + field_map lookup + entity_label
+
+### File nuovi (3)
+- `import_lebi_bulk.py` — Bulk import script con checkpoint
+- `sync_lebi_to_supabase.py` — Sync SQLite → Supabase con upsert
+- `_test_lebi_narrative.py` — Test pipeline discorsiva su nomi casuali LeBI
+
+### Verifiche chiave
+- LocalDbAdapter interroga `lebi_records` → `SOURCE_CANDIDATE` observations
+- `extract_claims_from_record` processa `lebi_records` tramite `PERSON_SOURCE_SCHEMAS`
+- Provenance corretta: URL LeBI, PDF, source_id estratti dai campi `detail_url`, `pdf_url`, `lebi_id`
+- Identity resolution: RESOLVED per nomi univoci, AMBIGUOUS per omonimi (es. GERMANO GUIDO)
+- URL LeBI nei context claims: `https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/show/{id}`
+- AI provider: OpenAI esaurito (429), Anthropic non autorizzato (401), Mistral attivo (200)
+
+---
+
 ## 2026-08-05 — V7.3-PERSON-FIX: Evidence-Locked Narration, Multi-Table Retrieval, Script Security
 
 ### Contesto

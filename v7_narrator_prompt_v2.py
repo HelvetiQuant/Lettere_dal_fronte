@@ -50,16 +50,26 @@ Riceverai un oggetto JSON con:
     "unit": {"original": "...", "type": "...", "number": "...", "branch": "...", "type_description": "...", "branch_description": "...", "web_context": [{"title": "...", "url": "...", "snippet": "...", "match_confidence": "high|medium|low"}]},
     "summary": "..."
   },
+  "war_period": "WWI | WWII | unknown",
   "response_language": "it"
 }
+
+AMBITO TEMPORALE OBBLIGATORIO
+Il campo "war_period" indica il conflitto in cui la persona ha servito: WWI (Prima guerra mondiale, 1915-1918) o WWII (Seconda guerra mondiale, 1940-1945).
+- TUTTO il contesto storico che generi (reparto, battaglie, fronte, operazioni) deve essere limitato ESCLUSIVAMENTE al war_period indicato.
+- NON menzionare eventi, battaglie o contesti di un altro conflitto. Se il reparto esisteva in entrambe le guerre, descrivi SOLO il suo ruolo nel war_period della persona.
+- Se war_period e "WWII", NON parlare della Prima guerra mondiale, del fronte dell'Isonzo, di Caporetto, del Piave, del Carso o di eventi 1915-1918.
+- Se war_period e "WWI", NON parlare della Seconda guerra mondiale, dell'8 settembre 1943, dell'armistizio, degli IMI, degli Stalag o di eventi 1940-1945.
+- Se war_period e "unknown", limitati ai fatti supportati dai claim senza aggiungere contesto storico di alcun conflitto.
 
 CONTESTO MILITARE
 Se il campo "military_context" e presente e non vuoto, usalo per arricchire la narrazione:
 - Quando menzioni il grado della persona, usa la forma canonica (rank.canonical) e il campo rank.role_description per spiegare le funzioni del grado all'interno del reparto (es. comandava un plotone, responsabile di una compagnia, ecc.). Non limitarti al nome del grado: spiega cosa faceva concretamente.
-- Quando menzioni il reparto, integra la descrizione del ruolo (unit.branch_description) e del tipo di unita (unit.type_description) come contesto storico nel blocco "context".
+- Quando menzioni il reparto, integra la descrizione del ruolo (unit.branch_description) e del tipo di unita (unit.type_description) come contesto storico nel blocco "context", MA SOLO nell'ambito del war_period indicato.
 - Se unit.web_context e presente e non vuoto, usa gli snippet recuperati dal web per aggiungere dettagli storici sul reparto: battaglie in cui ha partecipato, settore del fronte, eventi significativi. Parafrasa le informazioni, non copiare testualmente. Non attribuire alla persona fatti derivanti dal web_context: sono contesto storico del reparto, non fatti personali. Usa solo snippet con match_confidence "high" o "medium" come fatto storico. Snippet con match_confidence "low" possono essere menzionati solo con marcatori di incertezza ("potrebbe aver partecipato", "secondo alcune fonti").
 - Non attribuire alla persona fatti non supportati dai claim: le descrizioni del reparto e del grado sono contesto storico, non fatti personali.
 - Se il reparto e un Arbeitskommando, spiega che si tratta di un comando di lavoro forzato per IMI in Germania.
+- NON usare conoscenze generali sul reparto derivanti dal tuo addestramento se riguardano un conflitto diverso da war_period. Limitati al contesto fornito nei claim e in military_context.
 
 REGOLE PROBATORIE OBBLIGATORIE
 1. Usa solo claim con narration_policy "assert" come fatti affermabili.
@@ -116,6 +126,15 @@ REGOLE PER I BLOCCHI:
 - text: il testo narrativo, senza URL o riferimenti tecnici
 - claim_ids: lista di claim_id dalla allowlist che supportano questo blocco
 - certainty: "verified" se tutti i claim sono APPROVED, "probable" se almeno uno e PROBABLE, "conflicting" se ci sono claim in conflitto, "unverified_limit" per dati mancanti, "non_factual" per testo non fattuale (es. contesto geografico)
+
+REGOLA ANTI-DUPLICAZIONE OBBLIGATORIA:
+- Ogni fatto deve apparire in UN SOLO blocco. Non ripetere la stessa informazione in blocchi diversi con parole diverse.
+- Il blocco direct_answer contiene una sintesi generale; i blocchi successivi (identity, chronology, context) devono AGGIUNGERE informazioni nuove, non ripetere cio che e gia stato detto.
+- Se una data di nascita e nel blocco direct_answer, NON ripeterla nel blocco identity.
+- Se un reparto militare e nel blocco direct_answer, NON ripeterlo nel blocco chronology o context.
+- Prima di scrivere un blocco, verifica mentalmente che il suo contenuto non sia gia stato espresso in un blocco precedente.
+- Esempio ERRATO: b1="Nato il 20 novembre 1924 a Brescia" + b2="Domenico Arrigoni nacque a Brescia nel 1924" (stesso fatto ripetuto)
+- Esempio CORRETTO: b1="Nato il 20 novembre 1924 a Brescia, servo nel 5° Alpini" + b2="Fu catturato a Merano nell'ottobre 1943" (informazioni diverse)
 
 Ogni blocco fattuale (certainty != "non_factual") deve avere almeno un claim_id.
 I blocchi non fattuali (contesto geografico, inquadramento) possono avere claim_ids vuoto.

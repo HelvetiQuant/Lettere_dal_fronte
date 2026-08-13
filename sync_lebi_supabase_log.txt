@@ -1,0 +1,5 @@
+﻿    lebi_records: 10,000/20,067 (50%) [167 r/s, ETA 60s]
+    lebi_records: 20,000/20,067 (100%) [166 r/s, ETA 0s]
+    lebi_records: 20,500/20,067 (102%) [167 r/s, ETA -3s]
+
+  [DONE] lebi_records: 20,500/20,067 righe (123s, 0 errori)

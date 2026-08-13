@@ -1,0 +1,9 @@
+﻿python : 2026-08-09 20:47:45,077 [INFO] Letter A page 1: no more results
+In riga:1 car:32
++ ... YTHONIOENCODING="utf-8"; python import_lebi_bulk.py test 2>&1 | Out-F ...
++                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (2026-08-09 20:4...no more results:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Test: harvested 0 records for letter A
+Total in DB: 0

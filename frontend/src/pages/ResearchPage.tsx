@@ -1,17 +1,129 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Brain, Clock, AlertTriangle, FileSearch, BookOpen } from 'lucide-react';
+import { Brain, Clock, AlertTriangle, FileSearch, BookOpen, Zap, ShieldCheck, Activity } from 'lucide-react';
 import { api } from '@/api/client';
 import { ApiError } from '@/api/errors';
-import type { ResearchV2Result, ResearchV2PlansResponse, Fragment, TimelineEntry, ResearchPlan } from '@/api/types';
+import type {
+  ResearchV2Result, ResearchV2PlansResponse, Fragment, TimelineEntry, ResearchPlan,
+  V7ResearchResult, V7SemanticCounts, V7Snapshot,
+} from '@/api/types';
 import { Card, Tag, Input, Button, LoadingState, ErrorState, EmptyState } from '@/components/feedback/States';
 import { PageIntro, Section } from '@/components/layout/PageIntro';
 import { Timeline } from '@/components/dossier/DossierParts';
 
+type PipelineMode = 'v7' | 'v2';
+
+function IdentityBadge({ status }: { status?: string }) {
+  if (!status) return null;
+  const variant = status === 'RESOLVED_IDENTITY' ? 'success' :
+    status === 'AMBIGUOUS_IDENTITY' ? 'warning' :
+    status === 'CONFLICTED_IDENTITY' ? 'warning' :
+    status === 'UNRESOLVED_IDENTITY' ? 'neutral' : 'neutral';
+  const label = status.replace('_IDENTITY', '').replace('_', ' ');
+  return <Tag variant={variant as 'success' | 'warning' | 'neutral'}>Identity: {label}</Tag>;
+}
+
+function V7ResultView({ result }: { result: V7ResearchResult }) {
+  const snapshot: V7Snapshot | null = result.snapshot;
+  const semantic: V7SemanticCounts = result.semantic_counts || {};
+  const claims = snapshot?.person_claims || [];
+  const identity = snapshot?.identity_status;
+  const corroboration = snapshot?.corroboration_status;
+  const warPeriod = snapshot?.war_period;
+  const crossWar = semantic.cross_war_contamination;
+  const timings = result.stage_timings || {};
+
+  return (
+    <>
+      <Section title={`Run ${result.run_id}`} >
+        <Card>
+          <div className="flex flex--wrap" style={{ gap: 'var(--s-2)' }}>
+            <IdentityBadge status={identity} />
+            {corroboration && <Tag variant="neutral">Corroboration: {corroboration}</Tag>}
+            {warPeriod && <Tag variant="accent">War: {warPeriod}</Tag>}
+            <Tag variant={crossWar ? 'warning' : 'success'}>Cross-war: {crossWar ? 'DETECTED' : 'Clean'}</Tag>
+            <Tag variant="neutral">Obs: {result.observation_count}</Tag>
+            <Tag variant="neutral">Claims: {claims.length}</Tag>
+            {result.errors.length > 0 && <Tag variant="warning">Errors: {result.errors.length}</Tag>}
+          </div>
+        </Card>
+      </Section>
+
+      {result.errors.length > 0 && (
+        <Section title="Errors">
+          <Card variant="info">
+            {result.errors.map((e, i) => (
+              <div key={i} className="text-sm" style={{ color: 'var(--c-warning)' }}>{e}</div>
+            ))}
+          </Card>
+        </Section>
+      )}
+
+      {result.warnings.length > 0 && (
+        <Section title={`Warnings (${result.warnings.length})`}>
+          <Card>
+            {result.warnings.slice(0, 10).map((w, i) => (
+              <div key={i} className="text-sm text-muted">{w}</div>
+            ))}
+          </Card>
+        </Section>
+      )}
+
+      {Object.keys(timings).length > 0 && (
+        <Section title="Stage Timings">
+          <Card>
+            <div className="flex flex--wrap" style={{ gap: 'var(--s-2)' }}>
+              {Object.entries(timings).map(([stage, t]) => (
+                <Tag key={stage} variant="neutral">{stage}: {t.toFixed(1)}s</Tag>
+              ))}
+            </div>
+          </Card>
+        </Section>
+      )}
+
+      {claims.length > 0 && (
+        <Section title={`Person Claims (${claims.length})`}>
+          <div className="grid grid--auto">
+            {claims.slice(0, 30).map((c, i) => (
+              <Card key={i}>
+                <div className="flex flex--between flex--center">
+                  <strong>{c.predicate || '—'}</strong>
+                  {c.certainty && <Tag variant="neutral">{c.certainty}</Tag>}
+                </div>
+                <div className="text-sm mt-1">{c.value || '—'}</div>
+                <div className="text-xs text-muted mt-1">Sources: {c.source_count ?? c.evidence_count ?? 0}</div>
+              </Card>
+            ))}
+            {claims.length > 30 && (
+              <Card><div className="text-sm text-muted">+{claims.length - 30} more claims…</div></Card>
+            )}
+          </div>
+        </Section>
+      )}
+
+      {result.report && (
+        <Section title={`Report (${result.report.length} chars)`}>
+          <Card variant="info">
+            <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{result.report}</div>
+          </Card>
+        </Section>
+      )}
+
+      {!result.report && (
+        <Section title="Report">
+          <Card><EmptyState message="Nessun report generato." /></Card>
+        </Section>
+      )}
+    </>
+  );
+}
+
 export function ResearchPage() {
   const [params] = useSearchParams();
   const [query, setQuery] = useState(params.get('q') || '');
-  const [result, setResult] = useState<ResearchV2Result | null>(null);
+  const [mode, setMode] = useState<PipelineMode>('v7');
+  const [v2Result, setV2Result] = useState<ResearchV2Result | null>(null);
+  const [v7Result, setV7Result] = useState<V7ResearchResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const [plans, setPlans] = useState<ResearchPlan[]>([]);
@@ -27,21 +139,22 @@ export function ResearchPage() {
     if (query.trim().length < 3) return;
     setLoading(true);
     setError(null);
-    setResult(null);
+    setV2Result(null);
+    setV7Result(null);
     try {
-      const data = await api.researchV2Create(query.trim());
-      setResult(data);
+      if (mode === 'v7') {
+        const data = await api.v7Research(query.trim());
+        setV7Result(data);
+      } else {
+        const data = await api.researchV2Create(query.trim());
+        setV2Result(data);
+      }
     } catch (e) {
       setError(e instanceof ApiError ? e : new ApiError(0, String(e)));
     } finally {
       setLoading(false);
     }
   };
-
-  const allFragments: Fragment[] = result?.cycles?.flatMap(c => c.fragments || []) || [];
-  const timeline: TimelineEntry[] = result?.timeline || result?.facts?.timeline || [];
-  const conflicts: unknown[] = result?.facts?.conflicts || [];
-  const narrative = result?.narrative;
 
   return (
     <>
@@ -57,7 +170,7 @@ export function ResearchPage() {
       />
 
       <Section>
-        <div className="flex" style={{ gap: 'var(--s-2)' }}>
+        <div className="flex flex--wrap" style={{ gap: 'var(--s-2)', alignItems: 'center' }}>
           <Input
             placeholder="Es: Gaiaschi Luigi internato a Sandbostel"
             value={query}
@@ -70,12 +183,42 @@ export function ResearchPage() {
             <Brain size={16} /> {loading ? 'Ricerca…' : 'Avvia ricerca'}
           </Button>
         </div>
+        <div className="flex flex--center mt-2" style={{ gap: 'var(--s-2)' }}>
+          <Button
+            variant={mode === 'v7' ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => setMode('v7')}
+          >
+            <Zap size={12} /> V7 Pipeline
+          </Button>
+          <Button
+            variant={mode === 'v2' ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => setMode('v2')}
+          >
+            <Activity size={12} /> V2 Legacy
+          </Button>
+        </div>
       </Section>
 
       {error && <ErrorState message={error.userMessage} onRetry={runResearch} />}
-      {loading && <LoadingState label="Ricerca federata in corso. L'IA interroga più fonti in cicli successivi…" />}
+      {loading && (
+        <LoadingState label={
+          mode === 'v7'
+            ? 'Pipeline V7 in esecuzione: Plan → Discover → Fetch → Extract → Resolve → Fuse → Validate → Narrate…'
+            : "Ricerca federata V2 in corso. L'IA interroga più fonti in cicli successivi…"
+        } />
+      )}
 
-      {result && (
+      {v7Result && mode === 'v7' && <V7ResultView result={v7Result} />}
+
+      {v2Result && mode === 'v2' && (() => {
+        const result = v2Result;
+        const allFragments: Fragment[] = result?.cycles?.flatMap(c => c.fragments || []) || [];
+        const timeline: TimelineEntry[] = result?.timeline || result?.facts?.timeline || [];
+        const conflicts: unknown[] = result?.facts?.conflicts || [];
+        const narrative = result?.narrative;
+        return (
         <>
           <Section title={`Piano #${result.plan_id}`}>
             <Card>
@@ -134,7 +277,8 @@ export function ResearchPage() {
             </Card>
           </Section>
         </>
-      )}
+        );
+      })()}
 
       <Section title="Ricerche recenti">
         {plansError ? (

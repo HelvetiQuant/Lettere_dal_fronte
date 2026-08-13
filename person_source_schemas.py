@@ -187,6 +187,9 @@ PREDICATE_VALIDATORS: Dict[str, Callable[[str], bool]] = {
     "current_municipality": _validate_place,
     "burial_place": _validate_place,
     "burial_country": _validate_place,
+    "capture_front": _validate_non_empty,
+    "return_date": _validate_date,
+    "return_place": _validate_place,
 }
 
 PREDICATE_NORMALIZERS: Dict[str, Callable[[str], str]] = {
@@ -222,6 +225,9 @@ PREDICATE_NORMALIZERS: Dict[str, Callable[[str], str]] = {
     "current_municipality": _normalize_place,
     "burial_place": _normalize_place,
     "burial_country": _normalize_place,
+    "capture_front": _normalize_text,
+    "return_date": _normalize_date,
+    "return_place": _normalize_place,
 }
 
 
@@ -250,6 +256,7 @@ PERSON_SOURCE_SCHEMAS: Dict[str, SourceSchema] = {
             "arbeitskommando": "work_command",
             "mansione": "assignment",
             "reparto": "military_unit",
+            "arma": "military_branch",
         },
         provenance_fields={
             "lettera": "archive_letter",
@@ -267,7 +274,7 @@ PERSON_SOURCE_SCHEMAS: Dict[str, SourceSchema] = {
     # ─── caduti_albooro — WWI, 342,555 records ──────────────────────────────
     "caduti_albooro": SourceSchema(
         table_name="caduti_albooro",
-        war_period=WAR_PERIOD_WWII,
+        war_period=WAR_PERIOD_WWI,
         name_fields=("", "", "nominativo"),
         authority_tier=1,
         description="Caduti Albo d'Oro — caduti italiani WWI",
@@ -296,7 +303,7 @@ PERSON_SOURCE_SCHEMAS: Dict[str, SourceSchema] = {
     # ─── decorati_nastroazzurro — WWI, 279,832 records ──────────────────────
     "decorati_nastroazzurro": SourceSchema(
         table_name="decorati_nastroazzurro",
-        war_period=WAR_PERIOD_WWII,
+        war_period=WAR_PERIOD_WWI,
         name_fields=("cognome", "nome", ""),
         authority_tier=1,
         description="Decorati al Nastro Azzurro — decorati italiani WWI",
@@ -348,6 +355,49 @@ PERSON_SOURCE_SCHEMAS: Dict[str, SourceSchema] = {
         ],
     ),
 
+    # ─── lebi_records — WWII IMI, 166K records (LeBI/ANRP) ───────────────────
+    "lebi_records": SourceSchema(
+        table_name="lebi_records",
+        war_period=WAR_PERIOD_WWII,
+        name_fields=("cognome", "nome", ""),
+        authority_tier=1,
+        description="Lessico Biografico degli IMI — ANRP, schede biografiche complete internati militari italiani WWII",
+        claim_fields={
+            "data_nascita": "birth_date",
+            "luogo_nascita": "birth_place",
+            "provincia_nascita": "birth_province",
+            "grado": "rank",
+            "reparto": "military_unit",
+            "arma": "military_branch",
+            "matricola": "military_id",
+            "fronte_cattura": "capture_front",
+            "luogo_cattura": "capture_place",
+            "data_cattura": "capture_date",
+            "campi_internamento": "internment_place",
+            "sorte": "fate",
+            "data_decesso": "death_date",
+            "luogo_decesso": "death_place",
+            "causa_morte": "death_cause",
+            "luogo_sepoltura": "burial_place",
+            "data_rientro": "return_date",
+            "luogo_rientro": "return_place",
+        },
+        provenance_fields={
+            "detail_url": "source_url",
+            "pdf_url": "source_document",
+            "fonti": "source_ref",
+            "lebi_id": "source_id",
+        },
+        identity_fields=[
+            "data_nascita", "luogo_nascita", "provincia_nascita",
+            "matricola", "grado", "reparto", "data_decesso",
+        ],
+        conflict_fields=[
+            "data_nascita", "luogo_nascita", "matricola",
+            "reparto", "data_decesso", "luogo_decesso",
+        ],
+    ),
+
     # ─── caduti_ministero — WWII, 162,646 records ───────────────────────────
     "caduti_ministero": SourceSchema(
         table_name="caduti_ministero",
@@ -364,6 +414,11 @@ PERSON_SOURCE_SCHEMAS: Dict[str, SourceSchema] = {
             "comune_nascita": "birth_place",
             "nazione_decesso": "death_country",
             "luogo_sepoltura": "burial_place",
+            "grado": "rank",
+            "reparto": "military_unit",
+            "anno_morte": "death_year",
+            "luogo_morte": "death_place",
+            "causa_morte": "death_cause",
         },
         provenance_fields={
             "scheda_url": "source_url",

@@ -19,6 +19,8 @@ import type {
   AIRuntimeHealth, AIRuntimeConfig, AIRuntimeBenchmark,
   ChatMessageDTO, ChatResponseDTO, ChatHealthDTO,
   ResearchChatResponse,
+  V7ResearchResult, V7HealthResponse, V7CapabilitiesResponse, V7NarrateResponse,
+  CrossLinkStatus,
 } from './types';
 
 export const api = {
@@ -234,4 +236,21 @@ export const api = {
     post<Record<string, unknown>>('/api/v7/build-response', data, undefined, 30_000),
   v73ResponseSchema: () =>
     get<{ schema_version: string; sections: { id: string; title: string }[] }>('/api/v7/response-schema'),
+
+  // ── V7 Unified Pipeline (full research) ──
+  v7Research: (userInput: string, intent = 'PERSON_LOOKUP', targetId = '', conflict = 'UNKNOWN') =>
+    post<V7ResearchResult>('/api/v7/research',
+      { user_input: userInput, intent, target_id: targetId, conflict }, undefined, 300_000),
+  v7RunStatus: (runId: string) =>
+    get<Record<string, unknown>>(`/api/v7/research/${runId}`),
+  v7Health: () =>
+    get<V7HealthResponse>('/api/v7/health'),
+  v7Capabilities: () =>
+    get<V7CapabilitiesResponse>('/api/v7/system/capabilities'),
+  v7Narrate: (snapshot: Record<string, unknown>) =>
+    post<V7NarrateResponse>('/api/v7/narrate', snapshot),
+
+  // ── Cross-Linking Safe (V7.6) ──
+  crossLinkStatus: () =>
+    get<CrossLinkStatus>('/api/cross-link/status'),
 };

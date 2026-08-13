@@ -71,6 +71,7 @@ _openai_client = None
 _anthropic_client = None
 _mistral_client = None
 _gemini_configured = False
+_ollama_base_url = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
 
 
 def _get_openai_client():
@@ -305,6 +306,87 @@ def _call_perplexity(
     }
 
 
+def _call_ollama(
+    model: str,
+    system: str,
+    user: str,
+    max_tokens: int = 4096,
+    temperature: float = 0.3,
+    json_mode: bool = False,
+    images: List[Dict] = None,
+    json_schema: Optional[Dict] = None,
+) -> Dict:
+    """Chiama Ollama locale (OpenAI-compatible endpoint).
+
+    Ollama espone /v1/chat/completions compatibile con l'API OpenAI.
+    Supporta json_object mode via response_format.
+    Costo: 0 (locale, no API key).
+    """
+    base = _ollama_base_url
+    messages = [
+        {"role": "system", "content": system},
+        {"role": "user", "content": user},
+    ]
+    body: Dict[str, Any] = {
+        "model": model,
+        "messages": messages,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+        "stream": True,  # V7.4: streaming to avoid timeout on CPU-only
+    }
+    if json_mode:
+        body["response_format"] = {"type": "json_object"}
+    if json_schema and json_mode:
+        body["response_format"] = {
+            "type": "json_schema",
+            "json_schema": {
+                "name": json_schema.get("name", "structured_output"),
+                "schema": json_schema.get("schema", json_schema),
+                "strict": json_schema.get("strict", True),
+            },
+        }
+
+    # V7.4: Use streaming to prevent timeout on CPU-only machines
+    resp = requests.post(
+        f"{base}/v1/chat/completions",
+        headers={"Content-Type": "application/json"},
+        json=body,
+        timeout=(30, 600),  # (connect, read-per-chunk)
+        stream=True,
+    )
+    resp.raise_for_status()
+
+    text_parts = []
+    in_tok = 0
+    out_tok = 0
+    for line in resp.iter_lines():
+        if not line:
+            continue
+        line_str = line.decode("utf-8")
+        if line_str.startswith("data: "):
+            line_str = line_str[6:]
+        if line_str == "[DONE]":
+            break
+        try:
+            chunk = json.loads(line_str)
+            delta = chunk["choices"][0].get("delta", {}).get("content", "")
+            if delta:
+                text_parts.append(delta)
+            usage = chunk.get("usage", {})
+            if usage:
+                in_tok = usage.get("prompt_tokens", in_tok)
+                out_tok = usage.get("completion_tokens", out_tok)
+        except (json.JSONDecodeError, KeyError, IndexError):
+            continue
+
+    text = "".join(text_parts).strip()
+    if not in_tok:
+        in_tok = len(system) // 4 + len(user) // 4
+    if not out_tok:
+        out_tok = len(text) // 4
+    return {"text": text, "input_tokens": in_tok, "output_tokens": out_tok, "cost": 0.0}
+
+
 def _call_gemini(
     model: str,
     system: str,
@@ -350,6 +432,7 @@ _PROVIDER_FUNCS = {
     "mistral": _call_mistral,
     "perplexity": _call_perplexity,
     "gemini": _call_gemini,
+    "ollama": _call_ollama,
 }
 
 # Default models per provider (fallback se select_model non trova modelli nel DB)
@@ -359,10 +442,11 @@ _DEFAULT_MODELS = {
     "mistral": "mistral-small-latest",
     "perplexity": "sonar",
     "gemini": "gemini-2.0-flash",
+    "ollama": "gemma4:e2b-it-qat",
 }
 
 # Fallback order quando select_model non ha modelli nel DB
-_FALLBACK_ORDER = ["openai", "anthropic", "mistral", "perplexity", "gemini"]
+_FALLBACK_ORDER = ["openai", "anthropic", "mistral", "perplexity", "gemini", "ollama"]
 
 
 def call_ai(
@@ -439,12 +523,17 @@ def call_ai(
         if not func:
             continue
 
-        model = model_id if i == 0 and model_id else _DEFAULT_MODELS.get(pcode)
+        # V7.4: Only use model_id for the primary provider (i==0 AND it's the selected provider).
+        # When primary is skipped and we fall through to fallback order, use each provider's default model.
+        model = model_id if (i == 0 and pcode == provider_code and model_id) else _DEFAULT_MODELS.get(pcode)
         if not model:
             continue
 
         # Check budget
         est_cost = 0.01  # stima conservativa
+        # V7.4: Local providers (ollama, lmstudio) have zero cost, skip budget check
+        if pcode in ("ollama", "lmstudio"):
+            est_cost = 0.0
         budget_check = check_budget_before_task(pcode, est_cost)
         if not budget_check.get("ok"):
             attempted.append({"provider": pcode, "error": "insufficient_budget"})
@@ -598,7 +687,7 @@ def call_ai_json(
 # ═══ AVAILABILITY ═════════════════════════════════════════════════════════
 
 def get_available_providers() -> List[str]:
-    """Ritorna lista provider con chiave API configurata."""
+    """Ritorna lista provider con chiave API configurata o locale attivo."""
     available = []
     for pcode, key_name in [
         ("openai", "OPENAI_API_KEY"),
@@ -609,8 +698,135 @@ def get_available_providers() -> List[str]:
     ]:
         if _get_key(key_name):
             available.append(pcode)
+    # Ollama: sempre disponibile se il server locale risponde
+    try:
+        r = requests.get(f"{_ollama_base_url}/api/tags", timeout=3)
+        if r.status_code == 200:
+            available.append("ollama")
+    except Exception:
+        pass
     return available
 
 
 def is_any_provider_available() -> bool:
     return len(get_available_providers()) > 0
+
+
+# ═══ AI VALIDATION ═════════════════════════════════════════════════════════
+
+_VALIDATION_SYSTEM = """Sei un validatore storico rigoroso. Analizzi un testo narrativo generato da AI
+verificando:
+1. Accuratezza storica: nessun anacronismo o contaminazione temporale tra guerre diverse
+2. Coerenza con i dati forniti: nomi, date, luoghi, unità militari corrispondono ai claim
+3. Allucinazioni: fatti non supportati da evidenza nei claim
+4. Temporal scoping: se il periodo è WWII, non devono esserci riferimenti a WWI (e viceversa)
+
+Rispondi SOLO in JSON con questo schema:
+{
+  "valid": true/false,
+  "issues": ["descrizione problema 1", "descrizione problema 2"],
+  "severity": "none" | "minor" | "major" | "critical",
+  "suggestions": ["suggerimento correttivo 1"]
+}
+
+Se non trovi problemi, restituisci {"valid": true, "issues": [], "severity": "none", "suggestions": []}.
+"""
+
+
+def validate_ai_output(
+    generated_text: str,
+    claims_context: str,
+    war_period: str = "unknown",
+    skip_providers: Optional[set] = None,
+) -> Dict:
+    """Valida un testo generato da AI usando OpenAI come validatore, Mistral come fallback.
+
+    Args:
+        generated_text: testo narrativo da validare
+        claims_context: contesto dei claim/evidenze per la validazione
+        war_period: periodo storico (WWI/WWII/unknown) per il temporal scoping
+        skip_providers: provider da saltare
+
+    Returns:
+        {
+            ok: bool,
+            valid: bool,          # True se il testo passa la validazione
+            issues: list[str],    # problemi rilevati
+            severity: str,        # none/minor/major/critical
+            suggestions: list[str],
+            provider: str,        # validatore usato
+            model: str,
+            raw: str,             # risposta raw del validatore
+        }
+    """
+    user_prompt = f"""Periodo storico: {war_period}
+
+DATI E CLAIM DI RIFERIMENTO:
+{claims_context}
+
+TESTO GENERATO DA VALIDARE:
+{generated_text}
+
+Analizza il testo e restituisci il JSON di validazione."""
+
+    _skip = skip_providers or set()
+    validation_order = [
+        p for p in ["openai", "mistral", "anthropic", "gemini"]
+        if p not in _skip and not _breaker_is_open(p)
+    ]
+
+    for pcode in validation_order:
+        func = _PROVIDER_FUNCS.get(pcode)
+        if not func:
+            continue
+        model = _DEFAULT_MODELS.get(pcode)
+        if not model:
+            continue
+        try:
+            result = func(
+                model=model,
+                system=_VALIDATION_SYSTEM,
+                user=user_prompt,
+                max_tokens=1024,
+                temperature=0.1,
+                json_mode=True,
+            )
+            import json as _json
+            try:
+                data = _json.loads(result["text"])
+            except _json.JSONDecodeError:
+                start = result["text"].find("{")
+                end = result["text"].rfind("}") + 1
+                if start >= 0 and end > start:
+                    data = _json.loads(result["text"][start:end])
+                else:
+                    data = {"valid": True, "issues": [], "severity": "none",
+                            "suggestions": [], "_parse_error": True}
+
+            _breaker_record_success(pcode)
+            return {
+                "ok": True,
+                "valid": data.get("valid", True),
+                "issues": data.get("issues", []),
+                "severity": data.get("severity", "none"),
+                "suggestions": data.get("suggestions", []),
+                "provider": pcode,
+                "model": model,
+                "raw": result["text"],
+            }
+        except Exception as e:
+            log.warning("Validation provider %s failed: %s", pcode, e)
+            _breaker_record_failure(pcode)
+            continue
+
+    return {
+        "ok": False,
+        "valid": True,  # If no validator available, don't block
+        "issues": [],
+        "severity": "none",
+        "suggestions": [],
+        "provider": None,
+        "model": None,
+        "raw": "",
+        "error": "Nessun validatore AI disponibile",
+    }

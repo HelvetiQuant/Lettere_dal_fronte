@@ -1,0 +1,6 @@
+﻿    [ERR] offset 0: HTTP 409 - {"code":"23505","details":"Key (lebi_id)=(2345) already exists.","hint":null,"message":"duplicate key value violates unique constraint \"lebi_records_lebi_id_key\""}
+    [ERR] offset 500: HTTP 409 - {"code":"23505","details":"Key (lebi_id)=(3278) already exists.","hint":null,"message":"duplicate key value violates unique constraint \"lebi_records_lebi_id_key\""}
+    [ERR] offset 1000: HTTP 409 - {"code":"23505","details":"Key (lebi_id)=(3858) already exists.","hint":null,"message":"duplicate key value violates unique constraint \"lebi_records_lebi_id_key\""}
+    [ABORT] Troppi errori
+
+  [DONE] lebi_records: 0/166,112 righe (6s, 11 errori)

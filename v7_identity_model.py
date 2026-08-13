@@ -67,6 +67,7 @@ STRONG_IDENTIFIERS = [
 # V7.3-FIX: War period classification per table
 TABLE_WAR_PERIOD = {
     "internati": "WWII",
+    "lebi_records": "WWII",
     "caduti_albooro": "WWI",
     "decorati_nastroazzurro": "WWI",
     "caduti_cwgc": "BOTH",
@@ -386,6 +387,14 @@ class IdentityResolver:
 
         cognome_match = obs_cognome == target_cognome
         nome_match = target_nome and obs_nome == target_nome
+
+        # V7.3-FIX: Also try reversed name order (user may type "Nome Cognome")
+        if not cognome_match or not nome_match:
+            reversed_cognome_match = obs_cognome == target_nome
+            reversed_nome_match = target_cognome and obs_nome == target_cognome
+            if reversed_cognome_match and reversed_nome_match:
+                cognome_match = True
+                nome_match = True
 
         # V7.3-FIX: Get war period for this observation's table
         obs_war_period = TABLE_WAR_PERIOD.get(table, "UNKNOWN")

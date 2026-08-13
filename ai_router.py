@@ -87,6 +87,7 @@ TASK_TYPES = {
     "ocr": {"capabilities": ["vision", "ocr"], "min_quality": 0.7},
     "verify_citations": {"capabilities": ["text"], "min_quality": 0.6},
     "embeddings": {"capabilities": ["embeddings"], "min_quality": 0.5},
+    "narration": {"capabilities": ["text", "structured_output"], "min_quality": 0.7},
 }
 
 
@@ -104,22 +105,37 @@ def get_routing_policy(task_type: str) -> Optional[Dict]:
     return _default_policy(task_type)
 
 
+_GENERATION_TASKS = {
+    "generate_biography", "generate_viewpoints", "generate_timeline",
+    "generate_research_plan", "generate_followup_queries",
+    "narration",
+}
+
+_VALIDATION_TASKS = {
+    "compare_claims", "propose_entity_matches", "evaluate_search_cycle",
+    "decide_continue_or_stop", "verify_citations",
+}
+
+
 def _default_policy(task_type: str) -> Dict:
-    """Policy di default: OpenAI primario per tutti i task, altri in fallback."""
+    """Policy di default: Ollama per generazione, OpenAI per validazione."""
     task_def = TASK_TYPES.get(task_type, {})
     caps = task_def.get("capabilities", ["text"])
 
-    # OpenAI primario per tutti i task type; fallback chain ordinata
     if "web_search" in caps:
-        # Per web search, Perplexity ha capability unica ma se non disponibile
-        # OpenAI subentra come fallback naturale
-        primary, fallback = "openai", ["perplexity", "anthropic", "mistral", "gemini"]
+        primary, fallback = "perplexity", ["openai", "anthropic", "mistral", "gemini"]
     elif "vision" in caps and "ocr" in caps:
-        primary, fallback = "openai", ["mistral", "gemini", "anthropic"]
+        primary, fallback = "ollama", ["mistral", "gemini", "openai", "anthropic"]
     elif "embeddings" in caps:
         primary, fallback = "openai", ["gemini", "mistral"]
+    elif task_type in _GENERATION_TASKS:
+        # Generazione/ragionamento: Ollama (gemma4) primary, Mistral fallback
+        primary, fallback = "ollama", ["mistral", "gemini", "anthropic", "openai"]
+    elif task_type in _VALIDATION_TASKS:
+        # Validazione: OpenAI primary, Mistral fallback
+        primary, fallback = "openai", ["mistral", "anthropic", "gemini", "ollama"]
     else:
-        primary, fallback = "openai", ["anthropic", "mistral", "perplexity", "gemini"]
+        primary, fallback = "ollama", ["mistral", "openai", "anthropic", "gemini"]
 
     return {
         "task_type": task_type,
@@ -226,7 +242,23 @@ def select_model(task_type: str, input_size: int = 0,
             "policy_version": policy.get("version", "default"),
         }
 
-    # Ordina per combined score
+    # V7.4: Respect policy primary_model_id if specified
+    primary_provider = policy.get("primary_model_id")
+    if primary_provider:
+        primary_candidates = [c for c in candidates if c["provider_code"] == primary_provider]
+        if primary_candidates:
+            best = primary_candidates[0]  # Already sorted by quality_score DESC
+            return {
+                "provider_code": best["provider_code"],
+                "model_identifier": best["model_identifier"],
+                "model_id": best["model_id"],
+                "reason": f"policy_primary={primary_provider} "
+                          f"(quality={best['quality']}, cost={best['cost']})",
+                "policy_version": policy.get("version", "default"),
+                "estimated_cost": best["estimated_cost"],
+            }
+
+    # Fallback: best combined score
     candidates.sort(key=lambda x: x["combined_score"], reverse=True)
     best = candidates[0]
     return {
@@ -251,6 +283,7 @@ def _estimate_cost(provider_code: str, task_type: str, input_size: int) -> float
         "perplexity": 0.002,
         "gemini": 0.001,
         "lmstudio": 0.0,
+        "ollama": 0.0,
     }
     rate = cost_per_1k.get(provider_code, 0.002)
     return est_tokens / 1000 * rate
@@ -388,7 +421,7 @@ def check_budget_before_task(provider_code: str, estimated_cost: float) -> Dict:
     budget = p.get("budget_configured", 50.0)
     reserve = p.get("budget_reserve", 5.0)
     available = budget - spent - reserve
-    if estimated_cost > available:
+    if estimated_cost > available and estimated_cost > 0:
         return {"ok": False, "reason": "insufficient_budget",
                 "available": available, "estimated": estimated_cost,
                 "reserve": reserve}

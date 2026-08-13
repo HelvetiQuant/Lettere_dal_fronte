@@ -1,0 +1,536 @@
+================================================================================
+[1/5] DONELLI GIUSEPPE (lebi_records)
+Status: validated_deterministic | / | 17 claims | AMBIGUOUS_IDENTITY | 9.4s
+Fallback reason: ai_unavailable_or_failed
+================================================================================
+# Rapporto di Ricerca — snap_v7_4e322bbdec52a846
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: DONELLI GIUSEPPE
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: AMBIGUOUS_IDENTITY
+## Corroborazione: PARTIAL
+
+## Identita Candidati (caso ambiguo)
+  - DONELLI GIUSEPPE: discriminanti=['data_nascita', 'luogo_nascita', 'grado', 'reparto', 'provincia_nascita', 'data_decesso', 'luogo_sepoltura', 'arma']
+  - DONELLI GIUSEPPE: discriminanti=['paternita', 'grado', 'reparto', 'anno_morte', 'luogo_morte', 'causa_morte', 'classe']
+  - DONELLI GIUSEPPE: discriminanti=['arma', 'anno_decorazione']
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - birth_date: 22-06-1922
+  - birth_place: Campegine
+  - birth_province: Reggio Emilia
+  - rank: Soldato
+  - military_unit: 8 Rgt. Art. Div. Fant.
+  - military_branch: Artiglieria
+  - fate: deceduto
+  - death_date: 04-05-1945
+  - death_place: Gorzow Wielkopolski (voivodato Di Lubusz)/Fronte Tedesco
+  - burial_place: Bielany/varsavia (polonia) - Cimitero Militare Italiano d'Onore.
+  - paternity: FRANCESCO
+  - draft_class: 1890
+  - current_municipality: Cadelbosco di Sopra
+  - rank: Soldato
+  - military_unit: 25 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Settore Di Tolmino
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: FRANCESCO
+  - draft_class: 1882
+  - current_municipality: Ossago Lodigiano
+  - rank: Soldato
+  - military_unit: 26 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: 1 Sezione Di Sanita
+  - death_cause: Ferite Riportate In Combattimento
+  - military_branch: Esercito
+  - decoration_year: 1942
+  - decoration_type: Croce di Guerra al Valor Militare
+
+## Claim Asserti (origine, non corroborati)
+  - birth_date: 22-06-1922
+  - birth_place: Campegine
+  - birth_province: Reggio Emilia
+  - rank: Soldato
+  - military_unit: 8 Rgt. Art. Div. Fant.
+  - military_branch: Artiglieria
+  - fate: deceduto
+  - death_date: 04-05-1945
+  - death_place: Gorzow Wielkopolski (voivodato Di Lubusz)/Fronte Tedesco
+  - burial_place: Bielany/varsavia (polonia) - Cimitero Militare Italiano d'Onore.
+  - paternity: FRANCESCO
+  - draft_class: 1890
+  - current_municipality: Cadelbosco di Sopra
+  - rank: Soldato
+  - military_unit: 25 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Settore Di Tolmino
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: FRANCESCO
+  - draft_class: 1882
+  - current_municipality: Ossago Lodigiano
+  - rank: Soldato
+  - military_unit: 26 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: 1 Sezione Di Sanita
+  - death_cause: Ferite Riportate In Combattimento
+  - military_branch: Esercito
+  - decoration_year: 1942
+  - decoration_type: Croce di Guerra al Valor Militare
+
+## Omonimi Respinti
+  - DONELLI GIUSEPPE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - DONELLI GIUSEPPE: motivi=['HOMONYM_DIFFERENT_IDENTITY', 'reparto', 'luogo_morte', 'classe'], conflitti=['reparto', 'luogo_morte', 'classe']
+  - DONELLI GIUSEPPE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - unit: Field unit not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - internment_place: Field internment_place not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+  - capture_place: Field capture_place not supported by accepted evidence
+  - capture_date: Field capture_date not supported by accepted evidence
+
+---
+## Provenienza
+- Snapshot: snap_v7_4e322bbdec52a846
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): AMBIGUOUS_IDENTITY
+- Identity Resolution (legacy): UNRESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: 
+- Person Claims: 29
+- Context Claims: 0
+- Candidate Identities: 3
+- Provider Ledger: 81 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+
+
+================================================================================
+[2/5] GIALDI Ruggero (internati)
+Status: validated_ai | openai/gpt-4o | 8 claims | RESOLVED_IDENTITY | 16.4s
+================================================================================
+Ruggero Gialdi nacque a Rolo il 12 settembre 1916 e servì come caporale nel 33° Reggimento di Artiglieria della Divisione di Fanteria durante la Prima guerra mondiale. Morì il 9 aprile 1944 sul Fronte Polacco.
+
+Non ci sono informazioni dettagliate sulle specifiche operazioni o battaglie a cui Ruggero Gialdi potrebbe aver partecipato durante il suo servizio militare.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_420c41b6d2d33052
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 76
+- Context Claims: 20
+- Provider Ledger: 32 observations
+
+
+================================================================================
+[3/5] PACE SALVATORE DI BONAVENTURA (caduti_ministero)
+Status: validated_deterministic | / | 16 claims | RESOLVED_IDENTITY | 14.0s
+Fallback reason: ai_unavailable_or_failed
+================================================================================
+# Rapporto di Ricerca — snap_v7_3350fd8d40f534e3
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: PACE SALVATORE DI BONAVENTURA
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: RESOLVED_IDENTITY
+## Corroborazione: PARTIAL
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - birth_date: 1897-04-17
+  - birth_province: MT, PZ
+  - birth_place: potenza
+  - rank: Soldato
+  - military_unit: 119 Reggimento Fanteria
+  - death_year: 1918
+  - death_place: Monte Grappa
+  - death_cause: Ferite Riportate In Combattimento
+
+## PROBABLE (fonte valida, incertezza su OCR/normalizzazione)
+  - rank: Soldato
+  - unit: 119 Reggimento Fanteria
+  - death_year: 1918
+  - death_place: Monte Grappa
+
+## Claim di Contesto (non attribuibili alla persona)
+  - [EVENT] source_url: https://www.difesa.it/assets/albooro/2/171.jpg
+  - [EVENT] source_volume: 2
+  - [EVENT] source_page: 171
+  - [EVENT] source_sub: 23
+
+## Claim Asserti (origine, non corroborati)
+  - rank: Soldato
+  - unit: 119 Reggimento Fanteria
+  - death_year: 1918
+  - death_place: Monte Grappa
+  - birth_date: 1897-04-17
+  - birth_province: MT, PZ
+  - birth_place: potenza
+  - rank: Soldato
+  - military_unit: 119 Reggimento Fanteria
+  - death_year: 1918
+  - death_place: Monte Grappa
+  - death_cause: Ferite Riportate In Combattimento
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - death_date: Field death_date not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - internment_place: Field internment_place not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+  - capture_place: Field capture_place not supported by accepted evidence
+  - capture_date: Field capture_date not supported by accepted evidence
+  - fate: Field fate not supported by accepted evidence
+
+---
+## Provenienza
+- Snapshot: snap_v7_3350fd8d40f534e3
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Identity Resolution (legacy): RESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: cluster_4fd00e5676df
+- Person Claims: 12
+- Context Claims: 4
+- Candidate Identities: 0
+- Provider Ledger: 96 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+
+
+================================================================================
+[4/5] SCHETTINO GIOVANNI (caduti_albooro)
+Status: validated_deterministic | / | 19 claims | AMBIGUOUS_IDENTITY | 7.1s
+Fallback reason: ai_unavailable_or_failed
+================================================================================
+# Rapporto di Ricerca — snap_v7_bc15280f83b4e0ca
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: SCHETTINO GIOVANNI
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: AMBIGUOUS_IDENTITY
+## Corroborazione: PARTIAL
+
+## Identita Candidati (caso ambiguo)
+  - SCHETTINO GIOVANNI: discriminanti=['data_nascita', 'luogo_nascita']
+  - SCHETTINO GIOVANNI: discriminanti=['paternita', 'grado', 'reparto', 'anno_morte', 'luogo_morte', 'causa_morte', 'classe']
+  - SCHETTINO GIOVANNI: discriminanti=['arma', 'anno_decorazione']
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - birth_date: 07-10-1924
+  - birth_place: Buenos Aires
+  - capture_front: Italiano
+  - capture_place: Bologna
+  - capture_date: 11-09-1943
+  - internment_place: ["Stalag XI B", "Osterode am Harz"]
+  - fate: sopravvissuto
+  - return_date: 01-09-1945
+  - paternity: ALFONSO
+  - draft_class: 1884
+  - current_municipality: Castellammare di Stabia
+  - rank: Soldato
+  - military_unit: 3 Reggimento Artiglieria Da Fortezza
+  - death_year: 1917
+  - death_place: Castellammare Di Stabia
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: MARIANO
+  - draft_class: 1876
+  - current_municipality: Marigliano
+  - rank: Sottotenente Di Complemento
+  - military_unit: 3 Reggimento Artiglieria Da Fortezza
+  - death_year: 1918
+  - death_place: Roma
+  - death_cause: Malattia
+  - military_branch: Esercito
+  - decoration_year: 1918
+  - decoration_type: Medaglia di Bronzo
+
+## Claim Asserti (origine, non corroborati)
+  - birth_date: 07-10-1924
+  - birth_place: Buenos Aires
+  - capture_front: Italiano
+  - capture_place: Bologna
+  - capture_date: 11-09-1943
+  - internment_place: ["Stalag XI B", "Osterode am Harz"]
+  - fate: sopravvissuto
+  - return_date: 01-09-1945
+  - paternity: ALFONSO
+  - draft_class: 1884
+  - current_municipality: Castellammare di Stabia
+  - rank: Soldato
+  - military_unit: 3 Reggimento Artiglieria Da Fortezza
+  - death_year: 1917
+  - death_place: Castellammare Di Stabia
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: MARIANO
+  - draft_class: 1876
+  - current_municipality: Marigliano
+  - rank: Sottotenente Di Complemento
+  - military_unit: 3 Reggimento Artiglieria Da Fortezza
+  - death_year: 1918
+  - death_place: Roma
+  - death_cause: Malattia
+  - military_branch: Esercito
+  - decoration_year: 1918
+  - decoration_type: Medaglia di Bronzo
+
+## Omonimi Respinti
+  - SCHETTINO GIOVANNI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - SCHETTINO GIOVANNI: motivi=['HOMONYM_DIFFERENT_IDENTITY', 'paternita', 'grado', 'anno_morte', 'luogo_morte', 'causa_morte', 'classe'], conflitti=['paternita', 'grado', 'anno_morte', 'luogo_morte', 'causa_morte', 'classe']
+  - SCHETTINO GIOVANNI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - unit: Field unit not supported by accepted evidence
+  - death_date: Field death_date not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+
+---
+## Provenienza
+- Snapshot: snap_v7_bc15280f83b4e0ca
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): AMBIGUOUS_IDENTITY
+- Identity Resolution (legacy): UNRESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: 
+- Person Claims: 27
+- Context Claims: 0
+- Candidate Identities: 3
+- Provider Ledger: 82 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+
+
+================================================================================
+[5/5] FICCA CARLO (decorati_nastroazzurro)
+Status: validated_deterministic | / | 11 claims | AMBIGUOUS_IDENTITY | 8.2s
+Fallback reason: ai_unavailable_or_failed
+================================================================================
+# Rapporto di Ricerca — snap_v7_b4c32bbcbc3f37cd
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: FICCA CARLO
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: AMBIGUOUS_IDENTITY
+## Corroborazione: PARTIAL
+
+## Identita Candidati (caso ambiguo)
+  - FICCA CARLO: discriminanti=['paternita', 'grado', 'reparto', 'anno_morte', 'luogo_morte', 'causa_morte', 'classe']
+  - FICCA CARLO: discriminanti=['arma', 'anno_decorazione']
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - paternity: LEOPOLDO
+  - draft_class: 1896
+  - current_municipality: Sant'Agata de' Goti
+  - rank: Sergente
+  - military_unit: 24 Reggimento Artiglieria Da Campagna
+  - death_year: 1915
+  - death_place: ospedale Da Campo N. 86
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: ROSARIO
+  - draft_class: 1880
+  - current_municipality: Napoli
+  - rank: Soldato
+  - military_unit: 1083 Centuria
+  - death_year: 1918
+  - death_place: Nave Ospedale «Ferdinando Palasciano»
+  - death_cause: Malattia
+  - paternity: FILIPPO
+  - draft_class: 1891
+  - current_municipality: Ripatransone
+  - rank: Caporale
+  - military_unit: 238 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Campo
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: PACIFICO
+  - draft_class: 1888
+  - current_municipality: Ripatransone
+  - rank: Soldato
+  - military_unit: 228 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Carso
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: DOMENICO
+  - draft_class: 1862
+  - current_municipality: Ripatransone
+  - rank: Operaio
+  - military_unit: Genio Militare 7 Armata
+  - death_year: 1917
+  - death_place: Ospedale Da Campo N. 029
+  - death_cause: Malattia
+  - paternity: VINCENZO
+  - draft_class: 1894
+  - current_municipality: Montalto delle Marche
+  - rank: Caporale
+  - military_unit: 160 Battaglione M.T.
+  - death_year: 1918
+  - death_place: Foggia
+  - death_cause: Malattia
+  - paternity: DOMENICO
+  - draft_class: 1889
+  - current_municipality: Castorano
+  - rank: Soldato
+  - military_unit: 126 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Campo
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: GIOVANNI
+  - draft_class: 1889
+  - current_municipality: Castignano
+  - rank: Soldato
+  - military_unit: 17 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Isonzo
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: POMPILIO
+  - draft_class: 1895
+  - current_municipality: San Ginesio
+  - rank: Soldato
+  - military_unit: 12 Reggimento Fanteria
+  - death_year: 1916
+  - death_place: Carso
+  - death_cause: Ferite Riportate In Combattimento
+  - military_branch: Esercito
+  - decoration_year: 1916
+  - decoration_type: Medaglia di Bronzo
+
+## Claim Asserti (origine, non corroborati)
+  - paternity: LEOPOLDO
+  - draft_class: 1896
+  - current_municipality: Sant'Agata de' Goti
+  - rank: Sergente
+  - military_unit: 24 Reggimento Artiglieria Da Campagna
+  - death_year: 1915
+  - death_place: ospedale Da Campo N. 86
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: ROSARIO
+  - draft_class: 1880
+  - current_municipality: Napoli
+  - rank: Soldato
+  - military_unit: 1083 Centuria
+  - death_year: 1918
+  - death_place: Nave Ospedale «Ferdinando Palasciano»
+  - death_cause: Malattia
+  - paternity: FILIPPO
+  - draft_class: 1891
+  - current_municipality: Ripatransone
+  - rank: Caporale
+  - military_unit: 238 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Campo
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: PACIFICO
+  - draft_class: 1888
+  - current_municipality: Ripatransone
+  - rank: Soldato
+  - military_unit: 228 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Carso
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: DOMENICO
+  - draft_class: 1862
+  - current_municipality: Ripatransone
+  - rank: Operaio
+  - military_unit: Genio Militare 7 Armata
+  - death_year: 1917
+  - death_place: Ospedale Da Campo N. 029
+  - death_cause: Malattia
+  - paternity: VINCENZO
+  - draft_class: 1894
+  - current_municipality: Montalto delle Marche
+  - rank: Caporale
+  - military_unit: 160 Battaglione M.T.
+  - death_year: 1918
+  - death_place: Foggia
+  - death_cause: Malattia
+  - paternity: DOMENICO
+  - draft_class: 1889
+  - current_municipality: Castorano
+  - rank: Soldato
+  - military_unit: 126 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Campo
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: GIOVANNI
+  - draft_class: 1889
+  - current_municipality: Castignano
+  - rank: Soldato
+  - military_unit: 17 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Isonzo
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: POMPILIO
+  - draft_class: 1895
+  - current_municipality: San Ginesio
+  - rank: Soldato
+  - military_unit: 12 Reggimento Fanteria
+  - death_year: 1916
+  - death_place: Carso
+  - death_cause: Ferite Riportate In Combattimento
+  - military_branch: Esercito
+  - decoration_year: 1916
+  - decoration_type: Medaglia di Bronzo
+
+## Omonimi Respinti
+  - FICCA CARLO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FICCA CARLO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - birth_place: Field birth_place not supported by accepted evidence [BLOCCANTE]
+  - unit: Field unit not supported by accepted evidence
+  - death_date: Field death_date not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - internment_place: Field internment_place not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+  - capture_place: Field capture_place not supported by accepted evidence
+  - capture_date: Field capture_date not supported by accepted evidence
+  - fate: Field fate not supported by accepted evidence
+
+---
+## Provenienza
+- Snapshot: snap_v7_b4c32bbcbc3f37cd
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): AMBIGUOUS_IDENTITY
+- Identity Resolution (legacy): UNRESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: 
+- Person Claims: 75
+- Context Claims: 0
+- Candidate Identities: 2
+- Provider Ledger: 38 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+

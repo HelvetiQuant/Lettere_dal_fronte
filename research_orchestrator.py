@@ -81,7 +81,7 @@ def resolve_input(user_input: str) -> Dict:
             parts = user_input.split()
             cognome = parts[0] if parts else user_input
             nome = " ".join(parts[1:]) if len(parts) > 1 else ""
-            for table in ["internati", "caduti_albooro", "decorati"]:
+            for table in ["internati", "lebi_records", "caduti_albooro", "decorati"]:
                 if not _table_exists(conn, table):
                     continue
                 rows = conn.execute(
@@ -502,7 +502,7 @@ def _search_internal(query: str, context: Dict, entity_type: str,
     # Ricerca diretta su tabelle
     try:
         conn = get_conn()
-        for table in ["internati", "caduti_albooro", "decorati"]:
+        for table in ["internati", "lebi_records", "caduti_albooro", "decorati"]:
             if not _table_exists(conn, table):
                 continue
             parts = query.split()

@@ -1,9 +1,22 @@
 # IMI Extractor — Architettura Tecnica Completa
 ## Sistema di Ricerca Storica su Eventi della Prima e Seconda Guerra Mondiale
 
-**Versione documento**: 3.0  
-**Data**: 2026-07-28  
+**Versione documento**: 4.1  
+**Data**: 2026-08-13  
 **Scopo**: Documento di architettura per AI Architect — analisi completa di tutti i layer, dati, pipeline, API e infrastruttura.
+
+**Changelog versione 4.1**:
+- V7.8: Fix contaminazione cross-war (case sensitivity, name parsing, legacy fallback, war_period schema)
+- V7.7: Frontend integration completa (ResearchPage, SoldierDossierPage, AdminPage)
+- V7.6: Cross-Linking Sicuro con Reversibilità (audit table, 4.438 internati arricchiti)
+- V7.5: OpenAI primary per report generation (gpt-4o + Mistral fallback)
+- Aggiunta pipeline V7 (UnifiedResearchOrchestratorV7 — 9 stage)
+- Aggiunta V7.3 Structural Correction (quarantine, identity, barriers, narration planner)
+- Aggiunta V7.3-PERSON-FIX (schema registry, identity resolver, evidence-locked narrator)
+- Aggiunta LeBI integration (166K record, 5 tabelle persona)
+- Aggiunta Cross-Linking militare (caduti_ministero ← caduti_albooro, internati ← lebi_records)
+- Aggiunta pipeline di ragionamento end-to-end (sezione 15)
+- Aggiornamento file inventory con moduli V7/V7.3
 
 ---
 
@@ -47,11 +60,12 @@ validazioni_ai.db    ← 94 KB  — DB validazioni AI
 
 | Tabella | Scopo | Righe (approx) |
 |---------|-------|----------------|
-| `internati` | Record IMI estratti da PDF OCR | ~100K |
-| `decorati` | Decorati (Albi della Memoria ISTORECO) | ~50K |
-| `caduti_albooro` | Caduti Albo d'Oro | ~600K |
-| `caduti_cwgc` | Caduti Commonwealth War Graves Commission | ~1.7M |
-| `caduti_ministero` | Caduti Ministero Difesa | ~400K |
+| `internati` | Record IMI estratti da PDF OCR | 20.465 |
+| `lebi_records` | Lessico Biografico IMI (ANRP) | 166.112 |
+| `decorati_nastroazzurro` | Decorati Nastro Azzurro | 279.832 |
+| `caduti_albooro` | Caduti Albo d'Oro | 342.555 |
+| `caduti_cwgc` | Caduti Commonwealth War Graves Commission | 506.446 |
+| `caduti_ministero` | Caduti Ministero Difesa (+cross-link militare) | 162.646 |
 | `caduti_bologna` | Caduti bolognesi | ~12K |
 | `caduti_sardi` | Caduti sardi | ~30K |
 | `caduti_francia_ww1` | Caduti francesi WW1 | ~1.4M |
@@ -459,6 +473,47 @@ PDF OCR (Archivio Bolzano) → pdfplumber/PyMuPDF → estrazione strutturata
   → arricchimento con fonti esterne (LeBI, ICRC, CWGC)
 ```
 
+### 5.1b Cross-Linking Sicuro con Reversibilità (`cross_link_safe.py`)
+
+Arricchimento dei record `internati` con dati militari e biografici da tabelle indipendenti, con tracciamento completo delle modifiche nella tabella `cross_link_audit`.
+
+```
+internati (20K, copertura campi molto bassa)
+  ← cross-link con lebi_records (166K, dati completi al 65-99%)
+  → Match SICURO: nome esatto + candidato unico + anno WWII plausibile (1895-1928)
+  → 4.438 record arricchiti (21%)
+  → 40.587 aggiornamenti campi (data_nascita, grado, reparto, campi, decesso, ...)
+
+internati ← caduti_ministero (162K)
+  → Match: nome esatto + anno di nascita coincidente
+  → 13 record arricchiti
+
+internati ← decorati_nastroazzurro (280K)
+  → Match: nome esatto + anno decorazione 1940-1947
+  → 353 record arricchiti (decorazione, arma)
+```
+
+**Audit table** (`cross_link_audit`): ogni modifica tracciata con `old_value`, `new_value`, `source_table`, `source_record_id`, `match_method`, `match_score`, `reverted`.
+
+**Reversibilità**:
+```bash
+python cross_link_safe.py --audit    # Registra baseline pre-cross-link
+python cross_link_safe.py --run      # Esegue cross-linking sicuro
+python cross_link_safe.py --revert   # Reverte tutte le modifiche
+python cross_link_safe.py --status   # Mostra stato audit
+```
+
+**Revert selettivo** (per tabella fonte o metodo match) via SQL diretto su `cross_link_audit`.
+
+**Regole anti-mixing**:
+- Solo nome esatto (cognome+nome), niente fuzzy
+- Validazione anno WWII (1895-1928) filtra omonimi di altre epoche
+- Solo campi vuoti popolati, nessuna sovrascrittura
+- Candidato unico o singolo plausibile, niente ambiguità
+
+**Schema aggiornato** (`person_source_schemas.py`):
+- `internati`: 11 nuovi claim_fields (death_date, death_cause, death_place, burial_place, internment_camps, capture_front, return_date, decoration, decoration_year, death_year)
+
 ### 5.2 Scraping fonti esterne
 
 | Scraper | File | Fonte | Righe |
@@ -646,7 +701,7 @@ Frontend dev: vite dev server (porta 5173)
 
 ---
 
-## 10. Flusso End-to-End: Ricerca Evento
+## 10. Flusso End-to-End: Ricerca Evento (Legacy V3)
 
 ```
 Utente: "Battaglia di Caporetto"
@@ -727,6 +782,29 @@ Utente: "Battaglia di Caporetto"
 | `source_providers/federation.py` | 245 | Registry 27 provider + search |
 | `search_ww1_documents.py` | 294 | Ricerca documenti WW1 per evento |
 | `sync_ww1_to_supabase.py` | 196 | Sync SQLite→Supabase |
+
+### Moduli V7/V7.3 (pipeline corrente)
+
+| File | Scopo |
+|------|-------|
+| `unified_orchestrator_v7.py` | 9-stage pipeline: PLAN→DISCOVER→FETCH→EXTRACT→RESOLVE→FUSE→VALIDATE→NARRATE→PERSIST |
+| `semantic_query_plan.py` | SemanticQueryPlan, TargetSpec, ProviderRoute |
+| `evidence_snapshot_v7.py` | EvidenceSnapshotV7 con source_lineage, independence_groups, provenance_chain |
+| `v7_provider_adapters.py` | V7AdapterRegistry: LocalDbAdapter (5 tabelle), WebSearchAdapter, FederationAdapter |
+| `v7_identity_model.py` | IdentityResolver: cluster-based, strong/weak identifiers, homonym rejection |
+| `v7_fusion_engine.py` | FusionEngine: PRESERVE_CONTRADICTIONS, independence groups, source lineage |
+| `v7_narrator.py` | NarratorV7: AI/deterministic, evidence-locked, hallucination check, dedup |
+| `v7_event_aggregate.py` | EventOntology, AggregateDefinitionRegistry (7 definizioni) |
+| `v7_security_audit.py` | LegacySecurityAuditor, ImportSafetyAuditor, KillSwitchVerifier |
+| `v7_quarantine.py` | QuarantineManager: 1.7M link legacy quarantined |
+| `person_source_schemas.py` | Schema registry: 5 tabelle persona, claim_fields, identity_fields, conflict_fields |
+| `narration_planner_v73.py` | ClaimSelector, CoveragePlanner, NarrationPlanner, SemanticValidator |
+| `domain_model_v73.py` | Canonical domain model: SourceArtifact, Entity, IdentityCandidate, Evidence, Claim |
+| `text_matching_v73.py` | Word-boundary matching, specificity, OCR variants, alias matching |
+| `barriers_v73.py` | Temporal barriers (WWI/WWII veto), geographic barriers (semantic roles) |
+| `cross_link_military_data_v3.py` | Cross-linking: caduti_ministero←albooro (89K), internati←lebi (5.8K) |
+| `v7_api.py` | 5 endpoint: /api/v7/health, capabilities, research, research/{id}, narrate |
+| `adapters_v73.py` | Legacy endpoint adapters con feature flags (V73_CANONICAL_*) |
 
 ---
 
@@ -837,14 +915,277 @@ Il file `sql/001_supabase_historical_archive_core.sql` (748 righe) è stato appl
 
 ---
 
-## 14. Roadmap Tecnica
+## 14. Pipeline V7 — UnifiedResearchOrchestratorV7
+
+### 14.1 9-Stage Pipeline (V7.1+)
+
+```
+PLAN → DISCOVER → FETCH → EXTRACT → RESOLVE → FUSE → VALIDATE → NARRATE → PERSIST
+```
+
+**File**: `unified_orchestrator_v7.py`
+
+| Stage | Scopo | Modulo |
+|-------|-------|--------|
+| PLAN | Costruisce SemanticQueryPlan con TargetSpec + ProviderRoute | `semantic_query_plan.py` |
+| DISCOVER | Interroga LocalDbAdapter (5 tabelle persona) + WebSearchAdapter | `v7_provider_adapters.py` |
+| FETCH | Recupera record completi da SQLite | `v7_provider_adapters.py` |
+| EXTRACT | Estrae claim+provenance via `extract_claims_from_record()` | `person_source_schemas.py` |
+| RESOLVE | IdentityResolver: cluster-based, strong/weak identifiers, homonym rejection | `v7_identity_model.py` |
+| FUSE | FusionEngine: PRESERVE_CONTRADICTIONS, independence groups, source lineage | `v7_fusion_engine.py` |
+| VALIDATE | OutputValidatorV7: hallucination check, evidence hash, payload validation | `v7_narrator.py` |
+| NARRATE | NarratorV7: AI (GPT-4o) o deterministic fallback con provenance completa | `v7_narrator.py` |
+| PERSIST | Salva EvidenceSnapshotV7 con provenance chain | `evidence_snapshot_v7.py` |
+
+### 14.2 V7.3 Structural Correction
+
+**Quarantine**: Tutti i 1.708.869 link legacy marcati `CANDIDATE` con `usable_as_evidence=0`. Solo link V7.3 approvati sono usabili.
+
+**Barriere temporali**: WWI/WWII hard veto — nessun link cross-guerra.
+
+**Barriere geografiche**: burial != event, death != capture, detention != event.
+
+**Identity resolution**:
+- Strong identifiers: data_nascita + luogo_nascita + matricola
+- Medium identifiers: grado + reparto + paternita
+- Weak identifiers: nome only → NEEDS_REVIEW
+- Strong conflict → REJECTED_HOMONYM (claim mai combinati tra cluster)
+
+**Narration planner** (`narration_planner_v73.py`):
+- ClaimSelector: seleziona claim per identity cluster, mai mescola candidati
+- CoveragePlanner: PERSON (tutti campi biografici), EVENT (10 dimensioni stratificate)
+- SemanticValidator: contraddizioni, homonym leakage, temporal, geographic
+- GlobalValidator: evidence, certainty, hallucination detection
+
+### 14.3 V7.3-PERSON-FIX
+
+**Schema registry** (`person_source_schemas.py`): 5 tabelle persona con mapping claim_fields, identity_fields, conflict_fields, war_period, authority_tier.
+
+| Tabella | War Period | Claim Fields | Authority |
+|---------|-----------|-------------|----------|
+| `lebi_records` | WWII | 18 | 1 |
+| `internati` | WWII | 14 (con cross-link: grado, reparto, arma) | 1 |
+| `caduti_albooro` | WWI | 9 | 1 |
+| `caduti_ministero` | WWII | 13 (con cross-link: grado, reparto, death_*) | 1 |
+| `decorati_nastroazzurro` | Variabile | 3 | 1 |
+
+**Narrator evidence-locked**:
+- Payload validato con `_validate_payload()` + `_compute_evidence_hash()`
+- Post-gen hallucination check: `_post_gen_hallucination_check()`
+- Circuit breaker: 3 fallimenti AI → deterministic fallback
+- AI non decide identità — solo backend
+
+### 14.4 Anti-Duplicazione Narrativa
+
+**Prompt-level**: Istruzioni esplicite anti-duplicazione nel system prompt del narrator.
+
+**Renderer-level**: Deduplication in `v7_narrator.py` con token overlap e shared n-grams:
+- Sentenze duplicate rilevate via Jaccard similarity su token sets
+- N-gram overlap (3-gram) per frasi semanticamente simili
+- Rimozione automatica di frasi duplicate prima dell'output
+
+**Ambiguous identity blocking**: Quando `AMBIGUOUS_IDENTITY` con cluster conflittuali → fallback deterministico (no AI narration) per evitare mixing di claim da cluster diversi.
+
+---
+
+## 15. Pipeline di Ragionamento End-to-End
+
+### 15.1 PERSON_LOOKUP — Flusso completo
+
+```
+Utente: "GUSTINELLI ANNIBALE"
+  │
+  ▼
+[1] PLAN — semantic_query_plan.py
+  │ TargetSpec(name="GUSTINELLI ANNIBALE", intent=PERSON_LOOKUP)
+  │ ProviderRoute: LocalDbAdapter (5 tabelle) + WebSearchAdapter (fallback)
+  │
+  ▼
+[2] DISCOVER — v7_provider_adapters.py: LocalDbAdapter
+  │ Query 5 tabelle in parallelo:
+  │   SELECT * FROM lebi_records WHERE cognome='GUSTINELLI' AND nome LIKE 'ANNIBALE%'
+  │   SELECT * FROM internati WHERE cognome='GUSTINELLI' AND nome LIKE 'ANNIBALE%'
+  │   SELECT * FROM caduti_ministero WHERE cognome='GUSTINELLI' AND nome LIKE 'ANNIBALE%'
+  │   SELECT * FROM caduti_albooro WHERE nominativo LIKE '%GUSTINELLI ANNIBALE%'
+  │   SELECT * FROM decorati_nastroazzurro WHERE cognome='GUSTINELLI' AND nome LIKE 'ANNIBALE%'
+  │ → Observations: [{table, record_id, cognome, nome, ...}, ...]
+  │
+  ▼
+[3] FETCH — Recupero record completi
+  │ Per ogni observation: SELECT * FROM {table} WHERE id={record_id}
+  │ → Record completi con tutti i campi (inclusi cross-link militari)
+  │
+  ▼
+[4] EXTRACT — person_source_schemas.py: extract_claims_from_record()
+  │ Per ogni record, per ogni claim_field nello schema:
+  │   raw_value = record[col_name]
+  │   normalized, status, note = validate_and_normalize_value(predicate, raw_value)
+  │   if status != skipped:
+  │     claim = {predicate, value_raw, value_normalized, source_id, table, record_id}
+  │ → Claims: [{predicate: birth_date, value: 1912-04-12}, {predicate: rank, value: Soldato}, ...]
+  │
+  ▼
+[5] RESOLVE — v7_identity_model.py: IdentityResolver
+  │ 5a. Cluster creation:
+  │   Per ogni observation, crea IdentityCandidate con:
+  │   - strong_ids: data_nascita + luogo_nascita + matricola
+  │   - medium_ids: grado + reparto + paternita
+  │   - war_period: dallo schema della tabella
+  │
+  │ 5b. Cluster matching:
+  │   Per ogni pair di candidates:
+  │   - Se strong_ids match → stesso cluster
+  │   - Se strong_ids conflict → REJECTED_HOMONYM
+  │   - Se solo name match → NEEDS_REVIEW (no merge)
+  │
+  │ 5c. Status assignment:
+  │   - 1 cluster, 0 homonyms → RESOLVED_IDENTITY
+  │   - 1 cluster, N homonyms → RESOLVED_IDENTITY (homonyms rejected)
+  │   - 2+ clusters, no conflict → AMBIGUOUS_IDENTITY (multiple candidates)
+  │   - 2+ clusters with conflicting claims → AMBIGUOUS_IDENTITY_CONFLICTING
+  │
+  │ → IdentityResult: {status, clusters: [{id, claims, observations}], rejected_homonyms}
+  │
+  ▼
+[6] FUSE — v7_fusion_engine.py: FusionEngine
+  │ Per ogni cluster:
+  │   6a. Dedup claims per (predicate, value_normalized)
+  │   6b. Group by independence_group (same source = dependent)
+  │   6c. Corroboration:
+  │     - 2+ independent sources same value → VERIFIED (confidence 0.9+)
+  │     - 1 source, authoritative → ASSERTED (confidence 0.85)
+  │     - 1 source, non-authoritative → PROBABLE (confidence 0.7)
+  │     - Conflicting values → CONFLICTING (preserved, not resolved)
+  │   6d. Source lineage groups: track provenance chain
+  │ → FusedClaims: [{predicate, value, status, confidence, evidence_ids, sources}]
+  │
+  ▼
+[7] VALIDATE — v7_narrator.py: pre-narration checks
+  │ 7a. Check identity status:
+  │   - RESOLVED_IDENTITY → proceed to AI narration
+  │   - AMBIGUOUS_IDENTITY_CONFLICTING → block AI, use deterministic
+  │   - AMBIGUOUS_IDENTITY (no conflict) → proceed with caution
+  │
+  │ 7b. Build evidence payload:
+  │   - Claims from resolved cluster only (never mix clusters)
+  │   - Context claims (provenance, source URLs)
+  │   - Evidence hash for post-gen validation
+  │
+  │ 7c. Circuit breaker check:
+  │   - If 3 AI failures in window → skip AI, use deterministic
+  │   - If AI provider unavailable → deterministic fallback
+  │
+  ▼
+[8] NARRATE — v7_narrator.py: NarratorV7
+  │ 8a. AI Narration path (GPT-4o):
+  │   - System prompt: anti-duplication instructions, evidence-locked
+  │   - User prompt: structured claims with values, provenance
+  │   - Schema: OpenAI structured output (narration_models.py)
+  │   - Post-gen checks:
+  │     _post_gen_hallucination_check(): verify no invented facts
+  │     _validate_payload(): verify all claims present in evidence
+  │   - Deduplication: token overlap + n-gram similarity → remove duplicates
+  │
+  │ 8b. Deterministic fallback:
+  │   - ReportRenderer: structured markdown with APPROVED/PROBABLE/CONFLICTING sections
+  │   - All claims with provenance, no AI invention
+  │   - Omonimi respinti listed with rejection reasons
+  │   - Gap condizionali listed (missing fields)
+  │
+  │ → NarrationResult: {answer_markdown, used_claim_ids, omitted_claims, provider, model}
+  │
+  ▼
+[9] PERSIST — evidence_snapshot_v7.py
+  │ Save EvidenceSnapshotV7:
+  │   - snapshot_id, timestamp, target_name, intent
+  │   - person_claims, context_claims
+  │   - identity_status, resolved_cluster_id
+  │   - candidate_identities, rejected_homonyms
+  │   - provider_ledger (observations per provider)
+  │   - narration_result (answer, used/omitted claims)
+  │   - schema_version, narrator_contract
+  │ → Persisted to SQLite + optional Supabase sync
+```
+
+### 15.2 EVENT_LOOKUP — Flusso completo
+
+```
+Utente: "Battaglia di Caporetto"
+  │
+  ▼
+[1] PLAN → TargetSpec(name="Caporetto", intent=EVENT_LOOKUP)
+  │
+  ▼
+[2] DISCOVER → eventi_1gm.db (49 eventi) + event_aliases (161 alias)
+  │ → EventResolution: {canonical: "Battaglia di Caporetto", id: 16}
+  │
+  ▼
+[3-4] FETCH + EXTRACT → archivio_documenti + event_links + fonti_indice
+  │ → Claims: date, luoghi, reparti, operazioni, conseguenze
+  │
+  ▼
+[5] RESOLVE → Event identity è deterministica (49 eventi canonici)
+  │ → Temporal filter: WWI events only accept WWI sources
+  │ → Geographic filter: burial != event, death != capture
+  │
+  ▼
+[6] FUSE → Claim corroboration con independence groups
+  │ → 10 dimensioni stratificate: cronologia, geografia, reparti, perdite, cause, conseguenze
+  │
+  ▼
+[7] VALIDATE → CoveragePlanner: critical/important/minor gaps
+  │
+  ▼
+[8] NARRATE → 13 sezioni narrative con citazioni esplicite
+  │ → AI sintesi discorsiva per fatti concordanti
+  │ → Versioni divergenti preservate (no AI resolution)
+  │
+  ▼
+[9] PERSIST → EvidenceSnapshotV7 + graph projection
+```
+
+### 15.3 AGGREGATE_QUERY — Flusso completo
+
+```
+Utente: "Quanti internati per campo?"
+  │
+  ▼
+[1] PLAN → TargetSpec(intent=AGGREGATE_QUERY, definition_id="camp_count")
+  │
+  ▼
+[2-4] DISCOVER+FETCH+EXTRACT → AggregateDefinitionRegistry (7 definizioni)
+  │ → Esecuzione deterministica (AI non inventa definizioni)
+  │
+  ▼
+[5-6] RESOLVE+FUSE → Group by campo, count internati, sort desc
+  │ → 50 campi, top: Berlino (384), Amburgo (215), ...
+  │
+  ▼
+[7-9] VALIDATE+NARRATE+PERSIST → Tabella + grafico + narrazione
+```
+
+---
+
+## 16. Roadmap Tecnica
+
+### Completato (V7/V7.3/V7.8)
+- ✅ V7.1 Pipeline refactor (12 fasi, 26 test, 16/16 acceptance)
+- ✅ V7.3 Structural Correction (6 fasi, 160 test, quarantine + barriers)
+- ✅ V7.3-PERSON-FIX (14 task, 43 test, schema registry + identity resolver)
+- ✅ V7.5 OpenAI primary per report generation (gpt-4o + Mistral fallback)
+- ✅ V7.6 Cross-Linking Sicuro (4.438 internati arricchiti, audit table reversibile)
+- ✅ V7.7 Frontend integration (ResearchPage, SoldierDossierPage, AdminPage)
+- ✅ V7.8 Fix contaminazione cross-war (6 root cause, case sensitivity + name parsing + legacy fallback + war_period schema)
+- ✅ LeBI integration (166K record, 5 tabelle persona)
+- ✅ Cross-linking militare (89K caduti_ministero + 5.8K internati arricchiti)
+- ✅ Anti-duplicazione narrativa (prompt + renderer + ambiguous blocking)
+- ✅ Supabase parity check (6/8 tabelle OK)
 
 ### Immediato
-1. ~~**Completare sync event_links** (1.5M righe, ~30 min ETA)~~ ⏳ In corso (18%)
-2. ~~**Applicare schema canonico** `001_supabase_historical_archive_core.sql`~~ ✅ Completato
-3. ~~**Sync tabelle eventi** (eventi_1gm, event_aliases, map_features)~~ ✅ Completato
-4. **Eseguire backfill canonico** (`backfill_canonical.py`) per 1M+ righe
-5. **Abilitare estensione `vector`** nel dashboard Supabase per RAG embeddings
+1. **Eseguire backfill canonico** (`backfill_canonical.py`) per 1M+ righe
+2. **Abilitare estensione `vector`** nel dashboard Supabase per RAG embeddings
+3. **Sync cross-link militare** su Supabase (89K + 5.8K record aggiornati)
+4. **Migliorare matching internati↔lebi** (14.6K ancora senza match)
 
 ### Breve termine
 5. **Configurare RLS** sul nuovo progetto (`04_rls_policies.sql`)
@@ -860,4 +1201,4 @@ Il file `sql/001_supabase_historical_archive_core.sql` (748 righe) è stato appl
 
 ---
 
-*Documento generato per AI Architect — 2026-07-28*
+*Documento generato per AI Architect — 2026-08-13 (v4.1)*

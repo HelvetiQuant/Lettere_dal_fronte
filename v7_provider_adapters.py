@@ -173,8 +173,14 @@ class LocalDbAdapter(BaseProviderAdapter):
         observations = []
         query = plan.target.display_name
         parts = query.split()
-        cognome = parts[0] if parts else query
-        nome = " ".join(parts[1:]) if len(parts) > 1 else ""
+        cognome = (parts[0] if parts else query).upper()
+        nome = (" ".join(parts[1:]) if len(parts) > 1 else "").upper()
+
+        # V7.3-FIX: Try both name orderings for PERSON_LOOKUP.
+        # Italian DB convention is "COGNOME NOME" but users may type "NOME COGNOME".
+        # If standard ordering yields no full-name matches, try reversed.
+        reversed_cognome = nome if nome else ""
+        reversed_nome = cognome if nome else ""
 
         try:
             conn = get_conn()
@@ -182,6 +188,7 @@ class LocalDbAdapter(BaseProviderAdapter):
             if plan.intent == "PERSON_LOOKUP":
                 tables = [
                     ("internati", "cognome", "nome"),
+                    ("lebi_records", "cognome", "nome"),
                     ("caduti_albooro", "nominativo", ""),
                     ("decorati_nastroazzurro", "cognome", "nome"),
                     ("caduti_cwgc", "cognome", "nome"),
@@ -191,19 +198,40 @@ class LocalDbAdapter(BaseProviderAdapter):
                     try:
                         if name_col == "nominativo":
                             # V7.2: exact full-name match for nominativo tables
+                            query_upper = query.upper()
                             sql_full = f"SELECT * FROM {table} WHERE nominativo = ? LIMIT 20"
-                            rows_full = conn.execute(sql_full, (query,)).fetchall()
-                            # Surname-only matches (different nome)
+                            rows_full = conn.execute(sql_full, (query_upper,)).fetchall()
+                            # Also try reversed order: "Nome Cognome"
+                            if not rows_full and reversed_cognome:
+                                reversed_query = f"{reversed_cognome} {reversed_nome}".strip()
+                                rows_full = conn.execute(sql_full, (reversed_query,)).fetchall()
+                            # Surname-only matches (different nome) — try both cognome values
                             sql_surname = f"SELECT * FROM {table} WHERE nominativo LIKE ? AND nominativo != ? LIMIT 20"
-                            rows_surname = conn.execute(sql_surname, (f"{cognome}%", query)).fetchall()
+                            rows_surname = conn.execute(sql_surname, (f"{cognome}%", query_upper)).fetchall()
+                            if reversed_cognome:
+                                rows_surname_rev = conn.execute(sql_surname, (f"{reversed_cognome}%", query_upper)).fetchall()
+                                # Merge, dedup by id
+                                seen_ids = {r["id"] for r in rows_surname if "id" in r.keys()}
+                                for r in rows_surname_rev:
+                                    if r["id"] not in seen_ids:
+                                        rows_surname.append(r)
                         else:
                             # V7.2: exact cognome + exact nome match
                             if nome_col and nome:
                                 sql_full = f"SELECT * FROM {table} WHERE {name_col} = ? AND {nome_col} = ? LIMIT 20"
                                 rows_full = conn.execute(sql_full, (cognome, nome)).fetchall()
+                                # V7.3-FIX: Try reversed ordering if no match
+                                if not rows_full and reversed_cognome:
+                                    rows_full = conn.execute(sql_full, (reversed_cognome, reversed_nome)).fetchall()
                                 # Surname-only matches (cognome matches but nome differs)
                                 sql_surname = f"SELECT * FROM {table} WHERE {name_col} = ? AND ({nome_col} != ? OR {nome_col} = '' OR {nome_col} IS NULL) LIMIT 20"
                                 rows_surname = conn.execute(sql_surname, (cognome, nome)).fetchall()
+                                if reversed_cognome:
+                                    rows_surname_rev = conn.execute(sql_surname, (reversed_cognome, reversed_nome)).fetchall()
+                                    seen_ids = {r["id"] for r in rows_surname if "id" in r.keys()}
+                                    for r in rows_surname_rev:
+                                        if r["id"] not in seen_ids:
+                                            rows_surname.append(r)
                             else:
                                 # No nome column or no nome provided — all surname matches
                                 sql_full = f"SELECT * FROM {table} WHERE {name_col} = ? LIMIT 20"

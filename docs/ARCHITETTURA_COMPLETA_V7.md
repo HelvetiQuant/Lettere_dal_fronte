@@ -1,7 +1,7 @@
 # Architettura Completa del Sistema IMI Extractor
 
-**Versione documento:** 7.2-narration-v2  
-**Data:** 3 Agosto 2026  
+**Versione documento:** 7.4-ollama-integration  
+**Data:** 10 Agosto 2026  
 **Autore:** AI Architect  
 
 ---
@@ -49,12 +49,12 @@ IMI Extractor è un sistema di ricerca storica su internati militari italiani (I
           ┌────────────────────┼────────────────────┐
           │                    │                    │
 ┌─────────▼─────────┐ ┌───────▼───────┐ ┌──────────▼──────────┐
-│  SOURCE FEDERATION │ │  LINKING V2   │ │  AI CLIENT          │
-│  27 providers:     │ │  Temporal     │ │  OpenAI · Anthropic │
-│  NARA · ICRC · LeBI│ │  filter +     │ │  Mistral · Gemini   │
-│  CWGC · Arolsen    │ │  scoring +    │ │  Perplexity · Local │
-│  Antenati · SHD    │ │  decide()     │ │  Fallback chain     │
-│  DDB · IWM · etc.  │ │               │ │                     │
+│  SOURCE FEDERATION │ │  LINKING V2   │ │  AI CLIENT (V7.5)   │
+│  27 providers:     │ │  Temporal     │ │  OpenAI (gen)       │
+│  NARA · ICRC · LeBI│ │  filter +     │ │  OpenAI (validator) │
+│  CWGC · Arolsen    │ │  scoring +    │ │  Mistral (fallback) │
+│  Antenati · SHD    │ │  decide()     │ │  Gemini · Perplexity│
+│  DDB · IWM · etc.  │ │               │ │  Fallback chain     │
 └─────────┬──────────┘ └───────┬───────┘ └─────────────────────┘
           │                    │
           └────────────────────┤
@@ -471,18 +471,65 @@ ai_client.py
     │
     ├── call_ai() → text completion, JSON mode, image input
     ├── call_ai_json() → JSON mode with auto-parse
+    ├── validate_ai_output() → V7.4 AI cross-validation (OpenAI primary, Mistral fallback)
     ├── get_available_providers() → check API keys
     ├── is_any_provider_available() → bool
     │
     ├── Providers supportati:
-    │     OpenAI (GPT-4o, GPT-5.5)
+    │     OpenAI (GPT-4o, GPT-5.5) — validatore primario
     │     Anthropic (Claude)
-    │     Mistral (Mistral Large/Nemo)
+    │     Mistral (Mistral Large/Nemo) — validatore fallback
     │     Perplexity (Sonar)
     │     Gemini (Google)
+    │     Ollama (local, Gemma 4 e2b-it-qat) — generatore primario V7.4
     │     LM Studio (local)
     │
     └── Fallback chain: primary → secondary → local
+```
+
+### V7.4: Routing AI con Policy DB
+
+```
+ai_router.py
+    │
+    ├── select_model() → seleziona provider+modello da DB
+    │     1. Legge routing policy da ai_routing_policies (task_type → primary_model_id)
+    │     2. Rispetta primary_model_id della policy (non solo score)
+    │     3. Verifica capabilities, budget, circuit breaker
+    │     4. Fallback: best combined score se primary non disponibile
+    │
+    ├── check_budget_before_task() → skip per provider locali (cost=0)
+    │
+    ├── Task types:
+    │     narration → OpenAI primary, Mistral fallback (Ollama escluso)
+    │     generate_biography → OpenAI primary, Mistral fallback
+    │     generate_viewpoints → OpenAI primary, Mistral fallback
+    │     generate_timeline → OpenAI primary, Mistral fallback
+    │     generate_research_plan → OpenAI primary, Mistral fallback
+    │     generate_followup_queries → OpenAI primary, Mistral fallback
+    │     validate_output → OpenAI primary, Mistral fallback
+    │     verify_citations → OpenAI primary, Mistral fallback
+    │
+    └── Policy version: v7.5-openai-primary
+```
+
+### V7.4: AI Cross-Validation Pipeline
+
+```
+v7_narrator.py → _ai_cross_validate()
+    │
+    ├── Dopo generazione AI (OpenAI/Mistral) + hallucination check
+    ├── validate_ai_output() chiama OpenAI (Mistral fallback)
+    │     - Verifica accuratezza storica e scope temporale
+    │     - Coerenza con claim dati
+    │     - Allucinazioni non catturate dai check deterministici
+    │
+    ├── Risultato: valid/invalid + severity (minor/major/critical)
+    │     valid → narrazione approvata con flags opzionali
+    │     invalid + major → flags aggiunti al risultato
+    │     invalid + critical → fallback a narrazione deterministica
+    │
+    └── Metadata salvato in GenerationInfo.ai_validation
 ```
 
 ### RAG Pipeline
@@ -593,6 +640,9 @@ frontend/ (React + TypeScript + Vite)
 
 | Versione | Componente | Stato |
 |----------|-----------|-------|
+| 7.5-openai-primary | OpenAI primary for report generation, Mistral fallback, Ollama excluded | ATTIVO |
+| 7.4-ollama-e2b | Ollama integration + AI cross-validation | SUPERSEDED |
+| 7.3 | Structural Correction (quarantine, barriers, canonical) | ATTIVO |
 | 7.2-narration-v2 | Narrator pipeline | ATTIVO |
 | 7.2 | Evidence Snapshot | ATTIVO |
 | 7.1 | Orchestrator | ATTIVO |

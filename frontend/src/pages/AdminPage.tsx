@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Activity, Database, FileText, Download, Link2, Globe, StopCircle, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Activity, Database, FileText, Download, Link2, Globe, StopCircle, Shield, AlertTriangle, CheckCircle, Zap, Link } from 'lucide-react';
 import { api } from '@/api/client';
 import { ApiError } from '@/api/errors';
-import type { StatusResponse, SourceStatsResponse } from '@/api/types';
+import type { StatusResponse, SourceStatsResponse, V7HealthResponse, V7CapabilitiesResponse, CrossLinkStatus } from '@/api/types';
 import { Card, Tag, LoadingState, ErrorState, PartialDataNotice } from '@/components/feedback/States';
 import { PageIntro, Section } from '@/components/layout/PageIntro';
 import { OperationConfirm } from '@/components/forms/OperationConfirm';
@@ -12,20 +12,26 @@ export function AdminPage() {
   const [sourceStats, setSourceStats] = useState<SourceStatsResponse | null>(null);
   const [corrections, setCorrections] = useState<{ total: number; corrections: Record<string, unknown>[] } | null>(null);
   const [narrator, setNarrator] = useState<{ version: string; circuit_breaker_open?: boolean; evidence_locked?: boolean; hallucination_check?: boolean; error?: string } | null>(null);
+  const [v7Health, setV7Health] = useState<V7HealthResponse | null>(null);
+  const [v7Caps, setV7Caps] = useState<V7CapabilitiesResponse | null>(null);
+  const [crossLink, setCrossLink] = useState<CrossLinkStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ApiError | null>(null);
   const [partial, setPartial] = useState(false);
 
   const refresh = () => {
     setLoading(true);
-    Promise.allSettled([api.status(), api.sourceStats(), api.corrections(10), api.narratorStatus()])
-      .then(([statusRes, srcRes, corrRes, narrRes]) => {
+    Promise.allSettled([api.status(), api.sourceStats(), api.corrections(10), api.narratorStatus(), api.v7Health(), api.v7Capabilities(), api.crossLinkStatus()])
+      .then(([statusRes, srcRes, corrRes, narrRes, v7hRes, v7cRes, clRes]) => {
         if (statusRes.status === 'fulfilled') setStatus(statusRes.value);
         else setPartial(true);
         if (srcRes.status === 'fulfilled') setSourceStats(srcRes.value);
         else setPartial(true);
         if (corrRes.status === 'fulfilled') setCorrections(corrRes.value);
         if (narrRes.status === 'fulfilled') setNarrator(narrRes.value);
+        if (v7hRes.status === 'fulfilled') setV7Health(v7hRes.value);
+        if (v7cRes.status === 'fulfilled') setV7Caps(v7cRes.value);
+        if (clRes.status === 'fulfilled') setCrossLink(clRes.value);
       })
       .finally(() => setLoading(false));
   };
@@ -170,6 +176,77 @@ export function AdminPage() {
                 {narrator.error && (
                   <div className="mt-2 text-sm" style={{ color: 'var(--c-warning)' }}>
                     <AlertTriangle size={12} /> {narrator.error}
+                  </div>
+                )}
+              </Card>
+            </Section>
+          )}
+
+          {v7Health && (
+            <Section title="V7 Pipeline — Health">
+              <Card>
+                <div className="flex flex--center mb-3" style={{ gap: 'var(--s-2)' }}>
+                  <Zap size={18} aria-hidden="true" />
+                  <Tag variant={v7Health.status === 'ok' ? 'success' : 'warning'}>{v7Health.status}</Tag>
+                </div>
+                <div className="grid grid--2">
+                  <div><strong>Orchestrator:</strong> {v7Health.orchestrator_class}</div>
+                  <div><strong>Schema:</strong> {v7Health.schema_version}</div>
+                  <div><strong>Narrator contract:</strong> {v7Health.narrator_contract_version}</div>
+                </div>
+                {v7Caps && (
+                  <div className="mt-2 text-sm text-muted">
+                    {Object.entries(v7Caps).filter(([k]) => k !== 'orchestrator_class' && k !== 'schema_version').map(([k, v]) => (
+                      <div key={k}><strong>{k}:</strong> {String(v)}</div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            </Section>
+          )}
+
+          {crossLink && (
+            <Section title="Cross-Linking Safe (V7.6)">
+              <Card>
+                <div className="flex flex--center mb-3" style={{ gap: 'var(--s-2)' }}>
+                  <Link size={18} aria-hidden="true" />
+                  <Tag variant="accent">{crossLink.total_audits} audit records</Tag>
+                  <Tag variant="success">{crossLink.active} active</Tag>
+                  {crossLink.reverted > 0 && <Tag variant="neutral">{crossLink.reverted} reverted</Tag>}
+                </div>
+                {crossLink.by_method && crossLink.by_method.length > 0 && (
+                  <div className="mt-2">
+                    <strong>By method:</strong>
+                    <div className="flex flex--wrap mt-1" style={{ gap: 'var(--s-1)' }}>
+                      {crossLink.by_method.map((m) => (
+                        <Tag key={m.method} variant="neutral">{m.method}: {m.active} active, {m.reverted} reverted</Tag>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {crossLink.by_source_table && crossLink.by_source_table.length > 0 && (
+                  <div className="mt-2">
+                    <strong>By source table:</strong>
+                    <div className="flex flex--wrap mt-1" style={{ gap: 'var(--s-1)' }}>
+                      {crossLink.by_source_table.map((t) => (
+                        <Tag key={t.table} variant="neutral">{t.table}: {t.active}</Tag>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {crossLink.by_column && crossLink.by_column.length > 0 && (
+                  <div className="mt-2">
+                    <strong>By column:</strong>
+                    <div className="flex flex--wrap mt-1" style={{ gap: 'var(--s-1)' }}>
+                      {crossLink.by_column.map((c) => (
+                        <Tag key={c.column} variant="neutral">{c.column}: {c.active}</Tag>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {crossLink.error && (
+                  <div className="mt-2 text-sm" style={{ color: 'var(--c-warning)' }}>
+                    <AlertTriangle size={12} /> {crossLink.error}
                   </div>
                 )}
               </Card>

@@ -201,6 +201,7 @@ class GenerationInfo:
     repair_attempted: bool = False
     repair_succeeded: bool = False
     fallback_reason: str = ""
+    ai_validation: Optional[Dict[str, Any]] = None
 
 
 @dataclass

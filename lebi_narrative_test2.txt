@@ -1,0 +1,1634 @@
+﻿python : C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified 
+HTTPS request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+In riga:1 car:32
++ ... PYTHONIOENCODING="utf-8"; python _test_lebi_narrative.py 2>&1 | Out-F ...
++                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\eryma\...ml#tls-warnings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+  Selected: FERRARI PIETRO | Soldato | sopravvissuto | nato 19-10-1924 a Rottofreno
+  Selected: MILANI LELIO FRANCESCO |  | sopravvissuto | nato 30-08-1920 a Genova
+  Selected: POGGIALI ROBERTO |  | sopravvissuto | nato 18-10-1909 a Roma
+  Selected: PIETRAFESA GERARDO | Soldato | sopravvissuto | nato 27-04-1915 a Candela
+  Selected: FOLGORI ANDREA | Caporale | sopravvissuto | nato 11-12-1919 a Roma
+
+======================================================================
+Testing 5 names through UnifiedResearchOrchestratorV7
+======================================================================
+
+
+======================================================================
+TEST 1/5: FERRARI PIETRO
+======================================================================
+2026-08-09 22:52:41,877 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:52:41,877 [INFO] Retrying request to /chat/completions in 0.463279 seconds
+2026-08-09 22:52:42,673 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:52:42,674 [INFO] Retrying request to /chat/completions in 0.941883 seconds
+2026-08-09 22:52:44,011 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:52:44,021 [WARNING] AI provider openai failed: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}
+2026-08-09 22:52:45,800 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 401 Unauthorized"
+2026-08-09 22:52:45,801 [WARNING] AI provider anthropic failed: Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'API key is invalid.'}, 'request_id': None}
+2026-08-09 22:52:53,845 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:52:53,863 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 9 blocks
+2026-08-09 22:52:53,863 [WARNING] NARRATE_V2: Hallucination check found 25 warnings: ['HALLUCINATED_PLACE_OR_NAME:Nato in block b2 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Brescia in block b2 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Giuseppe in block b2 ÔÇö not in evidence']
+2026-08-09 22:52:53,863 [WARNING] NARRATE_V2: Severe hallucination (25 warnings), falling back to deterministic
+2026-08-09 22:52:53,866 [INFO] NARRATE_V2: mode=deterministic, provider=, status=validated_deterministic, claims_used=22, omitted=325, repair=no
+Identity: AMBIGUOUS_IDENTITY | Obs: 242 | Elapsed: 24.0s
+
+--- REPORT ---
+
+# Rapporto di Ricerca ÔÇö snap_v7_e35761612602f9e9
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: FERRARI PIETRO
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: AMBIGUOUS_IDENTITY
+## Corroborazione: PARTIAL
+
+## Identita Candidati (caso ambiguo)
+  - FERRARI PIETRO: discriminanti=['data_nascita', 'luogo_nascita', 'grado', 'reparto', 'causa_morte', 'provincia_nascita', 'data_decesso', 'luogo_sepoltura', 'arma']
+  - FERRARI PIETRO: discriminanti=['paternita', 'grado', 'reparto', 'anno_morte', 'luogo_morte', 'causa_morte', 'classe']
+  - FERRARI PIETRO: discriminanti=['arma', 'anno_decorazione']
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - birth_date: 08-03-1911
+  - birth_place: Alfianello
+  - birth_province: Brescia
+  - rank: Soldato
+  - military_unit: 9 Btg. Pres. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Greco
+  - capture_date: 14-09-1943
+  - internment_place: ["Stalag X D", "Stalag III B", "Stalag II B", "Stalag VI D"]
+  - fate: deceduto
+  - death_date: 04-02-1944
+  - death_place: Bochum (nord Reno-westfalia)/Fronte Tedesco
+  - death_cause: Malattia
+  - burial_place: Francoforte Sul Meno (germania) - Cimitero Militare Italiano d'Onore - Posizione Tombale: Riquadro Q - Fila 3 - Tomba 21.
+  - birth_date: 08-09-1911
+  - birth_place: Tizzano Val Parma
+  - birth_province: Parma
+  - rank: Soldato
+  - military_unit: 18 Rgt. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Greco
+  - capture_date: 09-09-1943
+  - fate: deceduto
+  - death_date: 04-02-1944
+  - death_place: Bochum Gerthe/Fronte Polacco
+  - death_cause: Malattia
+  - burial_place: Francoforte Sul Meno (germania) - Cimitero Militare Italiano d'Onore
+  - birth_date: 08-01-1912
+  - birth_place: Milano
+  - birth_province: Milano
+  - rank: Soldato
+  - military_unit: 8 Rgt. Ftr.
+  - military_branch: Fanteria
+  - fate: deceduto
+  - death_date: 22-05-1944
+  - death_place: Fronte Tedesco
+  - birth_date: 19-10-1924
+  - birth_place: Rottofreno
+  - birth_province: Piacenza
+  - rank: Soldato
+  - capture_front: Italiano
+  - capture_place: Reggio Emilia
+  - capture_date: 10-09-1943
+  - internment_place: ["Stalag X B/Z"]
+  - fate: sopravvissuto
+  - return_date: 02-09-1945
+  - birth_date: 18-06-1912
+  - birth_place: Gonzaga
+  - birth_province: Mantova
+  - rank: Soldato
+  - military_unit: 64 Rgt. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Greco
+  - capture_place: Calamata
+  - capture_date: 10-09-1943
+  - internment_place: ["Stalag XII A"]
+  - birth_date: 16-03-1924
+  - birth_place: Parre
+  - birth_province: Bergamo
+  - rank: Soldato
+  - military_unit: 5 Rgt. Alp.
+  - military_branch: Alpini
+  - capture_front: Italiano
+  - capture_place: Merano
+  - capture_date: 09-09-1943
+  - internment_place: ["Distretto Militare I: Konigsberg", "Stalag IX C"]
+  - fate: sopravvissuto
+  - return_date: 24-08-1945
+  - birth_date: 09-11-1922
+  - birth_place: Guidizzolo
+  - birth_province: Mantova
+  - rank: Aviere
+  - military_branch: Aeronautica
+  - capture_date: 11-09-1943
+  - fate: sopravvissuto
+  - return_date: 11-09-1945
+  - birth_date: 22-11-1911
+  - birth_province: Dom. Bergamo
+  - rank: Soldato
+  - military_unit: 9 Rgt. Art.
+  - military_branch: Artiglieria
+  - capture_front: Italiano
+  - capture_place: Bressanone
+  - capture_date: 09-09-1943
+  - internment_place: ["Stalag I A", "Stalag III C"]
+  - birth_date: 12-11-1920
+  - birth_place: Pistoia
+  - birth_province: Pistoia
+  - rank: Soldato
+  - military_unit: 26 Sett. G.a.f.
+  - military_branch: Guardia Alla frontiera
+  - capture_front: Italiano
+  - capture_place: Trieste
+  - capture_date: 15-09-1943
+  - internment_place: ["Stalag XX B"]
+  - birth_date: 29-06-1916
+  - birth_place: Jesolo
+  - birth_province: Venezia
+  - rank: Soldato
+  - military_branch: Sanit├á
+  - capture_front: Italiano
+  - capture_place: Trieste
+  - capture_date: 15-09-1943
+  - internment_place: ["Stalag III C", "Stalag IX C"]
+  - birth_date: 15-05-1909
+  - birth_place: Milano
+  - birth_province: Milano
+  - rank: Soldato
+  - military_unit: 5 Rgt.
+  - internment_place: ["Stalag XX A", "Stalag VIII B"]
+  - birth_date: 28-03-1918
+  - birth_place: Parma
+  - birth_province: Parma
+  - rank: Soldato
+  - military_branch: Non Indicato
+  - capture_front: Greco
+  - capture_place: Patrasso
+  - capture_date: 09-09-1943
+  - internment_place: ["Stalag XII F"]
+  - fate: sopravvissuto
+  - return_date: 09-10-1945
+  - paternity: GIUSEPPE
+  - draft_class: 1896
+  - current_municipality: Fratta Polesine
+  - rank: Soldato
+  - military_unit: 4 Reggimento Cavalleria
+  - death_year: 1916
+  - death_place: Quota 144 (Doberdo)
+  - death_cause: Fatto d'Armi
+  - paternity: LUIGI
+  - draft_class: 1885
+  - current_municipality: Carsoli
+  - rank: Soldato
+  - military_unit: 13 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Cave Di Selz
+  - death_cause: Ferite Riportate in Combattimento
+  - paternity: ENRICO
+  - draft_class: 1895
+  - current_municipality: Riva del Po
+  - rank: Soldato
+  - military_unit: 44 Reggimento Fanteria
+  - death_year: 1918
+  - death_place: Ancona
+  - death_cause: Malattia
+  - paternity: ALESSANDRO
+  - draft_class: 1896
+  - current_municipality: Gossolengo
+  - rank: Soldato
+  - military_unit: 201 Reggimento Fanteria
+  - death_year: 1916
+  - death_place: Monte Maio
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: ANTONIO
+  - draft_class: 1880
+  - current_municipality: Fanano
+  - rank: Caporale
+  - military_unit: 2 Reggimento Genio
+  - death_year: 1917
+  - death_place: Ospedale Da Campo N. 0140
+  - death_cause: Malattia
+  - paternity: CESARE
+  - draft_class: 1888
+  - current_municipality: Scandiano
+  - rank: Soldato
+  - military_unit: 55 Reggimento Fanteria
+  - death_year: 1916
+  - death_cause: Affondamento Di Nave
+  - paternity: COSTANTE
+  - draft_class: 1888
+  - current_municipality: Corniglio
+  - rank: Caporale Maggiore
+  - military_unit: 4 Reggimento Artiglieria Da Fortezza
+  - death_year: 1917
+  - death_place: Spezia
+  - death_cause: Malattia
+  - paternity: DOMENICO
+  - draft_class: 1887
+  - current_municipality: Calendasco
+  - rank: Soldato
+  - military_unit: 23 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Varzo
+  - death_cause: Malattia
+  - paternity: EUGENIO
+  - draft_class: 1892
+  - current_municipality: Luzzara
+  - rank: Soldato
+  - military_unit: 34 Reggimento Fanteria
+  - death_year: 1918
+  - death_cause: Affondamento Di Nave
+  - paternity: FRANCESCO
+  - draft_class: 1882
+  - current_municipality: Tizzano Val Parma
+  - rank: Soldato
+  - military_unit: 39 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Ripiegamento Al Piave
+  - death_cause: Combattimento
+  - paternity: GIACOMO
+  - draft_class: 1880
+  - current_municipality: Corniglio
+  - rank: Soldato
+  - military_unit: 2 Reggimento Genio
+  - death_year: 1918
+  - death_place: Monte Grappa
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: GIUSEPPE
+  - draft_class: 1895
+  - current_municipality: Rottofreno
+  - rank: Caporale Maggiore
+  - military_unit: 43 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: 66 Sezione Di Sanita
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: VIRGINIO
+  - draft_class: 1896
+  - current_municipality: Casalgrande
+  - rank: Soldato
+  - military_unit: 129 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: 133 Reparto Someggiato Di Sanita
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: SECONDO
+  - draft_class: 1894
+  - current_municipality: Roma
+  - rank: Caporale
+  - military_unit: 28 Reggimento Artiglieria
+  - death_year: 1918
+  - death_place: Ospedale Militare Di Parma
+  - death_cause: Malattia
+  - paternity: PIETRO
+  - draft_class: 1890
+  - current_municipality: Borghetto d'Arroscia
+  - rank: Soldato
+  - military_unit: 1 Reggimento Alpini
+  - death_year: 1915
+  - death_place: Monte Rombon
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: CELESTINO
+  - draft_class: 1897
+  - current_municipality: Codogno
+  - rank: Caporale
+  - military_unit: 261 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Monte San Gabriele
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: FRANCESCO
+  - draft_class: 1889
+  - current_municipality: Busto Arsizio
+  - rank: Soldato
+  - military_unit: 613 Compagnia Mitraglieri Fiat
+  - death_year: 1917
+  - death_place: Monte San Michele
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: GIOVANNI
+  - draft_class: 1897
+  - current_municipality: Milano
+  - rank: Soldato
+  - military_unit: 70 Reparto D'assalto
+  - death_year: 1918
+  - death_place: Val Brenta
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: LUIGI
+  - draft_class: 1883
+  - current_municipality: Chignolo Po
+  - rank: Soldato
+  - military_unit: 1 Reggimento Genio
+  - death_year: 1918
+  - death_place: Prigionia
+  - death_cause: Malattia
+  - paternity: BATTISTA
+  - draft_class: 1892
+  - current_municipality: Borgo San Giacomo
+  - rank: Soldato
+  - military_unit: 165 Batteria Bombardieri
+  - death_year: 1917
+  - death_place: Carso
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: VINCENZO
+  - draft_class: 1893
+  - current_municipality: Bucchianico
+  - rank: Soldato
+  - military_unit: 19 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Ospedaletto Da Campo N. 67
+  - death_cause: Malattia
+  - military_branch: Esercito
+  - decoration_year: 1951
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1945
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1942
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1941
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1940
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1940
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1926
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1923
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1918
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1918
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1918
+  - decoration_type: Promozione per Merito di Guerra
+  - military_branch: Esercito
+  - decoration_year: 1917
+  - decoration_type: Promozione per Merito di Guerra
+  - military_branch: Esercito
+  - decoration_year: 1916
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1916
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1916
+  - decoration_type: Medaglia di Bronzo
+
+## Claim Asserti (origine, non corroborati)
+  - birth_date: 08-03-1911
+  - birth_place: Alfianello
+  - birth_province: Brescia
+  - rank: Soldato
+  - military_unit: 9 Btg. Pres. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Greco
+  - capture_date: 14-09-1943
+  - internment_place: ["Stalag X D", "Stalag III B", "Stalag II B", "Stalag VI D"]
+  - fate: deceduto
+  - death_date: 04-02-1944
+  - death_place: Bochum (nord Reno-westfalia)/Fronte Tedesco
+  - death_cause: Malattia
+  - burial_place: Francoforte Sul Meno (germania) - Cimitero Militare Italiano d'Onore - Posizione Tombale: Riquadro Q - Fila 3 - Tomba 21.
+  - birth_date: 08-09-1911
+  - birth_place: Tizzano Val Parma
+  - birth_province: Parma
+  - rank: Soldato
+  - military_unit: 18 Rgt. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Greco
+  - capture_date: 09-09-1943
+  - fate: deceduto
+  - death_date: 04-02-1944
+  - death_place: Bochum Gerthe/Fronte Polacco
+  - death_cause: Malattia
+  - burial_place: Francoforte Sul Meno (germania) - Cimitero Militare Italiano d'Onore
+  - birth_date: 08-01-1912
+  - birth_place: Milano
+  - birth_province: Milano
+  - rank: Soldato
+  - military_unit: 8 Rgt. Ftr.
+  - military_branch: Fanteria
+  - fate: deceduto
+  - death_date: 22-05-1944
+  - death_place: Fronte Tedesco
+  - birth_date: 19-10-1924
+  - birth_place: Rottofreno
+  - birth_province: Piacenza
+  - rank: Soldato
+  - capture_front: Italiano
+  - capture_place: Reggio Emilia
+  - capture_date: 10-09-1943
+  - internment_place: ["Stalag X B/Z"]
+  - fate: sopravvissuto
+  - return_date: 02-09-1945
+  - birth_date: 18-06-1912
+  - birth_place: Gonzaga
+  - birth_province: Mantova
+  - rank: Soldato
+  - military_unit: 64 Rgt. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Greco
+  - capture_place: Calamata
+  - capture_date: 10-09-1943
+  - internment_place: ["Stalag XII A"]
+  - birth_date: 16-03-1924
+  - birth_place: Parre
+  - birth_province: Bergamo
+  - rank: Soldato
+  - military_unit: 5 Rgt. Alp.
+  - military_branch: Alpini
+  - capture_front: Italiano
+  - capture_place: Merano
+  - capture_date: 09-09-1943
+  - internment_place: ["Distretto Militare I: Konigsberg", "Stalag IX C"]
+  - fate: sopravvissuto
+  - return_date: 24-08-1945
+  - birth_date: 09-11-1922
+  - birth_place: Guidizzolo
+  - birth_province: Mantova
+  - rank: Aviere
+  - military_branch: Aeronautica
+  - capture_date: 11-09-1943
+  - fate: sopravvissuto
+  - return_date: 11-09-1945
+  - birth_date: 22-11-1911
+  - birth_province: Dom. Bergamo
+  - rank: Soldato
+  - military_unit: 9 Rgt. Art.
+  - military_branch: Artiglieria
+  - capture_front: Italiano
+  - capture_place: Bressanone
+  - capture_date: 09-09-1943
+  - internment_place: ["Stalag I A", "Stalag III C"]
+  - birth_date: 12-11-1920
+  - birth_place: Pistoia
+  - birth_province: Pistoia
+  - rank: Soldato
+  - military_unit: 26 Sett. G.a.f.
+  - military_branch: Guardia Alla frontiera
+  - capture_front: Italiano
+  - capture_place: Trieste
+  - capture_date: 15-09-1943
+  - internment_place: ["Stalag XX B"]
+  - birth_date: 29-06-1916
+  - birth_place: Jesolo
+  - birth_province: Venezia
+  - rank: Soldato
+  - military_branch: Sanit├á
+  - capture_front: Italiano
+  - capture_place: Trieste
+  - capture_date: 15-09-1943
+  - internment_place: ["Stalag III C", "Stalag IX C"]
+  - birth_date: 15-05-1909
+  - birth_place: Milano
+  - birth_province: Milano
+  - rank: Soldato
+  - military_unit: 5 Rgt.
+  - internment_place: ["Stalag XX A", "Stalag VIII B"]
+  - birth_date: 28-03-1918
+  - birth_place: Parma
+  - birth_province: Parma
+  - rank: Soldato
+  - military_branch: Non Indicato
+  - capture_front: Greco
+  - capture_place: Patrasso
+  - capture_date: 09-09-1943
+  - internment_place: ["Stalag XII F"]
+  - fate: sopravvissuto
+  - return_date: 09-10-1945
+  - paternity: GIUSEPPE
+  - draft_class: 1896
+  - current_municipality: Fratta Polesine
+  - rank: Soldato
+  - military_unit: 4 Reggimento Cavalleria
+  - death_year: 1916
+  - death_place: Quota 144 (Doberdo)
+  - death_cause: Fatto d'Armi
+  - paternity: LUIGI
+  - draft_class: 1885
+  - current_municipality: Carsoli
+  - rank: Soldato
+  - military_unit: 13 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Cave Di Selz
+  - death_cause: Ferite Riportate in Combattimento
+  - paternity: ENRICO
+  - draft_class: 1895
+  - current_municipality: Riva del Po
+  - rank: Soldato
+  - military_unit: 44 Reggimento Fanteria
+  - death_year: 1918
+  - death_place: Ancona
+  - death_cause: Malattia
+  - paternity: ALESSANDRO
+  - draft_class: 1896
+  - current_municipality: Gossolengo
+  - rank: Soldato
+  - military_unit: 201 Reggimento Fanteria
+  - death_year: 1916
+  - death_place: Monte Maio
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: ANTONIO
+  - draft_class: 1880
+  - current_municipality: Fanano
+  - rank: Caporale
+  - military_unit: 2 Reggimento Genio
+  - death_year: 1917
+  - death_place: Ospedale Da Campo N. 0140
+  - death_cause: Malattia
+  - paternity: CESARE
+  - draft_class: 1888
+  - current_municipality: Scandiano
+  - rank: Soldato
+  - military_unit: 55 Reggimento Fanteria
+  - death_year: 1916
+  - death_cause: Affondamento Di Nave
+  - paternity: COSTANTE
+  - draft_class: 1888
+  - current_municipality: Corniglio
+  - rank: Caporale Maggiore
+  - military_unit: 4 Reggimento Artiglieria Da Fortezza
+  - death_year: 1917
+  - death_place: Spezia
+  - death_cause: Malattia
+  - paternity: DOMENICO
+  - draft_class: 1887
+  - current_municipality: Calendasco
+  - rank: Soldato
+  - military_unit: 23 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Varzo
+  - death_cause: Malattia
+  - paternity: EUGENIO
+  - draft_class: 1892
+  - current_municipality: Luzzara
+  - rank: Soldato
+  - military_unit: 34 Reggimento Fanteria
+  - death_year: 1918
+  - death_cause: Affondamento Di Nave
+  - paternity: FRANCESCO
+  - draft_class: 1882
+  - current_municipality: Tizzano Val Parma
+  - rank: Soldato
+  - military_unit: 39 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Ripiegamento Al Piave
+  - death_cause: Combattimento
+  - paternity: GIACOMO
+  - draft_class: 1880
+  - current_municipality: Corniglio
+  - rank: Soldato
+  - military_unit: 2 Reggimento Genio
+  - death_year: 1918
+  - death_place: Monte Grappa
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: GIUSEPPE
+  - draft_class: 1895
+  - current_municipality: Rottofreno
+  - rank: Caporale Maggiore
+  - military_unit: 43 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: 66 Sezione Di Sanita
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: VIRGINIO
+  - draft_class: 1896
+  - current_municipality: Casalgrande
+  - rank: Soldato
+  - military_unit: 129 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: 133 Reparto Someggiato Di Sanita
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: SECONDO
+  - draft_class: 1894
+  - current_municipality: Roma
+  - rank: Caporale
+  - military_unit: 28 Reggimento Artiglieria
+  - death_year: 1918
+  - death_place: Ospedale Militare Di Parma
+  - death_cause: Malattia
+  - paternity: PIETRO
+  - draft_class: 1890
+  - current_municipality: Borghetto d'Arroscia
+  - rank: Soldato
+  - military_unit: 1 Reggimento Alpini
+  - death_year: 1915
+  - death_place: Monte Rombon
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: CELESTINO
+  - draft_class: 1897
+  - current_municipality: Codogno
+  - rank: Caporale
+  - military_unit: 261 Reggimento Fanteria
+  - death_year: 1917
+  - death_place: Monte San Gabriele
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: FRANCESCO
+  - draft_class: 1889
+  - current_municipality: Busto Arsizio
+  - rank: Soldato
+  - military_unit: 613 Compagnia Mitraglieri Fiat
+  - death_year: 1917
+  - death_place: Monte San Michele
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: GIOVANNI
+  - draft_class: 1897
+  - current_municipality: Milano
+  - rank: Soldato
+  - military_unit: 70 Reparto D'assalto
+  - death_year: 1918
+  - death_place: Val Brenta
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: LUIGI
+  - draft_class: 1883
+  - current_municipality: Chignolo Po
+  - rank: Soldato
+  - military_unit: 1 Reggimento Genio
+  - death_year: 1918
+  - death_place: Prigionia
+  - death_cause: Malattia
+  - paternity: BATTISTA
+  - draft_class: 1892
+  - current_municipality: Borgo San Giacomo
+  - rank: Soldato
+  - military_unit: 165 Batteria Bombardieri
+  - death_year: 1917
+  - death_place: Carso
+  - death_cause: Ferite Riportate In Combattimento
+  - paternity: VINCENZO
+  - draft_class: 1893
+  - current_municipality: Bucchianico
+  - rank: Soldato
+  - military_unit: 19 Reggimento Fanteria
+  - death_year: 1915
+  - death_place: Ospedaletto Da Campo N. 67
+  - death_cause: Malattia
+  - military_branch: Esercito
+  - decoration_year: 1951
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1945
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1942
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1941
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1940
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1940
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1926
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1923
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1919
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1918
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1918
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1918
+  - decoration_type: Promozione per Merito di Guerra
+  - military_branch: Esercito
+  - decoration_year: 1917
+  - decoration_type: Promozione per Merito di Guerra
+  - military_branch: Esercito
+  - decoration_year: 1916
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1916
+  - decoration_type: Medaglia di Bronzo
+  - military_branch: Esercito
+  - decoration_year: 1916
+  - decoration_type: Medaglia di Bronzo
+
+## Omonimi Respinti
+  - FERRARI PIETRO: motivi=['HOMONYM_DIFFERENT_IDENTITY', 'data_nascita', 'luogo_nascita', 'reparto', 'provincia_nascita', 'luogo_sepoltura', 'data_decesso', 'arma', 'grado'], conflitti=['data_nascita', 'luogo_nascita', 'reparto', 'provincia_nascita', 'luogo_sepoltura', 'data_decesso', 'arma', 'grado']
+  - FERRARI PIETRO: motivi=['HOMONYM_DIFFERENT_IDENTITY', 'paternita', 'reparto', 'anno_morte', 'luogo_morte', 'causa_morte', 'classe', 'grado'], conflitti=['paternita', 'reparto', 'anno_morte', 'luogo_morte', 'causa_morte', 'classe', 'grado']
+  - FERRARI PIETRO: motivi=['HOMONYM_DIFFERENT_IDENTITY', 'anno_decorazione'], conflitti=['anno_decorazione']
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - unit: Field unit not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+
+## Piste di Ricerca (non verificate)
+  - Piero Ferrari - Wikipedia (tavily)
+  - Pietro Ferrari, B.Tech., B.Arch., M.Arch. (tavily)
+  - Piero Ferrari & family (tavily)
+  - Family Values (tavily)
+  - Ferrari Pietro (tavily)
+  - 1233 Piero Ferrari Photos & High Res Pictures (tavily)
+  - A journey through time, a tribute to our legacy. Discover ... (tavily)
+  - Such an honor to meet Piero Ferrari. The Ferrari family ... (tavily)
+  - True facts from the Ferrari movie with Piero Ferrari. (tavily)
+  - Piero Ferrari's version (tavily)
+  - Piero Ferrari (tavily)
+  - Piero Ferrari | Formula 1 Wiki - Fandom (tavily)
+  - Piero Ferrari & family (tavily)
+  - Family Values (tavily)
+  - Piero Ferrari - Bloomberg Billionaires Index (tavily)
+  - Pierro Ferrari | Opus World (tavily)
+  - Ferrari Pietro (tavily)
+  - 1,233 Piero Ferrari Photos & High Res Pictures - Getty Images (tavily)
+  - Who Are Enzo FerrariÔÇÖs 2 Sons, Piero and Dino? (tavily)
+  - United by colour (tavily)
+  - A journey through time, a tribute to our legacy. Discover Piero Ferrari's ... (tavily)
+  - Ferrari Tour with Piero Ferrari (tavily)
+  - True facts from the Ferrari movie with Piero Ferrari. : r/Ferrari (tavily)
+  - True facts from the Ferrari movie with Piero Ferrari. - YouTube (tavily)
+  - My first visit to Ferrari I was over the moon. Dream of dreams ... (tavily)
+
+---
+## Fonti
+- **obs_2aa2b3ec3534584c**: Piero Ferrari - Wikipedia ÔÇö https://en.wikipedia.org/wiki/Piero_Ferrari
+- **obs_2b511663ca714960**: Pietro Ferrari, B.Tech., B.Arch., M.Arch. ÔÇö https://www.georgebrown.ca/bio/pietro-ferrari
+- **obs_62fef79731910b8e**: Piero Ferrari & family ÔÇö https://www.forbes.com/profile/piero-ferrari
+- **obs_c57e2aaa5d03bbe8**: Family Values ÔÇö https://www.ferrari.com/en-EN/magazine/articles/family-values-piero-ferrari
+- **obs_5b1b4118db8777ba**: Ferrari Pietro ÔÇö https://www.carpenteriaferrari.com
+- **obs_c4705cb78225183e**: 1233 Piero Ferrari Photos & High Res Pictures ÔÇö https://www.gettyimages.com/photos/piero-ferrari
+- **obs_3f9b7de20914a9e3**: A journey through time, a tribute to our legacy. Discover ... ÔÇö https://www.facebook.com/Ferrari/videos/a-journey-through-time-a-tribute-to-our-legacy-discover-piero-ferraris-ferrarida/1136434151332626
+- **obs_66b63801e992bb8e**: Such an honor to meet Piero Ferrari. The Ferrari family ... ÔÇö https://www.instagram.com/p/DYx9be3q0qr?hl=en
+- **obs_44345059f1d3c71d**: True facts from the Ferrari movie with Piero Ferrari. ÔÇö https://www.youtube.com/watch?v=7lzlMX_NNlo
+- **obs_b65740be671ef13d**: Piero Ferrari's version ÔÇö https://www.ferrari.com/magazine/articles/piero-ferraris-version-film-about-Enzo
+- **obs_8d00ca22bc4d748b**: Piero Ferrari ÔÇö https://en.wikipedia.org/wiki/Piero_Ferrari
+- **obs_1ed9312b5feaa50e**: Piero Ferrari | Formula 1 Wiki - Fandom ÔÇö https://f1.fandom.com/wiki/Piero_Ferrari
+- **obs_49810bca1fcf8027**: Piero Ferrari & family ÔÇö https://www.forbes.com/profile/piero-ferrari
+- **obs_f21cb9d0f2e7a85d**: Family Values ÔÇö https://www.ferrari.com/en-EN/magazine/articles/family-values-piero-ferrari
+- **obs_6c4ec93093c35266**: Piero Ferrari - Bloomberg Billionaires Index ÔÇö https://www.bloomberg.com/billionaires/profiles/piero-ferrari
+- **obs_5071cbcf32763fac**: Pierro Ferrari | Opus World ÔÇö https://www.thisisopus.com/opus-world/pierro-ferrari
+- **obs_7a7551845ab7b8bc**: Ferrari Pietro ÔÇö https://www.carpenteriaferrari.com
+- **obs_34c82239746a0ff1**: 1,233 Piero Ferrari Photos & High Res Pictures - Getty Images ÔÇö https://www.gettyimages.com/photos/piero-ferrari
+- **obs_812eca37334486b0**: Who Are Enzo FerrariÔÇÖs 2 Sons, Piero and Dino? ÔÇö https://www.biography.com/business-leaders/a46119935/enzo-ferrari-sons-piero-alfredo
+- **obs_6f15ab1befa94691**: United by colour ÔÇö https://www.ferrari.com/magazine/articles/united-by-colour-the-purosangue-piero-ferrari
+- **obs_4951c1083b44cc49**: A journey through time, a tribute to our legacy. Discover Piero Ferrari's ... ÔÇö https://www.facebook.com/Ferrari/videos/a-journey-through-time-a-tribute-to-our-legacy-discover-piero-ferraris-ferrarida/1136434151332626
+- **obs_a4a6d547d45e3deb**: Ferrari Tour with Piero Ferrari ÔÇö https://www.neueluxury.com/experience/ferrari-tour-with-piero-ferrari
+- **obs_fae8d9482d8f215c**: True facts from the Ferrari movie with Piero Ferrari. : r/Ferrari ÔÇö https://www.reddit.com/r/Ferrari/comments/18sv4on/true_facts_from_the_ferrari_movie_with_piero
+- **obs_cee3ca7049a9df7a**: True facts from the Ferrari movie with Piero Ferrari. - YouTube ÔÇö https://www.youtube.com/watch?v=7lzlMX_NNlo
+- **obs_e18861703f55e2cd**: My first visit to Ferrari I was over the moon. Dream of dreams ... ÔÇö https://www.instagram.com/reel/DU18Ks9kTTf
+
+---
+## Provenienza
+- Snapshot: snap_v7_e35761612602f9e9
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): AMBIGUOUS_IDENTITY
+- Identity Resolution (legacy): UNRESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: 
+- Person Claims: 347
+- Context Claims: 0
+- Candidate Identities: 3
+- Provider Ledger: 242 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto ├¿ stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 2/5: MILANI LELIO FRANCESCO
+======================================================================
+2026-08-09 22:52:54,035 [INFO] LocalDbAdapter: 84 observations
+2026-08-09 22:52:55,894 [INFO] WebSearchAdapter[tavily]: 20 observations in 1.86s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-09 22:52:58,061 [INFO] FederationAdapter: 16 observations
+2026-08-09 22:52:58,621 [INFO] WebSearchAdapter[tavily]: 20 observations in 0.56s
+2026-08-09 22:52:59,394 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_4eff6ccad935', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_1e3c38769d44', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_1c9d3c58b1b7', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_b5a16661fe9d', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_1b644cfc1b7f']
+2026-08-09 22:53:01,361 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:53:01,361 [INFO] Retrying request to /chat/completions in 0.419463 seconds
+2026-08-09 22:53:01,967 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:53:01,968 [INFO] Retrying request to /chat/completions in 0.769687 seconds
+2026-08-09 22:53:03,190 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:53:03,190 [WARNING] AI provider openai failed: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}
+2026-08-09 22:53:03,417 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 401 Unauthorized"
+2026-08-09 22:53:03,417 [WARNING] AI provider anthropic failed: Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'API key is invalid.'}, 'request_id': None}
+2026-08-09 22:53:09,595 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:53:09,615 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 7 blocks
+2026-08-09 22:53:09,617 [WARNING] NARRATE_V2: Hallucination check found 8 warnings: ['HALLUCINATED_PLACE_OR_NAME:Figlio in block b2 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Pietro in block b2 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Stalag in block b3 ÔÇö not in evidence']
+2026-08-09 22:53:09,617 [WARNING] NARRATE_V2: Severe hallucination (8 warnings), falling back to deterministic
+2026-08-09 22:53:09,617 [INFO] NARRATE_V2: mode=deterministic, provider=, status=validated_deterministic, claims_used=26, omitted=1, repair=no
+Identity: RESOLVED_IDENTITY | Obs: 140 | Elapsed: 15.7s
+
+--- REPORT ---
+
+# Rapporto di Ricerca ÔÇö snap_v7_4653f076da29deec
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: MILANI LELIO FRANCESCO
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: RESOLVED_IDENTITY
+## Corroborazione: PARTIAL
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - birth_date: 30-08-1920
+  - birth_place: Genova
+  - birth_province: Genova
+  - military_unit: 2 Rgt. Genio 1 Comp. Antincendi
+  - military_branch: Genio
+  - capture_front: Croato
+  - capture_place: Spalato
+  - capture_date: 27-09-1943
+  - internment_place: ["Stalag VIII A"]
+  - fate: sopravvissuto
+  - return_date: 25-07-1945
+  - paternity: PIETRO
+  - draft_class: 1894
+  - current_municipality: Nibbiola
+  - rank: Caporale
+  - military_unit: 96 Reggimento Fanteria
+  - death_year: 1916
+  - death_place: Carso
+  - death_cause: Combattimento
+
+## PROBABLE (fonte valida, incertezza su OCR/normalizzazione)
+  - birth_place: Genova
+  - unit: 2 Rgt. Genio 1 Comp. Antincendi
+  - fate: sopravvissuto
+
+## Claim di Contesto (non attribuibili alla persona)
+  - [EVENT] source_url: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/show/295019
+  - [EVENT] source_document: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/showpdf/295019
+  - [EVENT] source_id: 295019
+  - [EVENT] source_url: DettagliNominativi.aspx?id=duFVatcDR6Mp6xBcXmAOBw%3d%3d
+  - [EVENT] source_volume: Piemonte III - (Vol XVI)
+
+## Claim Asserti (origine, non corroborati)
+  - birth_place: Genova
+  - unit: 2 Rgt. Genio 1 Comp. Antincendi
+  - fate: sopravvissuto
+  - birth_date: 30-08-1920
+  - birth_place: Genova
+  - birth_province: Genova
+  - military_unit: 2 Rgt. Genio 1 Comp. Antincendi
+  - military_branch: Genio
+  - capture_front: Croato
+  - capture_place: Spalato
+  - capture_date: 27-09-1943
+  - internment_place: ["Stalag VIII A"]
+  - fate: sopravvissuto
+  - return_date: 25-07-1945
+  - paternity: PIETRO
+  - draft_class: 1894
+  - current_municipality: Nibbiola
+  - rank: Caporale
+  - military_unit: 96 Reggimento Fanteria
+  - death_year: 1916
+  - death_place: Carso
+  - death_cause: Combattimento
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - death_date: Field death_date not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+
+## Piste di Ricerca (non verificate)
+  - In Memory of Francesco Milani (1937-2026) (tavily)
+  - Francesco Milani (c.1818 - 1879) - Genealogy - Geni.com (tavily)
+  - We are sad to announce that Francesco Milani, founder ... - Instagram (tavily)
+  - Francesco Milani - Detailed stats - Transfermarkt (tavily)
+  - Francesco Milani ÔÇö Milan - Amati Auctions (tavily)
+  - Francesco Milani - Perfil del jugador - Transfermarkt (tavily)
+  - Francesco Milani - Storia e Memoria di Bologna (tavily)
+  - Francesco Milani ÔÇô Photography Exhibition (tavily)
+  - Addio a Francesco Milani - RSI (tavily)
+  - Francesco Milani - Facebook (tavily)
+  - Dr. Lelio Francesco: Morricone Diabetologo, Endocrinologo - Wellness (tavily)
+  - Francesco Milani - Chelmsford, England, United Kingdom - LinkedIn (tavily)
+  - Francesco Lelio - GialloZafferano Italian Recipes (tavily)
+  - Francesco Milani Sold at Auction Prices - Artists - Invaluable.com (tavily)
+  - [PDF] La Luce (1698) by Giovanni Michele Milani - Radboud Repository (tavily)
+  - Mariani, Francesco | Loyola University Chicago (tavily)
+  - ÔÇ¬Stephanie MilaniÔÇ¼ - ÔÇ¬Google ScholarÔÇ¼ (tavily)
+  - Francesco Romani - HLS PILAC (tavily)
+  - Abdominal Obesity Phenotype Predicts COVID-19 Chest X-Ray ... (tavily)
+  - Tri-Ponderal Mass Index vs body Mass Index in discriminating central ... (tavily)
+  - In Memory of Francesco Milani (1937-2026) (tavily)
+  - Francesco Milani (c.1818 - 1879) - Genealogy - Geni.com (tavily)
+  - We are sad to announce that Francesco Milani, founder ... - Instagram (tavily)
+  - Francesco Milani - Detailed stats - Transfermarkt (tavily)
+  - Francesco Milani ÔÇö Milan - Amati Auctions (tavily)
+  - Francesco Milani - Perfil del jugador - Transfermarkt (tavily)
+  - Francesco Milani - Storia e Memoria di Bologna (tavily)
+  - Francesco Milani ÔÇô Photography Exhibition (tavily)
+  - Addio a Francesco Milani - RSI (tavily)
+  - Francesco Milani - Facebook (tavily)
+  - Dr. Lelio Francesco: Morricone Diabetologo, Endocrinologo - Wellness (tavily)
+  - Francesco Milani - Chelmsford, England, United Kingdom - LinkedIn (tavily)
+  - Francesco Lelio - GialloZafferano Italian Recipes (tavily)
+  - Francesco Milani Sold at Auction Prices - Artists - Invaluable.com (tavily)
+  - [PDF] La Luce (1698) by Giovanni Michele Milani - Radboud Repository (tavily)
+  - Mariani, Francesco | Loyola University Chicago (tavily)
+  - ÔÇ¬Stephanie MilaniÔÇ¼ - ÔÇ¬Google ScholarÔÇ¼ (tavily)
+  - Francesco Romani - HLS PILAC (tavily)
+  - Abdominal Obesity Phenotype Predicts COVID-19 Chest X-Ray ... (tavily)
+  - Tri-Ponderal Mass Index vs body Mass Index in discriminating central ... (tavily)
+
+---
+## Fonti
+- **obs_29074bbcedda5b56**: In Memory of Francesco Milani (1937-2026) ÔÇö https://milani.ch/en/insights/in-memory-of-francesco-milani-1937-2026
+- **obs_c3868d2022232e26**: Francesco Milani (c.1818 - 1879) - Genealogy - Geni.com ÔÇö https://www.geni.com/people/Francesco-Milani/6000000203599962027
+- **obs_7bc2484dc437b42e**: We are sad to announce that Francesco Milani, founder ... - Instagram ÔÇö https://www.instagram.com/p/DT2zlx6Ar_0
+- **obs_f36552bbec71409d**: Francesco Milani - Detailed stats - Transfermarkt ÔÇö https://www.transfermarkt.co.uk/francesco-milani/leistungsdatendetails/spieler/457412/wettbewerb/IJ2A
+- **obs_da13e1af46223195**: Francesco Milani ÔÇö Milan - Amati Auctions ÔÇö https://amati.com/maker/milani-francesco
+- **obs_35dffa75517acdb5**: Francesco Milani - Perfil del jugador - Transfermarkt ÔÇö https://www.transfermarkt.es/francesco-milani/profil/spieler/457412
+- **obs_fb8f4d6daec05bce**: Francesco Milani - Storia e Memoria di Bologna ÔÇö https://www.storiaememoriadibologna.it/archivio/persone/milani-francesco-0
+- **obs_19b23871c8f4af7a**: Francesco Milani ÔÇô Photography Exhibition ÔÇö https://www.milaniimaging.net/francesco-milani
+- **obs_33dd8cd5bb414b3d**: Addio a Francesco Milani - RSI ÔÇö https://www.rsi.ch/rete-due/programmi/cultura/alphaville/Addio-a-Francesco-Milani--3362739.html
+- **obs_1efe76df3bc5369a**: Francesco Milani - Facebook ÔÇö https://www.facebook.com/francesco.milani.16
+- **obs_8537a51a9efe462b**: Dr. Lelio Francesco: Morricone Diabetologo, Endocrinologo - Wellness ÔÇö https://www.grupposandonato.it/dottori/lelio-morricone
+- **obs_5e4eaaf283d240ef**: Francesco Milani - Chelmsford, England, United Kingdom - LinkedIn ÔÇö https://uk.linkedin.com/in/francescomilani
+- **obs_8aead9803dbcd81f**: Francesco Lelio - GialloZafferano Italian Recipes ÔÇö https://www.giallozafferano.com/guest/francesco-lelio
+- **obs_bc1f23e947f39366**: Francesco Milani Sold at Auction Prices - Artists - Invaluable.com ÔÇö https://www.invaluable.com/artist/milani-francesco-2qodpsq086/sold-at-auction-prices
+- **obs_1ad73b2b8d71622e**: [PDF] La Luce (1698) by Giovanni Michele Milani - Radboud Repository ÔÇö https://repository.ubn.ru.nl/bitstream/handle/2066/301924/1/301924.pdf
+- **obs_05733d74a73373a9**: Mariani, Francesco | Loyola University Chicago ÔÇö https://www.luc.edu/rome/about/facultystaff/faculty/marianifrancesco.shtml
+- **obs_87107fd588d6aab4**: ÔÇ¬Stephanie MilaniÔÇ¼ - ÔÇ¬Google ScholarÔÇ¼ ÔÇö https://scholar.google.com/citations?user=vx68rkMAAAAJ&hl=en
+- **obs_5a057d65f7cf9a6d**: Francesco Romani - HLS PILAC ÔÇö https://pilac.law.harvard.edu/team//francesco-romani
+- **obs_1acd2c34d155c7af**: Abdominal Obesity Phenotype Predicts COVID-19 Chest X-Ray ... ÔÇö https://www.researchsquare.com/article/rs-167177/latest
+- **obs_daff3fde1d458d14**: Tri-Ponderal Mass Index vs body Mass Index in discriminating central ... ÔÇö https://pubmed.ncbi.nlm.nih.gov/33741212
+- **obs_d51bff829de51c8d**: In Memory of Francesco Milani (1937-2026) ÔÇö https://milani.ch/en/insights/in-memory-of-francesco-milani-1937-2026
+- **obs_6b15c543c159fd07**: Francesco Milani (c.1818 - 1879) - Genealogy - Geni.com ÔÇö https://www.geni.com/people/Francesco-Milani/6000000203599962027
+- **obs_06e8fc6fc2c9394b**: We are sad to announce that Francesco Milani, founder ... - Instagram ÔÇö https://www.instagram.com/p/DT2zlx6Ar_0
+- **obs_d615e8e4017395c9**: Francesco Milani - Detailed stats - Transfermarkt ÔÇö https://www.transfermarkt.co.uk/francesco-milani/leistungsdatendetails/spieler/457412/wettbewerb/IJ2A
+- **obs_ee1ae8bb6664c240**: Francesco Milani ÔÇö Milan - Amati Auctions ÔÇö https://amati.com/maker/milani-francesco
+- **obs_8a72e40c3e9d49d6**: Francesco Milani - Perfil del jugador - Transfermarkt ÔÇö https://www.transfermarkt.es/francesco-milani/profil/spieler/457412
+- **obs_eb78103b2d4e7767**: Francesco Milani - Storia e Memoria di Bologna ÔÇö https://www.storiaememoriadibologna.it/archivio/persone/milani-francesco-0
+- **obs_1a036d5331b38dd5**: Francesco Milani ÔÇô Photography Exhibition ÔÇö https://www.milaniimaging.net/francesco-milani
+- **obs_ede2860b992fd4ad**: Addio a Francesco Milani - RSI ÔÇö https://www.rsi.ch/rete-due/programmi/cultura/alphaville/Addio-a-Francesco-Milani--3362739.html
+- **obs_7c1915b97a9c0625**: Francesco Milani - Facebook ÔÇö https://www.facebook.com/francesco.milani.16
+- **obs_df9ac8a449604af6**: Dr. Lelio Francesco: Morricone Diabetologo, Endocrinologo - Wellness ÔÇö https://www.grupposandonato.it/dottori/lelio-morricone
+- **obs_e9fd0b6092df04d4**: Francesco Milani - Chelmsford, England, United Kingdom - LinkedIn ÔÇö https://uk.linkedin.com/in/francescomilani
+- **obs_b356b3c34545a82c**: Francesco Lelio - GialloZafferano Italian Recipes ÔÇö https://www.giallozafferano.com/guest/francesco-lelio
+- **obs_9c0136699eed330e**: Francesco Milani Sold at Auction Prices - Artists - Invaluable.com ÔÇö https://www.invaluable.com/artist/milani-francesco-2qodpsq086/sold-at-auction-prices
+- **obs_f05fb0db66f5b02e**: [PDF] La Luce (1698) by Giovanni Michele Milani - Radboud Repository ÔÇö https://repository.ubn.ru.nl/bitstream/handle/2066/301924/1/301924.pdf
+- **obs_f0117d24d54d8c38**: Mariani, Francesco | Loyola University Chicago ÔÇö https://www.luc.edu/rome/about/facultystaff/faculty/marianifrancesco.shtml
+- **obs_f3f3675c863a464e**: ÔÇ¬Stephanie MilaniÔÇ¼ - ÔÇ¬Google ScholarÔÇ¼ ÔÇö https://scholar.google.com/citations?user=vx68rkMAAAAJ&hl=en
+- **obs_6804e0869f2192a0**: Francesco Romani - HLS PILAC ÔÇö https://pilac.law.harvard.edu/team//francesco-romani
+- **obs_df2addd9c1480b97**: Abdominal Obesity Phenotype Predicts COVID-19 Chest X-Ray ... ÔÇö https://www.researchsquare.com/article/rs-167177/latest
+- **obs_0b806aa8f4babcd5**: Tri-Ponderal Mass Index vs body Mass Index in discriminating central ... ÔÇö https://pubmed.ncbi.nlm.nih.gov/33741212
+
+---
+## Provenienza
+- Snapshot: snap_v7_4653f076da29deec
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Identity Resolution (legacy): RESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: cluster_f08e13738c3a
+- Person Claims: 22
+- Context Claims: 5
+- Candidate Identities: 0
+- Provider Ledger: 140 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto ├¿ stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 3/5: POGGIALI ROBERTO
+======================================================================
+2026-08-09 22:53:09,744 [INFO] LocalDbAdapter: 14 observations
+2026-08-09 22:53:11,055 [INFO] WebSearchAdapter[tavily]: 10 observations in 1.31s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-09 22:53:13,418 [INFO] FederationAdapter: 23 observations
+2026-08-09 22:53:15,668 [INFO] WebSearchAdapter[tavily]: 19 observations in 2.25s
+2026-08-09 22:53:16,436 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_8be41e36402d', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_23040aecee7c', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_dfe825ae3291']
+2026-08-09 22:53:18,068 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:53:18,068 [INFO] Retrying request to /chat/completions in 0.455139 seconds
+2026-08-09 22:53:18,711 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:53:18,711 [INFO] Retrying request to /chat/completions in 0.803276 seconds
+2026-08-09 22:53:19,694 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:53:19,694 [WARNING] AI provider openai failed: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}
+2026-08-09 22:53:19,944 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 401 Unauthorized"
+2026-08-09 22:53:19,944 [WARNING] AI provider anthropic failed: Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'API key is invalid.'}, 'request_id': None}
+2026-08-09 22:53:24,161 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:53:24,179 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 4 blocks
+2026-08-09 22:53:24,179 [WARNING] NARRATE_V2: Hallucination check found 9 warnings: ['HALLUCINATED_PLACE_OR_NAME:Proveniva in block b2 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Alessandria in block b2 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Ravenna in block b2 ÔÇö not in evidence']
+2026-08-09 22:53:24,181 [WARNING] NARRATE_V2: Severe hallucination (9 warnings), falling back to deterministic
+2026-08-09 22:53:24,181 [INFO] NARRATE_V2: mode=deterministic, provider=, status=validated_deterministic, claims_used=15, omitted=0, repair=no
+Identity: RESOLVED_IDENTITY | Obs: 66 | Elapsed: 14.6s
+
+--- REPORT ---
+
+# Rapporto di Ricerca ÔÇö snap_v7_c0de5bd8272dd576
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: POGGIALI ROBERTO
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: RESOLVED_IDENTITY
+## Corroborazione: PARTIAL
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - birth_date: 18-10-1909
+  - birth_place: Roma
+  - birth_province: Roma
+  - military_unit: Dep. 38 Rgt. Ftr. Tortona
+  - military_branch: Fanteria
+  - capture_date: 09-09-1943
+  - internment_place: ["Stalag VI C/Z: Meppen", "Fredeburg", "Lippstadt", "Stalag VI D"]
+  - fate: sopravvissuto
+  - return_date: 14-09-1945
+
+## PROBABLE (fonte valida, incertezza su OCR/normalizzazione)
+  - birth_place: Roma
+  - unit: Dep. 38 Rgt. Ftr. Tortona
+  - fate: sopravvissuto
+
+## Claim di Contesto (non attribuibili alla persona)
+  - [EVENT] source_url: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/show/205821
+  - [EVENT] source_document: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/showpdf/205821
+  - [EVENT] source_id: 205821
+
+## Claim Asserti (origine, non corroborati)
+  - birth_place: Roma
+  - unit: Dep. 38 Rgt. Ftr. Tortona
+  - fate: sopravvissuto
+  - birth_date: 18-10-1909
+  - birth_place: Roma
+  - birth_province: Roma
+  - military_unit: Dep. 38 Rgt. Ftr. Tortona
+  - military_branch: Fanteria
+  - capture_date: 09-09-1943
+  - internment_place: ["Stalag VI C/Z: Meppen", "Fredeburg", "Lippstadt", "Stalag VI D"]
+  - fate: sopravvissuto
+  - return_date: 14-09-1945
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - rank: Field rank not supported by accepted evidence [BLOCCANTE]
+  - death_date: Field death_date not supported by accepted evidence
+  - death_year: Field death_year not supported by accepted evidence
+  - death_place: Field death_place not supported by accepted evidence
+  - death_cause: Field death_cause not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+  - capture_place: Field capture_place not supported by accepted evidence
+
+## Piste di Ricerca (non verificate)
+  - Roberto Poggiali (tavily)
+  - Roberto Poggiali (tavily)
+  - Roberto Poggiali (tavily)
+  - Marketing Policy - Roberto Poggiali (tavily)
+  - Serata con Roberto Poggiali al Museo del ciclismo (tavily)
+  - A Roberto Poggiali il Timone d'Oro 2023 (tavily)
+  - Fiche de ROBERTO POGGIALI (tavily)
+  - Roberto Poggiali Stock Photos - Free & Royalty ... (tavily)
+  - File:Roberto Poggiali 1962.jpg (tavily)
+  - roberto.poggiali (tavily)
+  - Roberto Poggiali - Wikipedia (tavily)
+  - Roberto Poggiali - Wikipedia (tavily)
+  - Marketing Policy - Roberto Poggiali (tavily)
+  - ROBERTO POGGIALI (tavily)
+  - ROBERTO POGGIALI DI GLORIA ... (tavily)
+  - GRAVE LUTTO PER ROBERTO POGGIALI, E' MANCATA ... (tavily)
+  - Serata con Roberto Poggiali al Museo del ciclismo (tavily)
+  - A Roberto Poggiali il Timone d'Oro 2023 (tavily)
+  - Quad Evolution Roberto Poggiali (tavily)
+  - Roberto Poggiali (tavily)
+  - File:Roberto Poggiali 1962.jpg - Wikimedia Commons (tavily)
+  - Fiche de ROBERTO POGGIALI (tavily)
+  - Roberto Poggiali Stock Photos - Free & Royalty ... (tavily)
+  - Firenze - Aneddoti, ricordi e commozione nella serata con ... (tavily)
+  - Roberto Poggiali - Tecnico IT Junior in formazione (tavily)
+  - Roberto Poggiali (tavily)
+  - roberto.poggiali (tavily)
+  - Manuel Poggiali (@poggy54) - Photos (tavily)
+  - Brando POGGIALI | Istituto Italiano di Tecnologia, Genoa | IIT (tavily)
+
+---
+## Fonti
+- **obs_7539b70459f89e5f**: Roberto Poggiali ÔÇö https://en.wikipedia.org/wiki/Roberto_Poggiali
+- **obs_abfc942dbf8ecb01**: Roberto Poggiali ÔÇö https://www.procyclingstats.com/rider/roberto-poggiali
+- **obs_40d1ddf7b210d831**: Roberto Poggiali ÔÇö https://it.wikipedia.org/wiki/Roberto_Poggiali
+- **obs_ee4c676090d5263a**: Marketing Policy - Roberto Poggiali ÔÇö https://robertopoggiali.it/en/marketing-policy
+- **obs_1c554776e73218cf**: Serata con Roberto Poggiali al Museo del ciclismo ÔÇö https://www.youtube.com/watch?v=ze-LzdbwX20
+- **obs_b11d936357f0f5c3**: A Roberto Poggiali il Timone d'Oro 2023 ÔÇö https://www.federciclismo.it/articoli/a-roberto-poggiali-il-timone-doro-2023
+- **obs_d981bfd28069176b**: Fiche de ROBERTO POGGIALI ÔÇö https://www.lequipe.fr/Cyclisme/CyclismeFicheCoureur2334.html
+- **obs_b85a412e1e04fda7**: Roberto Poggiali Stock Photos - Free & Royalty ... ÔÇö https://www.dreamstime.com/photos-images/roberto-poggiali.html
+- **obs_b08916a62b07d24b**: File:Roberto Poggiali 1962.jpg ÔÇö https://commons.wikimedia.org/wiki/File:Roberto_Poggiali_1962.jpg
+- **obs_1058bc232dd1dd35**: roberto.poggiali ÔÇö https://www.instagram.com/roberto.poggiali
+- **obs_181ea9de3feee373**: Roberto Poggiali - Wikipedia ÔÇö https://en.wikipedia.org/wiki/Roberto_Poggiali
+- **obs_db9f727560c4130b**: Roberto Poggiali - Wikipedia ÔÇö https://it.wikipedia.org/wiki/Roberto_Poggiali
+- **obs_c7dd04cfad1501d9**: Marketing Policy - Roberto Poggiali ÔÇö https://robertopoggiali.it/en/marketing-policy
+- **obs_f14d57d2b012945b**: ROBERTO POGGIALI ÔÇö https://www.gscorsera.it/roberto-poggiali
+- **obs_f11238108e536e23**: ROBERTO POGGIALI DI GLORIA ... ÔÇö https://www.visura.pro/imprese/3000405563-roberto-poggiali-di-gloria-poggiali.html
+- **obs_828e854fdeb708a7**: GRAVE LUTTO PER ROBERTO POGGIALI, E' MANCATA ... ÔÇö https://www.tuttobiciweb.it/article/2023/10/04/1696424004/lutto-roberto-poggiali-morte-roberta-poggiali
+- **obs_dccb3d88adb00e05**: Serata con Roberto Poggiali al Museo del ciclismo ÔÇö https://www.youtube.com/watch?v=ze-LzdbwX20
+- **obs_c81cea75d966f44b**: A Roberto Poggiali il Timone d'Oro 2023 ÔÇö https://www.federciclismo.it/articoli/a-roberto-poggiali-il-timone-doro-2023
+- **obs_8a5bdbee32813474**: Quad Evolution Roberto Poggiali ÔÇö http://www.quadevolution.it
+- **obs_4487d08928bea141**: Roberto Poggiali ÔÇö https://sitiodeciclismo.com/vuelta/coureurfiche.php?coureurid=3945
+- **obs_baf033d70b0cf028**: File:Roberto Poggiali 1962.jpg - Wikimedia Commons ÔÇö https://commons.wikimedia.org/wiki/File:Roberto_Poggiali_1962.jpg
+- **obs_1f01fabd5e6f39aa**: Fiche de ROBERTO POGGIALI ÔÇö https://www.lequipe.fr/Cyclisme/CyclismeFicheCoureur2334.html
+- **obs_5d284f86f794f4dc**: Roberto Poggiali Stock Photos - Free & Royalty ... ÔÇö https://www.dreamstime.com/photos-images/roberto-poggiali.html
+- **obs_44247da6120ae19c**: Firenze - Aneddoti, ricordi e commozione nella serata con ... ÔÇö https://www.uisp.it/firenze/pagina/aneddoti-ricordi-e-commozione-nella-serata-con-roberto-poggiali-al-museo-bartali
+- **obs_262c163a63037cef**: Roberto Poggiali - Tecnico IT Junior in formazione ÔÇö https://it.linkedin.com/in/roberto-poggiali-66869920b
+- **obs_d6138a519957d263**: Roberto Poggiali ÔÇö https://www.procyclingstats.com/rider/roberto-poggiali
+- **obs_ecba866264b0e3f9**: roberto.poggiali ÔÇö https://www.instagram.com/roberto.poggiali
+- **obs_f1e2a2a147202d0f**: Manuel Poggiali (@poggy54) - Photos ÔÇö https://www.facebook.com/poggy54/photos
+- **obs_b56995ab7b677536**: Brando POGGIALI | Istituto Italiano di Tecnologia, Genoa | IIT ÔÇö https://www.researchgate.net/profile/Brando-Poggiali-3
+
+---
+## Provenienza
+- Snapshot: snap_v7_c0de5bd8272dd576
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Identity Resolution (legacy): RESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: cluster_75e00a52f3ba
+- Person Claims: 12
+- Context Claims: 3
+- Candidate Identities: 0
+- Provider Ledger: 66 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto ├¿ stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 4/5: PIETRAFESA GERARDO
+======================================================================
+2026-08-09 22:53:24,301 [INFO] LocalDbAdapter: 11 observations
+2026-08-09 22:53:25,471 [INFO] WebSearchAdapter[tavily]: 10 observations in 1.17s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.internetculturale.it'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-09 22:53:27,640 [INFO] FederationAdapter: 16 observations
+2026-08-09 22:53:29,111 [INFO] WebSearchAdapter[tavily]: 20 observations in 1.47s
+2026-08-09 22:53:29,918 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_c7608e58ecde', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_e442e7c76547', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_8098cf2859be']
+2026-08-09 22:53:34,205 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:53:34,220 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-09 22:53:34,220 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 5 blocks
+2026-08-09 22:53:34,220 [INFO] NARRATE_V2: mode=ai, provider=mistral, status=validated_ai, claims_used=9, omitted=0, repair=yes
+Identity: RESOLVED_IDENTITY | Obs: 57 | Elapsed: 10.0s
+
+--- REPORT ---
+
+Gerardo Pietrafesa fu un soldato italiano catturato durante la seconda guerra mondiale e sopravvissuto alla prigionia nel campo di concentramento di Mauthausen.
+
+Nacque il 27 aprile 1915 a Candela, in provincia di Foggia, e fu arruolato come soldato semplice.
+
+Catturato il 9 settembre 1943 sul fronte albanese, fu deportato nel campo di concentramento di Mauthausen, dove rimase prigioniero fino al 21 luglio 1945, data del suo ritorno in Italia.
+
+Il soldato, come grado base della truppa, era il combattente di prima linea: eseguiva gli ordini, difendeva le posizioni, partecipava agli assalti e ai lavori di fortificazione, sostenendo il peso maggiore delle perdite durante il conflitto.
+
+Non risultano ulteriori dettagli sul suo arruolamento, reparto di appartenenza o specifiche mansioni svolte durante la prigionia oltre a quelli documentati.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_a5b8e52756d3aac6
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 12
+- Context Claims: 3
+- Provider Ledger: 57 observations
+
+## Fonti
+- **obs_7eafc09d32e2bcef**: dati della societ├á - pietrafesa gerardo ÔÇö [https://www.ufficiocamerale.it/2677/pietrafesa-gerardo](https://www.ufficiocamerale.it/2677/pietrafesa-gerardo)
+- **obs_71990be35c6fc745**: 5 "Gerardo Pietrafesa" profiles ÔÇö [https://www.linkedin.com/pub/dir/Gerardo/Pietrafesa](https://www.linkedin.com/pub/dir/Gerardo/Pietrafesa)
+- **obs_260daffe91690c58**: 5 profili ÔÇ£Gerardo PietrafesaÔÇØ ÔÇö [https://it.linkedin.com/pub/dir/Gerardo/Pietrafesa](https://it.linkedin.com/pub/dir/Gerardo/Pietrafesa)
+- **obs_b8ec9c29dacc6dd7**: Gerardo Pietrafesa en personas ÔÇö [https://www.facebook.com/public/Gerardo-Pietrafesa?locale=es_LA](https://www.facebook.com/public/Gerardo-Pietrafesa?locale=es_LA)
+- **obs_ae03b6482496ff2f**: ­ƒôî Come annunciato qualche ora fa, Gerardo "Dino ... ÔÇö [https://www.facebook.com/PB1963/videos/-come-annunciato-qualche-ora-fa-gerardo-dino-pietrafesa-entra-ufficialmente-a-fa/709268464800916](https://www.facebook.com/PB1963/videos/-come-annunciato-qualche-ora-fa-gerardo-dino-pietrafesa-entra-ufficialmente-a-fa/709268464800916)
+- **obs_eaccd01c7c3e4f13**: Gerardo Pietrafesa (@gerpy90) ÔÇö [https://www.instagram.com/gerpy90](https://www.instagram.com/gerpy90)
+- **obs_3752837c6c851085**: Gerardo @ Truly Blessed Studios - Greenacres - Book Online - Prices, Reviews, Photos ÔÇö [https://booksy.com/en-us/565005_gerardo-truly-blessed-studios_barber-shop_15961_west-palm-beach](https://booksy.com/en-us/565005_gerardo-truly-blessed-studios_barber-shop_15961_west-palm-beach)
+- **obs_3e778ba40b866001**: ­ƒÖÅ­ƒò»´©Å Jerry Pietrafesa ci ha lasciato oggi improvvisamente. ... ÔÇö [https://www.facebook.com/CONIBasilicata/posts/%EF%B8%8F-jerry-pietrafesa-ci-ha-lasciato-oggi-improvvisamente-un-grande-uomo-di-sport-a/939989018781672](https://www.facebook.com/CONIBasilicata/posts/%EF%B8%8F-jerry-pietrafesa-ci-ha-lasciato-oggi-improvvisamente-un-grande-uomo-di-sport-a/939989018781672)
+- **obs_c64e33a30febae00**: Obituary information for Gerardo Paonessa ÔÇö [https://www.cudneyfuneralhome.com/obituaries/Gerardo-Paonessa?obId=47001350](https://www.cudneyfuneralhome.com/obituaries/Gerardo-Paonessa?obId=47001350)
+- **obs_8728c7aee04acc55**: Hortencia Gerardo Obituary (2026) - Middleburg Heights, OH ÔÇö [https://obits.cleveland.com/us/obituaries/cleveland/name/hortencia-gerardo-obituary?id=61885045](https://obits.cleveland.com/us/obituaries/cleveland/name/hortencia-gerardo-obituary?id=61885045)
+- **obs_e43b1db8a8e92c4c**: Gerardo Pietrafesa - IMDb ÔÇö [https://m.imdb.com/name/nm2174182](https://m.imdb.com/name/nm2174182)
+- **obs_b62f792e25fef5b5**: Gerardo Pietrafesa (1848ÔÇô1937) ÔÇö [https://ancestors.familysearch.org/es/L8GJ-T4Y/gerardo-pietrafesa-1848-1937](https://ancestors.familysearch.org/es/L8GJ-T4Y/gerardo-pietrafesa-1848-1937)
+- **obs_b4a31ac412ccd8fb**: Gerardo Pietrafesa - Photos - IMDb ÔÇö [https://www.imdb.com/name/nm2174182/mediaindex?ref_=mv_md](https://www.imdb.com/name/nm2174182/mediaindex?ref_=mv_md)
+- **obs_b070ccaeb8a8f38e**: Gerardo Pietrafesa - Biography ÔÇö [https://www.imdb.com/name/nm2174182/bio?ref_=nm_ov_ql_1](https://www.imdb.com/name/nm2174182/bio?ref_=nm_ov_ql_1)
+- **obs_ccab844292924841**: Pitty Service Sas Di Pietrafesa Gerardo E C. ÔÇö [https://m.companyreports.it/pitty-service-sas-di-pietrafesa-gerardo-c-01677570762](https://m.companyreports.it/pitty-service-sas-di-pietrafesa-gerardo-c-01677570762)
+- **obs_d7b518bf9979e4a2**: Gedenkkerzen von Gerardo Pietrafesa ÔÇö [https://trauer.nn.de/traueranzeige/gerardo-pietrafesa/gedenkkerzen](https://trauer.nn.de/traueranzeige/gerardo-pietrafesa/gedenkkerzen)
+- **obs_877fe860cdf33fa6**: Come annunciato qualche ora fa, Gerardo "Dino" Pietrafesa ... ÔÇö [https://www.facebook.com/PB1963/videos/-come-annunciato-qualche-ora-fa-gerardo-dino-pietrafesa-entra-ufficialmente-a-fa/709268464800916](https://www.facebook.com/PB1963/videos/-come-annunciato-qualche-ora-fa-gerardo-dino-pietrafesa-entra-ufficialmente-a-fa/709268464800916)
+- **obs_a429f3d40bab7bec**: 5 "Gerardo Pietrafesa" profiles - LinkedIn ÔÇö [https://www.linkedin.com/pub/dir/Gerardo/Pietrafesa](https://www.linkedin.com/pub/dir/Gerardo/Pietrafesa)
+- **obs_9b34c1587b0cdf42**: Gerardo pietrafesa | PagineBianche.it ÔÇö [https://www.paginebianche.it/p/gerardo-pietrafesa.html](https://www.paginebianche.it/p/gerardo-pietrafesa.html)
+- **obs_82abca8b6978cd7c**: Gerardo Pietrafesa ÔÇö [https://www.beyazperde.com/sanatcilar/sanatci-524887](https://www.beyazperde.com/sanatcilar/sanatci-524887)
+- **obs_cb4680f2aa7d87f6**: 5 profili ÔÇ£Gerardo PietrafesaÔÇØ ÔÇö [https://it.linkedin.com/pub/dir/Gerardo/Pietrafesa](https://it.linkedin.com/pub/dir/Gerardo/Pietrafesa)
+- **obs_80ae242e929c8b63**: PIETRAFESA GERARDO, Partita IVA - Ufficio Camerale ÔÇö [https://www.ufficiocamerale.it/2677/pietrafesa-gerardo](https://www.ufficiocamerale.it/2677/pietrafesa-gerardo)
+- **obs_11acdde9438ff6ac**: Pitty Service S.a.s. Di Pietrafesa Gerardo & C. - Kompass ÔÇö [https://lb.kompass.com/c/pitty-service-s-a-s-di-pietrafesa-gerardo-c/it1480871](https://lb.kompass.com/c/pitty-service-s-a-s-di-pietrafesa-gerardo-c/it1480871)
+- **obs_8c6ddc2826b26f49**: Gerardo Pietrafesa en personas - Facebook ÔÇö [https://m.facebook.com/public/Gerardo-Pietrafesa?locale=es_LA](https://m.facebook.com/public/Gerardo-Pietrafesa?locale=es_LA)
+- **obs_a316f9ccef482654**: gerardo pietrafesa ÔÇö [https://www.youtube.com/@gerardopietrafesa7381/about](https://www.youtube.com/@gerardopietrafesa7381/about)
+- **obs_1de24012bb0824e3**: Gerardo Pietrafesa (@gerpy90) ÔÇó Instagram photos and videos ÔÇö [https://www.instagram.com/gerpy90](https://www.instagram.com/gerpy90)
+- **obs_0d0193b399ac97f1**: Gerardo Gabriel PIETRAFESA personal appointments ÔÇö [https://find-and-update.company-information.service.gov.uk/officers/LBNcpYtCkUlz4CuiLJalh9RKYfo/appointments](https://find-and-update.company-information.service.gov.uk/officers/LBNcpYtCkUlz4CuiLJalh9RKYfo/appointments)
+- **obs_a988bec7637c16a9**: Teresa Pietrafesa (ÔÇô1962) - Ancestors Family Search ÔÇö [https://ancestors.familysearch.org/en/LT63-16T/teresa-pietrafesa-1962](https://ancestors.familysearch.org/en/LT63-16T/teresa-pietrafesa-1962)
+- **obs_3e14b58a64344124**: Pitty Service S.a.s. di Pietrafesa Gerardo & C. - Potenza ÔÇö [https://www.paginegialle.it/potenza-pz/pitty-service-pietrafesa-gerardo-c](https://www.paginegialle.it/potenza-pz/pitty-service-pietrafesa-gerardo-c)
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 5/5: FOLGORI ANDREA
+======================================================================
+2026-08-09 22:53:34,351 [INFO] LocalDbAdapter: 7 observations
+2026-08-09 22:53:35,531 [INFO] WebSearchAdapter[tavily]: 10 observations in 1.18s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-09 22:53:38,013 [INFO] FederationAdapter: 23 observations
+2026-08-09 22:53:39,624 [INFO] WebSearchAdapter[tavily]: 19 observations in 1.61s
+2026-08-09 22:53:40,490 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_73bf053b4a78', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_25207f37d8b7', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_3807a80cd460']
+2026-08-09 22:53:47,193 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:53:47,234 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-09 22:53:47,234 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 8 blocks
+2026-08-09 22:53:47,236 [INFO] NARRATE_V2: mode=ai, provider=mistral, status=validated_ai, claims_used=11, omitted=0, repair=yes
+Identity: RESOLVED_IDENTITY | Obs: 59 | Elapsed: 13.0s
+
+--- REPORT ---
+
+Andrea Folgori risulta arruolato come caporale nel 26┬░ Reggimento Genio durante la Seconda guerra mondiale.
+
+Andrea Folgori nacque a Roma il 11 dicembre 1919.
+
+Fu catturato dalle forze nemiche l'8 settembre 1943 sul fronte albanese, inquadrato nel 26┬░ Reggimento Genio.
+
+Dopo la cattura fu internato nello Stalag IX A, dove rimase fino al termine del conflitto.
+
+Rientr├▓ in Italia il 12 settembre 1945, sopravvivendo alla prigionia.
+
+Il 26┬░ Reggimento Genio operava in Albania durante il secondo conflitto mondiale, specializzato nella costruzione di fortificazioni e infrastrutture militari.
+
+Il caporale, primo grado di comando nella truppa, comandava una squadra di 8-12 uomini, ne curava la disciplina e l'addestramento, e trasmetteva gli ordini dei superiori in combattimento.
+
+Non risultano disponibili ulteriori dettagli sulla carriera militare di Folgori prima della cattura n├® sulle specifiche mansioni svolte all'interno del reparto.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_89b38536be7a15ca
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 15
+- Context Claims: 3
+- Provider Ledger: 59 observations
+
+## Fonti
+- **obs_6f8605ea21468a26**: Andrea Folgori ÔÇö [https://fr-fr.facebook.com/andrea.folgori.9](https://fr-fr.facebook.com/andrea.folgori.9)
+- **obs_df45998605f28b36**: The very young Andrea Greco and Maxime Folgori win a ... ÔÇö [https://sport.quotidiano.net/en/locale/altri-sport/i-giovanissimi-andrea-greco-e-maxime-folgori-fanno-incetta-di-titoli-e-medaglie-20d0bebf](https://sport.quotidiano.net/en/locale/altri-sport/i-giovanissimi-andrea-greco-e-maxime-folgori-fanno-incetta-di-titoli-e-medaglie-20d0bebf)
+- **obs_adf6c4fd61eb80f7**: FOLGORI ANDREA - Updated August 2026 ÔÇö [https://www.yelp.com/biz/folgori-andrea-fiumicino](https://www.yelp.com/biz/folgori-andrea-fiumicino)
+- **obs_6e3447f8a85f0b6a**: Emanuele Folgori ÔÇö [https://uk.linkedin.com/in/emanuelefolgori](https://uk.linkedin.com/in/emanuelefolgori)
+- **obs_7d550e192d9f998b**: Laura FOLGORI | Paediatrician | Medical Doctor ... ÔÇö [https://www.researchgate.net/profile/Laura-Folgori](https://www.researchgate.net/profile/Laura-Folgori)
+- **obs_5a7cba7c3fe7daef**: Daniele Folgori Email - Purchase Director @ Everex ÔÇö [https://rocketreach.co/daniele-folgori-email_160725859](https://rocketreach.co/daniele-folgori-email_160725859)
+- **obs_ad1efd12332e9e01**: CURICULUM VITAE LAURA FOLGORI, M.D. ÔÇö [https://www.asst-fbf-sacco.it/storage/media/professionals_files/25087/cv_folgori_laura.pdf](https://www.asst-fbf-sacco.it/storage/media/professionals_files/25087/cv_folgori_laura.pdf)
+- **obs_6399f3527eb599d2**: Dr. Laura Folgori | Author | Department of Paediatrics, ... ÔÇö [https://sciprofiles.com/profile/1625700](https://sciprofiles.com/profile/1625700)
+- **obs_1c53fba9ed99a78d**: Andrea Polinori ÔÇö [https://en.wikipedia.org/wiki/Andrea_Polinori](https://en.wikipedia.org/wiki/Andrea_Polinori)
+- **obs_14a40a99b21fd4e5**: Andrea De Vittori | Jay McMahon ÔÇö [https://www.colorado.edu/faculty/mcmahon/andrea-de-vittori](https://www.colorado.edu/faculty/mcmahon/andrea-de-vittori)
+- **obs_71554f8811ad285a**: 40+ profili ÔÇ£FolgoriÔÇØ - LinkedIn ÔÇö [https://it.linkedin.com/pub/dir/+/Folgori/it-5636-Roma](https://it.linkedin.com/pub/dir/+/Folgori/it-5636-Roma)
+- **obs_a62b522cfb46e268**: The very young Andrea Greco and Maxime Folgori win a slew of titles ... ÔÇö [https://sport.quotidiano.net/en/locale/altri-sport/i-giovanissimi-andrea-greco-e-maxime-folgori-fanno-incetta-di-titoli-e-medaglie-20d0bebf](https://sport.quotidiano.net/en/locale/altri-sport/i-giovanissimi-andrea-greco-e-maxime-folgori-fanno-incetta-di-titoli-e-medaglie-20d0bebf)
+- **obs_c746d166a2f1f1ff**: Folgori Andrea a Fiumicino (RM) - Pagine Bianche ÔÇö [https://www.paginebianche.it/scheda/fregene/folgori-andrea-ferramenta-colori-elettricita.7045240](https://www.paginebianche.it/scheda/fregene/folgori-andrea-ferramenta-colori-elettricita.7045240)
+- **obs_7572f360caed0299**: Andrea Folgori (@andrea.folgori.9) ÔÇó Facebook, Connect with friends ÔÇö [https://fr-fr.facebook.com/andrea.folgori.9](https://fr-fr.facebook.com/andrea.folgori.9)
+- **obs_31ade4a61c2e72b9**: FOLGORI ANDREA, Partita IVA: 07315311006, Fatturato ... ÔÇö [https://www.ufficiocamerale.it/2893/folgori-andrea](https://www.ufficiocamerale.it/2893/folgori-andrea)
+- **obs_2ad9618f344ae489**: FRA03910 | Andrea Folgori - Flickr ÔÇö [https://www.flickr.com/photos/201599986@N04/54054982783](https://www.flickr.com/photos/201599986@N04/54054982783)
+- **obs_d34e748a5b57c300**: Andrea Folgori (@andrea.folgori.9) ÔÇó Facebook, Connect with friends ÔÇö [https://m.facebook.com/andrea.folgori.9?locale=nb_NO](https://m.facebook.com/andrea.folgori.9?locale=nb_NO)
+- **obs_e54ff8e42dd3308e**: FRA04320 | Andrea Folgori | Flickr ÔÇö [https://www.flickr.com/photos/201599986@N04/54055073199](https://www.flickr.com/photos/201599986@N04/54055073199)
+- **obs_5904942e18c28e57**: Andrea Folgori (@folgoria) ┬À Fregene - Instagram ÔÇö [https://www.instagram.com/folgoria](https://www.instagram.com/folgoria)
+- **obs_95b52b26a6943cfa**: Andrea Gori ÔÇö [https://fondazione-menarini.com/en/courses-and-events/speaker.html/andrea-gori](https://fondazione-menarini.com/en/courses-and-events/speaker.html/andrea-gori)
+- **obs_1d15bb50669c3cff**: FOLGORI ANDREA - Updated August 2026 - Yelp ÔÇö [https://m.yelp.com/biz/folgori-andrea-fiumicino](https://m.yelp.com/biz/folgori-andrea-fiumicino)
+- **obs_4ce5a05e5c1abe23**: Andrea Gori - Universitat de Barcelona ÔÇö [https://sira.ub.edu/static/fitxes/Biologia.html?id=gori.ub.edu&lang=en](https://sira.ub.edu/static/fitxes/Biologia.html?id=gori.ub.edu&lang=en)
+- **obs_52a5df86fdaad6bd**: [PDF] ANDREA BRIGLIADORI ÔÇö [https://andreabrigliadori.com/CV_AndreaBrigliadori.pdf](https://andreabrigliadori.com/CV_AndreaBrigliadori.pdf)
+- **obs_84764174e46123a6**: Andrea Splendori ÔÇö [https://www.pentago.it/who-we-are/andrea-splendori](https://www.pentago.it/who-we-are/andrea-splendori)
+- **obs_438e8aea0e9d3176**: Andrea De Vittori | Jay McMahon | University of Colorado Boulder ÔÇö [https://www.colorado.edu/faculty/mcmahon/andrea-de-vittori](https://www.colorado.edu/faculty/mcmahon/andrea-de-vittori)
+- **obs_9028b9dc05b9da5b**: Necrotizing pneumonia in children: a case series ÔÇö [https://www.pediatric-respiratory-journal.com/necrotizing-pneumonia-in-children-a-case-series](https://www.pediatric-respiratory-journal.com/necrotizing-pneumonia-in-children-a-case-series)
+- **obs_c29c918ce72c1c79**: Successful treatment with percutaneous transhepatic ... ÔÇö [https://pure.amsterdamumc.nl/en/publications/successful-treatment-with-percutaneous-transhepatic-alcoholizatio](https://pure.amsterdamumc.nl/en/publications/successful-treatment-with-percutaneous-transhepatic-alcoholizatio)
+- **obs_0765842b7d337796**: Identification of deletion carriers in X-linked chronic granulomatous ... ÔÇö [https://pubmed.ncbi.nlm.nih.gov/19839755](https://pubmed.ncbi.nlm.nih.gov/19839755)
+- **obs_9ea171d4fbc49e8f**: SARS-CoV-2 Infection in Health Workers: Analysis from Verona ... ÔÇö [https://pmc.ncbi.nlm.nih.gov/articles/PMC8296263](https://pmc.ncbi.nlm.nih.gov/articles/PMC8296263)
+
+--- END REPORT ---
+

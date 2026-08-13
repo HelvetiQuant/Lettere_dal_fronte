@@ -848,6 +848,30 @@ class NarratorV7_v2:
         draft = None
         gen_info = GenerationInfo(mode="deterministic")
 
+        # V7.5-FIX: Block AI narration for AMBIGUOUS_IDENTITY with conflicting clusters
+        # When identity is ambiguous, person_claims may contain data from multiple
+        # people with the same name. AI would mix facts from different individuals.
+        if use_ai and snapshot.identity_status == "AMBIGUOUS_IDENTITY" and len(snapshot.candidate_identities) > 1:
+            conflicting = any(
+                getattr(ci, "conflicting_with", None) or getattr(ci, "conflicts", None)
+                for ci in snapshot.candidate_identities
+            )
+            if conflicting:
+                logger.warning(
+                    f"NARRATE_V2: AMBIGUOUS_IDENTITY with {len(snapshot.candidate_identities)} conflicting clusters, "
+                    f"forcing deterministic fallback to prevent cross-person contamination"
+                )
+                use_ai = False
+                gen_info.fallback_reason = "ambiguous_identity_conflicting_clusters"
+
+        # V7.3-FIX: Infer war period for temporal contamination check
+        war_period = "unknown"
+        try:
+            from military_ontology import _infer_war_period
+            war_period = _infer_war_period(selected.narratable_claims)
+        except Exception:
+            pass
+
         if use_ai:
             draft, gen_info = self._try_ai_draft(snapshot, selected, request_type, requested_depth)
 
@@ -860,7 +884,7 @@ class NarratorV7_v2:
             if validation.valid:
                 # V7.3-FIX: Post-generation hallucination check
                 hallucination_warnings = self._post_gen_hallucination_check(
-                    draft, selected, snapshot,
+                    draft, selected, snapshot, war_period=war_period,
                 )
                 if hallucination_warnings:
                     logger.warning(
@@ -875,14 +899,32 @@ class NarratorV7_v2:
                             f"falling back to deterministic"
                         )
                     else:
-                        # Add warnings to validation flags and proceed
+                        # V7.4: AI cross-validation even with minor hallucination warnings
+                        ai_val_flags = self._ai_cross_validate(
+                            draft, selected, snapshot, gen_info, war_period,
+                        )
+                        if ai_val_flags is None:
+                            return self._build_deterministic_result(
+                                snapshot, selected, request_type,
+                            )
+                        all_flags = hallucination_warnings + (ai_val_flags or [])
                         return self._build_result(
                             draft, validation, selected, snapshot, request_type, gen_info,
-                            extra_flags=hallucination_warnings,
+                            extra_flags=all_flags if all_flags else None,
                         )
                 else:
+                    # V7.4: AI cross-validation (OpenAI validator, Mistral fallback)
+                    ai_val_flags = self._ai_cross_validate(
+                        draft, selected, snapshot, gen_info, war_period,
+                    )
+                    if ai_val_flags is None:
+                        # Critical validation failure — fall back to deterministic
+                        return self._build_deterministic_result(
+                            snapshot, selected, request_type,
+                        )
                     return self._build_result(
                         draft, validation, selected, snapshot, request_type, gen_info,
+                        extra_flags=ai_val_flags if ai_val_flags else None,
                     )
             else:
                 # Attempt repair
@@ -1041,9 +1083,11 @@ class NarratorV7_v2:
 
         # V7.3-TODO1: Build military context for narrator enrichment
         military_context = {}
+        war_period = "unknown"
         try:
-            from military_ontology import build_military_context
+            from military_ontology import build_military_context, _infer_war_period
             military_context = build_military_context(payload_claims)
+            war_period = _infer_war_period(payload_claims)
         except Exception as e:
             logger.debug(f"Military context build skipped: {e}")
 
@@ -1055,6 +1099,7 @@ class NarratorV7_v2:
             "claims": payload_claims,
             "coverage": coverage,
             "military_context": military_context,
+            "war_period": war_period,
             "response_language": "it",
             "evidence_hash": evidence_hash,
         }
@@ -1118,6 +1163,7 @@ class NarratorV7_v2:
         draft: NarrationDraft,
         selected: SelectedEvidence,
         snapshot: EvidenceSnapshotV7,
+        war_period: str = "unknown",
     ) -> List[str]:
         """V7.3-FIX: Post-generation hallucination detection.
 
@@ -1149,6 +1195,14 @@ class NarratorV7_v2:
                     supported_dates.add(year_match.group(0))
                 supported_dates.add(value_lower)
 
+            # V7.8-FIX: Also extract dates from source_text, date_note, data_quality_note
+            # These contain raw record text with factual dates the AI legitimately references
+            if predicate in ("source_text", "date_note", "data_quality_note"):
+                year_matches = re.findall(r"(18|19)\d{2}", value)
+                for ym in year_matches:
+                    supported_dates.add(ym)
+                supported_dates.add(value_lower)
+
             # Collect places
             if predicate in ("birth_place", "death_place", "event_location", "capture_place",
                              "internment_place", "burial", "residence", "municipality"):
@@ -1158,10 +1212,25 @@ class NarratorV7_v2:
                     if len(word) >= 4:
                         supported_places.add(word)
 
+            # V7.8-FIX: Also extract places from source_text and data_quality_note
+            # These contain raw record text with place names the AI legitimately references
+            if predicate in ("source_text", "data_quality_note"):
+                # Extract capitalized words as potential place names
+                cap_in_text = re.findall(r'\b[A-Z][a-z]{3,}\b', value)
+                for cw in cap_in_text:
+                    supported_places.add(cw.lower())
+
             # Collect names
             if predicate in ("full_name", "cognome", "nome", "display_name",
                              "decoration", "award", "medal", "rank", "unit",
                              "military_unit", "branch"):
+                supported_names.add(value_lower)
+                for word in value_lower.split():
+                    if len(word) >= 3:
+                        supported_names.add(word)
+
+            # V7.8-FIX: Also collect names from source_text
+            if predicate in ("source_text",):
                 supported_names.add(value_lower)
                 for word in value_lower.split():
                     if len(word) >= 3:
@@ -1225,7 +1294,126 @@ class NarratorV7_v2:
                         f"HALLUCINATED_PLACE_OR_NAME:{w} in block {block.block_id} — not in evidence"
                     )
 
+        # V7.3-FIX: Temporal contamination check
+        if war_period in ("WWI", "WWII"):
+            wwi_markers = [
+                "prima guerra mondiale", "grande guerra", "isonzo", "caporetto",
+                "piave", "carso", "1915", "1916", "1917", "1918",
+                "fronte italiano 1915", "ritirata di caporetto",
+            ]
+            wwii_markers = [
+                "seconda guerra mondiale", "8 settembre", "armistizio",
+                "imi", "internato militare", "stalag", "oflag",
+                "arbeitskommando", "1940", "1941", "1942", "1943", "1944", "1945",
+                "campo prigionia", "prigionia di guerra",
+            ]
+            for block in draft.blocks:
+                text_lower = block.text.lower()
+                if war_period == "WWII":
+                    for marker in wwi_markers:
+                        if marker in text_lower:
+                            warnings.append(
+                                f"TEMPORAL_CONTAMINATION_WWI_IN_WWII:{marker} in block {block.block_id}"
+                            )
+                            break
+                elif war_period == "WWI":
+                    for marker in wwii_markers:
+                        if marker in text_lower:
+                            # Allow if the claim itself contains this marker (e.g., capture_date 1943)
+                            if marker in supported_dates or marker in supported_names:
+                                continue
+                            warnings.append(
+                                f"TEMPORAL_CONTAMINATION_WWII_IN_WWI:{marker} in block {block.block_id}"
+                            )
+                            break
+
         return warnings
+
+    def _ai_cross_validate(
+        self,
+        draft: NarrationDraft,
+        selected: SelectedEvidence,
+        snapshot: EvidenceSnapshotV7,
+        gen_info: GenerationInfo,
+        war_period: str,
+    ) -> Optional[List[str]]:
+        """V7.4: AI cross-validation of generated text.
+
+        Uses OpenAI as validator (Mistral fallback) to check:
+        - Historical accuracy and temporal scoping
+        - Coherence with claim data
+        - Hallucinations not caught by deterministic checks
+
+        Returns:
+            List of validation flag strings (may be empty if all OK).
+            None if critical failure — caller should fall back to deterministic.
+        """
+        try:
+            from ai_client import validate_ai_output
+
+            # Build text representation for validator
+            generated_text = "\n".join(
+                f"[{b.block_id}] {b.text}" for b in draft.blocks
+            )
+
+            # Build claims context for validator
+            claims_lines = []
+            for c in selected.narratable_claims:
+                predicate = c.get("predicate", "")
+                value = c.get("value", "")
+                source = c.get("source_id", "")
+                claims_lines.append(f"- {predicate}: {value} (source: {source})")
+            claims_context = "\n".join(claims_lines)
+
+            # V7.4: Don't skip generator provider — if OpenAI is unavailable,
+            # Mistral validates even if it was the generator (better than no validation)
+            result = validate_ai_output(
+                generated_text=generated_text,
+                claims_context=claims_context,
+                war_period=war_period,
+            )
+
+            gen_info.ai_validation = {
+                "ok": result["ok"],
+                "valid": result["valid"],
+                "severity": result["severity"],
+                "provider": result["provider"],
+                "model": result["model"],
+                "issues": result["issues"],
+                "suggestions": result["suggestions"],
+            }
+
+            if not result["ok"]:
+                logger.info("NARRATE_V2: AI validator unavailable, proceeding without cross-validation")
+                return []
+
+            if result["valid"]:
+                logger.info(f"NARRATE_V2: AI cross-validation PASSED via {result['provider']}/{result['model']}")
+                return []
+            else:
+                severity = result.get("severity", "minor")
+                issues = result.get("issues", [])
+                logger.warning(
+                    f"NARRATE_V2: AI cross-validation FAILED (severity={severity}): "
+                    f"{issues[:3]}"
+                )
+                flags = [f"AI_VALIDATION_{severity.upper()}:{issue}" for issue in issues]
+                # V7.4: If validator is same provider as generator, downgrade critical→major
+                # (self-validation tends to be overly strict)
+                if severity == "critical":
+                    if result.get("provider") == gen_info.provider:
+                        logger.info(
+                            f"NARRATE_V2: Downgrading critical→major (self-validation by {result['provider']})"
+                        )
+                        severity = "major"
+                if severity == "critical":
+                    gen_info.fallback_reason = f"ai_validation_critical: {issues[:2]}"
+                    return None
+                return flags
+
+        except Exception as e:
+            logger.warning(f"NARRATE_V2: AI cross-validation exception: {e}")
+            return []
 
     def _salvage_draft(self, data: dict) -> NarrationDraft:
         """Attempt to salvage a partially valid draft."""
@@ -1381,10 +1569,43 @@ class NarratorV7_v2:
             "conflict", "limitations", "research_next_step",
         ]
 
+        # V7.5-FIX: Deduplicate near-identical blocks before rendering
+        # Use token overlap ratio + shared 4-gram detection
+        def _tokenize(s: str) -> set:
+            return set(re.findall(r'\w{3,}', s.lower()))
+        
+        def _ngrams(s: str, n: int = 4) -> set:
+            toks = re.findall(r'\w{2,}', s.lower())
+            return set(tuple(toks[i:i+n]) for i in range(len(toks) - n + 1))
+        
+        seen_tokens: list = []
+        seen_ngrams: list = []
         lines = []
         for role in section_order:
             if role in sections:
                 for text in sections[role]:
+                    tokens = _tokenize(text)
+                    if not tokens:
+                        lines.append(text)
+                        lines.append("")
+                        continue
+                    ngrams = _ngrams(text)
+                    is_dup = False
+                    for i, prev_tokens in enumerate(seen_tokens):
+                        overlap = len(tokens & prev_tokens) / min(len(tokens), len(prev_tokens))
+                        if overlap >= 0.55:
+                            is_dup = True
+                            break
+                        # Check shared 4-grams (exact phrase overlap)
+                        if seen_ngrams and ngrams:
+                            shared = len(ngrams & seen_ngrams[i])
+                            if shared >= 2:
+                                is_dup = True
+                                break
+                    if is_dup:
+                        continue
+                    seen_tokens.append(tokens)
+                    seen_ngrams.append(ngrams)
                     lines.append(text)
                     lines.append("")
 

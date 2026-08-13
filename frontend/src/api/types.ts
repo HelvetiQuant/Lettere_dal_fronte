@@ -618,6 +618,101 @@ export interface EntitaDetailResponse {
   }[];
 }
 
+// ── V7 Unified Research Pipeline ──
+
+export interface V7SemanticCounts {
+  web_candidates_seen?: number;
+  person_sources_confirmed?: number;
+  person_sources_probable?: number;
+  person_sources_ambiguous?: number;
+  person_candidates_rejected?: number;
+  context_sources?: number;
+  unique_person_facts?: number;
+  supporting_evidence_records?: number;
+  unique_source_records?: number;
+  provenance_items?: number;
+  conflict_sets?: number;
+  rejected_observations?: number;
+  candidate_clusters?: number;
+  identity_status?: string;
+  cross_war_contamination?: boolean;
+  claims_accepted?: number;
+  claims_rejected?: number;
+  claims_needs_review?: number;
+  [key: string]: unknown;
+}
+
+export interface V7PersonClaim {
+  predicate?: string;
+  value?: string;
+  certainty?: string;
+  source_count?: number;
+  evidence_count?: number;
+  [key: string]: unknown;
+}
+
+export interface V7Snapshot {
+  snapshot_id?: string;
+  schema_version?: string;
+  narrator_contract_version?: string;
+  identity_status?: string;
+  corroboration_status?: string;
+  war_period?: string;
+  person_claims?: V7PersonClaim[];
+  context_claims?: Record<string, unknown>[];
+  candidate_identities?: Record<string, unknown>[];
+  rejected_homonyms?: Record<string, unknown>[];
+  source_lineage_groups?: Record<string, unknown>[];
+  independence_groups?: Record<string, unknown>[];
+  [key: string]: unknown;
+}
+
+export interface V7ResearchResult {
+  run_id: string;
+  plan_id: string;
+  snapshot: V7Snapshot | null;
+  report: string | null;
+  report_structured?: Record<string, unknown> | null;
+  narration_result?: Record<string, unknown> | null;
+  errors: string[];
+  warnings: string[];
+  stage_timings: Record<string, number>;
+  observation_count: number;
+  semantic_counts: V7SemanticCounts;
+}
+
+export interface V7HealthResponse {
+  status: string;
+  orchestrator_class: string;
+  schema_version: string;
+  narrator_contract_version: string;
+}
+
+export interface V7CapabilitiesResponse {
+  orchestrator_class: string;
+  schema_version: string;
+  narrator_contract_version?: string;
+  [key: string]: unknown;
+}
+
+export interface V7NarrateResponse {
+  report: string;
+  snapshot_id: string;
+  narrator_contract_version: string;
+}
+
+// ── Cross-Linking Safe ──
+
+export interface CrossLinkStatus {
+  total_audits: number;
+  active: number;
+  reverted: number;
+  by_method: { method: string; active: number; reverted: number }[];
+  by_source_table: { table: string; active: number; reverted: number }[];
+  by_column: { column: string; active: number; reverted: number }[];
+  error?: string;
+}
+
 // ── Canonical Event ──
 
 export interface CanonicalEvent {
