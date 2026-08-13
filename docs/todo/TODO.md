@@ -1,10 +1,35 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 11 agosto 2026 (sera) — V7.5.1 anti-duplicazione narrazione + AMBIGUOUS_IDENTITY fix.
+Aggiornato: 13 agosto 2026 (sera) — V7.8 Fix contaminazione cross-war, name parsing, hallucination check.
 
 ---
 
-## V7.5.1 Anti-Duplicazione Narrazione — COMPLETATO (2026-08-11)
+## V7.8 Fix Contaminazione Cross-War e Hallucination Check — COMPLETATO (2026-08-13)
+
+### Completato
+- [x] **Case sensitivity SQLite**: uppercase cognome/nome/query in `v7_provider_adapters.py` e `unified_orchestrator_v7.py`
+- [x] **Name order dual-try**: tentativo entrambi ordini (cognome/nome e nome/cognome) in adapter, orchestrator, identity model
+- [x] **Legacy fallback PERSON_LOOKUP**: skip `resolve_observation` per IRRELEVANT in `unified_orchestrator_v7.py:604-609`
+- [x] **war_period schema**: corretto `caduti_albooro` e `decorati_nastroazzurro` → WWI in `person_source_schemas.py`
+- [x] **lebi_records war_period**: aggiunto `lebi_records: WWII` in `TABLE_WAR_PERIOD` in `v7_identity_model.py`
+- [x] **Web observation WWI filter**: filtro marker WWI (1915-1918, Caporetto, Isonzo, Piave) per target WWII
+- [x] **Hallucination check fix**: estrazione date/luoghi/nomi da `source_text`, `date_note`, `data_quality_note` in `v7_narrator.py:1198-1237`
+- [x] **Test backend API**: Luigi Gaiaschi → RESOLVED_IDENTITY, 5 claim da internati:22808, AI discorsiva gpt-4o
+- [x] **Documentazione**: ARCHITETTURA_COMPLETA.md v4.1, CHANGELOG V7.8
+
+### Pending
+- [ ] **Skip list parole italiane**: aggiungere "Molti", "Internati", "Tuttavia", "Comunque", "Pertanto", "Quindi", "Inoltre" alla hallucination skip list in `v7_narrator.py:1245-1265`
+- [ ] **Test su soldati WWI**: verificare che un soldato WWI (es. da `caduti_albooro`) non generi contesto WWII
+- [ ] **Test su `war_period=unknown`**: verificare comportamento narratore senza periodo bellico
+- [ ] **Test Giuseppe Gaiaschi**: verificare secondo nome della famiglia tramite API
+- [ ] **Test multi-nomi**: eseguire pipeline su 5+ nomi WWII per verificare zero contaminazione
+- [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare i warning `CLAIM_NOT_IN_SNAPSHOT` nei log narratore (claim provenance non trovati nello snapshot)
+- [ ] **Pulizia file temporanei**: rimuovere 60+ file `_tmp_*` e `_test_*` dal workspace
+- [ ] **Git push**: push commit `7cee11a` su origin
+
+---
+
+## V7.7 Frontend Integration — COMPLETATO (2026-08-13)
 
 ### Completato
 - [x] **Prompt anti-duplicazione**: sezione "REGOLA ANTI-DUPLICAZIONE OBBLIGATORIA" in `v7_narrator_prompt_v2.py:130-137` con esempi corretti/errati

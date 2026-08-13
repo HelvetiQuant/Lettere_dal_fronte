@@ -31,10 +31,15 @@ La pipeline V7.2 restituiva risultati completamente errati per ricerche di perso
 ### Risultati verificati (Luigi Gaiaschi)
 - **Before**: 63 person claims da 8 tabelle diverse (WWI+WWII), identity UNRESOLVED, narrazione con dati Caporetto/Isonzo/Piave
 - **After**: 5 person claims esclusivamente da `internati:22808` (WWII), identity RESOLVED_IDENTITY, zero contaminazione WWI
-- **Narrative**: deterministic mode (AI fallback per false-positive hallucination check su date nel source_text — issue separata)
+- **Narrative**: AI discorsiva via gpt-4o (5 blocchi, 18.4s) con contesto storico Operazione Achse, divergenza fonti Belgrado/Grecia, conferma luogo nascita Nibbiano
 
-### Issue residua
-Il narratore AI (`v7_narrator.py`) fallisce la hallucination check su "19" (estratto da "1912") e "Grecia" (presente nel `source_text` claim) → fallback a deterministic. Da investigare: il `_post_gen_hallucination_check` non parsa correttamente date e luoghi nei claim `source_text`.
+### Fix hallucination check (V7.8-FIX)
+Il narratore AI (`v7_narrator.py`) falliva la hallucination check su "19" (estratto da "1912") e "Grecia" (presente nel `source_text` claim) → fallback a deterministic. Root cause: `_post_gen_hallucination_check` raccoglieva date/luoghi/nomi solo da predicati strutturati (`birth_date`, `birth_place`, ecc.) ignorando `source_text`, `date_note`, `data_quality_note`.
+
+**Fix** (`v7_narrator.py:1198-1237`): estrazione date (`(18|19)\d{2}`), luoghi (capitalized words ≥4 chars) e nomi anche da `source_text`, `date_note`, `data_quality_note`. L'AI ora genera correttamente la narrazione discorsiva senza false-positive.
+
+### Warning residui (non bloccanti, ≤5)
+L'hallucination check flagga ancora parole italiane comuni come "Molti", "Internati", "Tuttavia" come `HALLUCINATED_PLACE_OR_NAME`. Da aggiungere alla skip list in `v7_narrator.py:1245-1265`.
 
 ---
 
