@@ -886,7 +886,7 @@ class UnifiedResearchOrchestratorV7:
                             confidence=0.85,
                             source=f"local_db:eventi_1gm:{raw.get('id','')}",
                             evidence_ids=[obs.observation_id],
-                            evidence_scope="CONTEXT_EVIDENCE",
+                            evidence_scope="PERSON_EVIDENCE",
                             source_function="event_context",
                             normalization_status="exact",
                         ))

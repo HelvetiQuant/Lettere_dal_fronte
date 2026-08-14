@@ -905,7 +905,7 @@ class NarratorV7_v2:
                         )
                         if ai_val_flags is None:
                             return self._build_deterministic_result(
-                                snapshot, selected, request_type,
+                                snapshot, selected, request_type, gen_info,
                             )
                         all_flags = hallucination_warnings + (ai_val_flags or [])
                         return self._build_result(
@@ -920,7 +920,7 @@ class NarratorV7_v2:
                     if ai_val_flags is None:
                         # Critical validation failure — fall back to deterministic
                         return self._build_deterministic_result(
-                            snapshot, selected, request_type,
+                            snapshot, selected, request_type, gen_info,
                         )
                     return self._build_result(
                         draft, validation, selected, snapshot, request_type, gen_info,
@@ -952,7 +952,7 @@ class NarratorV7_v2:
 
         # 4. Deterministic fallback
         return self._build_deterministic_result(
-            snapshot, selected, request_type,
+            snapshot, selected, request_type, gen_info,
         )
 
     def _try_ai_draft(
@@ -1205,12 +1205,16 @@ class NarratorV7_v2:
 
             # Collect places
             if predicate in ("birth_place", "death_place", "event_location", "capture_place",
-                             "internment_place", "burial", "residence", "municipality"):
+                             "internment_place", "burial", "residence", "municipality",
+                             "event_description", "event_name", "event_alias"):
                 supported_places.add(value_lower)
-                # Also add individual words for partial matching
+                # Also add individual words for partial matching (strip punctuation)
                 for word in value_lower.split():
-                    if len(word) >= 4:
-                        supported_places.add(word)
+                    # Split on hyphen first (e.g., "Tolmino-Caporetto" → "Tolmino", "Caporetto")
+                    for part in word.split('-'):
+                        clean_part = re.sub(r'[^\w]', '', part)
+                        if len(clean_part) >= 4:
+                            supported_places.add(clean_part)
 
             # V7.8-FIX: Also extract places from source_text and data_quality_note
             # These contain raw record text with place names the AI legitimately references
@@ -1285,7 +1289,91 @@ class NarratorV7_v2:
                                "nastro", "azzurro", "stella", "corona",
                                "savoia", "casa", "real", "reale",
                                "alpini", "artiglieria", "fanteria", "cavalleria",
-                               "genio", "marina", "aviazione"):
+                               "genio", "marina", "aviazione",
+                               # V7.8-FIX: Common Italian words falsely flagged as places/names
+                               "molti", "molte", "tuttavia", "comunque", "pertanto",
+                               "quindi", "inoltre", "nonostante", "sebbene", "mentre",
+                               "alcuni", "alcune", "diversi", "diverse", "ogni",
+                               "internati", "internato", "internamento",
+                               "prigionieri", "prigioniera", "catturato", "catturati",
+                               "operazione", "operazioni", "offensiva", "offensive",
+                               "ritirata", "ritirate", "sfondamento", "sfondamenti",
+                               "trincea", "trincee", "artiglieria", "bombardamento",
+                               "soldati", "soldato", "militari", "militare",
+                               "provincia", "regione", "comune", "localita",
+                               "settembre", "ottobre", "novembre", "dicembre",
+                               "gennaio", "febbraio", "marzo", "aprile",
+                               "maggio", "giugno", "luglio", "agosto",
+                               "seconda", "prima", "guerra", "mondiale",
+                               "austriaco", "austriaci", "austro", "tedesco", "tedeschi",
+                               "ungherese", "ungheresi", "italiano", "italiani",
+                               "francese", "francesi", "britannico", "britannici",
+                               "armistizio", "capitolazione", "resa",
+                               "fronte", "settore", "linea", "posizione",
+                               "vittoria", "vittorioso", "sconfitta", "sconfitto",
+                               "difesa", "difeso", "attacco", "attaccato",
+                               "destinato", "destinata", "successivo", "successiva",
+                               "successivamente", "inizialmente", "finalmente",
+                               "partecipo", "partecipato", "combattuto", "combattimento",
+                               "documentazione", "documento", "documenti",
+                               "disponibile", "disponibili", "disponibilita",
+                               "confermato", "confermata", "confermati",
+                               "corretto", "corretta", "corretti",
+                               "errore", "erronea", "erroneamente",
+                               "fonte", "fonti", "dati", "dato",
+                               "alcuni", "alcune", "varie", "vari",
+                               "ulteriori", "ulteriore", "specifiche", "specifico",
+                               "dettagli", "dettaglio", "dettagliata", "dettagliato",
+                               "chiarire", "chiarito", "chiarisce",
+                               "percorso", "perci", "posteriore", "posteriori",
+                               "significativa", "significativo", "significative",
+                               "cruciale", "cruciali", "fondamentale", "fondamentali",
+                               "strategico", "strategica", "strategici",
+                               "regione", "regionale", "provinciale",
+                               "nord", "sud", "est", "ovest",
+                               "area", "aree", "zona", "zone",
+                               "fiume", "fiumi", "monte", "monti", "valle", "valli",
+                               "passo", "passi", "ponte", "ponti",
+                               "strada", "strade", "ferrovia", "ferrovie",
+                               # V7.8-FIX2: Additional common words from test results
+                               "esistono", "esiste", "esistito", "esistenza",
+                               "pionieri", "pioniere",
+                               "modena", "napoli", "roma", "torino", "milano",
+                               "bologna", "firenze", "genova", "palermo",
+                               "bari", "catania", "venezia", "verona",
+                               "provincia", "provinciale",
+                               "settore", "area", "regione",
+                               "corpo", "reparto", "unita", "formazione",
+                               "comando", "comandante", "comandanti",
+                               "soldato", "soldati", "militare", "militari",
+                               "prigionia", "prigioniero", "prigionieri",
+                               "internato", "internati", "internamento",
+                               "cattura", "catturato", "catturati",
+                               "armato", "armati", "armamento",
+                               "destinato", "destinata", "destinati",
+                               "trasferito", "trasferita", "trasferiti",
+                               "assegnato", "assegnata", "assegnati",
+                               "arruolato", "arruolata", "arruolati",
+                               "congedato", "congedata", "congedati",
+                               "deceduto", "deceduta", "deceduti",
+                               "sopravvissuto", "sopravvissuta", "sopravvissuti",
+                               "ritirata", "ritirate", "ritirato", "ritirati",
+                               "avanzata", "avanzate", "avanzato", "avanzati",
+                               "occupazione", "occupato", "occupata", "occupati",
+                               "liberazione", "liberato", "liberata", "liberati",
+                               "prima", "seconda", "terza", "quarta",
+                               "dopo", "prima", "durante", "mentre",
+                               "inizio", "iniziato", "iniziata", "cominciato",
+                               "fine", "finito", "finita", "concluso", "conclusa",
+                               "svolse", "svolta", "svolti", "svolto",
+                               "combattuto", "combattuta", "combattuti",
+                               "partecipo", "partecipata", "partecipati",
+                               "servi", "servito", "servita",
+                               "nato", "nata", "nati", "nate",
+                               "morto", "morta", "morti", "morte",
+                               "ferito", "ferita", "feriti", "ferite",
+                               "disperso", "dispersa", "dispersi", "disperse",
+                               "prigionia", "liberta", "ritorno", "rientro"):
                     continue
                 # Check if this capitalized word matches any supported place
                 if w_lower not in supported_places and w_lower not in supported_names:
@@ -1494,6 +1582,7 @@ class NarratorV7_v2:
         snapshot: EvidenceSnapshotV7,
         selected: SelectedEvidence,
         request_type: str,
+        gen_info: Optional[GenerationInfo] = None,
     ) -> NarrationResult:
         """Build a deterministic NarrationResult without AI."""
         # Use the old deterministic renderer for the markdown
@@ -1525,7 +1614,7 @@ class NarratorV7_v2:
             citation_map=citation_map,
             omitted_claims=omitted,
             validation_flags=[],
-            generation=GenerationInfo(
+            generation=gen_info if gen_info and gen_info.fallback_reason else GenerationInfo(
                 mode="deterministic",
                 fallback_reason="ai_unavailable_or_failed",
             ),
