@@ -20,6 +20,7 @@ import type {
   ChatMessageDTO, ChatResponseDTO, ChatHealthDTO,
   ResearchChatResponse,
   V7ResearchResult, V7HealthResponse, V7CapabilitiesResponse, V7NarrateResponse,
+  V7FollowupResponse, V7ChatMessage,
   CrossLinkStatus,
 } from './types';
 
@@ -249,6 +250,9 @@ export const api = {
     get<V7CapabilitiesResponse>('/api/v7/system/capabilities'),
   v7Narrate: (snapshot: Record<string, unknown>) =>
     post<V7NarrateResponse>('/api/v7/narrate', snapshot),
+  v7Followup: (runId: string, question: string, conversationHistory?: V7ChatMessage[]) =>
+    post<V7FollowupResponse>('/api/v7/followup',
+      { run_id: runId, question, conversation_history: conversationHistory || [] }, undefined, 120_000),
 
   // ── Cross-Linking Safe (V7.6) ──
   crossLinkStatus: () =>

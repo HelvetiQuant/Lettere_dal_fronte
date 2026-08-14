@@ -1,17 +1,156 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Brain, Clock, AlertTriangle, FileSearch, BookOpen, Zap, ShieldCheck, Activity } from 'lucide-react';
+import { Brain, Clock, AlertTriangle, FileSearch, BookOpen, Zap, ShieldCheck, Activity, MessageSquare, Send } from 'lucide-react';
 import { api } from '@/api/client';
 import { ApiError } from '@/api/errors';
 import type {
   ResearchV2Result, ResearchV2PlansResponse, Fragment, TimelineEntry, ResearchPlan,
-  V7ResearchResult, V7SemanticCounts, V7Snapshot,
+  V7ResearchResult, V7SemanticCounts, V7Snapshot, V7ChatMessage, V7FollowupResponse,
 } from '@/api/types';
 import { Card, Tag, Input, Button, LoadingState, ErrorState, EmptyState } from '@/components/feedback/States';
 import { PageIntro, Section } from '@/components/layout/PageIntro';
 import { Timeline } from '@/components/dossier/DossierParts';
 
 type PipelineMode = 'v7' | 'v2';
+
+interface ChatTurn {
+  role: 'user' | 'assistant';
+  content: string;
+  generation?: V7FollowupResponse['generation'];
+}
+
+function FollowupChat({ runId, initialReport }: { runId: string; initialReport: string }) {
+  const [turns, setTurns] = useState<ChatTurn[]>([
+    { role: 'assistant', content: initialReport },
+  ]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [turns, loading]);
+
+  const sendFollowup = async () => {
+    const question = input.trim();
+    if (!question || loading) return;
+    setLoading(true);
+    setError(null);
+    setInput('');
+
+    const newTurns: ChatTurn[] = [...turns, { role: 'user', content: question }];
+    setTurns(newTurns);
+
+    try {
+      const history: V7ChatMessage[] = newTurns.map(t => ({ role: t.role, content: t.content }));
+      const resp = await api.v7Followup(runId, question, history);
+      setTurns([...newTurns, {
+        role: 'assistant',
+        content: resp.answer,
+        generation: resp.generation,
+      }]);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.userMessage : String(e));
+      setTurns(newTurns);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
+      <div
+        ref={scrollRef}
+        style={{
+          maxHeight: '500px',
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--s-2)',
+          paddingRight: 'var(--s-1)',
+        }}
+      >
+        {turns.map((turn, i) => (
+          <div
+            key={i}
+            style={{
+              display: 'flex',
+              justifyContent: turn.role === 'user' ? 'flex-end' : 'flex-start',
+            }}
+          >
+            <div
+              style={{
+                maxWidth: '85%',
+                padding: 'var(--s-2) var(--s-3)',
+                borderRadius: 'var(--r-md)',
+                background: turn.role === 'user'
+                  ? 'var(--c-accent-bg, #e3f2fd)'
+                  : 'var(--c-surface-2, #f5f5f5)',
+                border: turn.role === 'user'
+                  ? '1px solid var(--c-accent-border, #90caf9)'
+                  : '1px solid var(--c-border, #e0e0e0)',
+              }}
+            >
+              {turn.role === 'assistant' && i === 0 && (
+                <div className="text-xs text-muted mb-1" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <BookOpen size={11} /> Report iniziale
+                </div>
+              )}
+              {turn.role === 'assistant' && i > 0 && turn.generation && (
+                <div className="text-xs text-muted mb-1" style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-1)' }}>
+                  <MessageSquare size={11} />
+                  {turn.generation.provider}/{turn.generation.model}
+                  {turn.generation.input_tokens != null && (
+                    <span>· {turn.generation.input_tokens} in / {turn.generation.output_tokens} out</span>
+                  )}
+                </div>
+              )}
+              <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, fontSize: '0.9rem' }}>
+                {turn.content}
+              </div>
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+            <div
+              style={{
+                padding: 'var(--s-2) var(--s-3)',
+                borderRadius: 'var(--r-md)',
+                background: 'var(--c-surface-2, #f5f5f5)',
+                border: '1px solid var(--c-border, #e0e0e0)',
+              }}
+            >
+              <span className="text-sm text-muted">L'IA sta elaborando la risposta…</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div className="text-sm" style={{ color: 'var(--c-warning)' }}>{error}</div>
+      )}
+
+      <div className="flex flex--wrap" style={{ gap: 'var(--s-2)', alignItems: 'center' }}>
+        <Input
+          placeholder="Fai una domanda di follow-up…"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendFollowup()}
+          className="input--lg"
+          aria-label="Domanda di follow-up"
+          disabled={loading}
+        />
+        <Button onClick={sendFollowup} disabled={loading || !input.trim()}>
+          <Send size={16} /> {loading ? 'Attendi…' : 'Invia'}
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 function IdentityBadge({ status }: { status?: string }) {
   if (!status) return null;
@@ -112,6 +251,14 @@ function V7ResultView({ result }: { result: V7ResearchResult }) {
       {!result.report && (
         <Section title="Report">
           <Card><EmptyState message="Nessun report generato." /></Card>
+        </Section>
+      )}
+
+      {result.report && (
+        <Section title="Conversazione Follow-Up">
+          <Card>
+            <FollowupChat runId={result.run_id} initialReport={result.report} />
+          </Card>
         </Section>
       )}
     </>

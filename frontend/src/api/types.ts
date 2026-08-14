@@ -701,6 +701,32 @@ export interface V7NarrateResponse {
   narrator_contract_version: string;
 }
 
+// ── V7 Conversational Follow-Up ──
+
+export interface V7ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface V7FollowupGeneration {
+  mode: string;
+  provider: string;
+  model: string;
+  input_tokens?: number;
+  output_tokens?: number;
+  cost?: number;
+  latency_ms?: number;
+  fallback_reason?: string;
+}
+
+export interface V7FollowupResponse {
+  run_id: string;
+  question: string;
+  answer: string;
+  generation: V7FollowupGeneration;
+  errors: string[];
+}
+
 // ── Cross-Linking Safe ──
 
 export interface CrossLinkStatus {
