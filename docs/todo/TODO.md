@@ -1,6 +1,62 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 13 agosto 2026 (sera) — V7.8 Fix contaminazione cross-war, name parsing, hallucination check.
+Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucination check, cross-war fix.
+
+---
+
+## V7.8 Conversational Follow-Up — COMPLETATO (2026-08-14)
+
+### Completato
+- [x] **`call_ai_chat()` in `ai_client.py`**: multi-turn chat con OpenAI/Mistral/Anthropic, messages array con conversation history, fallback provider con circuit breaker
+- [x] **`_call_openai_chat()`, `_call_mistral_chat()`, `_call_anthropic_chat()`**: implementazioni provider-specific per multi-turn
+- [x] **`execute_followup()` in `unified_orchestrator_v7.py`**: recupera snapshot da run precedente, costruisce system prompt con claim/evidenze, chiama `call_ai_chat` con history
+- [x] **`_build_followup_system_prompt()`**: template con claim documentali, contesto, report precedente, regole anti-allucinazione
+- [x] **`POST /api/v7/followup` in `v7_api.py`**: endpoint con `run_id`, `question`, `conversation_history`
+- [x] **Test Luigi Gaiaschi**: 3 turni conversazionali (ricerca gpt-4o → follow-up gpt-4o-mini × 2), risposte context-aware
+- [x] **Test DEMARCO Giuseppe**: 3 turni conversazionali, AI cita fonti (Elenco_D.pdf, pagina 91), identifica dettagli non documentati
+- [x] **Git push**: commit `da1e9ad` + `971aae6` su `fix/provenance-linking-v2`
+- [x] **Documentazione**: CHANGELOG V7.8, ARCHITETTURA_COMPLETA.md aggiornata
+
+### Pending
+- [ ] **Persistenza run snapshot**: salvare snapshot su DB/Supabase per sopravvivere a restart del server (attualmente in-memory `_runs` dict)
+- [ ] **Frontend: UI conversazionale**: aggiungere chat interface in ResearchPage.tsx per follow-up
+- [ ] **Frontend: client API**: aggiungere `v7Followup()` in `client.ts`
+- [ ] **Rate limiting follow-up**: limitare numero di follow-up per run_id per evitare abuso
+- [ ] **Token budget tracking**: tracciare costi cumulativi di follow-up per run
+
+---
+
+## PROSSIMI LAVORI BACKEND — Priorità (post 2026-08-14)
+
+### A. Persistenza & Resilienza
+- [ ] **Persistenza snapshot su DB**: salvare `EvidenceSnapshotV7` su SQLite/Supabase dopo ogni run, per sopravvivere a restart del server. Tabella `research_snapshots` con `run_id`, `snapshot_json`, `created_at`, `intent`, `target_name`.
+- [ ] **Recupero run da DB**: `execute_followup` deve poter recuperare snapshot da DB se non in memoria (`_runs` dict)
+- [ ] **Cleanup automatico run**: scadenza TTL per run vecchi (es. 24h) con cleanup snapshot dal DB
+
+### B. Qualità Narrazione
+- [ ] **Hallucination skip list residui**: aggiungere "Ancona", "Germania" alla skip list in `v7_narrator.py`
+- [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare claim provenance non trovati nello snapshot (log narratore)
+- [ ] **Cross-war contamination su Pellegrini**: fixare mismatch war period (WWI vs WWII) per nomi presenti in entrambi i conflitti
+- [ ] **Test su soldati WWI**: verificare che un soldato WWI non generi contesto WWII
+- [ ] **Test su `war_period=unknown`**: verificare comportamento narratore senza periodo bellico
+
+### C. API & Orchestrator
+- [ ] **Endpoint `/api/v7/conversation`**: sessione conversazionale persistente con `session_id` (più follow-up concatenati)
+- [ ] **Streaming responses**: aggiungere SSE/streaming per follow-up (risposta incrementale)
+- [ ] **Batch research API**: endpoint per ricerca multipla (lista nomi → risultati paralleli)
+- [ ] **Webhook notifications**: callback URL per notificare completamento run lunghe
+
+### D. Supabase & Sync
+- [ ] **Sync `internati` (20.465 rows)**: sincronizzare tabella principale su Supabase
+- [ ] **Sync `source_authority_registry`**: tabella V3 su Supabase
+- [ ] **Riprendere sync `event_links`**: 1.5M rows, ~18% completato (in pausa)
+- [ ] **Vector extension Supabase**: abilitare `vector` extension per RAG embeddings
+- [ ] **Backfill canonical schema**: 1M+ rows da migrare a schema canonico
+
+### E. Frontend Integration
+- [ ] **Chat UI in ResearchPage.tsx**: interfaccia conversazionale per follow-up
+- [ ] **`v7Followup()` in `client.ts`**: metodo API per chiamare `/api/v7/followup`
+- [ ] **History panel**: visualizzare storico conversazione per run_id
 
 ---
 
