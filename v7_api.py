@@ -107,6 +107,35 @@ async def get_run_status(run_id: str):
     return ctx.to_dict()
 
 
+@router.post("/followup")
+async def conversational_followup(
+    run_id: str = Body(..., embed=True),
+    question: str = Body(..., embed=True),
+    conversation_history: Optional[List[Dict[str, Any]]] = Body(None, embed=True),
+):
+    """Ask a follow-up question about a previous research run.
+    
+    Uses the snapshot and claims from the previous run as context,
+    and calls OpenAI Chat Completions with conversation history.
+    
+    This avoids re-running the full pipeline for follow-up questions.
+    
+    Args:
+        run_id: The run_id from a previous /api/v7/research response
+        question: The follow-up question
+        conversation_history: Optional list of previous turns,
+            e.g. [{"role":"user","content":"Chi era Luigi Gaiaschi?"},
+                  {"role":"assistant","content":"Luigi Gaiaschi fu..."}]
+    """
+    orch = get_orchestrator()
+    result = orch.execute_followup(
+        run_id=run_id,
+        user_question=question,
+        conversation_history=conversation_history,
+    )
+    return result
+
+
 @router.post("/narrate")
 async def narrate_snapshot(
     snapshot_dict: Dict[str, Any] = Body(...),

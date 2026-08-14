@@ -220,6 +220,186 @@ class UnifiedResearchOrchestratorV7:
     def get_run(self, run_id: str) -> Optional[RunContext]:
         return self._runs.get(run_id)
 
+    def execute_followup(
+        self,
+        run_id: str,
+        user_question: str,
+        conversation_history: Optional[List[Dict[str, str]]] = None,
+    ) -> Dict[str, Any]:
+        """Execute a conversational follow-up using an existing run's snapshot.
+        
+        Instead of re-running the full pipeline, this method:
+        1. Recovers the snapshot from a previous run
+        2. Builds a system prompt with all claims/evidence as context
+        3. Calls OpenAI Chat Completions with conversation history
+        4. Returns the AI response with generation metadata
+        
+        Args:
+            run_id: The run_id from a previous /api/v7/research call
+            user_question: The follow-up question from the user
+            conversation_history: Previous turns [{"role":"user","content":"..."},
+                                   {"role":"assistant","content":"..."}]
+        
+        Returns:
+            Dict with answer, generation info, errors, warnings
+        """
+        t_start = time.time()
+        errors: List[str] = []
+        warnings: List[str] = []
+
+        # 1. Recover previous run
+        prev_ctx = self._runs.get(run_id)
+        if prev_ctx is None or prev_ctx.snapshot is None:
+            errors.append(f"Run not found or snapshot missing: {run_id}")
+            return {
+                "run_id": run_id,
+                "answer": "",
+                "generation": {"mode": "error", "fallback_reason": "run_not_found"},
+                "errors": errors,
+                "warnings": warnings,
+                "stage_timings": {"total": time.time() - t_start},
+            }
+
+        snapshot = prev_ctx.snapshot
+        prev_report = prev_ctx.report or ""
+
+        # 2. Build system prompt with full evidence context
+        system_prompt = self._build_followup_system_prompt(snapshot, prev_report)
+
+        # 3. Build messages array
+        messages: List[Dict[str, str]] = []
+        if conversation_history:
+            for turn in conversation_history:
+                role = turn.get("role", "user")
+                content = turn.get("content", "")
+                if role in ("user", "assistant") and content:
+                    messages.append({"role": role, "content": content})
+
+        # Add the current question
+        messages.append({"role": "user", "content": user_question})
+
+        # 4. Call AI with multi-turn chat
+        try:
+            from ai_client import call_ai_chat, is_any_provider_available
+
+            if not is_any_provider_available():
+                warnings.append("No AI provider available for follow-up")
+                return {
+                    "run_id": run_id,
+                    "answer": "Nessun provider AI disponibile per rispondere alla domanda di follow-up.",
+                    "generation": {
+                        "mode": "deterministic",
+                        "fallback_reason": "no_ai_provider",
+                    },
+                    "errors": errors,
+                    "warnings": warnings,
+                    "stage_timings": {"total": time.time() - t_start},
+                }
+
+            result = call_ai_chat(
+                system=system_prompt,
+                messages=messages,
+                max_tokens=4096,
+                temperature=0.3,
+            )
+
+            if not result.get("ok"):
+                errors.append(f"AI call failed: {result.get('error', 'unknown')}")
+                return {
+                    "run_id": run_id,
+                    "answer": "",
+                    "generation": {
+                        "mode": "deterministic",
+                        "fallback_reason": "ai_call_failed",
+                        "error": result.get("error", ""),
+                    },
+                    "errors": errors,
+                    "warnings": warnings,
+                    "stage_timings": {"total": time.time() - t_start},
+                }
+
+            elapsed = time.time() - t_start
+            generation = {
+                "mode": "ai",
+                "provider": result.get("provider", ""),
+                "model": result.get("model", ""),
+                "input_tokens": result.get("input_tokens", 0),
+                "output_tokens": result.get("output_tokens", 0),
+                "cost": result.get("cost", 0.0),
+                "latency_ms": result.get("latency_ms", 0),
+            }
+
+            return {
+                "run_id": run_id,
+                "answer": result["text"],
+                "generation": generation,
+                "errors": errors,
+                "warnings": warnings,
+                "stage_timings": {"followup": elapsed, "total": elapsed},
+            }
+
+        except Exception as e:
+            errors.append(f"FOLLOWUP_ERROR: {e}")
+            logger.exception(f"Follow-up error for run {run_id}")
+            return {
+                "run_id": run_id,
+                "answer": "",
+                "generation": {
+                    "mode": "error",
+                    "fallback_reason": str(e),
+                },
+                "errors": errors,
+                "warnings": warnings,
+                "stage_timings": {"total": time.time() - t_start},
+            }
+
+    def _build_followup_system_prompt(self, snapshot: EvidenceSnapshotV7, prev_report: str) -> str:
+        """Build system prompt with full evidence context for follow-up questions."""
+        # Gather all claims
+        person_claims = snapshot.person_claims or []
+        context_claims = snapshot.context_claims or []
+
+        claims_text = "\n".join(
+            f"  - {c.predicate}: {c.value_normalized} (status={c.status}, conf={c.confidence:.2f}, evidenze={len(c.evidence_ids)})"
+            for c in person_claims
+        )
+        context_text = "\n".join(
+            f"  - {c.predicate}: {c.value}"
+            for c in context_claims
+        )
+
+        target_name = snapshot.target.get("display_name", "soggetto")
+        identity = snapshot.identity_status
+        war_period = snapshot.target.get("conflict", "unknown")
+
+        prompt = f"""Sei uno storico ricercatore specializzato in storia militare italiana del XX secolo.
+Rispondi alla domanda dell'utente basandoti ESCLUSIVAMENT sulle evidenze documentali fornite di seguito.
+
+Non inventare informazioni non presenti nei dati. Se i dati sono insufficienti, dichiaralo esplicitamente.
+
+## Soggetto della ricerca
+- Nome: {target_name}
+- Status identità: {identity}
+- Periodo bellico: {war_period}
+
+## Claim documentali (evidenze primarie)
+{claims_text if claims_text.strip() else '  (nessun claim disponibile)'}
+
+## Claim di contesto
+{context_text if context_text.strip() else '  (nessun claim di contesto)'}
+
+## Report precedente generato
+{prev_report[:2000] if prev_report else '(nessun report precedente)'}
+
+## Istruzioni
+1. Rispondi in italiano, in modo discorsivo e preciso
+2. Cita le fonti quando possibile usando [ID fonte]
+3. Se la domanda chiede dettagli "non documentati", spiega chiaramente cosa manca e perché
+4. Non mescolare periodi bellici (WWI vs WWII)
+5. Se un'informazione non è nei claim, dì esplicitamente "non documentato nelle fonti disponibili"
+"""
+        return prompt
+
     def get_capabilities(self) -> Dict[str, Any]:
         """Return current capability snapshot for /api/system/capabilities."""
         return {

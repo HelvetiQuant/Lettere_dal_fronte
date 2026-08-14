@@ -830,3 +830,205 @@ Analizza il testo e restituisci il JSON di validazione."""
         "raw": "",
         "error": "Nessun validatore AI disponibile",
     }
+
+
+# ═══ MULTI-TURN CHAT ═══════════════════════════════════════════════════════
+
+def call_ai_chat(
+    system: str,
+    messages: List[Dict[str, str]],
+    max_tokens: int = 4096,
+    temperature: float = 0.3,
+    skip_providers: Optional[set] = None,
+) -> Dict:
+    """Esegue una chiamata AI multi-turno con conversation history.
+    
+    Usa la OpenAI Chat Completions API con messages array per supportare
+    follow-up conversazionali. Fallback su Mistral/Anthropic se OpenAI non disponibile.
+    
+    Args:
+        system: System prompt con contesto (snapshot, claims, etc.)
+        messages: Lista di {"role": "user"/"assistant", "content": "..."} 
+                  per la conversation history
+        max_tokens: Token massimi per la risposta
+        temperature: Temperatura di campionamento
+        skip_providers: Provider da saltare (circuit breaker)
+    
+    Returns:
+        {
+            ok: bool,
+            text: str,           # risposta AI
+            provider: str,       # provider usato
+            model: str,          # modello usato
+            cost: float,
+            input_tokens: int,
+            output_tokens: int,
+            latency_ms: int,
+            error: str,          # se ok=False
+        }
+    """
+    _skip = skip_providers or set()
+    order = [p for p in _FALLBACK_ORDER if not _breaker_is_open(p) and p not in _skip]
+    
+    attempted = []
+    t0 = time.time()
+    
+    for i, pcode in enumerate(order):
+        func = _PROVIDER_FUNCS.get(pcode)
+        if not func:
+            continue
+        
+        model = _DEFAULT_MODELS.get(pcode)
+        if not model:
+            continue
+        
+        # Check budget
+        est_cost = 0.01
+        if pcode in ("ollama", "lmstudio"):
+            est_cost = 0.0
+        budget_check = check_budget_before_task(pcode, est_cost)
+        if not budget_check.get("ok"):
+            attempted.append({"provider": pcode, "error": "insufficient_budget"})
+            continue
+        
+        try:
+            if pcode == "openai":
+                result = _call_openai_chat(model, system, messages, max_tokens, temperature)
+            elif pcode == "mistral":
+                result = _call_mistral_chat(model, system, messages, max_tokens, temperature)
+            elif pcode == "anthropic":
+                result = _call_anthropic_chat(model, system, messages, max_tokens, temperature)
+            else:
+                # For providers without native multi-turn, flatten to single user message
+                flat = "\n\n".join(
+                    f"{'Utente' if m['role']=='user' else 'Assistente'}: {m['content']}"
+                    for m in messages
+                )
+                result = func(model=model, system=system, user=flat,
+                              max_tokens=max_tokens, temperature=temperature)
+            
+            latency_ms = int((time.time() - t0) * 1000)
+            
+            run_id = record_task_run(
+                task_type="conversation",
+                provider_code=pcode,
+                model_identifier=model,
+                selection_reason="multi_turn_chat",
+                policy_version="default",
+                input_fingerprint=str(hash(system[:200])),
+                input_tokens=result["input_tokens"],
+                output_tokens=result["output_tokens"],
+                cost_estimated=est_cost,
+                cost_actual=result["cost"],
+                latency_ms=latency_ms,
+                outcome="success",
+                fallback_from=order[0] if i > 0 else None,
+                fallback_to=pcode if i > 0 else None,
+            )
+            
+            return {
+                "ok": True,
+                "text": result["text"],
+                "provider": pcode,
+                "model": model,
+                "cost": result["cost"],
+                "input_tokens": result["input_tokens"],
+                "output_tokens": result["output_tokens"],
+                "latency_ms": latency_ms,
+                "task_run_id": run_id,
+                "attempted": attempted,
+            }
+        
+        except Exception as e:
+            log.warning("AI chat provider %s failed: %s", pcode, e)
+            attempted.append({"provider": pcode, "error": str(e)})
+            _breaker_record_failure(pcode)
+            continue
+    
+    latency_ms = int((time.time() - t0) * 1000)
+    return {
+        "ok": False,
+        "text": "",
+        "provider": None,
+        "model": None,
+        "cost": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "latency_ms": latency_ms,
+        "error": "Tutti i provider AI hanno fallito o non sono configurati.",
+        "attempted": attempted,
+    }
+
+
+def _call_openai_chat(
+    model: str,
+    system: str,
+    messages: List[Dict[str, str]],
+    max_tokens: int = 4096,
+    temperature: float = 0.3,
+) -> Dict:
+    """Chiama OpenAI Chat Completions con messages array multi-turn."""
+    client = _get_openai_client()
+    full_messages = [{"role": "system", "content": system}] + messages
+    
+    resp = client.chat.completions.create(
+        model=model,
+        messages=full_messages,
+        max_tokens=max_tokens,
+        temperature=temperature,
+    )
+    text = resp.choices[0].message.content.strip()
+    in_tok = getattr(resp.usage, "prompt_tokens", 0) or 0
+    out_tok = getattr(resp.usage, "completion_tokens", 0) or 0
+    cost = in_tok * (0.15 / 1_000_000) + out_tok * (0.60 / 1_000_000)
+    return {"text": text, "input_tokens": in_tok, "output_tokens": out_tok, "cost": cost}
+
+
+def _call_mistral_chat(
+    model: str,
+    system: str,
+    messages: List[Dict[str, str]],
+    max_tokens: int = 4096,
+    temperature: float = 0.3,
+) -> Dict:
+    """Chiama Mistral Chat con messages array multi-turn."""
+    client = _get_mistral_client()
+    full_messages = [{"role": "system", "content": system}] + messages
+    
+    resp = client.chat.complete(
+        model=model,
+        messages=full_messages,
+        max_tokens=max_tokens,
+        temperature=temperature,
+    )
+    text = resp.choices[0].message.content.strip()
+    in_tok = len(system) // 4 + sum(len(m["content"]) // 4 for m in messages)
+    out_tok = len(text) // 4
+    cost = in_tok * (0.1 / 1_000_000) + out_tok * (0.3 / 1_000_000)
+    return {"text": text, "input_tokens": in_tok, "output_tokens": out_tok, "cost": cost}
+
+
+def _call_anthropic_chat(
+    model: str,
+    system: str,
+    messages: List[Dict[str, str]],
+    max_tokens: int = 4096,
+    temperature: float = 0.3,
+) -> Dict:
+    """Chiama Anthropic Messages API con conversation history."""
+    client = _get_anthropic_client()
+    
+    # Anthropic wants system separate, messages as user/assistant pairs
+    # Ensure messages alternate user/assistant starting with user
+    resp = client.messages.create(
+        model=model,
+        max_tokens=max_tokens,
+        system=system,
+        messages=messages,
+        temperature=temperature,
+    )
+    text = resp.content[0].text.strip()
+    in_tok = resp.usage.input_tokens
+    out_tok = resp.usage.output_tokens
+    cost = in_tok * (3.0 / 1_000_000) + out_tok * (15.0 / 1_000_000)
+    return {"text": text, "input_tokens": in_tok, "output_tokens": out_tok, "cost": cost}
