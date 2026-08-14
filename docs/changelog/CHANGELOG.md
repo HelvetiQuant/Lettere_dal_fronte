@@ -1,5 +1,40 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-08-14 — V7.8: Conversational Follow-Up via OpenAI Chat Completions
+
+### Funzionalità
+Il sistema supporta ora domande di follow-up conversazionali che riutilizzano lo snapshot e i claim di una ricerca precedente, senza dover ri-eseguire l'intera pipeline V7.
+
+### Implementazione
+
+| File | Modifica |
+|------|----------|
+| `ai_client.py` | `call_ai_chat()` — Multi-turn chat con OpenAI/Mistral/Anthropic, messages array con conversation history, fallback provider |
+| `ai_client.py` | `_call_openai_chat()`, `_call_mistral_chat()`, `_call_anthropic_chat()` — Provider-specific multi-turn implementations |
+| `unified_orchestrator_v7.py` | `execute_followup()` — Recupera snapshot da run precedente, costruisce system prompt con claim/evidenze, chiama `call_ai_chat` |
+| `unified_orchestrator_v7.py` | `_build_followup_system_prompt()` — Template con claim documentali, contesto, report precedente, regole anti-allucinazione |
+| `v7_api.py` | `POST /api/v7/followup` — Endpoint con `run_id`, `question`, `conversation_history` |
+
+### API
+
+```
+POST /api/v7/followup
+{
+  "run_id": "run_v7_...",
+  "question": "Puoi darmi i dettagli non documentati?",
+  "conversation_history": [
+    {"role": "user", "content": "Luigi Gaiaschi"},
+    {"role": "assistant", "content": "Luigi Gaiaschi fu..."}
+  ]
+}
+```
+
+### Test
+- Luigi Gaiaschi: ricerca iniziale (gpt-4o, 17.8s) → follow-up "dettagli non documentati" (gpt-4o-mini, 3.8s) → follow-up "fonti cattura Grecia" (gpt-4o-mini, 3.8s)
+- Risposte context-aware, anti-allucinazione, citazione fonti [ID]
+
+---
+
 ## 2026-08-13 — V7.8: Fix Contaminazione Cross-War e Name Parsing
 
 ### Contesto

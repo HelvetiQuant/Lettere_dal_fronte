@@ -841,6 +841,7 @@ Utente: "Battaglia di Caporetto"
 │  │  Compliance Gate → policy evaluation per ogni operazione              │  │
 │  │  AI Router → multi-modello con circuit breaker e budget               │  │
 │  │  AI Runtime → LM Studio / Remote / Test adapter                       │  │
+│  │  Conversational Follow-Up → OpenAI Chat Completions multi-turn        │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 │                                                                              │
 │  ┌─── Source Federation (27 providers) ──────────────────────────────────┐  │
