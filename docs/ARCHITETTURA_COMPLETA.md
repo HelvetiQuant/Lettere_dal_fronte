@@ -1,11 +1,12 @@
 # IMI Extractor — Architettura Tecnica Completa
 ## Sistema di Ricerca Storica su Eventi della Prima e Seconda Guerra Mondiale
 
-**Versione documento**: 4.1  
-**Data**: 2026-08-13  
+**Versione documento**: 4.2  
+**Data**: 2026-08-17  
 **Scopo**: Documento di architettura per AI Architect — analisi completa di tutti i layer, dati, pipeline, API e infrastruttura.
 
-**Changelog versione 4.1**:
+**Changelog versione 4.2**:
+- V7.8: Conversational Follow-Up backend (call_ai_chat, execute_followup, /api/v7/followup) + frontend (FollowupChat UI, v7Followup client)
 - V7.8: Fix contaminazione cross-war (case sensitivity, name parsing, legacy fallback, war_period schema)
 - V7.7: Frontend integration completa (ResearchPage, SoldierDossierPage, AdminPage)
 - V7.6: Cross-Linking Sicuro con Reversibilità (audit table, 4.438 internati arricchiti)
@@ -448,11 +449,19 @@ Lucide React (icone)
 | `/admin` | `AdminPage` | Admin panel |
 | `/soldato/:type/:id` | `SoldierDossierPage` | Dossier soldato |
 
-### 4.3 API Client (`frontend/src/api/client.ts` — 203 righe)
+### 4.3 API Client (`frontend/src/api/client.ts` — 261 righe)
 
-Single object `api` con ~60 metodi tipizzati. Tutte le chiamate passano attraverso `http.ts` con timeout configurabile.
+Single object `api` con ~65 metodi tipizzati. Tutte le chiamate passano attraverso `http.ts` con timeout configurabile.
 
-### 4.4 Tipi TypeScript (`frontend/src/api/types.ts` — 836 righe)
+Metodi V7:
+- `v7Research(userInput, intent, targetId, conflict)` → POST /api/v7/research (300s timeout)
+- `v7RunStatus(runId)` → GET /api/v7/research/{run_id}
+- `v7Health()` → GET /api/v7/health
+- `v7Capabilities()` → GET /api/v7/system/capabilities
+- `v7Narrate(snapshot)` → POST /api/v7/narrate
+- `v7Followup(runId, question, conversationHistory)` → POST /api/v7/followup (120s timeout)
+
+### 4.4 Tipi TypeScript (`frontend/src/api/types.ts` — 987 righe)
 
 Tipizzazione completa di tutti i DTO scambiati con il backend:
 - `SearchResult`, `InternatoRecord`, `CadutoRecord`, `DecoratoRecord`
@@ -460,6 +469,22 @@ Tipizzazione completa di tutti i DTO scambiati con il backend:
 - `CanonicalEvent`, `GraphEntityResponse`, `RAGContextResponse`
 - `HistoricalMap`, `MapFeatureRecord`
 - `AIRuntimeHealth`, `ChatResponseDTO`
+- `V7ResearchResult`, `V7Snapshot`, `V7PersonClaim`, `V7SemanticCounts`
+- `V7HealthResponse`, `V7CapabilitiesResponse`, `V7NarrateResponse`
+- `V7ChatMessage`, `V7FollowupGeneration`, `V7FollowupResponse`
+- `CrossLinkStatus`
+
+### 4.5 Conversational Follow-Up UI (`ResearchPage.tsx`)
+
+Componente `FollowupChat` integrato nella pagina di ricerca V7:
+- Chat a bolle (utente destra/blu, assistant sinistra/grigio)
+- Report iniziale mostrato come primo messaggio assistant
+- Auto-scroll verso il basso ad ogni nuovo messaggio
+- Metadata AI: ogni risposta mostra provider/modello/token (es. `openai/gpt-4o-mini · 1081 in / 110 out`)
+- Input + Enter-to-send con bottone "Invia"
+- Loading state durante attesa risposta AI
+- Conversation history inviata ad ogni follow-up (multi-turn context)
+- Error handling inline
 
 ---
 
@@ -803,7 +828,7 @@ Utente: "Battaglia di Caporetto"
 | `text_matching_v73.py` | Word-boundary matching, specificity, OCR variants, alias matching |
 | `barriers_v73.py` | Temporal barriers (WWI/WWII veto), geographic barriers (semantic roles) |
 | `cross_link_military_data_v3.py` | Cross-linking: caduti_ministero←albooro (89K), internati←lebi (5.8K) |
-| `v7_api.py` | 5 endpoint: /api/v7/health, capabilities, research, research/{id}, narrate |
+| `v7_api.py` | 6 endpoint: /api/v7/health, capabilities, research, research/{id}, narrate, followup |
 | `adapters_v73.py` | Legacy endpoint adapters con feature flags (V73_CANONICAL_*) |
 
 ---
@@ -815,7 +840,8 @@ Utente: "Battaglia di Caporetto"
 │                           FRONTEND (React 19)                                │
 │  HomePage · ExplorePage · EventResearchPage · GraphEntityPage · ChatPage    │
 │  SoldierDossierPage · AdminPage · ViewpointsPage · ResearchPage             │
-│  API Client (60+ metodi tipizzati) · TypeScript types (836 righe)           │
+│  ResearchPage: V7 Pipeline + FollowupChat (conversational follow-up)        │
+│  API Client (65+ metodi tipizzati) · TypeScript types (987 righe)           │
 └──────────────────────────────┬──────────────────────────────────────────────┘
                                │ HTTP (localhost:8123)
 ┌──────────────────────────────┴──────────────────────────────────────────────┐
@@ -1177,29 +1203,36 @@ Utente: "Quanti internati per campo?"
 - ✅ V7.6 Cross-Linking Sicuro (4.438 internati arricchiti, audit table reversibile)
 - ✅ V7.7 Frontend integration (ResearchPage, SoldierDossierPage, AdminPage)
 - ✅ V7.8 Fix contaminazione cross-war (6 root cause, case sensitivity + name parsing + legacy fallback + war_period schema)
+- ✅ V7.8 Conversational Follow-Up backend (call_ai_chat multi-turn, execute_followup, /api/v7/followup endpoint)
+- ✅ V7.8 Conversational Follow-Up frontend (FollowupChat UI, v7Followup client, V7ChatMessage/V7FollowupResponse types)
 - ✅ LeBI integration (166K record, 5 tabelle persona)
 - ✅ Cross-linking militare (89K caduti_ministero + 5.8K internati arricchiti)
 - ✅ Anti-duplicazione narrativa (prompt + renderer + ambiguous blocking)
 - ✅ Supabase parity check (6/8 tabelle OK)
 
 ### Immediato
-1. **Eseguire backfill canonico** (`backfill_canonical.py`) per 1M+ righe
-2. **Abilitare estensione `vector`** nel dashboard Supabase per RAG embeddings
-3. **Sync cross-link militare** su Supabase (89K + 5.8K record aggiornati)
-4. **Migliorare matching internati↔lebi** (14.6K ancora senza match)
+1. **Persistenza snapshot su DB** — salvare EvidenceSnapshotV7 su SQLite/Supabase per sopravvivere a restart del server (attualmente in-memory `_runs` dict)
+2. **Eseguire backfill canonico** (`backfill_canonical.py`) per 1M+ righe
+3. **Abilitare estensione `vector`** nel dashboard Supabase per RAG embeddings
+4. **Sync cross-link militare** su Supabase (89K + 5.8K record aggiornati)
+5. **Migliorare matching internati↔lebi** (14.6K ancora senza match)
 
 ### Breve termine
-5. **Configurare RLS** sul nuovo progetto (`04_rls_policies.sql`)
-6. **Creare Storage buckets** per thumbnail e rappresentazioni
-7. **Estendere `supabase_client.py`** per multi-schema completo
-8. **Integrare `repository_layer.py`** nelle pipeline esistenti
+6. **Configurare RLS** sul nuovo progetto (`04_rls_policies.sql`)
+7. **Creare Storage buckets** per thumbnail e rappresentazioni
+8. **Estendere `supabase_client.py`** per multi-schema completo
+9. **Integrare `repository_layer.py`** nelle pipeline esistenti
+10. **Streaming SSE per follow-up** — risposta incrementale per conversazione più reattiva
+11. **Rate limiting follow-up** — limitare numero di follow-up per run_id
 
 ### Medio termine
-9. **FTS tsvector** su PostgreSQL (`03_fts_tsvector.sql`)
-10. **Vector embeddings** su `archive.chunks` per RAG semantico
-11. **Job queue** attiva su `ops.job_queue` per task asincroni
-12. **Frontend admin** per review link/claims/evidence
+12. **FTS tsvector** su PostgreSQL (`03_fts_tsvector.sql`)
+13. **Vector embeddings** su `archive.chunks` per RAG semantico
+14. **Job queue** attiva su `ops.job_queue` per task asincroni
+15. **Frontend admin** per review link/claims/evidence
+16. **Batch research API** — endpoint per ricerca multipla (lista nomi → risultati paralleli)
+17. **Webhook notifications** — callback URL per notificare completamento run lunghe
 
 ---
 
-*Documento generato per AI Architect — 2026-08-13 (v4.1)*
+*Documento generato per AI Architect — 2026-08-17 (v4.2)*
