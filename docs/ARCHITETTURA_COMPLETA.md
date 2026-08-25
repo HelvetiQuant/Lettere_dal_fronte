@@ -1,11 +1,19 @@
 # IMI Extractor — Architettura Tecnica Completa
 ## Sistema di Ricerca Storica su Eventi della Prima e Seconda Guerra Mondiale
 
-**Versione documento**: 4.2  
+**Versione documento**: 5.0  
 **Data**: 2026-08-17  
 **Scopo**: Documento di architettura per AI Architect — analisi completa di tutti i layer, dati, pipeline, API e infrastruttura.
 
-**Changelog versione 4.2**:
+**Changelog versione 5.0**:
+- Evidence-Centric Architecture: 6 fasi completate (Fasi 2-7), 54 test, 6 moduli nuovi, 6 doc architettura
+- Fase 2: Evidence Contract (`evidence_contract.py`) — 10 invarianti, ClaimStatus 8 livelli, AnswerEvidenceBundle
+- Fase 3: Source Lineage (`source_lineage_service.py`) — 12 lineages, DB-backed independence scoring
+- Fase 4: Legacy Quarantine (`legacy_relation_adapter.py`) — non-distruttivo, revalidation gate, safety checks
+- Fase 5: AnswerEvidenceBundle (`answer_evidence_gate.py`) — pre/post-generation gate, context_hash + answer_hash
+- Fase 6: EvidenceSnapshot Persistente (`evidence_snapshot_service.py`) — save/load/verify, idempotente
+- Fase 7: Event Ontology (`event_ontology_service.py`) — gerarchia persistente, alias, validazione temporale
+- Fix schema: `linking/schema_v2.py` — `_safe_alter()` comment parsing, CHECK constraint fix
 - V7.8: Conversational Follow-Up backend (call_ai_chat, execute_followup, /api/v7/followup) + frontend (FollowupChat UI, v7Followup client)
 - V7.8: Fix contaminazione cross-war (case sensitivity, name parsing, legacy fallback, war_period schema)
 - V7.7: Frontend integration completa (ResearchPage, SoldierDossierPage, AdminPage)
@@ -1209,9 +1217,15 @@ Utente: "Quanti internati per campo?"
 - ✅ Cross-linking militare (89K caduti_ministero + 5.8K internati arricchiti)
 - ✅ Anti-duplicazione narrativa (prompt + renderer + ambiguous blocking)
 - ✅ Supabase parity check (6/8 tabelle OK)
+- ✅ **Evidence-Centric Architecture Fase 2**: Evidence Contract (10 invarianti, ClaimStatus 8 livelli, AnswerEvidenceBundle)
+- ✅ **Evidence-Centric Architecture Fase 3**: Source Lineage (12 lineages, DB-backed independence scoring, 10 test)
+- ✅ **Evidence-Centric Architecture Fase 4**: Legacy Quarantine (LegacyRelationAdapter, 3 tabelle, revalidation gate, 9 test)
+- ✅ **Evidence-Centric Architecture Fase 5**: AnswerEvidenceBundle (AnswerEvidenceGate, pre/post-generation gate, 10 test)
+- ✅ **Evidence-Centric Architecture Fase 6**: EvidenceSnapshot Persistente (save/load/verify, idempotente, 10 test)
+- ✅ **Evidence-Centric Architecture Fase 7**: Event Ontology Gerarchica (parent_event_id, alias, validazione temporale, 15 test)
 
 ### Immediato
-1. **Persistenza snapshot su DB** — salvare EvidenceSnapshotV7 su SQLite/Supabase per sopravvivere a restart del server (attualmente in-memory `_runs` dict)
+1. **Fase 8: Migration batch legacy → V2** — import bulk di 1.7M record_links + 1.5M event_links tramite LegacyRelationAdapter
 2. **Eseguire backfill canonico** (`backfill_canonical.py`) per 1M+ righe
 3. **Abilitare estensione `vector`** nel dashboard Supabase per RAG embeddings
 4. **Sync cross-link militare** su Supabase (89K + 5.8K record aggiornati)
@@ -1235,4 +1249,4 @@ Utente: "Quanti internati per campo?"
 
 ---
 
-*Documento generato per AI Architect — 2026-08-17 (v4.2)*
+*Documento generato per AI Architect — 2026-08-17 (v5.0)*

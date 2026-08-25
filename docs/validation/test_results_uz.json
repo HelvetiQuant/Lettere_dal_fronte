@@ -1,0 +1,464 @@
+{
+  "campaign_id": "validation_20260817_v1",
+  "run_id": "tests_uz_20260817T174705",
+  "created_at": "2026-08-17T17:47:07.271421+00:00",
+  "total_tests": 6,
+  "passed": 0,
+  "failed": 6,
+  "critical_failures": 3,
+  "results": [
+    {
+      "test_id": "U",
+      "name": "verified_policy_analysis",
+      "description": "Analyze what 'VERIFIED' means in the claim rules",
+      "checks": {
+        "has_classify_claim_status": true,
+        "has_verified_status": true,
+        "has_probable_status": true,
+        "has_approved_status": true
+      },
+      "approved_status_lines": [
+        "\"\"\"Classify a claim into APPROVED, PROBABLE, NEEDS_REVIEW, or REJECTED.",
+        "- verified → APPROVED",
+        "return \"APPROVED\""
+      ],
+      "pass_criteria": "VERIFIED should require evidence + provenance + multi-source",
+      "passed": false,
+      "finding": "classify_claim_status maps statuses to APPROVED/PROBABLE/NEEDS_REVIEW/REJECTED/CONTEXT. APPROVED is assigned to claims with status ACCEPTED or SUPPORTED and confidence >= 0.7. No check for evidence_ids, provenance_chain, or independent sources. A single-source claim with confidence 0.7 can be APPROVED.",
+      "note": "The EvidenceContract would require evidence_ids and provenance_chain for VERIFIED status."
+    },
+    {
+      "test_id": "V",
+      "name": "cross_link_field_provenance",
+      "description": "Audit field-level provenance of cross-linked internati data",
+      "metrics": {
+        "internati_with_active_crosslinks": 4448,
+        "total_internati": 20465,
+        "percentage_crosslinked": 21.7
+      },
+      "field_provenance_detail": [
+        {
+          "column": "data_nascita",
+          "source_table": "lebi_records",
+          "count": 4438,
+          "avg_match_score": 74.986
+        },
+        {
+          "column": "luogo_nascita",
+          "source_table": "lebi_records",
+          "count": 4422,
+          "avg_match_score": 74.986
+        },
+        {
+          "column": "arma",
+          "source_table": "lebi_records",
+          "count": 4149,
+          "avg_match_score": 74.986
+        },
+        {
+          "column": "grado",
+          "source_table": "lebi_records",
+          "count": 4047,
+          "avg_match_score": 74.986
+        },
+        {
+          "column": "reparto",
+          "source_table": "lebi_records",
+          "count": 3924,
+          "avg_match_score": 74.99
+        },
+        {
+          "column": "data_decesso",
+          "source_table": "lebi_records",
+          "count": 3626,
+          "avg_match_score": 74.992
+        },
+        {
+          "column": "luogo_morte",
+          "source_table": "lebi_records",
+          "count": 3573,
+          "avg_match_score": 74.992
+        },
+        {
+          "column": "luogo_sepoltura",
+          "source_table": "lebi_records",
+          "count": 2963,
+          "avg_match_score": 74.993
+        },
+        {
+          "column": "campi_internamento",
+          "source_table": "lebi_records",
+          "count": 2227,
+          "avg_match_score": 74.987
+        },
+        {
+          "column": "fronte_cattura",
+          "source_table": "lebi_records",
+          "count": 1840,
+          "avg_match_score": 74.984
+        },
+        {
+          "column": "data_cattura",
+          "source_table": "lebi_records",
+          "count": 1691,
+          "avg_match_score": 74.979
+        },
+        {
+          "column": "causa_morte",
+          "source_table": "lebi_records",
+          "count": 1434,
+          "avg_match_score": 74.99
+        },
+        {
+          "column": "luogo_cattura",
+          "source_table": "lebi_records",
+          "count": 1229,
+          "avg_match_score": 74.996
+        },
+        {
+          "column": "data_rientro",
+          "source_table": "lebi_records",
+          "count": 647,
+          "avg_match_score": 74.961
+        },
+        {
+          "column": "anno_decorazione",
+          "source_table": "decorati_nastroazzurro",
+          "count": 153,
+          "avg_match_score": 90.0
+        },
+        {
+          "column": "decorazione",
+          "source_table": "decorati_nastroazzurro",
+          "count": 153,
+          "avg_match_score": 90.0
+        },
+        {
+          "column": "arma",
+          "source_table": "decorati_nastroazzurro",
+          "count": 14,
+          "avg_match_score": 90.0
+        },
+        {
+          "column": "data_nascita",
+          "source_table": "caduti_ministero",
+          "count": 10,
+          "avg_match_score": 75.0
+        },
+        {
+          "column": "luogo_nascita",
+          "source_table": "caduti_ministero",
+          "count": 10,
+          "avg_match_score": 75.0
+        },
+        {
+          "column": "grado",
+          "source_table": "caduti_ministero",
+          "count": 9,
+          "avg_match_score": 77.778
+        },
+        {
+          "column": "luogo_morte",
+          "source_table": "caduti_ministero",
+          "count": 9,
+          "avg_match_score": 77.778
+        },
+        {
+          "column": "reparto",
+          "source_table": "caduti_ministero",
+          "count": 9,
+          "avg_match_score": 77.778
+        },
+        {
+          "column": "anno_morte",
+          "source_table": "caduti_ministero",
+          "count": 5,
+          "avg_match_score": 80.0
+        },
+        {
+          "column": "causa_morte",
+          "source_table": "caduti_ministero",
+          "count": 5,
+          "avg_match_score": 80.0
+        }
+      ],
+      "pass_criteria": "Cross-linked fields should be marked as secondary evidence",
+      "passed": false,
+      "finding": "4448/20465 (21.7%) internati have active cross-links. These fields were overwritten from external sources but appear as original data in the pipeline. No provenance distinction between original and cross-linked fields."
+    },
+    {
+      "test_id": "W",
+      "name": "event_ontology_hierarchy",
+      "description": "Validate event ontology hierarchy in DB",
+      "metrics": {
+        "total_events": 49,
+        "events_with_parent": 29,
+        "self_references": 0,
+        "invalid_parent_refs": 29,
+        "has_aliases_column": true
+      },
+      "hierarchy_sample": [
+        {
+          "id": 16,
+          "nome": "Battaglia di Caporetto",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 18,
+          "nome": "Battaglia del Carso",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 22,
+          "nome": "Monte Grappa",
+          "parent_event_id": "evt_0020",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 23,
+          "nome": "Monte Pasubio",
+          "parent_event_id": "evt_0020",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 24,
+          "nome": "Monte San Michele",
+          "parent_event_id": "evt_0018",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 29,
+          "nome": "Monte Nero",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 30,
+          "nome": "Settore di Tolmino",
+          "parent_event_id": "evt_0016",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 39,
+          "nome": "Prima battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 40,
+          "nome": "Seconda battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 41,
+          "nome": "Terza battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 42,
+          "nome": "Quarta battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 43,
+          "nome": "Quinta battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 44,
+          "nome": "Sesta battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 45,
+          "nome": "Settima battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 46,
+          "nome": "Ottava battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 47,
+          "nome": "Nona battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 48,
+          "nome": "Decima battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 49,
+          "nome": "Undicesima battaglia dell'Isonzo",
+          "parent_event_id": "evt_0017",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 50,
+          "nome": "Battaglia degli Altipiani",
+          "parent_event_id": "evt_0021",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        },
+        {
+          "id": 51,
+          "nome": "Battaglia del Monte Ortigara",
+          "parent_event_id": "evt_0021",
+          "event_type": "battaglia",
+          "conflict": "WWI"
+        }
+      ],
+      "pass_criteria": "No cycles, no invalid parent references",
+      "passed": false,
+      "finding": "29/49 events have parent_event_id set. 0 self-references, 29 invalid parent references. EventOntologyService (which would validate this) is NOT used by the pipeline.",
+      "note": "Hierarchy data exists but is not validated through the service during pipeline execution."
+    },
+    {
+      "test_id": "X",
+      "name": "snapshot_persistence",
+      "description": "Verify evidence_snapshots table is populated",
+      "metrics": {
+        "table_exists": false,
+        "rows_in_table": 0
+      },
+      "pass_criteria": "evidence_snapshots should have rows from pipeline runs",
+      "passed": false,
+      "finding": "evidence_snapshots table exists but has 0 rows. _stage_persist() is a no-op (pass). No snapshots are ever saved. No evidence trail. No reproducibility.",
+      "critical": true
+    },
+    {
+      "test_id": "Y",
+      "name": "graph_legacy_leakage",
+      "description": "Quantify legacy data leakage through graph service",
+      "metrics": {
+        "event_links_total": 1539685,
+        "event_links_high_confidence": 261934,
+        "event_links_gated_but_shown": 1539685,
+        "record_links_total": 169184,
+        "record_links_high_confidence": 152140,
+        "record_links_gated_but_shown": 169184,
+        "record_links_legacy": 169184
+      },
+      "pass_criteria": "Gated links should not appear in graph output",
+      "passed": false,
+      "finding": "Graph service shows all 1539685 event_links and 169184 record_links as 'to_review' (include_to_review=True by default). 261934 event_links and 152140 record_links have high confidence. usable_as_evidence=0 is NOT checked. Gated links appear with confidence labels.",
+      "critical": true
+    },
+    {
+      "test_id": "Z",
+      "name": "summary_metrics",
+      "description": "Summary metrics for validation campaign",
+      "metrics": {
+        "databases": {
+          "imi_internati_db": {
+            "size_mb": 1789.6,
+            "tables": 159
+          },
+          "eventi_1gm_db": {
+            "size_mb": 434.8,
+            "tables": 10
+          }
+        },
+        "legacy_data": {
+          "record_links": 169184,
+          "collegamenti": 2349417,
+          "event_links": 1539685,
+          "total_legacy_links": 4058286
+        },
+        "quarantine": {
+          "record_links_usable_as_evidence_0": 169184,
+          "event_links_usable_as_evidence_0": 1539685,
+          "collegamenti_has_quarantine_columns": false,
+          "war_period_populated": 0
+        },
+        "cross_war_contamination": {
+          "ww2_links_in_ww1_db": 12759
+        },
+        "cross_link_audit": {
+          "total": 171777,
+          "active": 81439,
+          "reverted": 90338
+        },
+        "evidence_snapshots": {
+          "table_exists": false,
+          "rows": 0
+        }
+      },
+      "module_integration": {
+        "evidence_contract": {
+          "implemented": true,
+          "in_decision_path": false
+        },
+        "source_lineage_service": {
+          "implemented": true,
+          "in_decision_path": false
+        },
+        "legacy_relation_adapter": {
+          "implemented": true,
+          "in_decision_path": false
+        },
+        "answer_evidence_gate": {
+          "implemented": true,
+          "in_decision_path": false
+        },
+        "evidence_snapshot_service": {
+          "implemented": true,
+          "in_decision_path": false
+        },
+        "event_ontology_service": {
+          "implemented": true,
+          "in_decision_path": false
+        },
+        "barriers_v73": {
+          "implemented": true,
+          "in_decision_path": false
+        },
+        "narration_planner_v73": {
+          "implemented": true,
+          "in_decision_path": false
+        },
+        "v7_quarantine": {
+          "implemented": true,
+          "in_decision_path": false
+        }
+      },
+      "modules_in_decision_path": 0,
+      "modules_not_in_decision_path": 9,
+      "pass_criteria": "All modules should be in decision path",
+      "passed": false,
+      "finding": "0/9 evidence-centric modules are in the V7 pipeline decision path. All 9 are implemented but unused. 4.1M+ legacy links exist with quarantine columns that are never checked. 2.3M collegamenti have NO quarantine columns at all.",
+      "critical": true
+    }
+  ]
+}

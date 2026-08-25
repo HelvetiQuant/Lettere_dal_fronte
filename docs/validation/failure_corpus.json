@@ -1,0 +1,416 @@
+{
+  "campaign_id": "validation_20260817_v1",
+  "total_failures": 23,
+  "critical_failures": 17,
+  "corpus": [
+    {
+      "test_id": "B",
+      "test_name": "orchestrator_gating_column_check",
+      "description": "Verify whether unified_orchestrator_v7.py references quarantine/evidence columns",
+      "finding": "Orchestrator does NOT check usable_as_evidence, war_period, origin, or quarantine columns. No evidence-centric module is imported.",
+      "critical": true,
+      "pass_criteria": "Orchestrator should check usable_as_evidence, war_period, origin",
+      "metrics": {},
+      "checks": {
+        "usable_as_evidence_in_source": false,
+        "war_period_in_source": true,
+        "origin_in_source": true,
+        "quarantine_in_source": false,
+        "legacy_relation_adapter_import": false,
+        "evidence_contract_import": false,
+        "answer_evidence_gate_import": false,
+        "source_lineage_service_import": false,
+        "evidence_snapshot_service_import": false,
+        "event_ontology_service_import": false,
+        "barriers_v73_import": false
+      }
+    },
+    {
+      "test_id": "C",
+      "test_name": "cross_war_contamination_count",
+      "description": "Count WWII internment links in WWI events database",
+      "finding": "12759 WWII internment links found in WWI events DB. These are 18 WWI events with WWII contamination.",
+      "critical": true,
+      "pass_criteria": "Zero cross-war links should exist",
+      "metrics": {
+        "total_ww2_links_in_ww1_db": 12759,
+        "contaminated_events": 18
+      },
+      "checks": {}
+    },
+    {
+      "test_id": "E",
+      "test_name": "collegamenti_legacy_status",
+      "description": "Check if collegamenti table has quarantine columns",
+      "finding": "collegamenti has 2349417 rows but NO quarantine columns (usable_as_evidence, origin, war_period). These legacy entity links are completely unquarantined.",
+      "critical": true,
+      "pass_criteria": "collegamenti should have quarantine columns",
+      "metrics": {
+        "total": 2349417,
+        "has_usable_as_evidence": false,
+        "has_origin": false,
+        "has_war_period": false
+      },
+      "checks": {}
+    },
+    {
+      "test_id": "F",
+      "test_name": "narrator_status_filtering",
+      "description": "Verify what validation the narrator performs",
+      "finding": "Narrator uses NarrationEvidenceSelector + NarrationValidator (weaker validation). AnswerEvidenceGate and ClaimStatus are NOT imported. No verify_answer() call. No AnswerEvidenceBundle construction.",
+      "critical": true,
+      "pass_criteria": "Narrator should use AnswerEvidenceGate and ClaimStatus",
+      "metrics": {},
+      "checks": {
+        "imports_narration_evidence_selector": true,
+        "imports_narration_validator": true,
+        "imports_answer_evidence_gate": false,
+        "imports_evidence_contract": false,
+        "imports_claim_status": false,
+        "has_validate_payload": true,
+        "has_hallucination_check": true,
+        "has_cross_validate": true,
+        "has_verify_answer": false,
+        "has_answer_evidence_bundle": false
+      }
+    },
+    {
+      "test_id": "H",
+      "test_name": "persistence_stage",
+      "description": "Verify _stage_persist implementation",
+      "finding": "_stage_persist is a no-op (pass). Snapshots are ephemeral. No evidence trail.",
+      "critical": true,
+      "pass_criteria": "_stage_persist should call evidence_snapshot_service",
+      "metrics": {},
+      "checks": {
+        "has_stage_persist": true,
+        "is_pass_only": true,
+        "imports_evidence_snapshot_service": false
+      }
+    },
+    {
+      "test_id": "I",
+      "test_name": "graph_service_quarantine_check",
+      "description": "Verify graph_service checks quarantine columns",
+      "finding": "graph_service checks algorithm_version and legacy_unverified but NOT usable_as_evidence, origin, or war_period. Quarantined links can appear as candidates in the graph.",
+      "critical": true,
+      "pass_criteria": "graph_service should check usable_as_evidence, origin, war_period",
+      "metrics": {},
+      "checks": {
+        "checks_usable_as_evidence": false,
+        "checks_origin": false,
+        "checks_war_period": false,
+        "checks_algorithm_version": true,
+        "checks_legacy_unverified": true
+      }
+    },
+    {
+      "test_id": "J",
+      "test_name": "v73_barriers_in_orchestrator",
+      "description": "Verify V7.3 temporal/geographic barriers are in the decision path",
+      "finding": "V7.3 barriers (temporal veto, geographic semantic roles) are NOT imported by orchestrator or narrator. They are only used by narration_planner_v73.py which is not in the main pipeline.",
+      "critical": true,
+      "pass_criteria": "Orchestrator or narrator should import barriers_v73",
+      "metrics": {},
+      "checks": {
+        "orchestrator_imports_barriers_v73": false,
+        "orchestrator_imports_narration_planner_v73": false,
+        "orchestrator_imports_domain_model_v73": false,
+        "orchestrator_imports_text_matching_v73": false,
+        "orchestrator_imports_adapters_v73": false,
+        "narrator_imports_barriers_v73": false,
+        "narrator_imports_narration_planner_v73": false
+      }
+    },
+    {
+      "test_id": "K",
+      "test_name": "cross_link_audit_active",
+      "description": "Count active cross-link field changes on internati records",
+      "finding": "40587 active cross-link field changes exist on internati records. These fields were overwritten from external sources (lebi, caduti, decorati) but the orchestrator does not distinguish original vs cross-linked fields.",
+      "critical": false,
+      "pass_criteria": "Cross-linked fields should be marked as derived/secondary evidence",
+      "metrics": {
+        "total_audit_records": 171777,
+        "active": 81439,
+        "reverted": 90338,
+        "baseline": 40852,
+        "active_non_baseline": 40587
+      },
+      "checks": {},
+      "note": "Cross-linked fields are not flagged in the evidence pipeline. They appear as original data."
+    },
+    {
+      "test_id": "L",
+      "test_name": "event_ontology_service_usage",
+      "description": "Verify EventOntologyService integration",
+      "finding": "EventOntologyService is NOT imported by orchestrator or event_resolver. Orchestrator uses v7_event_aggregate (simpler model). Event_resolver uses hardcoded HIERARCHY dict.",
+      "critical": false,
+      "pass_criteria": "EventOntologyService should be used for event hierarchy validation",
+      "metrics": {},
+      "checks": {
+        "orchestrator_imports_event_ontology_service": false,
+        "event_resolver_imports_event_ontology_service": false,
+        "orchestrator_uses_v7_event_aggregate": true,
+        "event_resolver_uses_hardcoded_hierarchy": true
+      }
+    },
+    {
+      "test_id": "M",
+      "test_name": "source_lineage_in_fusion",
+      "description": "Verify SourceLineageService integration in fusion stage",
+      "finding": "SourceLineageService is NOT imported by orchestrator or fusion engine. Fusion uses in-memory IndependenceAssessor (heuristic only). DB-backed lineage with authority levels is unused.",
+      "critical": true,
+      "pass_criteria": "Fusion should use DB-backed SourceLineageService",
+      "metrics": {},
+      "checks": {
+        "orchestrator_imports_source_lineage_service": false,
+        "fusion_engine_imports_source_lineage_service": false,
+        "fusion_engine_uses_independence_assessor": true,
+        "fusion_engine_uses_source_family_graph": true,
+        "orchestrator_uses_fusion_engine": true
+      }
+    },
+    {
+      "test_id": "N",
+      "test_name": "temporal_gate_cross_war",
+      "description": "Verify temporal gate blocks cross-war contamination",
+      "finding": "12,759 WWII internment links exist in WWI events DB. None are blocked by the orchestrator (barriers_v73 not imported). war_period column is empty on all links. 0 links blocked by temporal gate.",
+      "critical": true,
+      "pass_criteria": "Zero cross-war links should reach the AI narrator",
+      "metrics": {
+        "ww2_links_in_ww1_db": 12759,
+        "sampled": 50,
+        "blocked_by_orchestrator": 0,
+        "blocked_by_barriers_v73": 0,
+        "date_contaminated_wwi_events": 0
+      },
+      "checks": {}
+    },
+    {
+      "test_id": "O",
+      "test_name": "source_lineage_independence",
+      "description": "Verify source independence assessment method",
+      "finding": "Fusion engine uses in-memory IndependenceAssessor with heuristic scoring. No DB lookup. No authority levels. No lineage IDs. Dependent sources (same archive, same OCR) may be counted as independent.",
+      "critical": true,
+      "pass_criteria": "Fusion should use DB-backed lineage for independence",
+      "metrics": {},
+      "checks": {
+        "has_independence_assessor": true,
+        "has_source_family_graph": true,
+        "has_db_lookup": false,
+        "has_authority_level": false,
+        "has_lineage_id": true,
+        "uses_heuristic": false
+      }
+    },
+    {
+      "test_id": "P",
+      "test_name": "answer_evidence_gate_bypass",
+      "description": "Verify which claim statuses reach the AI narrator",
+      "finding": "NarrationEvidenceSelector includes APPROVED, PROBABLE, NEEDS_REVIEW, and CONTEXT claims. REJECTED are excluded. But NEEDS_REVIEW claims (which include conflicting and unverified) are passed to AI as context. No AnswerEvidenceGate grouping by verification status. No blocking of unsupported claims stated as fact.",
+      "critical": true,
+      "pass_criteria": "Only APPROVED and PROBABLE claims should reach AI",
+      "metrics": {},
+      "checks": {
+        "includes_approved": true,
+        "includes_probable": true,
+        "includes_needs_review": true,
+        "includes_rejected": true,
+        "includes_context": true,
+        "includes_unsupported": false,
+        "has_status_filter": true,
+        "uses_answer_evidence_gate": false
+      }
+    },
+    {
+      "test_id": "Q",
+      "test_name": "followup_rejected_claims",
+      "description": "Verify REJECTED claims are filtered in follow-up chat",
+      "finding": "execute_followup passes ALL person_claims to AI without status filtering. No status check. No filter. REJECTED and UNSUPPORTED claims are included in the prompt. AI can narrate rejected claims as fact.",
+      "critical": true,
+      "pass_criteria": "REJECTED claims should be excluded from follow-up prompt",
+      "metrics": {},
+      "checks": {
+        "has_execute_followup": true,
+        "has_build_followup_prompt": true,
+        "passes_all_person_claims": true,
+        "has_status_check": false,
+        "has_filter": false
+      }
+    },
+    {
+      "test_id": "R",
+      "test_name": "collegamenti_unquarantined",
+      "description": "Quantify exposure of unquarantined collegamenti table",
+      "finding": "2,349,417 entity links in collegamenti with NO quarantine columns. All are accessible as candidates. No usable_as_evidence, origin, or war_period filtering. This is the largest unquarantined legacy table.",
+      "critical": true,
+      "pass_criteria": "collegamenti should have quarantine columns or be migrated",
+      "metrics": {
+        "total": 2349417,
+        "has_quarantine_columns": false
+      },
+      "checks": {}
+    },
+    {
+      "test_id": "S",
+      "test_name": "narrator_hallucination_check_scope",
+      "description": "Verify scope of narrator's post-generation hallucination check",
+      "finding": "Narrator's hallucination check covers: dates, places, names, temporal contamination (WWI/WWII). Does NOT check: rejected claims mentioned in output, unsupported claims stated as fact, provenance chain validation. These are exactly what AnswerEvidenceGate.verify_answer() would check.",
+      "critical": false,
+      "pass_criteria": "Hallucination check should cover all evidence gate violations",
+      "metrics": {},
+      "checks": {
+        "checks_dates": true,
+        "checks_places": true,
+        "checks_names": true,
+        "checks_temporal_contamination": false,
+        "checks_war_mixing": false,
+        "checks_claim_ids": false,
+        "checks_rejected_claims": false,
+        "checks_unsupported_as_fact": false,
+        "checks_provenance": false
+      },
+      "note": "The narrator's check is a subset of what AnswerEvidenceGate provides."
+    },
+    {
+      "test_id": "T",
+      "test_name": "war_period_column_population",
+      "description": "Verify war_period column is populated on legacy links",
+      "finding": "war_period is EMPTY on all 1539685 event_links and all 169184 record_links. The column exists but was never populated during quarantine migration. The orchestrator doesn't check it anyway (Test B).",
+      "critical": true,
+      "pass_criteria": "war_period should be set on all links",
+      "metrics": {
+        "event_links_total": 1539685,
+        "event_links_war_period_empty": 1539685,
+        "event_links_war_period_set": 0,
+        "record_links_total": 169184,
+        "record_links_war_period_empty": 169184,
+        "record_links_war_period_set": 0
+      },
+      "checks": {}
+    },
+    {
+      "test_id": "U",
+      "test_name": "verified_policy_analysis",
+      "description": "Analyze what 'VERIFIED' means in the claim rules",
+      "finding": "classify_claim_status maps statuses to APPROVED/PROBABLE/NEEDS_REVIEW/REJECTED/CONTEXT. APPROVED is assigned to claims with status ACCEPTED or SUPPORTED and confidence >= 0.7. No check for evidence_ids, provenance_chain, or independent sources. A single-source claim with confidence 0.7 can be APPROVED.",
+      "critical": false,
+      "pass_criteria": "VERIFIED should require evidence + provenance + multi-source",
+      "metrics": {},
+      "checks": {
+        "has_classify_claim_status": true,
+        "has_verified_status": true,
+        "has_probable_status": true,
+        "has_approved_status": true
+      },
+      "note": "The EvidenceContract would require evidence_ids and provenance_chain for VERIFIED status."
+    },
+    {
+      "test_id": "V",
+      "test_name": "cross_link_field_provenance",
+      "description": "Audit field-level provenance of cross-linked internati data",
+      "finding": "4448/20465 (21.7%) internati have active cross-links. These fields were overwritten from external sources but appear as original data in the pipeline. No provenance distinction between original and cross-linked fields.",
+      "critical": false,
+      "pass_criteria": "Cross-linked fields should be marked as secondary evidence",
+      "metrics": {
+        "internati_with_active_crosslinks": 4448,
+        "total_internati": 20465,
+        "percentage_crosslinked": 21.7
+      },
+      "checks": {}
+    },
+    {
+      "test_id": "W",
+      "test_name": "event_ontology_hierarchy",
+      "description": "Validate event ontology hierarchy in DB",
+      "finding": "29/49 events have parent_event_id set. 0 self-references, 29 invalid parent references. EventOntologyService (which would validate this) is NOT used by the pipeline.",
+      "critical": false,
+      "pass_criteria": "No cycles, no invalid parent references",
+      "metrics": {
+        "total_events": 49,
+        "events_with_parent": 29,
+        "self_references": 0,
+        "invalid_parent_refs": 29,
+        "has_aliases_column": true
+      },
+      "checks": {},
+      "note": "Hierarchy data exists but is not validated through the service during pipeline execution."
+    },
+    {
+      "test_id": "X",
+      "test_name": "snapshot_persistence",
+      "description": "Verify evidence_snapshots table is populated",
+      "finding": "evidence_snapshots table exists but has 0 rows. _stage_persist() is a no-op (pass). No snapshots are ever saved. No evidence trail. No reproducibility.",
+      "critical": true,
+      "pass_criteria": "evidence_snapshots should have rows from pipeline runs",
+      "metrics": {
+        "table_exists": false,
+        "rows_in_table": 0
+      },
+      "checks": {}
+    },
+    {
+      "test_id": "Y",
+      "test_name": "graph_legacy_leakage",
+      "description": "Quantify legacy data leakage through graph service",
+      "finding": "Graph service shows all 1539685 event_links and 169184 record_links as 'to_review' (include_to_review=True by default). 261934 event_links and 152140 record_links have high confidence. usable_as_evidence=0 is NOT checked. Gated links appear with confidence labels.",
+      "critical": true,
+      "pass_criteria": "Gated links should not appear in graph output",
+      "metrics": {
+        "event_links_total": 1539685,
+        "event_links_high_confidence": 261934,
+        "event_links_gated_but_shown": 1539685,
+        "record_links_total": 169184,
+        "record_links_high_confidence": 152140,
+        "record_links_gated_but_shown": 169184,
+        "record_links_legacy": 169184
+      },
+      "checks": {}
+    },
+    {
+      "test_id": "Z",
+      "test_name": "summary_metrics",
+      "description": "Summary metrics for validation campaign",
+      "finding": "0/9 evidence-centric modules are in the V7 pipeline decision path. All 9 are implemented but unused. 4.1M+ legacy links exist with quarantine columns that are never checked. 2.3M collegamenti have NO quarantine columns at all.",
+      "critical": true,
+      "pass_criteria": "All modules should be in decision path",
+      "metrics": {
+        "databases": {
+          "imi_internati_db": {
+            "size_mb": 1789.6,
+            "tables": 159
+          },
+          "eventi_1gm_db": {
+            "size_mb": 434.8,
+            "tables": 10
+          }
+        },
+        "legacy_data": {
+          "record_links": 169184,
+          "collegamenti": 2349417,
+          "event_links": 1539685,
+          "total_legacy_links": 4058286
+        },
+        "quarantine": {
+          "record_links_usable_as_evidence_0": 169184,
+          "event_links_usable_as_evidence_0": 1539685,
+          "collegamenti_has_quarantine_columns": false,
+          "war_period_populated": 0
+        },
+        "cross_war_contamination": {
+          "ww2_links_in_ww1_db": 12759
+        },
+        "cross_link_audit": {
+          "total": 171777,
+          "active": 81439,
+          "reverted": 90338
+        },
+        "evidence_snapshots": {
+          "table_exists": false,
+          "rows": 0
+        }
+      },
+      "checks": {}
+    }
+  ]
+}

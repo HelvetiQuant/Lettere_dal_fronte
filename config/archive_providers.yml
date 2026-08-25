@@ -587,6 +587,118 @@ providers:
 # ═══ Provider non ancora integrati (blueprint) ═══════════════════════════════
 
 pending_providers:
+  - code: kriegsarchiv_wien
+    display_name: "Kriegsarchiv Wien (Österreichisches Staatsarchiv)"
+    base_url: "https://www.archivinformationssystem.at"
+    api_endpoints:
+      search: "https://www.archivinformationssystem.at/search"
+    authorized_domains:
+      - archivinformationssystem.at
+      - staatsarchiv.at
+    capabilities: [search]
+    access_mode: assisted
+    rights_default: METADATA_ONLY
+    authority_score: 0.98
+    authority_class: primary_archival
+    independence_group: kriegsarchiv_wien
+    historical_periods: [WWI, WWII, interwar, pre1900, postwar]
+    geographic_areas: [Austria, Europe, Italy]
+    entity_types: [person, event, unit, document, place]
+    languages: [de]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 3
+      terms_url: "https://www.archivinformationssystem.at"
+      notes: "Catalogo AIS online. Kriegstagebücher (diari di guerra) austro-ungarici disponibili per consultazione. Contatto: kriegsarchiv@archiv.gv.at"
+
+  - code: onb_anno
+    display_name: "ÖNB ANNO — Austrian Newspapers Online"
+    base_url: "https://anno.onb.ac.at"
+    api_endpoints:
+      search: "https://anno.onb.ac.at/search"
+      browse: "https://anno.onb.ac.at/cgi-content/anno?aid={aid}&datum={date}"
+    authorized_domains:
+      - anno.onb.ac.at
+      - onb.ac.at
+    capabilities: [search, get_metadata, get_document]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.85
+    authority_class: primary_archival
+    independence_group: onb
+    historical_periods: [WWI, pre1900, interwar, WWII, postwar]
+    geographic_areas: [Austria, Europe]
+    entity_types: [document, event, place]
+    languages: [de]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+      terms_url: "https://www.onb.ac.at/en/about-oenb/legal-notice/"
+      notes: "Giornali austriaci digitalizzati 1568-1945. Accesso libero. Kriegszeitung, Innsbrucker Nachrichten, Wiener Zeitung, Neue Freie Presse."
+
+  - code: bayerisches_hauptstaatsarchiv
+    display_name: "Bayerisches Hauptstaatsarchiv"
+    base_url: "https://www.gda.bayern.de"
+    api_endpoints:
+      search: "https://www.gda.bayern.de/de/recherche"
+    authorized_domains:
+      - gda.bayern.de
+      - bayern.de
+    capabilities: [search]
+    access_mode: assisted
+    rights_default: METADATA_ONLY
+    authority_score: 0.95
+    authority_class: primary_archival
+    independence_group: bhk
+    historical_periods: [WWI, WWII, interwar, pre1900, postwar]
+    geographic_areas: [Germany, Europe, Italy]
+    entity_types: [person, event, unit, document, place]
+    languages: [de]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 3
+      notes: "Archivio bavarese. Alpenkorps e divisioni tedesche a Caporetto. Contatto: poststelle@gda.bayern.de"
+
+  - code: volksbund
+    display_name: "Volksbund Deutsche Kriegsgräberfürsorge"
+    base_url: "https://www.volksbund.de"
+    api_endpoints:
+      search: "https://www.volksbund.de/graebersuche"
+    authorized_domains:
+      - volksbund.de
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.80
+    historical_periods: [WWI, WWII]
+    geographic_areas: [Germany, Europe]
+    entity_types: [person, place]
+    languages: [de]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+      notes: "Cimiteri di guerra tedeschi, caduti identificati."
+
+  - code: oeskr
+    display_name: "Österreichisches Schwarzes Kreuz (Kriegsgräberfürsorge)"
+    base_url: "https://www.schwarzeskreuz.at"
+    api_endpoints:
+      search: "https://www.schwarzeskreuz.at/graebersuche"
+    authorized_domains:
+      - schwarzeskreuz.at
+    capabilities: [search]
+    access_mode: auto
+    rights_default: PUBLIC_VIEW
+    authority_score: 0.80
+    historical_periods: [WWI, WWII]
+    geographic_areas: [Austria, Europe]
+    entity_types: [person, place]
+    languages: [de]
+    contract_version: "1.0"
+    config:
+      rate_limit_delay: 2
+      notes: "Cimiteri di guerra austriaci, caduti identificati."
+
   - code: open_library
     display_name: "Open Library"
     base_url: "https://openlibrary.org"

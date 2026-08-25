@@ -1,5 +1,196 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-08-20 — USSME Sources + Viewpoints V2 + Cross-Faction Caporetto
+
+### Contesto
+Integrazione delle fonti dell'Ufficio Storico Stato Maggiore dell'Esercito (USSME) nel sistema, con particolare focus sull'evento Caporetto (event_id=16). Implementazione del sistema viewpoints v2 per la ricostruzione storica comparativa multi-fazione, e completamento dell'architettura evidence-centric (Fasi 2-7).
+
+### Fonti USSME importate (49 record)
+
+| Collezione | Piattaforma | Documenti |
+|------------|-------------|-----------|
+| L'Esercito Italiano nella Grande Guerra (7 voll., 37 tomi) | issuu.com | 39 tomi |
+| Dall'Isonzo al Piave — Commissione d'Inchiesta (1919) | Internet Archive | 2 voll. |
+| Inventario Fondo H-4 (Gionfrida, 2015) | difesa.it / archive.org | 2 |
+| I Reparti d'Assalto Italiani (1915-18) | Internet Archive | 1 |
+| La Grande Guerra Segreta — Communication Intelligence | musei.difesa.it | 1 |
+| Esercito Italiano 1961 — Storia generale | Internet Archive | 1 |
+| Archivio Fotografico USSME | esercito.difesa.it | 1 |
+| Fondo H-4 — Documenti archivistici | AUSSME Roma | 1 |
+
+- 48 documenti linkati a event_id=16 (Caporetto) con `status=VERIFIED`, `usable_as_evidence=1`, `war_period=WWI`
+- Confidence: 0.95 (Vol. IV, Commissione d'Inchiesta), 0.90 (Caporetto keyword), 0.85 (Isonzo), 0.70 (grande_guerra collection)
+
+### Viewpoints V2 — Ricostruzione Comparativa
+
+Sistema di ricostruzione storica multi-fazione che raggruppa fonti per allineamento politico-militare (ITALIAN, GERMAN, AUSTRO_HUNGARIAN, UNKNOWN), estrae claim strutturati, identifica fatti comuni, divergenze e omissioni.
+
+**Risultati test Caporetto (event_id=16):**
+
+| Fazione | Fonti | Claim | Narrative |
+|---------|-------|-------|-----------|
+| ITALIAN | 467 | 424 | 5730 char |
+| GERMAN | 28 | 18 | 104 char |
+| AUSTRO_HUNGARIAN | 3 | 2 | 112 char |
+| UNKNOWN | 2 | 2 | 103 char |
+
+- **Common Ground**: 0 fatti comuni (divergenza totale tra fazioni)
+- **Divergences**: 2 (location_reference: 27 fonti, date_reference: 11 fonti)
+- **Omissions**: 446 (ITALIAN menziona Piave/Caporetto/Bari/Tolmino non menzionati da altre fazioni)
+
+**Provider per fazione:**
+- ITALIAN: USSME (42), USSME-SMD (1), WikimediaCommons (11), OeNB-ANNO (4), + 408 legacy
+- GERMAN: WikimediaCommons (12), USSME (4), KriegsarchivWien (4), LibraryOfCongress (2), Europeana (3), BayerischesHauptstaatsarchiv (1)
+- AUSTRO_HUNGARIAN: OeNB-ANNO (2), Europeana (1)
+- UNKNOWN: InternetArchive (2)
+
+### File creati
+
+| File | Descrizione |
+|------|-------------|
+| `import_ussme_sources.py` | Import metadata USSME (39 tomi EIGG + 2 Commissione + 4 altre pub.) |
+| `_link_ussme_to_caporetto.py` | Link 48 documenti USSME a event_id=16 |
+| `source_faction_classifier.py` | Classificatore fazione per provider (USSME=ITALIAN, Kriegsarchiv=AUSTRO_HUNGARIAN, ecc.) |
+| `viewpoints_service_v2.py` | Servizio ricostruzione comparativa multi-fazione |
+| `viewpoint_models.py` | Modelli tipizzati (FactionBundle, CommonFact, Divergence, Omission) |
+| `comparative_narrator.py` | Narratore comparativo con AI (Mistral/OpenAI) + fallback deterministico |
+| `common_fact_resolver.py` | Risoluzione fatti comuni tra fazioni (CROSS_FACTION_CONFIRMED, COMPATIBLE) |
+| `divergence_engine.py` | Rilevamento divergenze tra fazioni (UNKNOWN_CONFLICT, CONTRADICTION) |
+| `omission_detector.py` | Rilevamento omissioni (cosa una parte racconta e l'altra no) |
+| `faction_bundle_builder.py` | Costruttore bundle per fazione con classificazione fonti |
+| `evidence_contract.py` | 10 invarianti architetturali evidence-centric |
+| `source_lineage_service.py` | Lineage registry + independence scoring |
+| `legacy_relation_adapter.py` | Adapter legacy → canonical con quarantine |
+| `answer_evidence_gate.py` | Gate pre/post generazione AI |
+| `evidence_snapshot_service.py` | Persistenza snapshot con hash integrità |
+| `event_ontology_service.py` | Gerarchia eventi con parent_event_id |
+| `import_austrian_sources.py` | Import fonti austro-tedesche (Kriegsarchiv, ÖNB ANNO, Bayerisches) |
+
+### File modificati
+
+| File | Modifica |
+|------|----------|
+| `archivio_documenti.py` | +8 collezioni USSME in SOURCES, +entry austro-tedesche |
+| `config/archive_providers.yml` | Provider USSME, Kriegsarchiv, ÖNB-ANNO, Bayerisches |
+| `viewpoints_api.py` | Endpoint V2: POST /v2/create, GET /v2/{event_id} |
+| `linking/schema_v2.py` | Fix _safe_alter() comment parsing, CHECK constraint |
+
+### Evidence-Centric Architecture (Fasi 2-7)
+
+Migrazione da pipeline V7 ad modello evidence-centric: SOURCE → OBSERVATION → EVIDENCE → CLAIM → RELATION → ANSWER.
+
+- **Fase 2**: Evidence Contract (10 invarianti, ClaimStatus 8 livelli)
+- **Fase 3**: Source Lineage (12 lineages, independence scoring DB-backed)
+- **Fase 4**: Legacy Quarantine (3 tabelle legacy, gate revalidazione, non-distruttivo)
+- **Fase 5**: AnswerEvidenceBundle (pre/post generation gate, context_hash + answer_hash)
+- **Fase 6**: EvidenceSnapshot Persistente (save/load/verify, idempotente)
+- **Fase 7**: Event Ontology Gerarchica (parent_event_id, alias, ciclo detection)
+- **Totale test**: 64 (10+9+10+10+15+10)
+
+### Documentazione nuova
+
+- `docs/architecture/EVIDENCE_CONTRACT.md`
+- `docs/architecture/SOURCE_LINEAGE.md`
+- `docs/architecture/LEGACY_QUARANTINE.md`
+- `docs/architecture/ANSWER_EVIDENCE_BUNDLE.md`
+- `docs/architecture/EVIDENCE_SNAPSHOT_PERSISTENT.md`
+- `docs/architecture/EVENT_ONTOLOGY.md`
+- `docs/architecture/EVIDENCE_MODEL.md`
+- `docs/analysis/EVIDENCE_ARCHITECTURE_AUDIT.md`
+- `docs/audit/AUDIT_LOG_EVIDENCE_CENTRIC.md`
+- `docs/validation/INTEGRATION_AUDIT.md`
+
+---
+
+## 2026-08-17 — Evidence-Centric Architecture: Fasi 2-7
+
+### Contesto
+Migrazione dell'architettura da pipeline V7 ad modello evidence-centric: SOURCE → OBSERVATION → EVIDENCE → CLAIM → RELATION → ANSWER. Implementazione sequenziale di 6 fasi con 64 test totali.
+
+### Fasi completate
+
+#### Fase 2: Evidence Contract (`evidence_contract.py`)
+- 10 invarianti architetturali (no claim without evidence, no AI answer without bundle, ecc.)
+- Dataclass: `SourceRef`, `ObservationRef`, `EvidenceRef`, `ClaimRef`, `RelationRef`, `AnswerEvidenceBundle`
+- `ClaimStatus` (8 livelli): unsupported → candidate → supported → probable → verified / disputed / rejected
+- `EvidenceContract` validator con `build_answer_bundle()` e `to_prompt_context()`
+- Documentazione: `docs/architecture/EVIDENCE_CONTRACT.md`
+
+#### Fase 3: Source Lineage (`source_lineage_service.py`)
+- `LineageRegistry`: CRUD per `source_lineages` / `source_lineage_members`
+- `LineageBootstrap`: 12 lineages da `source_authority_registry` (ANRP, CICR, Ministero Difesa, Albo d'Oro, CWGC, ecc.)
+- `LineageAwareAssessor`: DB-backed independence scoring (same lineage = 0.05-0.2, different = 0.9)
+- `LineageSync`: sincronizza `SourceFamilyGraph` → DB
+- 10/10 test PASS
+- Documentazione: `docs/architecture/SOURCE_LINEAGE.md`
+
+#### Fase 4: Legacy Quarantine (`legacy_relation_adapter.py`)
+- `LegacyRelationAdapter`: scan, import, revalidation, quarantine report
+- 3 tabelle legacy gestite: `record_links`, `collegamenti`, `event_links`
+- Gate di revalidazione: confidence + temporal + identity → accepted/needs_review/rejected
+- Safety checks: `is_safe_for_verified()`, `is_safe_for_ai_context()`
+- Non-distruttivo, reversibile, idempotente
+- Fix schema: `temporal_gate`/`identity_gate` CHECK constraint + `_safe_alter()` parsing
+- 9/9 test PASS
+- Documentazione: `docs/architecture/LEGACY_QUARANTINE.md`
+
+#### Fase 5: AnswerEvidenceBundle (`answer_evidence_gate.py`)
+- `AnswerEvidenceGate`: converte `EvidenceSnapshotV7` → `AnswerEvidenceBundle`
+- Mapping status ClaimV7 → EvidenceContract (10 mapping)
+- Pre-generation gate: `validate_bundle()` (VERIFIED senza evidence, REJECTED in verified)
+- Post-generation gate: `verify_answer()` (UNSUPPORTED as fact, REJECTED mentioned, DISPUTED without conflict)
+- AI prompt generation con `context_hash` + `answer_hash`
+- Authority tier inference da provider name
+- 10/10 test PASS
+- Documentazione: `docs/architecture/ANSWER_EVIDENCE_BUNDLE.md`
+
+#### Fase 6: EvidenceSnapshot Persistente (`evidence_snapshot_service.py`)
+- `EvidenceSnapshotService`: save/load/list/link/verify/delete
+- `save_snapshot()`: serializza con `context_hash` + `answer_hash`
+- `load_snapshot()`: deserializza → `EvidenceSnapshotV7`
+- `verify_integrity()`: ricalcola hash e verifica
+- Idempotente: stesso contenuto → stesso hash → no duplicati
+- `link_relations()`: collega relazioni via `snapshot_id` FK
+- 10/10 test PASS
+- Documentazione: `docs/architecture/EVIDENCE_SNAPSHOT_PERSISTENT.md`
+
+#### Fase 7: Event Ontology Gerarchica (`event_ontology_service.py`)
+- `EventOntologyService`: gerarchia eventi con `parent_event_id` persistente
+- Query: `get_children()`, `get_descendants()`, `get_ancestors()`, `get_siblings()`, `get_full_tree()`
+- Management: `set_parent()`, `remove_parent()` con validazione
+- Alias management: `add_alias()`, `get_aliases()`, `remove_alias()`
+- Validazioni: ciclo detection, contenimento temporale, tipo gerarchia (campaign > battle > phase > skirmish)
+- `bootstrap_from_resolver()`: popola da `event_resolver.py` HIERARCHY dict
+- 15/15 test PASS
+- Documentazione: `docs/architecture/EVENT_ONTOLOGY.md`
+
+### Moduli nuovi (6)
+| File | Class | Test |
+|------|-------|------|
+| `evidence_contract.py` | `EvidenceContract`, `ClaimRef`, `AnswerEvidenceBundle` | — |
+| `source_lineage_service.py` | `LineageRegistry`, `LineageBootstrap`, `LineageAwareAssessor` | 10 |
+| `legacy_relation_adapter.py` | `LegacyRelationAdapter` | 9 |
+| `answer_evidence_gate.py` | `AnswerEvidenceGate` | 10 |
+| `evidence_snapshot_service.py` | `EvidenceSnapshotService` | 10 |
+| `event_ontology_service.py` | `EventOntologyService` | 15 |
+
+### Moduli modificati (1)
+| File | Modifica |
+|------|----------|
+| `linking/schema_v2.py` | Fix `_safe_alter()` comment parsing; fix `temporal_gate`/`identity_gate` CHECK constraint (aggiunto 'unknown') |
+
+### Documentazione nuova (6)
+- `docs/architecture/EVIDENCE_CONTRACT.md`
+- `docs/architecture/SOURCE_LINEAGE.md`
+- `docs/architecture/LEGACY_QUARANTINE.md`
+- `docs/architecture/ANSWER_EVIDENCE_BUNDLE.md`
+- `docs/architecture/EVIDENCE_SNAPSHOT_PERSISTENT.md`
+- `docs/architecture/EVENT_ONTOLOGY.md`
+
+### Totale test: 54 (10+9+10+10+15)
+
+---
+
 ## 2026-08-14 — V7.8: Conversational Follow-Up via OpenAI Chat Completions
 
 ### Funzionalità

@@ -179,6 +179,154 @@ SOURCES: List[Dict[str, Any]] = [
         "source_url": "http://ww1lit.nsms.ox.ac.uk/ww1lit/",
         "api_endpoint": None, "rights": "varie (uso educativo)", "language": "eng",
     },
+    # ═══ FONTI AUSTRIACHE/TEDESCHE — Fronte italiano WWI ═══════════════════════
+    {
+        "provider": "KriegsarchivWien", "doc_type": "collezione",
+        "title": "Kriegsarchiv Wien — Kriegstagebücher (Diari di guerra austro-ungarici)",
+        "description": "Diari di guerra delle unità austro-ungariche sul fronte italiano "
+                       "(Isonzo, Caporetto, Trentino). 14. Armee, Isonzoarmee, "
+                       "Edelweiss Division, Schützen Divisionen. Catalogo AIS online.",
+        "source_url": "https://www.archivinformationssystem.at/",
+        "api_endpoint": None,
+        "rights": "Metadati liberi, consultazione su richiesta",
+        "language": "de",
+    },
+    {
+        "provider": "OeNB-ANNO", "doc_type": "giornale",
+        "title": "ÖNB ANNO — Kriegszeitung & giornali austriaci 1914-1918",
+        "description": "Giornali austriaci digitalizzati della Grande Guerra: "
+                       "Kriegszeitung (Bollettino di guerra), Innsbrucker Nachrichten, "
+                       "Wiener Zeitung, Neue Freie Presse, Tiroler Volksblatt. "
+                       "Reportage dal fronte italiano, bollettini di vittoria, "
+                       "notizie su Caporetto/Karfreit, Isonzo, Tolmein.",
+        "source_url": "https://anno.onb.ac.at/",
+        "api_endpoint": "https://anno.onb.ac.at/search",
+        "rights": "Pubblico dominio (verificare per singolo titolo)",
+        "language": "de",
+    },
+    {
+        "provider": "BayerischesHauptstaatsarchiv", "doc_type": "collezione",
+        "title": "Bayerisches Hauptstaatsarchiv — Alpenkorps / Deutsches Korps am Isonzo",
+        "description": "Documenti del Deutsches Alpenkorps e delle divisioni bavaresi "
+                       "inviate sul fronte italiano nel 1917 (Generalkommando 51, "
+                       "200. Division, 1. Königlich Bayerische Division). "
+                       "Operazione Caporetto/Waffenbrüder 1917.",
+        "source_url": "https://www.gda.bayern.de/de/recherche",
+        "api_endpoint": None,
+        "rights": "Metadati liberi, consultazione su richiesta",
+        "language": "de",
+    },
+    {
+        "provider": "Volksbund", "doc_type": "collezione",
+        "title": "Volksbund Deutsche Kriegsgräberfürsorge — Caduti tedeschi WWI",
+        "description": "Registro dei caduti tedeschi della Prima Guerra Mondiale. "
+                       "Include caduti sul fronte italiano (Alpenkorps, Karfreit 1917).",
+        "source_url": "https://www.volksbund.de/graebersuche",
+        "api_endpoint": None,
+        "rights": "Dati pubblici", "language": "de",
+    },
+    {
+        "provider": "OeSKR", "doc_type": "collezione",
+        "title": "Österreichisches Schwarzes Kreuz — Caduti austriaci WWI",
+        "description": "Registro dei caduti austro-ungarici della Prima Guerra Mondile. "
+                       "Include caduti sul fronte italiano (Isonzo, Tirol, Karfreit).",
+        "source_url": "https://www.schwarzeskreuz.at/graebersuche",
+        "api_endpoint": None,
+        "rights": "Dati pubblici", "language": "de",
+    },
+    # ═══ USSME — UFFICIO STORICO STATO MAGGIORE ESERCITO ═══════════════════════
+    {
+        "provider": "USSME", "doc_type": "collezione",
+        "title": "L'Esercito Italiano nella Grande Guerra 1915-1918 — Opera omnia (7 voll., 37 tomi)",
+        "description": "Opera ufficiale USSME in 7 volumi e 37 tomi, ~17.000 pagine. "
+                       "Sintesi dei diari storici delle unità combattenti. "
+                       "Vol. IV = operazioni 1917 (Caporetto). Disponibile su issuu.com "
+                       "(consultazione online, no download).",
+        "source_url": "https://issuu.com/rivista.militare1/stacks/04034a0d24e744d4b4c63e2217cb5606",
+        "api_endpoint": None,
+        "rights": "Copyright USSME — consultazione online gratuita",
+        "language": "it",
+    },
+    {
+        "provider": "USSME", "doc_type": "relazione_ufficiale",
+        "title": "Dall'Isonzo al Piave 24 ottobre-9 novembre 1917 — Relazione Commissione d'Inchiesta (3 voll., 1919)",
+        "description": "Relazione ufficiale della Commissione d'Inchiesta su Caporetto "
+                       "(R.D. 12 gennaio 1918 n. 35). Vol. I: ricostruzione giorno per giorno "
+                       "degli avvenimenti militari. Vol. II: analisi cause e responsabilità. "
+                       "Vol. III: carte geografiche con schieramenti. "
+                       "Full text disponibile su Internet Archive.",
+        "source_url": "https://archive.org/details/dallisonzoalpiav02ital",
+        "api_endpoint": None,
+        "rights": "Pubblico dominio (1919)",
+        "language": "it",
+    },
+    {
+        "provider": "USSME", "doc_type": "inventario_archivistico",
+        "title": "Inventario del fondo H-4 — Commissione d'Inchiesta Caporetto (2015)",
+        "description": "Inventario analitico del fondo archivistico H-4 della Commissione "
+                       "d'Inchiesta su Caporetto, versato all'USSME nel 1922-1923. "
+                       "A cura di Alessandro Gionfrida. PDF disponibile su difesa.it.",
+        "source_url": "https://www.difesa.it/assets/allegati/43015/50_inventario_del_fondo_h4.pdf",
+        "api_endpoint": None,
+        "rights": "Copyright Ministero della Difesa — riproduzione vietata senza autorizzazione",
+        "language": "it",
+    },
+    {
+        "provider": "USSME", "doc_type": "monografia",
+        "title": "I Reparti d'Assalto Italiani nella Grande Guerra (1915-18) — Di Martino & Cappellano",
+        "description": "Studio USSME sui reparti d'assalto (Arditi, Fiamme Nere, Fiamme Verdi, "
+                       "Fiamme Cremisi) dal 1915 al 1918. Strettamente collegato alle vicende "
+                       "da Caporetto a Vittorio Veneto. Internet Archive (streaming).",
+        "source_url": "https://archive.org/details/i-reparti-d-assalto-italiani-nella-grande-guerra-1915-18",
+        "api_endpoint": None,
+        "rights": "Copyright USSME 2007",
+        "language": "it",
+    },
+    {
+        "provider": "USSME-SMD", "doc_type": "monografia",
+        "title": "La Grande Guerra segreta sul fronte Italiano (1915-1918) — Communication Intelligence",
+        "description": "Studio del Servizio Informazioni italiano: intercettazioni telefoniche, "
+                       "radio-telegrafiche, radiogoniometria. Previsioni dell'offensiva di "
+                       "Caporetto dal 7 ottobre 1917. Fonti: AUSSME fondo E-2, H-4. "
+                       "Consultabile su musei.difesa.it.",
+        "source_url": "https://musei.difesa.it/allegati/La%20Grande%20Guerra%20segreta%20sul%20fronte%20Italiano%20(1915-1918)/",
+        "api_endpoint": None,
+        "rights": "Copyright Ministero della Difesa",
+        "language": "it",
+    },
+    {
+        "provider": "USSME", "doc_type": "storia_generale",
+        "title": "L'Esercito Italiano dal Tricolore al 1° Centenario (1961)",
+        "description": "Storia generale dell'Esercito Italiano dal 1861 al 1961. "
+                       "Cap. X: La Grande Guerra (1915-1918) — dall'Isonzo a Vittorio Veneto. "
+                       "Full text su Internet Archive.",
+        "source_url": "https://archive.org/details/EsercitoItaliano1961",
+        "api_endpoint": None,
+        "rights": "Copyright USSME 1961",
+        "language": "it",
+    },
+    {
+        "provider": "USSME", "doc_type": "collezione",
+        "title": "USSME — Archivio Fotografico della Grande Guerra (Roma, Via Lepanto 5)",
+        "description": "Archivio fotografico USSME: ~50.000 immagini della Prima Guerra Mondiale. "
+                       "Materiali digitalizzati disponibili per riproduzione e vendita. "
+                       "Accesso fisico: lun-gio 8:30-13:30, ven 8:30-11:30. Chiuso ad agosto.",
+        "source_url": "https://www.esercito.difesa.it/storia/Ufficio-Storico-SME/Pagine/Archivio-fotografico-Inglese.aspx",
+        "api_endpoint": None,
+        "rights": "Riproduzione su richiesta con autorizzazione del Capo Ufficio Storico",
+        "language": "it",
+    },
+    {
+        "provider": "USSME", "doc_type": "fondo_archivistico",
+        "title": "Fondo H-4 — Commissione d'Inchiesta di Caporetto (buste e fascicoli)",
+        "description": "Fondo archivistico originale della Commissione d'Inchiesta su Caporetto "
+                       "presso l'AUSSME (Roma, Via Etruria 23). Documentazione primaria: "
+                       "testimonianze, carteggio, relazioni dei comandi. Consultazione su appuntamento.",
+        "source_url": "https://www.esercito.difesa.it/storia/Ufficio-Storico-SME/Pagine/default.aspx",
+        "api_endpoint": None,
+        "rights": "Consultazione su richiesta previo appuntamento",
+        "language": "it",
+    },
 ]
 
 
@@ -238,6 +386,13 @@ def upsert_documenti(conn: sqlite3.Connection, rows: Iterable[Dict[str, Any]]) -
         if not r.get("external_id"):
             continue
         row = {k: r.get(k) for k in _FIELDS}
+        # Sanitize: convert lists to comma-separated strings, ensure scalars
+        for k in _FIELDS:
+            v = row.get(k)
+            if isinstance(v, list):
+                row[k] = ", ".join(str(x) for x in v)
+            elif v is not None and not isinstance(v, (str, int, float)):
+                row[k] = str(v)
         row["war"] = row.get("war") or "WWI"
         row["retrieved_at"] = now
         if isinstance(row.get("raw_json"), (dict, list)):

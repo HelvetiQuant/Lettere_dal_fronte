@@ -329,12 +329,218 @@ CREATE TABLE IF NOT EXISTS golden_dataset_labels (
 CREATE INDEX IF NOT EXISTS idx_gdl_case ON golden_dataset_labels(case_id);
 CREATE INDEX IF NOT EXISTS idx_gdl_label ON golden_dataset_labels(label);
 CREATE INDEX IF NOT EXISTS idx_gdl_version ON golden_dataset_labels(dataset_version);
+
+-- ════════════════════════════════════════════════════════════════════════════
+-- EVIDENCE CONTRACT EXTENSIONS (v2.1 — 2026-08-17)
+-- ════════════════════════════════════════════════════════════════════════════
+
+-- ─── observations ──────────────────────────────────────────────────────────
+-- An observation is a datum actually observed inside a source.
+-- It sits between source_artifacts/ocr_observations and evidence_fragments.
+CREATE TABLE IF NOT EXISTS observations (
+    id TEXT PRIMARY KEY,
+    source_artifact_id TEXT NOT NULL REFERENCES source_artifacts(id),
+    ocr_observation_id TEXT REFERENCES ocr_observations(id),
+    source_type TEXT NOT NULL,          -- archive|document|web|ocr|ai_extracted|user_submitted
+    source_record_id TEXT,              -- original record key in source system
+    observation_type TEXT NOT NULL,     -- field_extraction|entity_mention|date|place|unit|matricola|event_ref
+    field_name TEXT,                    -- which field was observed (e.g. 'cognome', 'data_nascita')
+    raw_value TEXT NOT NULL,            -- exactly what was observed
+    normalized_value TEXT,              -- normalized form
+    page INTEGER,                       -- page number if applicable
+    frame TEXT,                         -- image region / bounding box
+    excerpt TEXT,                       -- surrounding context text
+    extraction_method TEXT NOT NULL,    -- ocr|regex|ai|manual|federated
+    extractor_version TEXT NOT NULL,    -- algorithm version
+    pipeline_run_id TEXT REFERENCES pipeline_runs(id),
+    created_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_obs_artifact ON observations(source_artifact_id);
+CREATE INDEX IF NOT EXISTS idx_obs_type ON observations(observation_type);
+CREATE INDEX IF NOT EXISTS idx_obs_field ON observations(field_name);
+CREATE INDEX IF NOT EXISTS idx_obs_run ON observations(pipeline_run_id);
+
+-- ─── source_lineages ────────────────────────────────────────────────────────
+-- Tracks which sources share a common origin (derivation chain).
+-- Replaces/extends source_families with explicit lineage type.
+CREATE TABLE IF NOT EXISTS source_lineages (
+    id TEXT PRIMARY KEY,
+    canonical_origin TEXT NOT NULL,     -- e.g. 'Ministero della Difesa — Albo d'Oro'
+    origin_type TEXT NOT NULL CHECK (origin_type IN (
+        'independent','derived','republication','mirror','unknown'
+    )),
+    parent_lineage_id TEXT REFERENCES source_lineages(id),
+    description TEXT,
+    authority_level REAL NOT NULL DEFAULT 0.5 CHECK (authority_level BETWEEN 0 AND 1),
+    created_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_sl_origin ON source_lineages(canonical_origin);
+CREATE INDEX IF NOT EXISTS idx_sl_type ON source_lineages(origin_type);
+CREATE INDEX IF NOT EXISTS idx_sl_parent ON source_lineages(parent_lineage_id);
+
+-- ─── source_lineage_members ─────────────────────────────────────────────────
+-- Links resource_registry entries to their source_lineage.
+CREATE TABLE IF NOT EXISTS source_lineage_members (
+    resource_id TEXT NOT NULL REFERENCES resource_registry(id),
+    lineage_id TEXT NOT NULL REFERENCES source_lineages(id),
+    relation_to_root TEXT NOT NULL,     -- root|derived|republication|mirror|unknown
+    evidence_observation_id TEXT REFERENCES observations(id),
+    PRIMARY KEY (resource_id, lineage_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_slm_lineage ON source_lineage_members(lineage_id);
+
+-- ─── evidence_snapshots ─────────────────────────────────────────────────────
+-- Immutable snapshot of a complete evidence pipeline run.
+-- Every significant historical answer must be reproducible via its snapshot.
+CREATE TABLE IF NOT EXISTS evidence_snapshots (
+    id TEXT PRIMARY KEY,
+    query TEXT NOT NULL,
+    intent TEXT NOT NULL,               -- PERSON_LOOKUP|EVENT_LOOKUP|AGGREGATE_QUERY|FOLLOWUP
+    created_at TEXT NOT NULL,
+    pipeline_version TEXT NOT NULL,
+    algorithm_versions TEXT NOT NULL,   -- JSON: {"linking":"2.0.0","narrator":"7.2",...}
+    source_ids TEXT NOT NULL,           -- JSON array of source resource IDs
+    observation_ids TEXT NOT NULL,      -- JSON array of observation IDs
+    evidence_ids TEXT NOT NULL,         -- JSON array of evidence_fragments IDs
+    claim_ids TEXT NOT NULL,            -- JSON array of claim IDs
+    relation_ids TEXT NOT NULL,         -- JSON array of relation IDs
+    rejected_candidates TEXT NOT NULL DEFAULT '[]',  -- JSON
+    conflicts TEXT NOT NULL DEFAULT '[]',            -- JSON
+    context_hash TEXT NOT NULL,         -- SHA-256 of all input context
+    answer_hash TEXT NOT NULL,          -- SHA-256 of final answer
+    snapshot_json TEXT NOT NULL         -- Full EvidenceSnapshotV7 serialized
+);
+
+CREATE INDEX IF NOT EXISTS idx_es_created ON evidence_snapshots(created_at);
+CREATE INDEX IF NOT EXISTS idx_es_intent ON evidence_snapshots(intent);
+CREATE INDEX IF NOT EXISTS idx_es_context ON evidence_snapshots(context_hash);
+
+-- ─── explainable_scoring ────────────────────────────────────────────────────
+-- Stores detailed feature breakdown for each relation score.
+CREATE TABLE IF NOT EXISTS explainable_scores (
+    relation_id TEXT NOT NULL REFERENCES relations(id),
+    feature_name TEXT NOT NULL,         -- e.g. 'surname_exact', 'birth_year_exact'
+    feature_value REAL NOT NULL,        -- contribution to score (can be negative)
+    feature_raw TEXT,                   -- raw value that was compared
+    is_penalty INTEGER NOT NULL DEFAULT 0,
+    algorithm_name TEXT NOT NULL,
+    algorithm_version TEXT NOT NULL,
+    pipeline_run_id TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (relation_id, feature_name, algorithm_version)
+);
+
+CREATE INDEX IF NOT EXISTS idx_es_relation ON explainable_scores(relation_id);
+CREATE INDEX IF NOT EXISTS idx_es_run ON explainable_scores(pipeline_run_id);
+
+-- ─── place_authority ────────────────────────────────────────────────────────
+-- Geographic authority layer: canonical places with historical names.
+CREATE TABLE IF NOT EXISTS place_authority (
+    id TEXT PRIMARY KEY,
+    canonical_name TEXT NOT NULL,
+    historical_name TEXT,
+    modern_name TEXT,
+    country TEXT,
+    historical_country TEXT,
+    lat REAL,
+    lon REAL,
+    valid_from TEXT,
+    valid_to TEXT,
+    aliases TEXT,                       -- JSON array of alias strings
+    parent_place_id TEXT REFERENCES place_authority(id),
+    created_at TEXT NOT NULL,
+    UNIQUE(canonical_name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_pa_canonical ON place_authority(canonical_name);
+CREATE INDEX IF NOT EXISTS idx_pa_parent ON place_authority(parent_place_id);
+CREATE INDEX IF NOT EXISTS idx_pa_country ON place_authority(country);
+"""
+
+# ─── Migration SQL for existing tables (additive, idempotent) ────────────────
+
+MIGRATION_CLAIMS_V2_SQL = """
+-- Add evidence contract columns to claims_v2 (additive, idempotent)
+ALTER TABLE claims_v2 ADD COLUMN temporal_context TEXT;
+ALTER TABLE claims_v2 ADD COLUMN geographic_context TEXT;
+ALTER TABLE claims_v2 ADD COLUMN support_score REAL DEFAULT 0.0;
+ALTER TABLE claims_v2 ADD COLUMN conflict_status TEXT DEFAULT 'none' CHECK (conflict_status IN (
+    'none','temporal','geographic','identity','source','factual'
+));
+ALTER TABLE claims_v2 ADD COLUMN verification_status TEXT DEFAULT 'candidate' CHECK (verification_status IN (
+    'unsupported','candidate','supported','probable','verified','contradicted','disputed','rejected'
+));
+ALTER TABLE claims_v2 ADD COLUMN evidence_scope TEXT DEFAULT 'person_evidence' CHECK (evidence_scope IN (
+    'person_evidence','context_evidence'
+));
+ALTER TABLE claims_v2 ADD COLUMN identity_cluster_id TEXT;
+ALTER TABLE claims_v2 ADD COLUMN source_lineage_id TEXT REFERENCES source_lineages(id);
+ALTER TABLE claims_v2 ADD COLUMN pipeline_run_id TEXT REFERENCES pipeline_runs(id);
+ALTER TABLE claims_v2 ADD COLUMN reviewed_at TEXT;
+ALTER TABLE claims_v2 ADD COLUMN reviewed_by TEXT;
+"""
+
+MIGRATION_EVIDENCE_FRAGMENTS_SQL = """
+-- Add observation link and classification to evidence_fragments (additive)
+ALTER TABLE evidence_fragments ADD COLUMN observation_id TEXT REFERENCES observations(id);
+ALTER TABLE evidence_fragments ADD COLUMN evidence_type TEXT DEFAULT 'direct' CHECK (evidence_type IN (
+    'direct','indirect','contextual','metadata'
+));
+ALTER TABLE evidence_fragments ADD COLUMN verification_status TEXT DEFAULT 'unverified' CHECK (verification_status IN (
+    'unverified','verified','contradicted','superseded'
+));
+ALTER TABLE evidence_fragments ADD COLUMN source_lineage_id TEXT REFERENCES source_lineages(id);
+ALTER TABLE evidence_fragments ADD COLUMN is_independent INTEGER DEFAULT 0;
+"""
+
+MIGRATION_RELATIONS_SQL = """
+-- Add evidence contract columns to relations (additive)
+ALTER TABLE relations ADD COLUMN temporal_gate TEXT DEFAULT 'unknown' CHECK (temporal_gate IN (
+    'direct_contemporary','retrospective','temporally_compatible','temporally_ambiguous','temporally_incompatible','unknown'
+));
+ALTER TABLE relations ADD COLUMN geographic_gate TEXT DEFAULT 'unknown' CHECK (geographic_gate IN (
+    'exact','compatible','ambiguous','incompatible','unknown'
+));
+ALTER TABLE relations ADD COLUMN identity_gate TEXT DEFAULT 'unverified' CHECK (identity_gate IN (
+    'verified','probable','candidate','unverified','rejected','unknown'
+));
+ALTER TABLE relations ADD COLUMN origin TEXT DEFAULT 'v2' CHECK (origin IN (
+    'v2','legacy','legacy_revalidated','manual','imported'
+));
+ALTER TABLE relations ADD COLUMN snapshot_id TEXT REFERENCES evidence_snapshots(id);
 """
 
 
+def _safe_alter(conn: sqlite3.Connection, sql: str):
+    """Execute ALTER TABLE statements, ignoring 'duplicate column' errors."""
+    for stmt in sql.strip().split(';'):
+        # Remove comment lines
+        lines = [l for l in stmt.strip().split('\n') if not l.strip().startswith('--')]
+        stmt = '\n'.join(lines).strip()
+        if not stmt:
+            continue
+        try:
+            conn.execute(stmt)
+        except sqlite3.OperationalError as e:
+            if 'duplicate column' not in str(e).lower():
+                raise
+
+
 def apply_schema(conn: sqlite3.Connection):
-    """Apply the v2 schema to a SQLite database."""
+    """Apply the v2 schema to a SQLite database.
+
+    Runs CREATE TABLE IF NOT EXISTS for all v2 tables, then applies
+    additive ALTER TABLE migrations for evidence contract extensions.
+    """
     conn.executescript(SCHEMA_SQL)
+    conn.commit()
+    # Apply additive migrations (idempotent)
+    _safe_alter(conn, MIGRATION_CLAIMS_V2_SQL)
+    _safe_alter(conn, MIGRATION_EVIDENCE_FRAGMENTS_SQL)
+    _safe_alter(conn, MIGRATION_RELATIONS_SQL)
     conn.commit()
 
 
@@ -354,7 +560,9 @@ def main():
         "'resource_registry','historical_events','event_aliases_v2','source_artifacts',"
         "'ocr_observations','claims_v2','evidence_fragments','claim_evidence_v2',"
         "'review_decisions','source_families','source_family_members','relations',"
-        "'relation_evidence','pipeline_runs','legacy_relation_quarantine','golden_dataset_labels'"
+        "'relation_evidence','pipeline_runs','legacy_relation_quarantine','golden_dataset_labels',"
+        "'observations','source_lineages','source_lineage_members','evidence_snapshots',"
+        "'explainable_scores','place_authority'"
         ") ORDER BY name"
     ).fetchall()]
     

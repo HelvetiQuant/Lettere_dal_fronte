@@ -1,0 +1,331 @@
+{
+  "campaign_id": "validation_20260817_v1",
+  "run_id": "tests_abc_20260817T174404",
+  "created_at": "2026-08-17T17:44:10.930229+00:00",
+  "total_tests": 13,
+  "passed": 3,
+  "failed": 10,
+  "critical_failures": 9,
+  "results": [
+    {
+      "test_id": "A",
+      "name": "legacy_confidence_distribution",
+      "description": "Verify that high-confidence legacy links are gated by usable_as_evidence",
+      "metrics": {
+        "total_event_links": 1539685,
+        "usable_as_evidence_0": 1539685,
+        "usable_as_evidence_1": 0,
+        "usable_as_evidence_null": 0,
+        "high_confidence_total": 261934,
+        "high_confidence_but_gated": 261934,
+        "high_confidence_ungated": 0
+      },
+      "pass_criteria": "All legacy links should have usable_as_evidence=0",
+      "passed": true,
+      "finding": "261934/261934 high-confidence links are gated (usable_as_evidence=0). But 0 are NOT gated.",
+      "note": "All event_links have usable_as_evidence=0 (quarantine applied). However, the orchestrator never checks this column (CF-3)."
+    },
+    {
+      "test_id": "B",
+      "name": "orchestrator_gating_column_check",
+      "description": "Verify whether unified_orchestrator_v7.py references quarantine/evidence columns",
+      "checks": {
+        "usable_as_evidence_in_source": false,
+        "war_period_in_source": true,
+        "origin_in_source": true,
+        "quarantine_in_source": false,
+        "legacy_relation_adapter_import": false,
+        "evidence_contract_import": false,
+        "answer_evidence_gate_import": false,
+        "source_lineage_service_import": false,
+        "evidence_snapshot_service_import": false,
+        "event_ontology_service_import": false,
+        "barriers_v73_import": false
+      },
+      "pass_criteria": "Orchestrator should check usable_as_evidence, war_period, origin",
+      "passed": false,
+      "finding": "Orchestrator does NOT check usable_as_evidence, war_period, origin, or quarantine columns. No evidence-centric module is imported.",
+      "critical": true
+    },
+    {
+      "test_id": "C",
+      "name": "cross_war_contamination_count",
+      "description": "Count WWII internment links in WWI events database",
+      "metrics": {
+        "total_ww2_links_in_ww1_db": 12759,
+        "contaminated_events": 18
+      },
+      "contaminated_events_detail": [
+        {
+          "evento_id": 25,
+          "nome": "Prigionia",
+          "conflict": "WWI",
+          "data_inizio": "1915-05-24",
+          "data_fine": "1918-11-04",
+          "ww2_link_count": 4348
+        },
+        {
+          "evento_id": 36,
+          "nome": "Lavoro forzato nel Reich",
+          "conflict": "WWII",
+          "data_inizio": "1943-09-08",
+          "data_fine": "1945-05-08",
+          "ww2_link_count": 2685
+        },
+        {
+          "evento_id": 23,
+          "nome": "Monte Pasubio",
+          "conflict": "WWI",
+          "data_inizio": "1916-05-15",
+          "data_fine": "1918-11-04",
+          "ww2_link_count": 1461
+        },
+        {
+          "evento_id": 35,
+          "nome": "Mauthausen e Gusen",
+          "conflict": "WWII",
+          "data_inizio": "1943-09-08",
+          "data_fine": "1945-05-05",
+          "ww2_link_count": 1159
+        },
+        {
+          "evento_id": 19,
+          "nome": "Battaglia del Piave",
+          "conflict": "WWI",
+          "data_inizio": "1918-06-15",
+          "data_fine": "1918-06-23",
+          "ww2_link_count": 740
+        },
+        {
+          "evento_id": 28,
+          "nome": "Monte Col di Lana",
+          "conflict": "WWI",
+          "data_inizio": "1915-06-23",
+          "data_fine": "1917-11-12",
+          "ww2_link_count": 543
+        },
+        {
+          "evento_id": 33,
+          "nome": "Campagna di Russia (ARMIR)",
+          "conflict": "WWII",
+          "data_inizio": "1941-07-01",
+          "data_fine": "1943-03-31",
+          "ww2_link_count": 490
+        },
+        {
+          "evento_id": 29,
+          "nome": "Monte Nero",
+          "conflict": "WWI",
+          "data_inizio": "1915-06-23",
+          "data_fine": "1917-09-12",
+          "ww2_link_count": 302
+        },
+        {
+          "evento_id": 17,
+          "nome": "Battaglie dell'Isonzo",
+          "conflict": "WWI",
+          "data_inizio": "1915-06-23",
+          "data_fine": "1917-09-12",
+          "ww2_link_count": 282
+        },
+        {
+          "evento_id": 32,
+          "nome": "Eccidio di Cefalonia",
+          "conflict": "WWII",
+          "data_inizio": "1943-09-08",
+          "data_fine": "1943-09-24",
+          "ww2_link_count": 203
+        }
+      ],
+      "pass_criteria": "Zero cross-war links should exist",
+      "passed": false,
+      "finding": "12759 WWII internment links found in WWI events DB. These are 18 WWI events with WWII contamination.",
+      "critical": true
+    },
+    {
+      "test_id": "D",
+      "name": "record_links_quarantine_status",
+      "description": "Verify quarantine status of record_links",
+      "metrics": {
+        "total": 169184,
+        "usable_as_evidence_0": 169184,
+        "usable_as_evidence_1": 0,
+        "algorithm_version_legacy": 169184,
+        "legacy_unverified": 169184,
+        "high_confidence_but_gated": 152140
+      },
+      "pass_criteria": "All legacy links should be quarantined (usable_as_evidence=0)",
+      "passed": true,
+      "finding": "All 169184 record_links have usable_as_evidence=0. 152140 have high confidence but are gated. However, orchestrator does not check this column (Test B)."
+    },
+    {
+      "test_id": "E",
+      "name": "collegamenti_legacy_status",
+      "description": "Check if collegamenti table has quarantine columns",
+      "metrics": {
+        "total": 2349417,
+        "has_usable_as_evidence": false,
+        "has_origin": false,
+        "has_war_period": false
+      },
+      "pass_criteria": "collegamenti should have quarantine columns",
+      "passed": false,
+      "finding": "collegamenti has 2349417 rows but NO quarantine columns (usable_as_evidence, origin, war_period). These legacy entity links are completely unquarantined.",
+      "critical": true
+    },
+    {
+      "test_id": "F",
+      "name": "narrator_status_filtering",
+      "description": "Verify what validation the narrator performs",
+      "checks": {
+        "imports_narration_evidence_selector": true,
+        "imports_narration_validator": true,
+        "imports_answer_evidence_gate": false,
+        "imports_evidence_contract": false,
+        "imports_claim_status": false,
+        "has_validate_payload": true,
+        "has_hallucination_check": true,
+        "has_cross_validate": true,
+        "has_verify_answer": false,
+        "has_answer_evidence_bundle": false
+      },
+      "pass_criteria": "Narrator should use AnswerEvidenceGate and ClaimStatus",
+      "passed": false,
+      "finding": "Narrator uses NarrationEvidenceSelector + NarrationValidator (weaker validation). AnswerEvidenceGate and ClaimStatus are NOT imported. No verify_answer() call. No AnswerEvidenceBundle construction.",
+      "critical": true
+    },
+    {
+      "test_id": "G",
+      "name": "followup_claim_filtering",
+      "description": "Verify whether execute_followup filters claims by verification status",
+      "checks": {
+        "has_status_filter_in_followup": true,
+        "uses_answer_evidence_gate": false,
+        "uses_narration_evidence_selector": false,
+        "passes_all_person_claims": true
+      },
+      "pass_criteria": "Followup should filter REJECTED/UNSUPPORTED claims",
+      "passed": true,
+      "finding": "execute_followup passes ALL person_claims and context_claims to AI without status filtering. No AnswerEvidenceGate. No NarrationEvidenceSelector. REJECTED claims included in prompt.",
+      "critical": true
+    },
+    {
+      "test_id": "H",
+      "name": "persistence_stage",
+      "description": "Verify _stage_persist implementation",
+      "checks": {
+        "has_stage_persist": true,
+        "is_pass_only": true,
+        "imports_evidence_snapshot_service": false
+      },
+      "pass_criteria": "_stage_persist should call evidence_snapshot_service",
+      "passed": false,
+      "finding": "_stage_persist is a no-op (pass). Snapshots are ephemeral. No evidence trail.",
+      "critical": true
+    },
+    {
+      "test_id": "I",
+      "name": "graph_service_quarantine_check",
+      "description": "Verify graph_service checks quarantine columns",
+      "checks": {
+        "checks_usable_as_evidence": false,
+        "checks_origin": false,
+        "checks_war_period": false,
+        "checks_algorithm_version": true,
+        "checks_legacy_unverified": true
+      },
+      "pass_criteria": "graph_service should check usable_as_evidence, origin, war_period",
+      "passed": false,
+      "finding": "graph_service checks algorithm_version and legacy_unverified but NOT usable_as_evidence, origin, or war_period. Quarantined links can appear as candidates in the graph.",
+      "critical": true
+    },
+    {
+      "test_id": "J",
+      "name": "v73_barriers_in_orchestrator",
+      "description": "Verify V7.3 temporal/geographic barriers are in the decision path",
+      "checks": {
+        "orchestrator_imports_barriers_v73": false,
+        "orchestrator_imports_narration_planner_v73": false,
+        "orchestrator_imports_domain_model_v73": false,
+        "orchestrator_imports_text_matching_v73": false,
+        "orchestrator_imports_adapters_v73": false,
+        "narrator_imports_barriers_v73": false,
+        "narrator_imports_narration_planner_v73": false
+      },
+      "pass_criteria": "Orchestrator or narrator should import barriers_v73",
+      "passed": false,
+      "finding": "V7.3 barriers (temporal veto, geographic semantic roles) are NOT imported by orchestrator or narrator. They are only used by narration_planner_v73.py which is not in the main pipeline.",
+      "critical": true
+    },
+    {
+      "test_id": "K",
+      "name": "cross_link_audit_active",
+      "description": "Count active cross-link field changes on internati records",
+      "metrics": {
+        "total_audit_records": 171777,
+        "active": 81439,
+        "reverted": 90338,
+        "baseline": 40852,
+        "active_non_baseline": 40587
+      },
+      "by_source_table": {
+        "lebi_records": 40210,
+        "decorati_nastroazzurro": 320,
+        "caduti_ministero": 57
+      },
+      "by_column": {
+        "data_nascita": 4448,
+        "luogo_nascita": 4432,
+        "arma": 4163,
+        "grado": 4056,
+        "reparto": 3933,
+        "data_decesso": 3626,
+        "luogo_morte": 3582,
+        "luogo_sepoltura": 2963,
+        "campi_internamento": 2227,
+        "fronte_cattura": 1840,
+        "data_cattura": 1691,
+        "causa_morte": 1439,
+        "luogo_cattura": 1229,
+        "data_rientro": 647,
+        "decorazione": 153,
+        "anno_decorazione": 153,
+        "anno_morte": 5
+      },
+      "pass_criteria": "Cross-linked fields should be marked as derived/secondary evidence",
+      "passed": false,
+      "finding": "40587 active cross-link field changes exist on internati records. These fields were overwritten from external sources (lebi, caduti, decorati) but the orchestrator does not distinguish original vs cross-linked fields.",
+      "note": "Cross-linked fields are not flagged in the evidence pipeline. They appear as original data."
+    },
+    {
+      "test_id": "L",
+      "name": "event_ontology_service_usage",
+      "description": "Verify EventOntologyService integration",
+      "checks": {
+        "orchestrator_imports_event_ontology_service": false,
+        "event_resolver_imports_event_ontology_service": false,
+        "orchestrator_uses_v7_event_aggregate": true,
+        "event_resolver_uses_hardcoded_hierarchy": true
+      },
+      "pass_criteria": "EventOntologyService should be used for event hierarchy validation",
+      "passed": false,
+      "finding": "EventOntologyService is NOT imported by orchestrator or event_resolver. Orchestrator uses v7_event_aggregate (simpler model). Event_resolver uses hardcoded HIERARCHY dict."
+    },
+    {
+      "test_id": "M",
+      "name": "source_lineage_in_fusion",
+      "description": "Verify SourceLineageService integration in fusion stage",
+      "checks": {
+        "orchestrator_imports_source_lineage_service": false,
+        "fusion_engine_imports_source_lineage_service": false,
+        "fusion_engine_uses_independence_assessor": true,
+        "fusion_engine_uses_source_family_graph": true,
+        "orchestrator_uses_fusion_engine": true
+      },
+      "pass_criteria": "Fusion should use DB-backed SourceLineageService",
+      "passed": false,
+      "finding": "SourceLineageService is NOT imported by orchestrator or fusion engine. Fusion uses in-memory IndependenceAssessor (heuristic only). DB-backed lineage with authority levels is unused.",
+      "critical": true
+    }
+  ]
+}
