@@ -119,7 +119,7 @@ def _get_gemini_model():
     if not _gemini_configured:
         genai.configure(api_key=key)
         _gemini_configured = True
-    model_name = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+    model_name = os.environ.get("GEMINI_MODEL", "gemini-flash-lite-latest")
     return genai.GenerativeModel(model_name)
 
 
@@ -441,7 +441,7 @@ _DEFAULT_MODELS = {
     "anthropic": "claude-sonnet-4-5-20250929",
     "mistral": "mistral-small-latest",
     "perplexity": "sonar",
-    "gemini": "gemini-2.0-flash",
+    "gemini": "gemini-flash-lite-latest",
     "ollama": "gemma4:e2b-it-qat",
 }
 

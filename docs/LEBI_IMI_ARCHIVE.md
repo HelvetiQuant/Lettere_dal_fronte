@@ -68,6 +68,21 @@ Parser **section-aware** (`import_lebi_bulk.py`, `update_lebi_matricole.py`):
 - Note fuse `Matricola III A: 113541.Matricola KZ: 0565.` → splittate su `.` prima di nuovo label
 - `matricola_cattura` esportata come **solo numeri** (`113541; 0565`), label rimossa in export
 
+## 3bis. Cross-link ASBZ internati ↔ LeBI (2026-10-12)
+
+**Semantica matricole** — verificata empiricamente:
+- `internati.matricola` = numero di **prigioniero** (scheda ASBZ) ↔ `lebi.matricola_cattura`
+- `lebi.matricola_militare` → `internati.matricola_militare` (colonna aggiunta)
+- `lebi.impiego` → `internati.arbeitskommando`
+- ⚠️ Il match numerico puro sulla matricola genera falsi positivi (domini diversi tra archivi): richiede SEMPRE cognome+nome identici
+
+Script: `cross_link_lebi_v2.py` (`--dry`/`--run`, audit in `cross_link_audit`).
+
+**Risultati run 2026-10-12:**
+- 4.438 coppie già note (name-match precedente) → arricchite
+- 4 nuovi link `matricola_cattura+name` (CAMPI 230024, CORSICO 2337, CAIONE 80920, MERLI 24646)
+- 2.401 update: 1.315 matricole prigioniero, 554 arbeitskommando, 482 matricole militari
+
 ## 4. Pipeline e script
 
 | Script | Funzione |
@@ -76,6 +91,7 @@ Parser **section-aware** (`import_lebi_bulk.py`, `update_lebi_matricole.py`):
 | `update_lebi_matricole.py` | Re-fetch + riclassificazione matricole (threaded fetch, single-writer DB, checkpoint `.lebi_update_checkpoint.json`, modalità `fix`/`retry`/`scan`) |
 | `sync_lebi_to_supabase.py` | Sync completo SQLite→Supabase |
 | `push_lebi_matricole_supabase.py` | Push incrementale delle colonne matricole/impiego |
+| `cross_link_lebi_v2.py` | Cross-link internati↔lebi via matricola cattura+nome + enrichment v2 |
 
 Pattern: thread solo fetch/parse → `executemany` nel main thread (SQLite single-writer). Checkpoint JSON per resume.
 
