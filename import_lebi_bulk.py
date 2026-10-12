@@ -37,6 +37,41 @@ BATCH_SIZE = 500
 MAX_WORKERS = 20
 REQUEST_TIMEOUT = 15
 
+# Label = Stalag/camp designation -> prisoner camp number; else -> military matricola
+CAMP_LABEL_RE = re.compile(
+    r"stalag|oflag|dulag|kz\b|lager|\bcampo\b|prigionier|prigionia|dachau|mauthausen|"
+    r"buchenwald|auschwitz|fallingbostel|warendorf|duderstadt|katovice|katowice|"
+    r"breslavia|witten|nevers|marlag|milag|stalino|lamsdorf",
+    re.IGNORECASE,
+)
+ROMAN_CAMP_RE = re.compile(r"^\(?\s*[IVXLCDM]+\s*[A-Z]{0,2}\s*\)?$")
+IMPIEGO_RE = re.compile(r"^(arb\.?\s*kdo|impiegat)", re.IGNORECASE)
+
+
+MIL_LABEL_RE = re.compile(
+    r"milit|distret|marina|aeronaut|guardia|finanz|carabinier|legione|capitaneria|"
+    r"compartimento|dipartimento|polizia|p\.s\.|c\.r\.i\.|\bcri\b|crem|z\.a\.t\.|"
+    r"scuola|centro|corpo|comando|equipaggi|deposito|direzione|reclutamento",
+    re.IGNORECASE,
+)
+
+
+def is_camp_matricola(label: str) -> bool:
+    """True if the matricola label refers to a prisoner camp (Stalag code, KZ, camp name)."""
+    if CAMP_LABEL_RE.search(label):
+        return True
+    return bool(ROMAN_CAMP_RE.match(label.strip()))
+
+
+def is_cattura_matricola(label: str, section: str) -> bool:
+    """True if a matricola note is a capture/prisoner matricola."""
+    if is_camp_matricola(label):
+        return True
+    if MIL_LABEL_RE.search(label):
+        return False
+    # Bare/generic "Matricola" label inside CATTURA or INTERNAMENTO = capture matricola
+    return section in ("CATTURA", "INTERNAMENTO")
+
 
 def get_conn() -> sqlite3.Connection:
     conn = sqlite3.connect(DB_PATH, timeout=30)
@@ -63,7 +98,9 @@ def ensure_table(conn: sqlite3.Connection):
             fronte_cattura TEXT,
             luogo_cattura TEXT,
             data_cattura TEXT,
-            matricola TEXT,
+            matricola_militare TEXT,
+            matricola_cattura TEXT,
+            impiego TEXT,
             campi_internamento TEXT,
             sorte TEXT,
             data_decesso TEXT,
@@ -133,6 +170,12 @@ def parse_record_html(html: str, lebi_id: str) -> Optional[Dict]:
                     sections.setdefault(active_section, {"fields": {}, "notes": []})
                     sections[active_section]["fields"][label] = value
             continue
+        
+        # Estrai note dai div con classe white-corner-show (note aggiuntive)
+        if "white-corner-show" in classes:
+            if text and text not in ("Note", ""):
+                sections.setdefault(active_section, {"fields": {}, "notes": []})
+                sections[active_section]["notes"].append(text)
 
     intern_camps = []
     in_internment = False
@@ -153,11 +196,30 @@ def parse_record_html(html: str, lebi_id: str) -> Optional[Dict]:
     rientro = sections.get("RIENTRO", {}).get("fields", {})
 
     matricola = ""
-    for note in sections.get("CATTURA", {}).get("notes", []):
-        m = re.search(r"Matricola:\s*(\S+)", note)
-        if m:
-            matricola = m.group(1)
-            break
+    camp_matricole = []
+
+    # Distingue matricola militare da matricola di cattura (campo prigionia)
+    for section_name, section_data in sections.items():
+        for note in section_data.get("notes", []):
+            for part in re.split(r"\.\s*(?=Matricola)", note, flags=re.IGNORECASE):
+                m = re.search(r"Matricola\s+([^:]+?)\s*:\s*(\S+)", part, re.IGNORECASE)
+                if m:
+                    label = m.group(1).strip()
+                    value = m.group(2).strip().rstrip(".")
+                    if is_cattura_matricola(label, section_name):
+                        camp_matricole.append(f"Matricola {label}: {value}")
+                    elif not matricola:
+                        matricola = value
+                else:
+                    m2 = re.search(r"Matricola\s*:\s*(\S+)", part, re.IGNORECASE)
+                    if m2:
+                        value = m2.group(1).strip().rstrip(".")
+                        if section_name in ("CATTURA", "INTERNAMENTO"):
+                            camp_matricole.append(f"Matricola: {value}")
+                        elif not matricola:
+                            matricola = value
+
+    matricola_cattura = "; ".join(camp_matricole)
 
     cognome = anag.get("COGNOME", "")
     nome = anag.get("NOME", "")
@@ -176,6 +238,7 @@ def parse_record_html(html: str, lebi_id: str) -> Optional[Dict]:
         sorte = "sopravvissuto"
 
     camps_str = json.dumps(intern_camps, ensure_ascii=False) if intern_camps else ""
+    impiego = "; ".join(c for c in intern_camps if isinstance(c, str) and IMPIEGO_RE.match(c.strip()))
     fonti_text = " | ".join(sections.get("FONTI", {}).get("notes", []))
 
     return {
@@ -192,7 +255,9 @@ def parse_record_html(html: str, lebi_id: str) -> Optional[Dict]:
         "fronte_cattura": cattura.get("Fronte", ""),
         "luogo_cattura": cattura.get("Luogo di cattura", ""),
         "data_cattura": cattura.get("Data cattura", ""),
-        "matricola": matricola,
+        "matricola_militare": matricola,
+        "matricola_cattura": matricola_cattura,
+        "impiego": impiego,
         "campi_internamento": camps_str,
         "sorte": sorte,
         "data_decesso": decesso.get("Data decesso", ""),
@@ -227,16 +292,18 @@ def insert_record(conn: sqlite3.Connection, record: Dict) -> bool:
             INSERT OR IGNORE INTO lebi_records
             (lebi_id, cognome, nome, data_nascita, luogo_nascita, provincia_nascita,
              regione_nascita, grado, reparto, arma, fronte_cattura, luogo_cattura,
-             data_cattura, matricola, campi_internamento, sorte, data_decesso,
+             data_cattura, matricola_militare, matricola_cattura, impiego,
+             campi_internamento, sorte, data_decesso,
              luogo_decesso, causa_morte, luogo_sepoltura, data_rientro, luogo_rientro,
              fonti, pdf_url, detail_url, imported_at, enriched_at)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """, (
             record["lebi_id"], record["cognome"], record["nome"], record["data_nascita"],
             record["luogo_nascita"], record["provincia_nascita"], record["regione_nascita"],
             record["grado"], record["reparto"], record["arma"],
             record["fronte_cattura"], record["luogo_cattura"], record["data_cattura"],
-            record["matricola"], record["campi_internamento"], record["sorte"],
+            record["matricola_militare"], record["matricola_cattura"], record["impiego"],
+            record["campi_internamento"], record["sorte"],
             record["data_decesso"], record["luogo_decesso"], record["causa_morte"],
             record["luogo_sepoltura"], record["data_rientro"], record["luogo_rientro"],
             record["fonti"], record["pdf_url"], record["detail_url"], now, now

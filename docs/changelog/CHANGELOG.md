@@ -3119,3 +3119,37 @@ Collegamenti per tabella: `caduti_ministero` 355.966 · `internati` 280.896 · `
 - Endpoint totali: 312
 - Provider federation: 27
 - AI provider attivi: 5 (OpenAI primario, 4 fallback)
+
+---
+
+## 2026-10-04 — Banca dati LeBI IMI: matricole divise, impiego, archivio definitivo
+
+### Schema dati (SQLite `imi_internati.db` + Supabase `lebi_records`)
+- `matricola` → rinominata `matricola_militare` (matricola Distretto/Marina/GdF/Aeronautica/Carabinieri)
+- `numero_interno_campo` → rinominata `matricola_cattura` (matricola da prigioniero)
+- Nuova colonna `impiego` — voci `Arb. Kdo.`/`impiegato...` estratte da `campi_internamento`
+- `campi_internamento` pulito: solo campi di prigionia, voci lavoro spostate in `impiego`
+- `matricola_cattura` esportata come solo numeri (label `Matricola ...:` rimossa)
+
+### Classificazione (parser section-aware)
+- `Matricola:` generica in sezione CATTURA/INTERNAMENTO → `matricola_cattura` (59.738)
+- Label militari in POSIZIONE MILITARE → `matricola_militare` (45.027)
+- `Matricola <campo>:` (Stalag/KZ/Dachau) → `matricola_cattura`
+- Mai inferire prigioniero da codice campo (es. `Stalag 307`)
+
+### Conteggi finali
+- Record: 166.112 | Militare: 45.027 | Cattura: 59.738 | Impiego: 17.347
+- Verifiche: 20/20 assegnazioni corrette su pagine live, 0 errori push Supabase
+
+### Export
+- `C:\Users\eryma\Downloads\lebi_export_MATRICOLE_IMPIEGO_20261004.xlsx` (unico file valido)
+- 27 colonne, wrap text, filtri, freeze riga 1, ordine cognome→nome
+
+### File
+- Nuovo: `push_lebi_matricole_supabase.py`, `docs/LEBI_IMI_ARCHIVE.md` (documento archivio)
+- Aggiornati: `import_lebi_bulk.py`, `update_lebi_matricole.py`, `sync_lebi_to_supabase.py`,
+  `cross_link_safe.py`, `populate_internati_v2.py` (alias `matricola_militare AS matricola`)
+- Eliminati: 8 export Excel obsoleti da Downloads
+
+### Riferimento
+Documento completo archivio: `docs/LEBI_IMI_ARCHIVE.md`

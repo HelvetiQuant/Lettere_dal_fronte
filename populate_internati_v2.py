@@ -74,7 +74,8 @@ lebi_by_cognome = defaultdict(list)
 lebi_rows = db.execute("""
     SELECT id, cognome, nome, data_nascita, luogo_nascita, provincia_nascita,
            grado, reparto, arma, fronte_cattura, luogo_cattura, data_cattura,
-           matricola, campi_internamento, sorte, data_decesso, luogo_decesso,
+           matricola_militare AS matricola, matricola_cattura, impiego,
+           campi_internamento, sorte, data_decesso, luogo_decesso,
            causa_morte, luogo_sepoltura, data_rientro
     FROM lebi_records
 """).fetchall()
