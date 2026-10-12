@@ -28,13 +28,13 @@ Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucinati
 
 ## PROSSIMI LAVORI BACKEND — Priorità (post 2026-08-14)
 
-### A. Persistenza & Resilienza
-- [ ] **Persistenza snapshot su DB**: salvare `EvidenceSnapshotV7` su SQLite/Supabase dopo ogni run, per sopravvivere a restart del server. Tabella `research_snapshots` con `run_id`, `snapshot_json`, `created_at`, `intent`, `target_name`.
-- [ ] **Recupero run da DB**: `execute_followup` deve poter recuperare snapshot da DB se non in memoria (`_runs` dict)
-- [ ] **Cleanup automatico run**: scadenza TTL per run vecchi (es. 24h) con cleanup snapshot dal DB
+### A. Persistenza & Resilienza — ✅ FATTO (2026-10-12)
+- [x] **Persistenza snapshot su DB**: `_stage_persist` salva `EvidenceSnapshotV7` su `research_snapshots` (imi_internati.db): `run_id`, `intent`, `target_name`, `snapshot_json`, `report`, `created_at`
+- [x] **Recupero run da DB**: `execute_followup` fa fallback su `_load_snapshot_from_db` se `_runs` in-memory non ha il run (warning `SNAPSHOT_RECOVERED_FROM_DB`)
+- [x] **Cleanup automatico run**: TTL 30 giorni con DELETE su ogni persist (`_SNAPSHOT_TTL_DAYS`)
 
 ### B. Qualità Narrazione
-- [ ] **Hallucination skip list residui**: aggiungere "Ancona", "Germania" alla skip list in `v7_narrator.py`
+- [x] **Hallucination skip list residui**: aggiunti "Ancona", "Germania", "Austria", "Polonia", "Storia/contesto" alla skip list in `v7_narrator.py` (2026-10-12)
 - [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare claim provenance non trovati nello snapshot (log narratore)
 - [ ] **Cross-war contamination su Pellegrini**: fixare mismatch war period (WWI vs WWII) per nomi presenti in entrambi i conflitti
 - [ ] **Test su soldati WWI**: verificare che un soldato WWI non generi contesto WWII
@@ -46,10 +46,14 @@ Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucinati
 - [ ] **Batch research API**: endpoint per ricerca multipla (lista nomi → risultati paralleli)
 - [ ] **Webhook notifications**: callback URL per notificare completamento run lunghe
 
-### D. Supabase & Sync
-- [ ] **Sync `internati` (20.465 rows)**: sincronizzare tabella principale su Supabase
+### D. Supabase & Sync — ✅ VERIFICATO (2026-10-12)
+- [x] **Sync `internati` (20.465 rows)**: FATTO — schema remoto esteso (+14 colonne: matricola_militare, cross_link_source, reparto, arma, morte/rientro/decorazione), full upsert 0 errori
+- [x] **Sync `event_links`**: COMPLETO — 2.725.000 righe remote (il dato "18%" era obsoleto)
+- [x] **Sync `lebi_records`**: 166.112 righe con matricola_militare/cattura/impiego (sessione 4 ott)
+- [x] **Schema `core` esposto**: `ALTER ROLE authenticator SET pgrst.db_schemas` + reload schema — core.entities(39), core.events(22), core.entity_names(84) raggiungibili via REST
+- [x] Altre tabelle remote presenti: decorati_nastroazzurro 279.832, caduti_albooro 342.555, caduti_ministero 162.646, archivio_documenti 979, eventi_1gm 49
 - [ ] **Sync `source_authority_registry`**: tabella V3 su Supabase
-- [ ] **Riprendere sync `event_links`**: 1.5M rows, ~18% completato (in pausa)
+- [ ] **graph_nodes/graph_edges**: tabelle esistenti ma vuote ovunque — richiede run pipeline identity su 20.465 internati
 - [ ] **Vector extension Supabase**: abilitare `vector` extension per RAG embeddings
 - [ ] **Backfill canonical schema**: 1M+ rows da migrare a schema canonico
 

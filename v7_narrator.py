@@ -1373,7 +1373,12 @@ class NarratorV7_v2:
                                "morto", "morta", "morti", "morte",
                                "ferito", "ferita", "feriti", "ferite",
                                "disperso", "dispersa", "dispersi", "disperse",
-                               "prigionia", "liberta", "ritorno", "rientro"):
+                               "prigionia", "liberta", "ritorno", "rientro",
+                               # V7.8-FIX3: place words legitimately recurring in POW/WWII context
+                               "ancona", "germania", "germanico", "germanica",
+                               "austria", "austriaco", "polonia", "polacco",
+                               "storia", "storico", "storica", "contesto",
+                               "contemporanea", "attuale", "attuali"):
                     continue
                 # Check if this capitalized word matches any supported place
                 if w_lower not in supported_places and w_lower not in supported_names:

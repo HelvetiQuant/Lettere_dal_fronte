@@ -28,7 +28,7 @@ import hashlib
 import json
 import time
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Tuple
 
 from semantic_query_plan import (
@@ -247,21 +247,24 @@ class UnifiedResearchOrchestratorV7:
         errors: List[str] = []
         warnings: List[str] = []
 
-        # 1. Recover previous run
+        # 1. Recover previous run (in-memory first, then DB fallback)
         prev_ctx = self._runs.get(run_id)
-        if prev_ctx is None or prev_ctx.snapshot is None:
-            errors.append(f"Run not found or snapshot missing: {run_id}")
-            return {
-                "run_id": run_id,
-                "answer": "",
-                "generation": {"mode": "error", "fallback_reason": "run_not_found"},
-                "errors": errors,
-                "warnings": warnings,
-                "stage_timings": {"total": time.time() - t_start},
-            }
-
-        snapshot = prev_ctx.snapshot
-        prev_report = prev_ctx.report or ""
+        if prev_ctx is not None and prev_ctx.snapshot is not None:
+            snapshot = prev_ctx.snapshot
+            prev_report = prev_ctx.report or ""
+        else:
+            snapshot, prev_report = self._load_snapshot_from_db(run_id)
+            if snapshot is None:
+                errors.append(f"Run not found or snapshot missing: {run_id}")
+                return {
+                    "run_id": run_id,
+                    "answer": "",
+                    "generation": {"mode": "error", "fallback_reason": "run_not_found"},
+                    "errors": errors,
+                    "warnings": warnings,
+                    "stage_timings": {"total": time.time() - t_start},
+                }
+            warnings.append("SNAPSHOT_RECOVERED_FROM_DB")
 
         # 2. Build system prompt with full evidence context
         system_prompt = self._build_followup_system_prompt(snapshot, prev_report)
@@ -1366,11 +1369,79 @@ Non inventare informazioni non presenti nei dati. Se i dati sono insufficienti, 
         else:
             ctx.errors.append("NO_SNAPSHOT_FOR_NARRATION")
 
+    _SNAPSHOT_DB = "imi_internati.db"
+    _SNAPSHOT_TTL_DAYS = 30
+
+    def _snapshot_db_conn(self):
+        import sqlite3 as _sq
+        conn = _sq.connect(self._SNAPSHOT_DB)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS research_snapshots (
+                run_id TEXT PRIMARY KEY,
+                intent TEXT,
+                target_name TEXT,
+                snapshot_json TEXT NOT NULL,
+                report TEXT,
+                created_at TEXT NOT NULL
+            )
+        """)
+        return conn
+
     def _stage_persist(self, ctx: RunContext):
-        """Stage 9: Save snapshot + report to DB."""
-        # Persistence is done via the existing report_conversation_provider
-        # or a new V7 persistence layer. For now, we keep it in-memory.
-        pass
+        """Stage 9: Save snapshot + report to DB (research_snapshots)."""
+        if ctx.snapshot is None:
+            return
+        try:
+            target_name = ""
+            if ctx.snapshot.target:
+                target_name = str(ctx.snapshot.target.get("display_name", ""))
+            conn = self._snapshot_db_conn()
+            try:
+                conn.execute(
+                    "INSERT OR REPLACE INTO research_snapshots "
+                    "(run_id, intent, target_name, snapshot_json, report, created_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    (
+                        ctx.run_id,
+                        ctx.snapshot.intent or "",
+                        target_name,
+                        json.dumps(ctx.snapshot.to_dict(), ensure_ascii=False),
+                        ctx.report or "",
+                        datetime.now().isoformat(),
+                    ),
+                )
+                # TTL cleanup: drop snapshots older than _SNAPSHOT_TTL_DAYS
+                conn.execute(
+                    "DELETE FROM research_snapshots WHERE created_at < ?",
+                    (
+                        (datetime.now() - timedelta(days=self._SNAPSHOT_TTL_DAYS)).isoformat(),
+                    ),
+                )
+                conn.commit()
+            finally:
+                conn.close()
+        except Exception as e:
+            logger.warning(f"snapshot persist failed for {ctx.run_id}: {e}")
+            ctx.warnings.append(f"SNAPSHOT_PERSIST_FAILED: {e}")
+
+    def _load_snapshot_from_db(self, run_id: str):
+        """Recover (snapshot, report) from research_snapshots for follow-up."""
+        try:
+            conn = self._snapshot_db_conn()
+            try:
+                row = conn.execute(
+                    "SELECT snapshot_json, report FROM research_snapshots WHERE run_id = ?",
+                    (run_id,),
+                ).fetchone()
+            finally:
+                conn.close()
+            if not row:
+                return None, None
+            snap = EvidenceSnapshotV7.from_dict(json.loads(row[0]))
+            return snap, row[1] or ""
+        except Exception as e:
+            logger.warning(f"snapshot db load failed for {run_id}: {e}")
+            return None, None
 
     def _compute_semantic_counts(self, ctx: RunContext) -> Dict[str, Any]:
         """V7.3-PERSON-FIX: Compute semantic counters with fact/evidence/provenance separation.

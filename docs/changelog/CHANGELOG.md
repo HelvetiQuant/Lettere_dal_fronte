@@ -3153,3 +3153,34 @@ Collegamenti per tabella: `caduti_ministero` 355.966 · `internati` 280.896 · `
 
 ### Riferimento
 Documento completo archivio: `docs/LEBI_IMI_ARCHIVE.md`
+
+---
+
+## 2026-10-12 — Fix priorità 2: Supabase schema/core, snapshot persist, skip list, cross-link matricola
+
+### Cross-link internati↔lebi (nuovo script `cross_link_lebi_v2.py`)
+- Semantica verificata: `internati.matricola` = numero prigioniero ↔ `lebi.matricola_cattura`
+- 4 nuovi link matricola+nome; 2.401 enrichment (1.315 prigioniero, 554 Arb.Kdo, 482 militari)
+- Nuova colonna `internati.matricola_militare` — domini separati correttamente
+
+### Supabase
+- `internati`: +14 colonne remote, full upsert 20.465 righe (0 errori)
+- Schema `core` esposto via `ALTER ROLE authenticator SET pgrst.db_schemas` + reload
+- Verificato remoto: event_links 2.7M, lebi_records 166K, caduti/decorati completi
+
+### Persistenza snapshot V7.8 (execute_followup sopravvive a restart)
+- `_stage_persist`: salva `EvidenceSnapshotV7` su tabella `research_snapshots` (imi_internati.db)
+- `execute_followup`: fallback `_load_snapshot_from_db` se run non in memoria
+- TTL 30 giorni automatico
+
+### AI
+- `ai_client.py`: GEMINI_MODEL default → `gemini-flash-lite-latest` (unico provider funzionante)
+- OpenAI/Anthropic/Mistral/Perplexity ancora non operativi (quota/chiave)
+
+### Qualità
+- `v7_narrator.py`: skip list +Ancona, Germania, Austria, Polonia, storia/contesto
+
+### Docs
+- `docs/LEBI_IMI_ARCHIVE.md` §3bis: semantica matricole + risultati cross-link
+- `docs/todo/TODO.md`: sezioni A/D aggiornate a stato reale
+- `ARCHITECTURE.md` root: ripristinato (era corrotto a "v")
