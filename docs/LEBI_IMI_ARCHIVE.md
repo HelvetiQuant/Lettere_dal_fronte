@@ -83,6 +83,23 @@ Script: `cross_link_lebi_v2.py` (`--dry`/`--run`, audit in `cross_link_audit`).
 - 4 nuovi link `matricola_cattura+name` (CAMPI 230024, CORSICO 2337, CAIONE 80920, MERLI 24646)
 - 2.401 update: 1.315 matricole prigioniero, 554 arbeitskommando, 482 matricole militari
 
+## 3ter. Arolsen enrichment (2026-10-12, in corso)
+
+Script `enrich_lebi_arolsen.py` — interroga Arolsen Archives (ITS-WS) per ogni record LeBI senza `matricola_cattura` e salva i match in tabella dedicata **`arolsen_matches`** (provenance separata: la colonna canonica NON viene modificata automaticamente).
+
+**Regole di match (livello storico):**
+- `exact+dob`: cognome+nome+anno nascita identici → conferma forte
+- `variant+dob`: variante di traslitterazione tedesca (es. CESARE→"Cesar", ORESTE→"Oresto", GIUSEPPE→"Guiseppe") + data identica → probabile
+- `exact`: nome identico, DOB mancante su uno dei due lati → candidato
+- anno diverso senza variante → **scartato** (rischio omonimo)
+
+**Note dati Arolsen:**
+- `PrisonerNumber` nella lista person è popolato su minoranza di schede — il numero è sulle scansioni dei documenti; `detail_url` punta al dossier Arolsen per consultazione manuale
+- Duplicati Arolsen frequenti (stessa persona, più carte con trascrizioni diverse — es. data mese/giorno invertita): conservati tutti con `raw_json`
+- Tracking `arolsen_checked` per resume; priorità `--linked` = record LeBI già linkati a internati
+
+**Stato parziale:** ~980/2.640 linked processati, ~1.930 match, 16 prisoner number.
+
 ## 4. Pipeline e script
 
 | Script | Funzione |
@@ -92,6 +109,7 @@ Script: `cross_link_lebi_v2.py` (`--dry`/`--run`, audit in `cross_link_audit`).
 | `sync_lebi_to_supabase.py` | Sync completo SQLite→Supabase |
 | `push_lebi_matricole_supabase.py` | Push incrementale delle colonne matricole/impiego |
 | `cross_link_lebi_v2.py` | Cross-link internati↔lebi via matricola cattura+nome + enrichment v2 |
+| `enrich_lebi_arolsen.py` | Enrichment Arolsen → `arolsen_matches` (checkpoint `arolsen_checked`, `--linked`, `--limit N`) |
 
 Pattern: thread solo fetch/parse → `executemany` nel main thread (SQLite single-writer). Checkpoint JSON per resume.
 

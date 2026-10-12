@@ -1,6 +1,6 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucination check, cross-war fix.
+Aggiornato: 12 ottobre 2026 — Grafo canonico popolato+sync, backfill reale, war-period data-verified, Arolsen enrichment.
 
 ---
 
@@ -18,7 +18,7 @@ Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucinati
 - [x] **Documentazione**: CHANGELOG V7.8, ARCHITETTURA_COMPLETA.md aggiornata
 
 ### Pending
-- [ ] **Persistenza run snapshot**: salvare snapshot su DB/Supabase per sopravvivere a restart del server (attualmente in-memory `_runs` dict)
+- [x] **Persistenza run snapshot**: FATTO (2026-10-12) — `_stage_persist` salva su `research_snapshots`, fallback in `execute_followup`, TTL 30gg
 - [ ] **Frontend: UI conversazionale**: aggiungere chat interface in ResearchPage.tsx per follow-up
 - [ ] **Frontend: client API**: aggiungere `v7Followup()` in `client.ts`
 - [ ] **Rate limiting follow-up**: limitare numero di follow-up per run_id per evitare abuso
@@ -37,8 +37,8 @@ Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucinati
 - [x] **Hallucination skip list residui**: aggiunti "Ancona", "Germania", "Austria", "Polonia", "Storia/contesto" alla skip list in `v7_narrator.py` (2026-10-12)
 - [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare claim provenance non trovati nello snapshot (log narratore)
 - [ ] **Cross-war contamination su Pellegrini**: fixare mismatch war period (WWI vs WWII) per nomi presenti in entrambi i conflitti
-- [ ] **Test su soldati WWI**: verificare che un soldato WWI non generi contesto WWII
-- [ ] **Test su `war_period=unknown`**: verificare comportamento narratore senza periodo bellico
+- [x] **Test cross-war**: regression benchmark 2026-10-12 — 23/23 war_period_set, 23/23 homonyms_handled, 23/23 no_legacy_leakage (5 target WWI da caduti_albooro + 5 caduti_cwgc inclusi)
+- [x] **War-period data-verified**: `caduti_ministero` WWII→**WWI** (morti 1914-1921), `decorati_nastroazzurro` WWI→**BOTH** (37% >=1939) in `person_source_schemas.py` + `v7_identity_model.py`
 
 ### C. API & Orchestrator
 - [ ] **Endpoint `/api/v7/conversation`**: sessione conversazionale persistente con `session_id` (più follow-up concatenati)
@@ -53,9 +53,9 @@ Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucinati
 - [x] **Schema `core` esposto**: `ALTER ROLE authenticator SET pgrst.db_schemas` + reload schema — core.entities(39), core.events(22), core.entity_names(84) raggiungibili via REST
 - [x] Altre tabelle remote presenti: decorati_nastroazzurro 279.832, caduti_albooro 342.555, caduti_ministero 162.646, archivio_documenti 979, eventi_1gm 49
 - [ ] **Sync `source_authority_registry`**: tabella V3 su Supabase
-- [ ] **graph_nodes/graph_edges**: tabelle esistenti ma vuote ovunque — richiede run pipeline identity su 20.465 internati
+- [x] **graph_nodes/graph_edges**: FATTO (2026-10-12) — `populate_graph.py` materializzato 1.513.299 nodi + 4.058.351 archi, sync Supabase 0 errori, pari al locale
 - [ ] **Vector extension Supabase**: abilitare `vector` extension per RAG embeddings
-- [ ] **Backfill canonical schema**: 1M+ rows da migrare a schema canonico
+- [x] **Backfill canonical schema**: FATTO (2026-10-12) — migrazioni reali implementate (era stub count-only): `evidence.link_quarantine` 1.708.934, `archive.external_items` 1.146, `evidence.claims` 51, `ai.datasets` 7, `archive.repositories` NARA
 
 ### E. Frontend Integration
 - [ ] **Chat UI in ResearchPage.tsx**: interfaccia conversazionale per follow-up
@@ -84,8 +84,8 @@ Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucinati
 - [ ] **Test Giuseppe Gaiaschi**: verificare secondo nome della famiglia tramite API
 - [ ] **Test multi-nomi**: eseguire pipeline su 5+ nomi WWII per verificare zero contaminazione
 - [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare i warning `CLAIM_NOT_IN_SNAPSHOT` nei log narratore (claim provenance non trovati nello snapshot)
-- [ ] **Pulizia file temporanei**: rimuovere 60+ file `_tmp_*` e `_test_*` dal workspace
-- [ ] **Git push**: push commit `7cee11a` su origin
+- [x] **Pulizia file temporanei**: FATTO (commit `bf78e42`) — 75 file `_tmp_*`/`_test_*`/log/checkpoint rimossi
+- [x] **Git push**: FATTO — branch `fix/provenance-linking-v2` pushato (commit `7224c8c`, `6b51fea`)
 
 ---
 
@@ -143,11 +143,11 @@ Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucinati
 
 ### Pending
 - [ ] **FTS indexing**: aggiungere `lebi_records` agli indici FTS SQLite per ricerca full-text
-- [ ] **Cross-linking ASBZ ↔ LeBI**: collegare 20.465 `internati` (ASBZ) ai 166K LeBI per arricchimento reciproco (matricola come chiave)
+- [x] **Cross-linking ASBZ ↔ LeBI**: FATTO (2026-10-12) — `cross_link_lebi_v2.py`: semantica verificata (`internati.matricola`=n.prigioniero ↔ `lebi.matricola_cattura`), 4 nuovi link + 2.401 enrichment, colonna `matricola_militare` aggiunta
 - [ ] **Frontend dossier**: verificare che il tab LeBI nel dossier mostri anche i dati della pipeline discorsiva
 - [ ] **Supabase query**: verificare che le query Supabase includano `lebi_records` nei filtri PERSON
 - [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare i warning `CLAIM_NOT_IN_SNAPSHOT` nei log narratore (claim provenance non trovati nello snapshot)
-- [ ] **AI provider keys**: ricaricare crediti OpenAI (429) e/o fixare chiave Anthropic (401) per miglior qualità AI
+- [~] **AI provider keys**: PARZIALE (2026-10-12) — Gemini ripristinato (`gemini-flash-lite-latest`); OpenAI 0 crediti, Anthropic chiave invalida, Mistral 429, Perplexity quota — ricaricare per qualità AI
 
 ---
 
@@ -160,12 +160,12 @@ Aggiornato: 14 agosto 2026 (sera) — V7.8 Conversational follow-up, hallucinati
 - [x] `event_aliases`: 161 rows synced
 - [x] `lebi_records`: 166K+ rows synced (upsert con merge-duplicates)
 
-### In corso / Pending
-- [ ] `event_links`: 1.539.685 rows, ~18% synced (background sync in pausa)
-- [ ] `internati`: 20.465 rows da sincronizzare
-- [ ] `decorati`, `caduti_*`: da sincronizzare
-- [ ] `graph_nodes`, `graph_edges`: da sincronizzare
-- [ ] `backfill_canonical.py`: 1M+ rows da migrare a schema canonico
+### In corso / Pending — aggiornato 2026-10-12
+- [x] `event_links`: 2.725.000 rows remote — COMPLETO (il "18%" era dato obsoleto)
+- [x] `internati`: 20.465 rows synced con schema esteso (+14 colonne)
+- [x] `decorati`, `caduti_*`: synced (nastroazzurro 279.832, albooro 342.555, ministero 162.646)
+- [x] `graph_nodes`, `graph_edges`: synced (1.513.299 / 4.058.351, 0 errori)
+- [x] `backfill_canonical.py`: FATTO — 1.708.934 link_quarantine + items/claims/datasets/repos
 - [ ] Vector extension in Supabase dashboard per RAG embeddings
 - [ ] Storage buckets per thumbnails/representations
 
@@ -215,7 +215,7 @@ Richiesta originale: bootstrap automatico completo (28 sezioni: job queue, worke
 - [x] **RPC `exec_sql_query`/`exec_sql_returning`**: helper riusabili per letture (inclusi pattern `WITH...INSERT...RETURNING`) via Supabase, dato che `exec_sql` esistente non ritorna righe.
 
 ### Azione manuale richiesta
-- [ ] **Supabase Dashboard → Settings → API → Exposed Schemas**: aggiungere `core` alla lista (già presenti `archive, evidence, ops, ai, api_public, legacy`). Necessario per `repository_layer.py`/`supabase_client.select_schema` via REST diretto.
+- [x] **Supabase Dashboard → Settings → API → Exposed Schemas**: FATTO via codice (2026-10-12) — `ALTER ROLE authenticator SET pgrst.db_schemas` + `NOTIFY pgrst, 'reload config'` + `NOTIFY pgrst, 'reload schema'`. `core.entities`/`core.events`/`core.entity_names` ora raggiungibili via REST.
 
 ### Da completare (fuori scope di questa sessione — settimane di lavoro)
 - [ ] Collegare `ia_pipeline.py`/`ia_evaluation.py` per scrivere in `archive.external_items`/`archive.representations` su un evento pilota (Battaglia del Carso, `evt_0018`) — prossimo passo naturale, end-to-end reale prima di generalizzare.
@@ -263,9 +263,8 @@ Richiesta originale: bootstrap automatico completo (28 sezioni: job queue, worke
 
 ### Post-merge
 
-- [ ] Popolare `graph_nodes` e `graph_edges` dalla pipeline identity-resolved su tutti i 20.465 internati.
-- [ ] Eseguire `identity_link_pipeline.py internati --execute` su dataset completo.
-- [ ] Valutare performance grafo con 688K entità e 2.3M collegamenti.
+- [x] Popolare `graph_nodes` e `graph_edges` — FATTO (2026-10-12): 1.513.299 nodi / 4.058.351 archi materializzati e sincronizzati su Supabase.
+- [ ] Valutare performance grafo con 688K entità e 2.3M collegamenti (query benchmark su graph_edges).
 - [ ] Frontend: test visuale grafo SVG su browser con dataset reale.
 - [ ] Frontend: mappa geospaziale movimentazioni (Leaflet + dati luogo_internamento).
 

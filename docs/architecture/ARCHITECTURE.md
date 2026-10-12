@@ -1,7 +1,7 @@
 # IMI Extractor — Architettura Tecnica Completa
 
 > Documento di riferimento per sviluppatori frontend e backend.
-> Versione: 2026-07-30 · Discovery Persistence Pipeline + Web Search Archival System
+> Versione: 2026-10-12 · Grafo canonico popolato, backfill reale, war-period data-verified (§11)
 
 ---
 
@@ -1426,3 +1426,71 @@ Il blocco `core` non esposto impatta **tre moduli indipendenti**:
 | Eventi canonici API | `/api/canonical-events` lettura `core.events` | `exec_sql` RPC diretta (bypassa PostgREST) |
 
 Il workaround `exec_sql` (RPC diretta) funziona perché bypassa PostgREST e il check `VALID_SCHEMAS`, ma è **meno efficiente** (no batch insert, no SELECT filtri REST) e **non idempotente nativamente** (richiede logica applicativa).
+
+> **RISOLTO (2026-10-12)**: schema `core` esposto via `ALTER ROLE authenticator SET pgrst.db_schemas = '..., core'` + `NOTIFY pgrst, 'reload config'` + `NOTIFY pgrst, 'reload schema'` — nessuna azione dashboard richiesta. `core.entities`/`core.events`/`core.entity_names` raggiungibili via REST.
+
+---
+
+## 11. Stato dati canonici e grafo (aggiornamento 2026-10-12)
+
+### 11.1 Grafo canonico popolato
+
+`populate_graph.py` materializza il grafo canonico in modo **additivo e reversibile** (le tabelle legacy restano intatte):
+
+| Sorgente | Tipo nodo/arco | Volume |
+|---|---|---|
+| `entita` (688.739) | node type `entity` | 688K nodi |
+| record sorgente (internati, lebi_records, caduti_*, decorati_*, ecc.) | node type `record` | ~800K nodi |
+| `eventi_1gm` (49) | node type `event` | 49 nodi |
+| `collegamenti` (~2.35M) | graph edges | ~2.35M archi |
+| `record_links` (~169K) | graph edges | 169K archi |
+| `event_links` (eventi_1gm.db, ~1.54M) | graph edges | ~1.54M archi |
+
+**Totale: 1.513.299 `graph_nodes` + 4.058.351 `graph_edges`** — sincronizzati su Supabase via `sync_graph_to_supabase.py` (batch + checkpoint restartabile, 0 errori).
+
+Provenienza preservata: ogni arco mantiene `source_system`, `source_edge_id`, `relation_type`, `confidence`, `evidence_json`, `algorithm_version`.
+
+### 11.2 Backfill canonical schema — migrazioni reali
+
+`backfill_canonical.py` esegue ora migrazioni **reali** (le funzioni erano stub count-only):
+
+| Target canonico | Sorgente | Righe | Note |
+|---|---|---|---|
+| `evidence.link_quarantine` | `event_links` + `record_links` | **1.708.934** | `quarantine_status='pending'`, `quarantine_reason='legacy_backfill'`, raw JSON completo, UNIQUE constraint + checkpoint `.backfill_links_checkpoint.json` |
+| `archive.external_items` | `archivio_documenti` | 1.146 | stable_id `item:{provider}:{ext_id}` |
+| `evidence.claims` | `claims` SQLite | 51 | `claim_status='legacy_unverified'` |
+| `ai.datasets` | dataset ML su disco | 7 | |
+| `archive.repositories` | `archivio_fonti` distinct | NARA | |
+
+### 11.3 Semantica matricole IMI (dominio corretto — riferimento canonico)
+
+| Campo | Dominio | Corrisponde a |
+|---|---|---|
+| `internati.matricola` | **numero prigioniero** (scheda ASBZ) | `lebi_records.matricola_cattura` |
+| `internati.matricola_militare` | matricola esercito | `lebi_records.matricola_militare` |
+| `internati.arbeitskommando` | comando lavoro | `lebi_records.impiego` |
+
+Regola storica: il numero di prigioniero NON è la matricola militare; il match numerico puro senza cognome produce falsi positivi (`cross_link_lebi_v2.py` usa matricola+nome).
+
+### 11.4 War-period classification — data-verified
+
+| Tabella | Periodo | Prova dati |
+|---|---|---|
+| internati, lebi_records | WWII | IMI post 8 sett. 1943 |
+| caduti_albooro | WWI | anno_morte 1915-1921 |
+| caduti_ministero | **WWI** | anno_morte 1914-1921, `difesa.it/assets/albooro` = Albo d'Oro Grande Guerra |
+| decorati_nastroazzurro | **BOTH** | 37% decorazioni >= 1939 (istituto WWI + riconoscimenti WWII-era) |
+| caduti_cwgc | BOTH | CWGC copre entrambe le guerre |
+
+Fonte unica: `person_source_schemas.py` (`PERSON_SOURCE_SCHEMAS`) + `v7_identity_model.py` (`TABLE_WAR_PERIOD`) — allineati.
+
+### 11.5 Arolsen enrichment
+
+`enrich_lebi_arolsen.py` interroga Arolsen Archives (ITS-WS) per record LeBI senza matricola di cattura. Match in tabella dedicata `arolsen_matches` (provenance separata — la colonna canonica non viene toccata):
+
+- `exact+dob`: nome+cognome+data nascita identici → conferma forte
+- `variant+dob`: traslitterazione tedesca (CESARE→Cesar, ORESTE→Oresto) + data → probabile
+- `exact`: nome identico, nessuna data per corroborare
+- Anno diverso senza variante → scartato (rischio omonimo)
+
+`PrisonerNumber` Arolsen è popolato solo su una minoranza di schede (il numero è sulle scansioni); il valore primario è il link `detail_url` al dossier Arolsen.
