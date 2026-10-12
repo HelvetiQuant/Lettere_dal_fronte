@@ -65,13 +65,15 @@ STRONG_IDENTIFIERS = [
 ]
 
 # V7.3-FIX: War period classification per table
+# Data-verified 2026-10: caduti_ministero = Albo d'Oro WWI (morti 1914-1921);
+# decorati_nastroazzurro = misto (37% decorazioni >= 1939)
 TABLE_WAR_PERIOD = {
     "internati": "WWII",
     "lebi_records": "WWII",
     "caduti_albooro": "WWI",
-    "decorati_nastroazzurro": "WWI",
+    "decorati_nastroazzurro": "BOTH",
     "caduti_cwgc": "BOTH",
-    "caduti_ministero": "WWII",
+    "caduti_ministero": "WWI",
 }
 
 

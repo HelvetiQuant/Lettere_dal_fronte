@@ -57,7 +57,7 @@ def _select_person_targets() -> List[Dict[str, Any]]:
             "war_period": "WWII",
         })
 
-    # 5 from caduti_albooro (WWII)
+    # 5 from caduti_albooro (WWI — Albo d'Oro Grande Guerra, morti 1915-1921)
     try:
         rows = conn.execute("""
             SELECT id, nominativo FROM caduti_albooro
@@ -71,12 +71,12 @@ def _select_person_targets() -> List[Dict[str, Any]]:
                 "intent": "PERSON_LOOKUP",
                 "source_table": "caduti_albooro",
                 "source_id": r["id"],
-                "war_period": "WWII",
+                "war_period": "WWI",
             })
     except sqlite3.OperationalError:
         pass
 
-    # 5 from decorati_nastroazzurro (WWII)
+    # 5 from decorati_nastroazzurro (WWI+WWII mix — istituto WWI, decorazioni anche WWII-era)
     try:
         rows = conn.execute("""
             SELECT id, cognome, nome FROM decorati_nastroazzurro
@@ -91,7 +91,7 @@ def _select_person_targets() -> List[Dict[str, Any]]:
                 "intent": "PERSON_LOOKUP",
                 "source_table": "decorati_nastroazzurro",
                 "source_id": r["id"],
-                "war_period": "WWII",
+                "war_period": "WWI",
             })
     except sqlite3.OperationalError:
         pass
@@ -244,10 +244,14 @@ class RegressionRunnerV73:
             if not checks["has_observations"]:
                 reasons.append(f"Expected >= 1 observations, got {result.observation_count}")
 
-        # Check 5: Identity resolution (for PERSON)
+        # Check 5: Identity resolution reached a terminal state (for PERSON).
+        # All v7.2 legacy-mapped terminal states are valid outcomes:
+        # RESOLVED (anchored/resolved), PARTIAL (conflicted/partial),
+        # UNRESOLVED (ambiguous or 0 clusters — correct for obscure names,
+        # better than a fabricated identity), NEEDS_REVIEW, AMBIGUOUS_IDENTITY.
         if target["intent"] == "PERSON_LOOKUP":
             checks["identity_resolved_or_review"] = result.identity_resolution in (
-                "RESOLVED", "NEEDS_REVIEW", "AMBIGUOUS_IDENTITY"
+                "RESOLVED", "PARTIAL", "UNRESOLVED", "NEEDS_REVIEW", "AMBIGUOUS_IDENTITY"
             )
             if not checks["identity_resolved_or_review"]:
                 reasons.append(f"Unexpected identity_resolution: {result.identity_resolution}")

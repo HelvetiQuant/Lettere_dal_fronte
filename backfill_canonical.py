@@ -93,7 +93,7 @@ def _build_insert_sql(schema: str, table: str, rows: List[Dict[str, Any]], *, co
     return f'INSERT INTO {schema}."{table}" ({col_str}) VALUES {", ".join(values)}{conflict}'
 
 
-def _bulk_insert(schema: str, table: str, rows: List[Dict[str, Any]], *, conflict_target: Optional[str] = None, dry_run: bool = False) -> Dict[str, int]:
+def _bulk_insert(schema: str, table: str, rows: List[Dict[str, Any]], *, conflict_target: Optional[str] = None, dry_run: bool = False, batch_size: int = BATCH_SIZE) -> Dict[str, int]:
     """Insert rows in batches via exec_sql; returns stats."""
     if not rows:
         return {"inserted": 0, "errors": 0}
@@ -101,8 +101,8 @@ def _bulk_insert(schema: str, table: str, rows: List[Dict[str, Any]], *, conflic
         return {"inserted": len(rows), "errors": 0}
     total = 0
     errors = 0
-    for i in range(0, len(rows), BATCH_SIZE):
-        batch = rows[i:i + BATCH_SIZE]
+    for i in range(0, len(rows), batch_size):
+        batch = rows[i:i + batch_size]
         sql = _build_insert_sql(schema, table, batch, conflict_target=conflict_target)
         try:
             r = execute_sql(sql, timeout=120)
@@ -232,6 +232,7 @@ def backfill_repositories(dry_run: bool = False) -> Dict:
 
     stats = {"table": "repositories", "total": len(rows), "would_migrate": 0, "migrated": 0, "skipped": 0}
     seen_repos = set()
+    to_insert = []
 
     for row in rows:
         repo_name = row["archivio"] if "archivio" in row.keys() and row["archivio"] else "Unknown"
@@ -247,7 +248,17 @@ def backfill_repositories(dry_run: bool = False) -> Dict:
             stats["would_migrate"] += 1
             print(f"  [DRY-RUN] Repository: {repo_name} -> stable_id={stable_id[:20]}...")
         else:
-            stats["migrated"] += 1
+            to_insert.append({
+                "stable_id": stable_id,
+                "name": repo_name,
+                "institution_type": "archive",
+            })
+
+    if not dry_run:
+        result = _bulk_insert("archive", "repositories", to_insert, conflict_target="stable_id")
+        stats["migrated"] = result["inserted"]
+        if result["errors"]:
+            stats["errors"] = result["errors"]
 
     conn.close()
     return stats
@@ -266,17 +277,40 @@ def backfill_claims(dry_run: bool = False) -> Dict:
     rows = conn.execute("SELECT * FROM claims").fetchall()
 
     stats = {"table": "claims", "total": len(rows), "would_migrate": 0, "migrated": 0, "skipped": 0}
+    to_insert = []
 
     for row in rows:
         subject_id = row["subject_id"] if "subject_id" in row.keys() and row["subject_id"] is not None else ""
         semantic = f"{row['subject_type']}:{subject_id}:{row['predicate']}:{row['object_value']}"
         semantic_hash = _sha256(semantic)
+        stable_id = row["stable_id"] if "stable_id" in row.keys() and row["stable_id"] else f"sha256:{semantic_hash}"
+
+        # CHECK: object_entity_id OR object_value deve essere non nullo
+        if not row["object_value"] and not row["object_id"]:
+            stats["skipped"] += 1
+            continue
 
         if dry_run:
             stats["would_migrate"] += 1
             print(f"  [DRY-RUN] Claim {row['id']}: {row['predicate']} -> semantic_hash={semantic_hash[:16]}...")
         else:
-            stats["migrated"] += 1
+            to_insert.append({
+                "stable_id": stable_id,
+                "predicate": row["predicate"],
+                "object_value": row["object_value"],
+                "claim_status": "legacy_unverified",
+                "valid_from": row["temporal_range_start"] or None,
+                "valid_to": row["temporal_range_end"] or None,
+                "date_precision": row["temporal_precision"] or "day",
+                "extraction_method": row["extraction_method"] or "backfill",
+                "algorithm_version": "backfill_v1",
+            })
+
+    if not dry_run:
+        result = _bulk_insert("evidence", "claims", to_insert, conflict_target="stable_id")
+        stats["migrated"] = result["inserted"]
+        if result["errors"]:
+            stats["errors"] = result["errors"]
 
     conn.close()
     return stats
@@ -285,10 +319,56 @@ def backfill_claims(dry_run: bool = False) -> Dict:
 # ─── Backfill: Link Quarantine ───────────────────────────────────────────────
 
 def backfill_link_quarantine(dry_run: bool = False) -> Dict:
-    """Migra event_links + record_links -> evidence.link_quarantine."""
-    stats = {"table": "link_quarantine", "total": 0, "would_migrate": 0, "migrated": 0, "skipped": 0}
+    """Migra event_links + record_links -> evidence.link_quarantine.
 
-    # event_links
+    Idempotente: UNIQUE(source_table, source_id, target_table, target_id, link_type)
+    su link_quarantine fa da guardia ai duplicati. Checkpoint su file per resume.
+    """
+    stats = {"table": "link_quarantine", "total": 0, "would_migrate": 0,
+             "migrated": 0, "skipped": 0, "errors": 0}
+    ckpt_file = BASE / ".backfill_links_checkpoint.json"
+    ckpt = {"event_links_last_id": 0, "record_links_last_id": 0}
+    if ckpt_file.exists() and not dry_run:
+        try:
+            ckpt.update(json.loads(ckpt_file.read_text()))
+        except Exception:
+            pass
+
+    PAGE = 20000
+    INS_BATCH = 500
+
+    def _migrate(table_label: str, conn: sqlite3.Connection, query: str,
+                 last_id: int, map_fn, ck_key: str) -> int:
+        migrated = 0
+        lid = last_id
+        while True:
+            rows = conn.execute(query, (lid, PAGE)).fetchall()
+            if not rows:
+                break
+            out = []
+            for r in rows:
+                lid = r["id"]
+                m = map_fn(r)
+                if m:
+                    out.append(m)
+            if out:
+                if dry_run:
+                    migrated += len(out)
+                else:
+                    res = _bulk_insert("evidence", "link_quarantine", out,
+                                       conflict_target="source_table, source_id, target_table, target_id, link_type",
+                                       batch_size=INS_BATCH)
+                    migrated += res["inserted"]
+                    stats["errors"] += res["errors"]
+            if not dry_run:
+                ckpt[ck_key] = lid
+                ckpt_file.write_text(json.dumps(ckpt))
+                print(f"  {table_label}: last_id={lid} migrated={migrated}", flush=True)
+            if len(rows) < PAGE:
+                break
+        return migrated
+
+    # ── event_links ──
     edb = BASE / "eventi_1gm.db"
     if edb.exists():
         conn = sqlite3.connect(str(edb))
@@ -299,10 +379,28 @@ def backfill_link_quarantine(dry_run: bool = False) -> Dict:
             stats["would_migrate"] += count
             print(f"  [DRY-RUN] event_links: {count:,} righe -> evidence.link_quarantine")
         else:
-            stats["migrated"] += count
+            def map_ev(r):
+                return {
+                    "source_table": "eventi_1gm",
+                    "source_id": r["evento_id"],
+                    "target_table": r["target_table"] or "unknown",
+                    "target_id": r["target_id"],
+                    "link_type": r["link_type"] or "associated",
+                    "raw_data_json": dict(r),
+                    "algorithm": r["origin"] or "legacy",
+                    "algorithm_version": r["rule_version"] or r["v73_rule_version"] or "backfill_v1",
+                    "quarantine_reason": r["quarantine_reason"] or "legacy_backfill",
+                    "quarantine_status": "pending",
+                }
+            n = _migrate("event_links", conn,
+                         "SELECT * FROM event_links WHERE id > ? ORDER BY id LIMIT ?",
+                         ckpt["event_links_last_id"], map_ev, "event_links_last_id")
+            stats["migrated"] += n
+            if stats["total"] - n > 0 and ckpt["event_links_last_id"] == 0:
+                stats["skipped"] += 0
         conn.close()
 
-    # record_links
+    # ── record_links ──
     mdb = BASE / "imi_internati.db"
     if mdb.exists():
         conn = sqlite3.connect(str(mdb))
@@ -313,7 +411,25 @@ def backfill_link_quarantine(dry_run: bool = False) -> Dict:
             stats["would_migrate"] += count
             print(f"  [DRY-RUN] record_links: {count:,} righe -> evidence.link_quarantine")
         else:
-            stats["migrated"] += count
+            def map_rl(r):
+                if r["from_id"] is None or r["to_id"] is None:
+                    return None
+                return {
+                    "source_table": r["from_table"] or "unknown",
+                    "source_id": r["from_id"],
+                    "target_table": r["to_table"] or "unknown",
+                    "target_id": r["to_id"],
+                    "link_type": r["link_type"] or "associated",
+                    "raw_data_json": dict(r),
+                    "algorithm": r["match_method"] or r["origin"] or "legacy",
+                    "algorithm_version": r["algorithm_version"] or r["rule_version"] or "backfill_v1",
+                    "quarantine_reason": r["quarantine_reason"] or "legacy_backfill",
+                    "quarantine_status": "pending",
+                }
+            n = _migrate("record_links", conn,
+                         "SELECT * FROM record_links WHERE id > ? ORDER BY id LIMIT ?",
+                         ckpt["record_links_last_id"], map_rl, "record_links_last_id")
+            stats["migrated"] += n
         conn.close()
 
     return stats
@@ -371,6 +487,7 @@ def backfill_ml_datasets(dry_run: bool = False) -> Dict:
     ]
 
     stats["total"] = len(datasets)
+    to_insert = []
 
     for ds in datasets:
         fpath = BASE / ds["path"]
@@ -385,7 +502,19 @@ def backfill_ml_datasets(dry_run: bool = False) -> Dict:
             stats["would_migrate"] += 1
             print(f"  [DRY-RUN] Dataset: {ds['name']} ({size:,} bytes) -> stable_id={stable_id[:20]}...")
         else:
-            stats["migrated"] += 1
+            to_insert.append({
+                "stable_id": stable_id,
+                "name": ds["name"],
+                "description": f"{ds['description']} (file: {ds['path']}, {size:,} bytes)",
+                "dataset_type": "instruction",
+                "license": ds["license"],
+            })
+
+    if not dry_run:
+        result = _bulk_insert("ai", "datasets", to_insert, conflict_target="stable_id")
+        stats["migrated"] = result["inserted"]
+        if result["errors"]:
+            stats["errors"] = result["errors"]
 
     return stats
 

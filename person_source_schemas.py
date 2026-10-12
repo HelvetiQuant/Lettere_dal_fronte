@@ -300,13 +300,14 @@ PERSON_SOURCE_SCHEMAS: Dict[str, SourceSchema] = {
         ],
     ),
 
-    # ─── decorati_nastroazzurro — WWI, 279,832 records ──────────────────────
+    # ─── decorati_nastroazzurro — WWI+WWII mix, 279,832 records ─────────────
+    # Data-verified 2026-10: 37% decorazioni >= 1939 (WWII era), resto WWI/retroattive
     "decorati_nastroazzurro": SourceSchema(
         table_name="decorati_nastroazzurro",
-        war_period=WAR_PERIOD_WWI,
+        war_period=WAR_PERIOD_BOTH,
         name_fields=("cognome", "nome", ""),
         authority_tier=1,
-        description="Decorati al Nastro Azzurro — decorati italiani WWI",
+        description="Decorati al Nastro Azzurro — decorati italiani WWI+WWII (istituto WWI, riconoscimenti anche WWII-era)",
         claim_fields={
             "arma": "military_branch",
             "anno_decorazione": "decoration_year",
@@ -398,13 +399,14 @@ PERSON_SOURCE_SCHEMAS: Dict[str, SourceSchema] = {
         ],
     ),
 
-    # ─── caduti_ministero — WWII, 162,646 records ───────────────────────────
+    # ─── caduti_ministero — WWI, 162,646 records ────────────────────────────
+    # Data-verified 2026-10: anno_morte 1914-1921, difesa.it/assets/albooro = Albo d'Oro WWI
     "caduti_ministero": SourceSchema(
         table_name="caduti_ministero",
-        war_period=WAR_PERIOD_WWII,
+        war_period=WAR_PERIOD_WWI,
         name_fields=("cognome", "nome", ""),
         authority_tier=1,
-        description="Caduti Ministero Difesa — caduti italiani WWII",
+        description="Caduti Ministero Difesa — Albo d'Oro caduti italiani WWI",
         claim_fields={
             "paternita": "paternity",
             "maternita": "maternity",

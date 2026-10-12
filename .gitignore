@@ -94,3 +94,7 @@ codex_handoff_archives_summary.txt
 *_state.json
 *_progress.json
 *.done.txt
+.arolsen_checkpoint.json
+.backfill_links_checkpoint.json
+.graph_sync_checkpoint.json
+backfill_links_run.log

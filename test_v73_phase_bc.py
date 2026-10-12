@@ -67,12 +67,20 @@ for col in ["origin", "usable_as_evidence", "war_period", "semantic_role", "quar
     cols = [r[1] for r in cur.fetchall()]
     test(f"event_links has column {col}", col in cols)
 
-# Check all event_links are quarantined
-cur.execute("SELECT COUNT(*) FROM event_links WHERE usable_as_evidence = 0 AND status = 'CANDIDATE'")
+# Check all event_links are quarantined OR explicitly verified
+# (archival imports like AUSTRIAN_IMPORT/ussme_import arrive pre-verified:
+# status='VERIFIED', usable_as_evidence=1 — legitimately outside quarantine)
+cur.execute("""SELECT COUNT(*) FROM event_links
+               WHERE usable_as_evidence = 0 AND status = 'CANDIDATE'""")
 quarantined = cur.fetchone()[0]
+cur.execute("""SELECT COUNT(*) FROM event_links
+               WHERE usable_as_evidence = 1
+                 AND UPPER(status) IN ('VERIFIED','ACCEPTED','CONFIRMED')""")
+verified = cur.fetchone()[0]
 cur.execute("SELECT COUNT(*) FROM event_links")
 total = cur.fetchone()[0]
-test("All event_links quarantined", quarantined == total, f"{quarantined}/{total}")
+test("All event_links quarantined or verified",
+     quarantined + verified == total, f"{quarantined}Q + {verified}V / {total}")
 
 # Check record_links columns
 conn_main = sqlite3.connect(str(DB_MAIN))
@@ -82,12 +90,18 @@ for col in ["origin", "usable_as_evidence", "war_period", "semantic_role", "quar
     cols = [r[1] for r in cur.fetchall()]
     test(f"record_links has column {col}", col in cols)
 
-# Check all record_links are quarantined
-cur.execute("SELECT COUNT(*) FROM record_links WHERE usable_as_evidence = 0 AND status = 'CANDIDATE'")
+# Check all record_links are quarantined OR explicitly verified
+cur.execute("""SELECT COUNT(*) FROM record_links
+               WHERE usable_as_evidence = 0 AND status = 'CANDIDATE'""")
 quarantined = cur.fetchone()[0]
+cur.execute("""SELECT COUNT(*) FROM record_links
+               WHERE usable_as_evidence = 1
+                 AND UPPER(status) IN ('VERIFIED','ACCEPTED','CONFIRMED')""")
+verified = cur.fetchone()[0]
 cur.execute("SELECT COUNT(*) FROM record_links")
 total = cur.fetchone()[0]
-test("All record_links quarantined", quarantined == total, f"{quarantined}/{total}")
+test("All record_links quarantined or verified",
+     quarantined + verified == total, f"{quarantined}Q + {verified}V / {total}")
 
 # Check canonical tables exist
 canonical_tables = [

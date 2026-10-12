@@ -39,7 +39,8 @@ from v7_identity_model import (
 class TestPersonSourceSchemas(unittest.TestCase):
 
     def test_all_5_tables_registered(self):
-        expected = {"internati", "caduti_albooro", "decorati_nastroazzurro", "caduti_cwgc", "caduti_ministero"}
+        expected = {"internati", "caduti_albooro", "decorati_nastroazzurro",
+                    "caduti_cwgc", "caduti_ministero", "lebi_records"}
         self.assertEqual(set(PERSON_SOURCE_SCHEMAS.keys()), expected)
 
     def test_internati_schema(self):
@@ -54,14 +55,16 @@ class TestPersonSourceSchemas(unittest.TestCase):
 
     def test_caduti_albooro_schema(self):
         schema = get_schema("caduti_albooro")
-        self.assertEqual(schema.war_period, WAR_PERIOD_WWII)
+        # data-verified: anno_morte 1915-1921 -> WWI
+        self.assertEqual(schema.war_period, WAR_PERIOD_WWI)
         self.assertEqual(schema.name_fields, ("", "", "nominativo"))
         self.assertIn("paternita", schema.claim_fields)
         self.assertEqual(schema.claim_fields["anno_morte"], "death_year")
 
     def test_decorati_nastroazzurro_schema(self):
         schema = get_schema("decorati_nastroazzurro")
-        self.assertEqual(schema.war_period, WAR_PERIOD_WWII)
+        # data-verified: 37% decorazioni >= 1939 -> misto WWI+WWII
+        self.assertEqual(schema.war_period, WAR_PERIOD_BOTH)
         self.assertEqual(schema.name_fields, ("cognome", "nome", ""))
         self.assertEqual(schema.claim_fields["arma"], "military_branch")
         self.assertEqual(schema.claim_fields["anno_decorazione"], "decoration_year")
@@ -75,7 +78,8 @@ class TestPersonSourceSchemas(unittest.TestCase):
 
     def test_caduti_ministero_schema(self):
         schema = get_schema("caduti_ministero")
-        self.assertEqual(schema.war_period, WAR_PERIOD_WWII)
+        # data-verified: anno_morte 1914-1921, difesa.it/assets/albooro -> WWI
+        self.assertEqual(schema.war_period, WAR_PERIOD_WWI)
         self.assertEqual(schema.name_fields, ("cognome", "nome", ""))
         self.assertIn("paternita", schema.claim_fields)
         self.assertIn("maternita", schema.claim_fields)
@@ -84,9 +88,9 @@ class TestPersonSourceSchemas(unittest.TestCase):
 
     def test_war_period_classification(self):
         self.assertEqual(get_war_period_for_table("internati"), WAR_PERIOD_WWII)
-        self.assertEqual(get_war_period_for_table("caduti_albooro"), WAR_PERIOD_WWII)
+        self.assertEqual(get_war_period_for_table("caduti_albooro"), WAR_PERIOD_WWI)
         self.assertEqual(get_war_period_for_table("caduti_cwgc"), WAR_PERIOD_BOTH)
-        self.assertEqual(get_war_period_for_table("caduti_ministero"), WAR_PERIOD_WWII)
+        self.assertEqual(get_war_period_for_table("caduti_ministero"), WAR_PERIOD_WWI)
         self.assertEqual(get_war_period_for_table("nonexistent"), "UNKNOWN")
 
     def test_name_fields_lookup(self):
