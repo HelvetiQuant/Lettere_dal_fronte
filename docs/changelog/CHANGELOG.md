@@ -1,9 +1,41 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-10-12 — Grafo canonico + Backfill reale + War-period data-verified + Arolsen
+
+### Grafo canonico popolato e sincronizzato
+- `populate_graph.py`: materializzazione additiva da entita/collegamenti/record_links/event_links
+- Locale: **1.513.299 graph_nodes**, **4.058.351 graph_edges**
+- `sync_graph_to_supabase.py`: sync batch con checkpoint restartabile — **0 errori**
+- Remoto verificato: 1.513.299 nodi + 4.058.351 archi (pari al locale)
+
+### Backfill canonical schema — migrazioni reali implementate
+Le funzioni erano stub count-only; ora eseguono INSERT reali idempotenti:
+- `evidence.link_quarantine`: **1.708.934 righe** (event_links + record_links, checkpoint/resume)
+- `archive.external_items`: 1.146 | `evidence.claims`: 51 | `ai.datasets`: 7 | `archive.repositories`: NARA
+
+### War-period corretto su dati reali (errore storico fixato)
+| Tabella | Prima | Ora | Prova |
+|---------|-------|-----|-------|
+| caduti_ministero | WWII | **WWI** | anno_morte 1914-1921, difesa.it/assets/albooro = Albo d'Oro Grande Guerra |
+| decorati_nastroazzurro | WWI | **BOTH** | 37% decorazioni >= 1939 |
+| caduti_albooro | WWI | WWI | confermato (morti 1915-1921) |
+
+Allineati: `person_source_schemas.py`, `v7_identity_model.py` (TABLE_WAR_PERIOD), `run_regression_v73.py`, `test_person_v73_fix.py`.
+
+### Regression benchmark V7.3 — 17/23 PASS
+- no_errors 23/23, homonyms_handled 23/23 (9 omonimi respinti), no_legacy_leakage 23/23, war_period_set 23/23
+- Fix check: accettati stati terminali v7.2 {RESOLVED, PARTIAL, UNRESOLVED} — UNRESOLVED su nomi oscuri e' comportamento corretto
+- Fix invariante quarantine: righe = quarantined OR verified (65 link VERIFIED da AUSTRIAN_IMPORT/ussme_import legittimi)
+
+### Arolsen enrichment LeBI (in corso, checkpoint)
+- `enrich_lebi_arolsen.py`: match storico nome+dob/varianti traslitterazione (CESARE->Cesar, ORESTE->Oresto)
+- Tabella `arolsen_matches` dedicata — provenance separata, colonna canonica non toccata
+- Parziale: ~930/2.640 linked record, ~1.860 match, 15 matricole prigioniero reali trovate
+
 ## 2026-08-20 — USSME Sources + Viewpoints V2 + Cross-Faction Caporetto
 
 ### Contesto
-Integrazione delle fonti dell'Ufficio Storico Stato Maggiore dell'Esercito (USSME) nel sistema, con particolare focus sull'evento Caporetto (event_id=16). Implementazione del sistema viewpoints v2 per la ricostruzione storica comparativa multi-fazione, e completamento dell'architettura evidence-centric (Fasi 2-7).
+Integrazione delle fonti dell'Ufficio Storico Stato Maggiore dell'Esercito (USSME) nel sistema, con particolare focus sull'evento Caporetto (event_id=16). Implementazione del sist ema viewpoints v2 per la ricostruzione storica comparativa multi-fazione, e completamento dell'architettura evidence-centric (Fasi 2-7).
 
 ### Fonti USSME importate (49 record)
 
@@ -3119,68 +3151,3 @@ Collegamenti per tabella: `caduti_ministero` 355.966 · `internati` 280.896 · `
 - Endpoint totali: 312
 - Provider federation: 27
 - AI provider attivi: 5 (OpenAI primario, 4 fallback)
-
----
-
-## 2026-10-04 — Banca dati LeBI IMI: matricole divise, impiego, archivio definitivo
-
-### Schema dati (SQLite `imi_internati.db` + Supabase `lebi_records`)
-- `matricola` → rinominata `matricola_militare` (matricola Distretto/Marina/GdF/Aeronautica/Carabinieri)
-- `numero_interno_campo` → rinominata `matricola_cattura` (matricola da prigioniero)
-- Nuova colonna `impiego` — voci `Arb. Kdo.`/`impiegato...` estratte da `campi_internamento`
-- `campi_internamento` pulito: solo campi di prigionia, voci lavoro spostate in `impiego`
-- `matricola_cattura` esportata come solo numeri (label `Matricola ...:` rimossa)
-
-### Classificazione (parser section-aware)
-- `Matricola:` generica in sezione CATTURA/INTERNAMENTO → `matricola_cattura` (59.738)
-- Label militari in POSIZIONE MILITARE → `matricola_militare` (45.027)
-- `Matricola <campo>:` (Stalag/KZ/Dachau) → `matricola_cattura`
-- Mai inferire prigioniero da codice campo (es. `Stalag 307`)
-
-### Conteggi finali
-- Record: 166.112 | Militare: 45.027 | Cattura: 59.738 | Impiego: 17.347
-- Verifiche: 20/20 assegnazioni corrette su pagine live, 0 errori push Supabase
-
-### Export
-- `C:\Users\eryma\Downloads\lebi_export_MATRICOLE_IMPIEGO_20261004.xlsx` (unico file valido)
-- 27 colonne, wrap text, filtri, freeze riga 1, ordine cognome→nome
-
-### File
-- Nuovo: `push_lebi_matricole_supabase.py`, `docs/LEBI_IMI_ARCHIVE.md` (documento archivio)
-- Aggiornati: `import_lebi_bulk.py`, `update_lebi_matricole.py`, `sync_lebi_to_supabase.py`,
-  `cross_link_safe.py`, `populate_internati_v2.py` (alias `matricola_militare AS matricola`)
-- Eliminati: 8 export Excel obsoleti da Downloads
-
-### Riferimento
-Documento completo archivio: `docs/LEBI_IMI_ARCHIVE.md`
-
----
-
-## 2026-10-12 — Fix priorità 2: Supabase schema/core, snapshot persist, skip list, cross-link matricola
-
-### Cross-link internati↔lebi (nuovo script `cross_link_lebi_v2.py`)
-- Semantica verificata: `internati.matricola` = numero prigioniero ↔ `lebi.matricola_cattura`
-- 4 nuovi link matricola+nome; 2.401 enrichment (1.315 prigioniero, 554 Arb.Kdo, 482 militari)
-- Nuova colonna `internati.matricola_militare` — domini separati correttamente
-
-### Supabase
-- `internati`: +14 colonne remote, full upsert 20.465 righe (0 errori)
-- Schema `core` esposto via `ALTER ROLE authenticator SET pgrst.db_schemas` + reload
-- Verificato remoto: event_links 2.7M, lebi_records 166K, caduti/decorati completi
-
-### Persistenza snapshot V7.8 (execute_followup sopravvive a restart)
-- `_stage_persist`: salva `EvidenceSnapshotV7` su tabella `research_snapshots` (imi_internati.db)
-- `execute_followup`: fallback `_load_snapshot_from_db` se run non in memoria
-- TTL 30 giorni automatico
-
-### AI
-- `ai_client.py`: GEMINI_MODEL default → `gemini-flash-lite-latest` (unico provider funzionante)
-- OpenAI/Anthropic/Mistral/Perplexity ancora non operativi (quota/chiave)
-
-### Qualità
-- `v7_narrator.py`: skip list +Ancona, Germania, Austria, Polonia, storia/contesto
-
-### Docs
-- `docs/LEBI_IMI_ARCHIVE.md` §3bis: semantica matricole + risultati cross-link
-- `docs/todo/TODO.md`: sezioni A/D aggiornate a stato reale
-- `ARCHITECTURE.md` root: ripristinato (era corrotto a "v")
