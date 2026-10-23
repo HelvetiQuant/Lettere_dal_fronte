@@ -1,0 +1,53 @@
+Ecco l'analisi tecnica e le piste archivistiche puntuali per il caso in esame.
+
+---
+
+### 1. Interpretazione dell'annotazione "sbandato" post-8 settembre 1943
+
+L'annotazione "sbandato" in data 8 settembre 1943 su un foglio matricolare sintetico è quasi sempre una **verbalizzazione d'ufficio retroattiva**, redatta dai Distretti Militari tra il 1945 e il 1948 in base alle circolari di regolarizzazione post-belliche (D.L.T. n. 124/1945 e D.L.C. n. 137/1948). 
+
+Se il militare era già rimpatriato per motivi di salute:
+* **Mancata ricezione degli atti sanitari:** L'ospedale da campo o la nave/treno ospedale non inviarono tempestivamente il verbale di ricovero o di riforma al deposito reggimentale, o questi registri andarono distrutti nei bombardamenti.
+* **Licenza di convalescenza:** Se il soldato fu rimpatriato e posto in "licenza straordinaria di convalescenza" in attesa di visita collegiale, formalmente risultava ancora "in forza" al reparto. All'atto dell'armistizio, non trovandosi sotto controllo dell'autorità militare regia o della RSI, la burocrazia post-bellica ha applicato la formula standard "sbandatosi l'8/9/1943", che fungeva da sanatoria amministrativa per chiudere la posizione matricolare senza aprire procedimenti per diserzione.
+
+---
+
+### 2. Conservazione dei Fogli Matricolari di Piacenza (classi 1915-1925) fuori dall'Archivio di Stato
+
+I ruoli e i fogli matricolari dell'ex **Distretto Militare di Piacenza** (soppresso e accorpato prima a Parma e poi a Bologna) non ancora versati all'Archivio di Stato sono custoditi da:
+
+* **Comando Militare Esercito (CME) "Emilia-Romagna" – Ufficio Documentale di Bologna** (ex CEDOC, via De' Castagnoli 3, Bologna).
+  * È l'ente dell'Esercito territorialmente competente che gestisce l'archivio matricolare residuale delle province di Bologna, Ferrara, Modena, Reggio Emilia, Parma e Piacenza. La richiesta si inoltra via PEC/email allegando delega/dichiarazione di discendenza.
+* **Ce.De.C.U. (Centro di Dematerializzazione e Conservazione Unico) dell'Esercito – Gaeta**:
+  * Qualora l'Ufficio Documentale di Bologna avesse già digitalizzato o centralizzato i fondi chiusi delle classi 1915-1925, le pratiche transitano da questo centro d'archivio centrale della Forza Armata.
+
+---
+
+### 3. Archivi dei ricoveri psichiatrici (1940-1945 e post-bellico) – Piacenza
+
+Per accertare i ricoveri civili e militari dell'epoca:
+
+* **Ospedale Psichiatrico Provinciale di Piacenza ("Madonna delle Grazie" - San Niccolò):**
+  * Ha accolto sia civili che militari rimpatriati con "nevrosi di guerra" o diagnosi di psicosi/schizofrenia.
+  * **Conservazione cartelle cliniche:** **Archivio Storico dell'Azienda USL di Piacenza** (Ufficio Archivio e Flussi Documentali / Direzione Sanitaria). I fascicoli sanitari individuali dei dimessi/deceduti contengono diario clinico, prescrizioni di terapia elettroconvulsivante (TEC) e corrispondenza con l'autorità militare.
+* **Archivio Storico dell'ex Ospedale Psichiatrico "San Lazzaro" di Reggio Emilia (Biblioteca Scientifica Carlo Livi):**
+  * Fondamentale per l'Emilia: fu il principale centro neuropsichiatrico concentrazionario e di smistamento per militari travolti da traumi bellici nel Nord Italia. Molti soldati emiliani venivano inviati qui prima della destinazione finale o del congedo. Il fondo conserva registri militari e cartelle nominative dettagliate.
+* **Ospedale Militare Principale di Bologna:**
+  * Struttura militare di transito per i degenti emiliani. Le cartelle cliniche militari storiche della Sanità Militare sono in gran parte confluite presso il **Centro Traumatologico Ortopedico / Dipartimento Militare di Medicina Legale (DMML) di Padova o Bologna** (competenze sanitarie ex Sanità Militare 1° Fo.Cen.).
+
+---
+
+### 4. Piste archivistiche alternative (Sanità, Pensioni, Invalidità)
+
+Se il foglio matricolare tace, la storia clinico-militare si ricostruisce tramite:
+
+1. **Fascicolo Pensioni di Guerra (Fondo fondamentale per tracciare la TEC e le cause di servizio):**
+   * **Archivio Centrale dello Stato (ACS) – Roma:** Fondo *Ministero del Tesoro - Direzione Generale delle Pensioni di Guerra*. Conserva i fascicoli delle domande di pensione privilegiata o di guerra respinte o accolte, con perizie mediche collegiali, copie di cartelle cliniche di guerra e memorie del soldato.
+   * **Ragioneria Territoriale dello Stato (RTS) di Parma/Piacenza:** Per i fascicoli dei pagamenti delle pensioni dirette ordinarie o tabellari di guerra (se concesse a vita).
+2. **Commissione Medico-Ospedaliera (CMO) / Commissioni di Sanità Militare:**
+   * La concessione della riforma per infermità o del congedo assoluto richiedeva un verbale della CMO (spesso CMO di Bologna o di Piacenza).
+   * **Archivio del Dipartimento Militare di Medicina Legale (DMML) di Bologna (ora Ufficio Sanità del CME Emilia-Romagna):** Custodisce i registri "Modello ML" (Modelli Sanitari) e i verbali di visita medica collegiale collegati all'idoneità al servizio.
+3. **Archivio Storico A.N.M.I.G. (Associazione Nazionale Mutilati e Invalidi di Guerra) – Sezione di Piacenza:**
+   * L'iscrizione all'ANMIG era il passaggio obbligato per ottenere tutele. I fascicoli personali dei soci conservati presso la Sezione provinciale contengono copie di cartelle sanitarie, diagnosi di "psicosi traumatica da guerra", richieste di riconoscimento causa di servizio e perizie sull'uso di elettroshock.
+4. **Archivio di Stato di Piacenza – Fondo "Prefettura / Ufficio Leva" (Verbali di Riforma):**
+   * Anche se il foglio matricolare è sintetico, verificare nei **Verbali delle Sedute di Riforma/Rivisita del Distretto** (serie aggregata alle Liste di Leva): vi sono trascritti i quadri diagnostici sintetici che motivavano la declaratoria di inabilità (es. "demenza precoce", "frenastenia", "psiconevrosi da spavento bellico").

@@ -19,7 +19,7 @@ class ProviderCWGC(SourceProvider):
     authorized_domains = {"www.cwgc.org", "cwgc.org"}
     cache_ttl_days = 120
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         conn = get_conn()
         conn.row_factory = _dict_factory
         cur = conn.cursor()

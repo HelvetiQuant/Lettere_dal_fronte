@@ -396,12 +396,213 @@ export interface EventDossierResponse {
   ok?: boolean;
   source?: string;
   event?: EventRecord;
+  evento?: EventRecord;
   caduti?: { items: CadutoRecord[]; total: number };
   decorati?: { items: DecoratoRecord[]; total: number };
   internati?: { items: InternatoRecord[]; total: number };
   documenti?: { items: DocumentoRecord[]; total: number };
   fonti?: { items: FonteIndiceRecord[]; total: number };
   total_fonti?: number;
+}
+
+// ── Event Research Pipeline (nuova architettura) ──
+
+export interface EventMatch {
+  id: number;
+  nome: string;
+  aliases: string[];
+  keywords: string[];
+  data_inizio: string;
+  data_fine: string;
+  luogo: string;
+  descrizione: string;
+  score: number;
+  match_source: string;
+  event_type: string;
+  parent_events: string[];
+  child_events: string[];
+  is_collection: boolean;
+}
+
+export interface EventResolution {
+  query: string;
+  is_event: boolean;
+  canonical: string | null;
+  canonical_id: number | null;
+  matches: EventMatch[];
+  ambiguity_warning: string | null;
+  proposed_distinctions: { type: string; nome: string; periodo: string; luogo: string; descrizione: string }[];
+  conflict: string;
+  confidence: number;
+}
+
+export interface EventSource {
+  source_id: string;
+  title: string;
+  source_type: string;
+  authority: string;
+  url: string;
+  archive_reference: string;
+  author_or_institution: string;
+  date: string;
+  excerpt: string;
+  summary: string;
+  availability: string;
+  relevance_score: number;
+  temporal_compatible: boolean;
+  geographic_compatible: boolean;
+  verification_status: string;
+  verification_note: string;
+}
+
+export interface EventClaim {
+  claim_id: string;
+  text: string;
+  claim_type: string;
+  value: string;
+  sources: string[];
+  confidence: string;
+  concordance: string;
+  conflicting_claims: string[];
+}
+
+export interface EvidencePackage {
+  event_name: string;
+  event_id: number | null;
+  resolution: EventResolution;
+  sources: EventSource[];
+  claims: EventClaim[];
+  concordant_facts: EventClaim[];
+  divergent_versions: EventClaim[];
+  uncertain_elements: EventClaim[];
+  archival_sources: EventSource[];
+  bibliographic_sources: EventSource[];
+  web_sources: EventSource[];
+  related_people: Record<string, unknown>[];
+  related_documents: Record<string, unknown>[];
+  graph_data: { nodes: Record<string, unknown>[]; edges: Record<string, unknown>[] };
+  collection_date: string;
+}
+
+export interface NarrativeParagraph {
+  section: string;
+  text: string;
+  source_ids: string[];
+  source_labels: string[];
+}
+
+export interface NarrativeReport {
+  event_name: string;
+  event_id: number | null;
+  resolution: EventResolution;
+  sections: NarrativeParagraph[];
+  inquadramento: string;
+  narrazione: string;
+  cronologia: { data: string; fase: string; descrizione: string; fonti: string[] }[];
+  luoghi: { nome: string; ruolo: string; fonti: string[] }[];
+  reparti: { nome: string; ruolo: string; fonti: string[] }[];
+  cause_conseguenze: string;
+  sintesi_concordanti: string;
+  fatti_concordanti: { fatto: string; fonti: string[] }[];
+  versioni_divergenti: { fatto: string; versione_a: string; fonte_a: string; versione_b: string; fonte_b: string }[];
+  elementi_incerti: { elemento: string; motivo: string; fonti: string[] }[];
+  fonti_archivistiche: EventSource[];
+  fonti_bibliografiche: EventSource[];
+  grafo: { nodes: Record<string, unknown>[]; edges: Record<string, unknown>[] };
+  persone_collegate: Record<string, unknown>[];
+  evidence_package: EvidencePackage;
+  ai_used: boolean;
+  ai_model: string | null;
+}
+
+export interface LinkAuditEntry {
+  link_id: number;
+  evento_id: number;
+  evento_nome: string;
+  target_table: string;
+  target_id: number;
+  link_type: string;
+  match_field: string;
+  match_value: string;
+  original_confidence: number;
+  match_method: string;
+  temporal_compatible: boolean;
+  geographic_compatible: boolean;
+  military_context: boolean;
+  review_status: string;
+  review_reason: string;
+  audit_date: string;
+}
+
+export interface AuditSummary {
+  total_links: number;
+  candidates: number;
+  probable: number;
+  confirmed: number;
+  rejected: number;
+  by_link_type: Record<string, Record<string, number>>;
+  by_event: Record<string, Record<string, number>>;
+  issues: string[];
+}
+
+// ── Historical Map ──
+
+export interface MapLocation {
+  name: string;
+  lat: number;
+  lon: number;
+  role: string;
+  phase: string | null;
+  source_ids: string[];
+  verification: string;
+  label_number: number;
+}
+
+export interface MapLine {
+  name: string;
+  points: { lat: number; lon: number }[];
+  line_type: string;
+  style: string;
+  color: string;
+  phase: string | null;
+  source_ids: string[];
+  verification: string;
+}
+
+export interface MapMovement {
+  name: string;
+  from: { lat: number; lon: number };
+  to: { lat: number; lon: number };
+  movement_type: string;
+  date: string;
+  phase: string | null;
+  source_ids: string[];
+  verification: string;
+  label_number: number;
+}
+
+export interface MapPhase {
+  name: string;
+  start_date: string;
+  end_date: string;
+  color: string;
+  description: string;
+}
+
+export interface HistoricalMap {
+  event_name: string;
+  title: string;
+  is_partial: boolean;
+  partial_note: string;
+  locations: MapLocation[];
+  lines: MapLine[];
+  movements: MapMovement[];
+  phases: MapPhase[];
+  bounding_box: { min_lat: number; min_lon: number; max_lat: number; max_lon: number };
+  svg: string;
+  legend: { symbol: string; meaning: string }[];
+  source_references: Record<string, string>;
+  sub_maps: HistoricalMap[];
 }
 
 export interface EntitaDetailResponse {
@@ -415,4 +616,397 @@ export interface EntitaDetailResponse {
     link_type: string;
     confidence: number;
   }[];
+}
+
+// ── V7 Unified Research Pipeline ──
+
+export interface V7SemanticCounts {
+  web_candidates_seen?: number;
+  person_sources_confirmed?: number;
+  person_sources_probable?: number;
+  person_sources_ambiguous?: number;
+  person_candidates_rejected?: number;
+  context_sources?: number;
+  unique_person_facts?: number;
+  supporting_evidence_records?: number;
+  unique_source_records?: number;
+  provenance_items?: number;
+  conflict_sets?: number;
+  rejected_observations?: number;
+  candidate_clusters?: number;
+  identity_status?: string;
+  cross_war_contamination?: boolean;
+  claims_accepted?: number;
+  claims_rejected?: number;
+  claims_needs_review?: number;
+  [key: string]: unknown;
+}
+
+export interface V7PersonClaim {
+  predicate?: string;
+  value?: string;
+  certainty?: string;
+  source_count?: number;
+  evidence_count?: number;
+  [key: string]: unknown;
+}
+
+export interface V7Snapshot {
+  snapshot_id?: string;
+  schema_version?: string;
+  narrator_contract_version?: string;
+  identity_status?: string;
+  corroboration_status?: string;
+  war_period?: string;
+  person_claims?: V7PersonClaim[];
+  context_claims?: Record<string, unknown>[];
+  candidate_identities?: Record<string, unknown>[];
+  rejected_homonyms?: Record<string, unknown>[];
+  source_lineage_groups?: Record<string, unknown>[];
+  independence_groups?: Record<string, unknown>[];
+  [key: string]: unknown;
+}
+
+export interface V7ResearchResult {
+  run_id: string;
+  plan_id: string;
+  snapshot: V7Snapshot | null;
+  report: string | null;
+  report_structured?: Record<string, unknown> | null;
+  narration_result?: Record<string, unknown> | null;
+  errors: string[];
+  warnings: string[];
+  stage_timings: Record<string, number>;
+  observation_count: number;
+  semantic_counts: V7SemanticCounts;
+}
+
+export interface V7HealthResponse {
+  status: string;
+  orchestrator_class: string;
+  schema_version: string;
+  narrator_contract_version: string;
+}
+
+export interface V7CapabilitiesResponse {
+  orchestrator_class: string;
+  schema_version: string;
+  narrator_contract_version?: string;
+  [key: string]: unknown;
+}
+
+export interface V7NarrateResponse {
+  report: string;
+  snapshot_id: string;
+  narrator_contract_version: string;
+}
+
+// ── V7 Conversational Follow-Up ──
+
+export interface V7ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface V7FollowupGeneration {
+  mode: string;
+  provider: string;
+  model: string;
+  input_tokens?: number;
+  output_tokens?: number;
+  cost?: number;
+  latency_ms?: number;
+  fallback_reason?: string;
+}
+
+export interface V7FollowupResponse {
+  run_id: string;
+  question: string;
+  answer: string;
+  generation: V7FollowupGeneration;
+  errors: string[];
+}
+
+// ── Cross-Linking Safe ──
+
+export interface CrossLinkStatus {
+  total_audits: number;
+  active: number;
+  reverted: number;
+  by_method: { method: string; active: number; reverted: number }[];
+  by_source_table: { table: string; active: number; reverted: number }[];
+  by_column: { column: string; active: number; reverted: number }[];
+  error?: string;
+}
+
+// ── Canonical Event ──
+
+export interface CanonicalEvent {
+  stable_id: string;
+  id: number;
+  preferred_name: string;
+  aliases: { name: string; type: string }[];
+  conflict: string;
+  event_type: string;
+  parent_event_id: string | null;
+  child_event_ids: string[];
+  date_start: string | null;
+  date_end: string | null;
+  temporal_precision: string;
+  general_location: string | null;
+  localities: string[];
+  subjects: string[];
+  units: string[];
+  description: string | null;
+  review_status: string;
+  narrative_version: string | null;
+  narrative_updated_at: string | null;
+}
+
+export interface CanonicalEventListResponse {
+  events: CanonicalEvent[];
+  total: number;
+}
+
+export interface CanonicalEventChildrenResponse {
+  parent: CanonicalEvent;
+  children: CanonicalEvent[];
+}
+
+// ── Graph Entity (canonical graph) ──
+
+export interface GraphNodeDTO {
+  id: string;
+  namespace: string;
+  type: string;
+  label: string;
+  source_table: string;
+  source_id: number;
+  external_id: string | null;
+  attributes: Record<string, unknown>;
+  status: string;
+}
+
+export interface GraphEvidenceDTO {
+  type: string;
+  label: string;
+  value: string | null;
+  source_table: string | null;
+  source_id: number | null;
+  source_url: string | null;
+  role: 'supports' | 'contradicts' | 'context';
+  strength: number | null;
+}
+
+export interface GraphEdgeDTO {
+  id: string;
+  source: GraphNodeDTO;
+  target: GraphNodeDTO;
+  relation: { type: string; label: string; direction: string };
+  status: string;
+  confidence: number | null;
+  confidence_label: string | null;
+  confidence_meaning: string;
+  explanation: string;
+  evidence: GraphEvidenceDTO[];
+  contrary_signals: GraphEvidenceDTO[];
+  algorithm: string;
+  algorithm_version: string;
+  source_system: string;
+  source_edge_id: string | null;
+  review: {
+    required: boolean;
+    decision: string | null;
+    reviewed_by: string | null;
+    reviewed_at: string | null;
+    note: string | null;
+  };
+  created_at: string | null;
+  last_verified_at: string | null;
+}
+
+export interface GraphIntegrityIssueDTO {
+  code: string;
+  severity: 'info' | 'warning' | 'error';
+  message: string;
+  source_system: string | null;
+  source_edge_id: string | null;
+}
+
+export interface GraphEntityResponse {
+  root: GraphNodeDTO;
+  nodes: GraphNodeDTO[];
+  edges: GraphEdgeDTO[];
+  issues: GraphIntegrityIssueDTO[];
+  truncated: boolean;
+  generated_at: string;
+}
+
+// ── RAG Pipeline ──
+
+export interface RAGChunkDTO {
+  chunk_id: string;
+  source_table: string;
+  source_id: number;
+  title: string;
+  text: string;
+  score: number;
+  retrieval_method: string;
+  metadata: Record<string, unknown>;
+  reranked_score: number;
+  rerank_reasons: string[];
+}
+
+export interface RAGContextResponse {
+  system_prompt: string;
+  user_context: string;
+  chunks: RAGChunkDTO[];
+  citations: { index: number; source_table: string; source_id: number; title: string; score: number; reasons: string[] }[];
+  token_estimate: number;
+  truncated: boolean;
+  warnings: string[];
+}
+
+export interface RAGValidationResponse {
+  valid: boolean;
+  issues: string[];
+}
+
+// ── Map Features ──
+
+export interface MapFeatureRecord {
+  id: string;
+  event_id: string;
+  phase: string;
+  feature_type: string;
+  geojson: Record<string, unknown>;
+  date_start: string | null;
+  date_end: string | null;
+  label: string;
+  description: string | null;
+  certainty: string;
+  source_table: string | null;
+  source_id: number | null;
+  source_url: string | null;
+  review_status: string;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MapFeatureListResponse {
+  features: MapFeatureRecord[];
+  total: number;
+}
+
+// ── AI Runtime ──
+
+export interface AIRuntimeHealth {
+  healthy: boolean;
+  provider: string;
+  model: string;
+  detail: string;
+  local: boolean;
+}
+
+export interface AIRuntimeConfig {
+  provider: string;
+  local_only: boolean;
+  lm_studio_configured: boolean;
+  generation: Record<string, unknown>;
+  embedding: Record<string, unknown>;
+  remote_fallback_order: string[];
+}
+
+export interface AIRuntimeBenchmark {
+  ok: boolean;
+  provider: string;
+  model: string;
+  latency_ms: number;
+  input_tokens: number;
+  output_tokens: number;
+  text_preview: string;
+  error: string;
+}
+
+// ── Chat ──
+
+export interface ChatMessageDTO {
+  role: string;
+  content: string;
+}
+
+export interface ChatResponseDTO {
+  risposta: string;
+  provider: string;
+  model: string;
+  latency_ms: number;
+  input_tokens: number;
+  output_tokens: number;
+  local: boolean;
+}
+
+export interface ChatHealthDTO {
+  available: boolean;
+  provider: string;
+  model: string;
+  local: boolean;
+  detail: string;
+}
+
+// ── Chat Research (Person Finder) ──
+
+export interface ResearchParsedInput {
+  nome?: string;
+  cognome?: string;
+  anno_nascita?: string;
+  luogo_nascita?: string;
+  conflitto_presunto?: string;
+  [key: string]: unknown;
+}
+
+export interface ResearchCandidate {
+  nome_originale: string;
+  nome_normalizzato: string;
+  stato: string;
+  compatibilita: string[];
+  contraddizioni: string[];
+  fonti: Array<{
+    istituzione: string;
+    source_level: string;
+    url: string;
+    esito: string;
+  }>;
+  confidence: number;
+}
+
+export interface ResearchDossier {
+  stato_identificazione: string;
+  profilo: Record<string, unknown>;
+  candidati: ResearchCandidate[];
+  omonimi_esclusi: ResearchCandidate[];
+  fonti: Array<Record<string, unknown>>;
+  contraddizioni: Array<Record<string, unknown>>;
+  ricerche_negative: Array<Record<string, unknown>>;
+  piste: Array<Record<string, unknown>>;
+  richieste: Array<{
+    ente: string;
+    fondo: string;
+    documento_richiesto: string;
+    dati_conosciuti: string;
+    motivazione: string;
+  }>;
+  varianti: Array<{ text: string; variant_type: string }>;
+  ai_used: boolean;
+  ai_model: string;
+}
+
+export interface ResearchChatResponse {
+  conversation_id: string;
+  answer: string;
+  dossier: ResearchDossier;
+  parsed_input: ResearchParsedInput;
+  ai_used: boolean;
+  ai_model: string;
 }

@@ -1,0 +1,89 @@
+## Rapporto di Ricerca: Rossi Mario
+
+### Identità e Provenienza
+- **Nome:** Rossi Mario
+- **Luogo di Nascita:** Arezzo [source: origin_record]
+- **Presenza:** Confermata
+- **Provenienza:** Verificata
+
+### Risoluzione dell'Identità
+L'identità di Rossi Mario è stata risolta, ma ci sono numerosi conflitti riguardanti il suo destino, grado militare, unità di appartenenza, anno e luogo di morte.
+
+### Conflitti Rilevati
+1. **Destino:**
+   - Deceduto
+   - Altro
+   - Rimpatriato
+
+2. **Grado Militare:**
+   - Soldato
+   - Tenente In Servizio Attivo
+   - Sottotenente Di Complemento
+   - Caporale
+   - Allievo Fuochista
+   - Capitano In Servizio Attivo
+   - Tenente Di Complemento
+   - Sergente Maggiore
+   - Nessun grado specificato
+
+3. **Unità di Appartenenza:**
+   - 9 Reggimento Artiglieria Pesante Campale
+   - 330 Compagnia Mitraglieri Fiat
+   - 66 Reggimento Fanteria
+   - 2 Reggimento Artiglieria Pesante Campale
+   - C. R. E. M.
+   - 42 Reggimento Fanteria
+   - 3 Reggimento Bersaglieri
+   - 5 Reggimento Alpini
+   - 1 Reggimento Artiglieria Da Fortezza
+   - 18 Reggimento Fanteria
+   - Nessuna unità specificata
+
+4. **Anno di Morte:**
+   - 1915
+   - 1916
+   - 1917
+   - 1918
+   - 1919
+
+5. **Luogo di Morte:**
+   - Pavia
+   - Carso
+   - Caserta
+   - Medio Isonzo
+   - Gragnano
+   - Ospedaletto Da Campo N. 216
+   - Monte Valbella
+   - Monte Ortigara
+   - Ospedaletto Da Campo N. 156
+   - Monte Nero
+   - Nessun luogo specificato
+
+### Gaps e Limitazioni
+Non sono disponibili evidenze accettate per determinare:
+- Anno di nascita
+- Grado militare definitivo
+- Unità di appartenenza definitiva
+- Data, anno e luogo di morte
+- Causa della morte
+- Eventuale prigionia o luogo di internamento
+- Luogo di sepoltura
+- Luogo e data di cattura
+- Destino finale
+
+### Conclusioni
+La ricerca su Rossi Mario è caratterizzata da numerosi conflitti e lacune informative. Sebbene l'identità sia stata risolta, le informazioni dettagliate riguardanti il suo servizio militare e il suo destino rimangono incerte. Ulteriori indagini e fonti potrebbero essere necessarie per chiarire questi aspetti.
+
+### Note
+- Non sono stati identificati omonimi con la stessa identità.
+- La ricerca è stata condotta utilizzando esclusivamente dati verificati e presenti nel database locale.
+---
+
+## Provenienza
+
+- Snapshot: snap_v7_9ef9297e73bf0e5f
+- Schema: 7
+- Narrator Contract: 7.1
+- Identity Resolution: RESOLVED
+- External Corroboration: PARTIAL
+- Provider Ledger: 74 observations

@@ -1,0 +1,132 @@
+# Rapporto di Ricerca — snap_v7_8b49e268dffc30d1
+Versione schema: 7
+Intent: PERSON_LOOKUP
+Target: Ferrari Carlo
+Contratto Narratore: 7.1
+
+## Risoluzione Identità: RESOLVED
+## Corroborazione Esterna: PARTIAL
+
+## Claim in Conflitto
+  - fate: deceduto (CONFLICTING)
+  - fate: altro (CONFLICTING)
+  - rank: Studente (CONFLICTING)
+  - rank: Caporale Maggiore (CONFLICTING)
+  - rank: Soldato (CONFLICTING)
+  - rank: Caporale (CONFLICTING)
+  - rank: Sergente (CONFLICTING)
+  - unit: 26 Reggimento Fanteria (CONFLICTING)
+  - unit: 5 Reggimento Artiglieria Da Fortezza (CONFLICTING)
+  - unit: 74 Reggimento Fanteria (CONFLICTING)
+  - unit: 3 Reggimento Artiglieria Da Fortezza (CONFLICTING)
+  - unit: 2 Reggimento Fanteria (CONFLICTING)
+  - unit: 209 Reggimento Fanteria (CONFLICTING)
+  - unit: 1221 Compagnia Mitraglieri Fiat (CONFLICTING)
+  - unit: 1 Reggimento Alpini (CONFLICTING)
+  - unit: 1 Compagnia Di Sanità (CONFLICTING)
+  - unit: 60 Reggimento Fanteria (CONFLICTING)
+  - unit: 66 Reggimento Fanteria (CONFLICTING)
+  - unit: 111 Reggimento Fanteria (CONFLICTING)
+  - unit: 249 Reggimento Fanteria (CONFLICTING)
+  - unit: 1 Reggimento Artiglieria Da Montagna (CONFLICTING)
+  - unit: 250 Reggimento Fanteria (CONFLICTING)
+  - unit: 93 Reggimento Fanteria (CONFLICTING)
+  - unit: 49 Reggimento Fanteria (CONFLICTING)
+  - unit: 112 Reggimento Fanteria (CONFLICTING)
+  - unit: Quartiere Generale Comando 9 Divisione (CONFLICTING)
+  - death_year: 1919 (CONFLICTING)
+  - death_year: 1916 (CONFLICTING)
+  - death_year: 1918 (CONFLICTING)
+  - death_year: 1917 (CONFLICTING)
+  - death_year: 1915 (CONFLICTING)
+  - death_place: Milano (CONFLICTING)
+  - death_place: Piacenza (CONFLICTING)
+  - death_place: Carso (CONFLICTING)
+  - death_place: Ospedaletto Da Campo N. 205 (CONFLICTING)
+  - death_place: Campo (CONFLICTING)
+  - death_place: Prigionia (CONFLICTING)
+  - death_place: Mendatica Montegrosso (CONFLICTING)
+  - death_place: Finalborgo (CONFLICTING)
+  - death_place: Monte Colbricon (CONFLICTING)
+  - death_place: Monte Pasubio (CONFLICTING)
+  - death_place: Ospedaletto Da Campo N. 220 (CONFLICTING)
+  - death_place: 84 Sezione Di Sanità (CONFLICTING)
+  - death_place: Tirano (CONFLICTING)
+  - death_place: Bassano (CONFLICTING)
+  - death_place: 8 Sezione Di Sanità (CONFLICTING)
+  - death_place: Ospedale Da Campo N. 020 (CONFLICTING)
+
+## Omonimi Respinti
+  - FERRARI MARIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI REALDO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI GIOVANNI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ANGELO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ANTONIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI CARMELO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI CRISTIANO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI : motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI CARMINO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI TEN...: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI STN.: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI GIACOMO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI SILVANO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI 1° ENRICO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI 4° GIO. BATTISTA: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ACHILLE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ADELMO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ADELVALDO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ADOLFO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI AGAPITO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI AGOSTINO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI MICHELE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ABELE DI NATALE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ABRAMO DI GUGLIELMO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ADOLFO DI BATTISTA: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI AGOSTINO BATTISTA DI FRANCESCO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI AGOSTINO DI BERNARDINO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI ARSENIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI CARLO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI DESIDERIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI DOMENICO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI EUFEMIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI EUGENIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI FRANCESCO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI GIACOMO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI GIOVANNI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI GIUSEPPE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI LUIGI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI NICOLA: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - FERRARI ALBERTO DI VITTORIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - birth_place: Field birth_place not supported by accepted evidence [BLOCCANTE]
+  - rank: Field rank not supported by accepted evidence [BLOCCANTE]
+  - unit: Field unit not supported by accepted evidence
+  - death_date: Field death_date not supported by accepted evidence
+  - death_year: Field death_year not supported by accepted evidence
+  - death_place: Field death_place not supported by accepted evidence
+  - death_cause: Field death_cause not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - internment_place: Field internment_place not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+  - capture_place: Field capture_place not supported by accepted evidence
+  - capture_date: Field capture_date not supported by accepted evidence
+  - fate: Field fate not supported by accepted evidence
+
+## Limitazioni
+  - NO_AI_PROVIDER: No AI provider available for narration. Using deterministic fallback.
+
+---
+## Provenienza
+- Snapshot: snap_v7_8b49e268dffc30d1
+- Schema: 7
+- Narrator Contract: 7.1
+- Identity Resolution: RESOLVED
+- External Corroboration: PARTIAL
+- Provider Ledger: 81 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.

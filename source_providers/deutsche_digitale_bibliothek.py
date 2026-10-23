@@ -23,7 +23,7 @@ class ProviderDDB(SourceProvider):
     }
     cache_ttl_days = 90
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         return []
 
     def get_metadata(self, record_id: str) -> dict:

@@ -1,0 +1,975 @@
+﻿python : C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified 
+HTTPS request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+In riga:1 car:32
++ ... PYTHONIOENCODING="utf-8"; python _test_lebi_narrative.py 2>&1 | Out-F ...
++                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\eryma\...ml#tls-warnings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.internetculturale.it'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+  Selected: CURIAZZI GIOVANBATTISTA |  | sopravvissuto | nato 05-02-1923 a Almenno San Bartolomeo
+  Selected: PELLEGRINI GIACOMO | Soldato | sopravvissuto | nato 27-07-1911 a Capetrano
+  Selected: BULGARELLI ERMANNO | Soldato |  | nato 31-08-1923 a Carpi
+  Selected: GERMANO GUIDO | Caporale | sopravvissuto | nato 23-09-1915 a Castel Del Monte
+  Selected: BRUTTI ALFIO |  | sopravvissuto | nato 29-02-1924 a Maiolati Spontini
+
+======================================================================
+Testing 5 names through UnifiedResearchOrchestratorV7
+======================================================================
+
+
+======================================================================
+TEST 1/5: CURIAZZI GIOVANBATTISTA
+======================================================================
+2026-08-09 22:57:26,677 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_a99c813edf02', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_b146302e8761', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_16d8b581badd']
+2026-08-09 22:57:30,227 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:57:30,227 [INFO] Retrying request to /chat/completions in 0.407525 seconds
+2026-08-09 22:57:30,986 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:57:30,986 [INFO] Retrying request to /chat/completions in 0.751394 seconds
+2026-08-09 22:57:31,961 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:57:31,961 [WARNING] AI provider openai failed: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}
+2026-08-09 22:57:33,246 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 401 Unauthorized"
+2026-08-09 22:57:33,247 [WARNING] AI provider anthropic failed: Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'API key is invalid.'}, 'request_id': None}
+2026-08-09 22:57:38,905 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:57:38,927 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 7 blocks
+2026-08-09 22:57:38,929 [WARNING] NARRATE_V2: Hallucination check found 10 warnings: ['HALLUCINATED_PLACE_OR_NAME:Bergamo in block b2 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Germania in block b3 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Innsbruck in block b3 ÔÇö not in evidence']
+2026-08-09 22:57:38,929 [WARNING] NARRATE_V2: Severe hallucination (10 warnings), falling back to deterministic
+2026-08-09 22:57:38,929 [INFO] NARRATE_V2: mode=deterministic, provider=, status=validated_deterministic, claims_used=17, omitted=0, repair=no
+Identity: RESOLVED_IDENTITY | Obs: 57 | Elapsed: 22.5s
+
+--- REPORT ---
+
+# Rapporto di Ricerca ÔÇö snap_v7_a511c7d66ba80af6
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: CURIAZZI GIOVANBATTISTA
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: RESOLVED_IDENTITY
+## Corroborazione: PARTIAL
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - birth_date: 05-02-1923
+  - birth_place: Almenno San Bartolomeo
+  - birth_province: Bergamo
+  - military_unit: 77 Rgt. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Italiano
+  - capture_place: Milano
+  - capture_date: 08-09-1943
+  - internment_place: ["Innsbruck", "Stalag III D", "Arb. Kdo. 284"]
+  - fate: sopravvissuto
+  - return_date: 08-09-1945
+
+## PROBABLE (fonte valida, incertezza su OCR/normalizzazione)
+  - birth_place: Almenno San Bartolomeo
+  - unit: 77 Rgt. Ftr.
+  - fate: sopravvissuto
+
+## Claim di Contesto (non attribuibili alla persona)
+  - [EVENT] source_url: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/show/249145
+  - [EVENT] source_document: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/showpdf/249145
+  - [EVENT] source_id: 249145
+
+## Claim Asserti (origine, non corroborati)
+  - birth_place: Almenno San Bartolomeo
+  - unit: 77 Rgt. Ftr.
+  - fate: sopravvissuto
+  - birth_date: 05-02-1923
+  - birth_place: Almenno San Bartolomeo
+  - birth_province: Bergamo
+  - military_unit: 77 Rgt. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Italiano
+  - capture_place: Milano
+  - capture_date: 08-09-1943
+  - internment_place: ["Innsbruck", "Stalag III D", "Arb. Kdo. 284"]
+  - fate: sopravvissuto
+  - return_date: 08-09-1945
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - rank: Field rank not supported by accepted evidence [BLOCCANTE]
+  - death_date: Field death_date not supported by accepted evidence
+  - death_year: Field death_year not supported by accepted evidence
+  - death_place: Field death_place not supported by accepted evidence
+  - death_cause: Field death_cause not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+
+## Piste di Ricerca (non verificate)
+  - Curiazzi, caccia al Tricolore. (tavily)
+  - La firma di Curiazzi sullÔÇÖargento iridato a squadre di marcia - Zonamista Magazine (tavily)
+  - Francesco Wann├á Curiazzi - -- (tavily)
+  - GIOVANBATTISTA | Casa Newton (tavily)
+  - Federica Curiazzi - Insegnante-Atleta - Universit├á degli Studi di Bergamo (tavily)
+  - massimo curiazzi - responsabile centri sportivi presso Hservizi Spa (tavily)
+  - Giovanbattista Rigamonti - Capgemini (tavily)
+  - Giovanbattista Angelini (tavily)
+  - ROBERTA CURIAZZI - Project Office support / Graduate in Management Engineering - Aruba SpA (tavily)
+  - Giovanbattista Tusa (tavily)
+  - Giovanbattista Greco - Italy - Freelancer on Guru (tavily)
+  - Giovanbattista Franciosi Storia della famiglia e documenti storici (tavily)
+  - GIOVANBATTISTA FAZZOLARI - Il Mattino (tavily)
+  - Giovanbattista Catalano ┬╗ Perfil (tavily)
+  - giovanbattista Giovanbattista Oliveri - -- (tavily)
+  - Giovanbattista Cutolo - Open (tavily)
+  - Giovanbattista Castellano - Medico Chirurgo - Specialista in Odontostomatologia presso Dott. Giovanbattista Castellano (tavily)
+  - Giovanbattista Catalano - stats, career and market value (tavily)
+  - Giovanbattista Fazzolari - Wikipedia (tavily)
+  - giovanbattista belzoni Archivi - Fortunadrago.it (tavily)
+  - Curiazzi, caccia al Tricolore. (tavily)
+  - La firma di Curiazzi sullÔÇÖargento iridato a squadre di marcia - Zonamista Magazine (tavily)
+  - Francesco Wann├á Curiazzi - -- (tavily)
+  - GIOVANBATTISTA | Casa Newton (tavily)
+  - Federica Curiazzi - Insegnante-Atleta - Universit├á degli Studi di Bergamo (tavily)
+  - massimo curiazzi - responsabile centri sportivi presso Hservizi Spa (tavily)
+  - Giovanbattista Rigamonti - Capgemini (tavily)
+  - Giovanbattista Angelini (tavily)
+  - ROBERTA CURIAZZI - Project Office support / Graduate in Management Engineering - Aruba SpA (tavily)
+  - Giovanbattista Tusa (tavily)
+  - Giovanbattista Greco - Italy - Freelancer on Guru (tavily)
+  - Giovanbattista Franciosi Storia della famiglia e documenti storici (tavily)
+  - GIOVANBATTISTA FAZZOLARI - Il Mattino (tavily)
+  - Giovanbattista Catalano ┬╗ Perfil (tavily)
+  - giovanbattista Giovanbattista Oliveri - -- (tavily)
+  - Giovanbattista Cutolo - Open (tavily)
+  - Giovanbattista Castellano - Medico Chirurgo - Specialista in Odontostomatologia presso Dott. Giovanbattista Castellano (tavily)
+  - Giovanbattista Catalano - stats, career and market value (tavily)
+  - Giovanbattista Fazzolari - Wikipedia (tavily)
+  - giovanbattista belzoni Archivi - Fortunadrago.it (tavily)
+
+---
+## Fonti
+- **obs_70737f34d2a71862**: Curiazzi, caccia al Tricolore. ÔÇö https://ecodibergamo.it/stories/premium/Sport/curiazzi-caccia-al-tricolore-e-un-appello-ai-ladri-ridatemi-il-passaporto-o_3606275_11
+- **obs_208676c3661f0b35**: La firma di Curiazzi sullÔÇÖargento iridato a squadre di marcia - Zonamista Magazine ÔÇö https://zonamistamagazine.com/la-firma-di-curiazzi-sullargento-iridato-a-squadre-di-marcia
+- **obs_ffdd1aaf0ac1331d**: Francesco Wann├á Curiazzi - -- ÔÇö https://www.linkedin.com/in/francesco-wann%C3%A0-curiazzi-16199a144
+- **obs_a8725caf1afb7f0a**: GIOVANBATTISTA | Casa Newton ÔÇö https://www.casa-newton.com/en/rooms/giovanbattista
+- **obs_9061c1c3d8436cce**: Federica Curiazzi - Insegnante-Atleta - Universit├á degli Studi di Bergamo ÔÇö https://www.linkedin.com/in/federica-curiazzi-635060200
+- **obs_5ceb934b68d8e413**: massimo curiazzi - responsabile centri sportivi presso Hservizi Spa ÔÇö https://www.linkedin.com/in/massimo-curiazzi-9a226415b
+- **obs_1de5ed8067025e91**: Giovanbattista Rigamonti - Capgemini ÔÇö https://www.linkedin.com/in/giovanbattista-rigamonti-514724a
+- **obs_5d3a1248aefbf84d**: Giovanbattista Angelini ÔÇö https://www.linkedin.com/in/giovanbattista-angelini
+- **obs_b38f4788cb43319e**: ROBERTA CURIAZZI - Project Office support / Graduate in Management Engineering - Aruba SpA ÔÇö https://www.linkedin.com/in/roberta-curiazzi-45847194/en
+- **obs_17122ba7e8597ef1**: Giovanbattista Tusa ÔÇö https://www.mimesisedizioni.it/catalogo/autore/10870/giovanbattista-tusa
+- **obs_21526a31c9d808a5**: Giovanbattista Greco - Italy - Freelancer on Guru ÔÇö https://guru.com/freelancers/giovanbattista-greco
+- **obs_cffe23e1bd927d1b**: Giovanbattista Franciosi Storia della famiglia e documenti storici ÔÇö https://www.myheritage.it/names/giovanbattista_franciosi
+- **obs_26e57901889a95d1**: GIOVANBATTISTA FAZZOLARI - Il Mattino ÔÇö https://www.ilmattino.it/t/giovanbattista-fazzolari
+- **obs_0c5dd25c964678df**: Giovanbattista Catalano ┬╗ Perfil ÔÇö https://www.livefutbol.com/person/pe314194/giovanbattista-catalano
+- **obs_10f566ff7c509f2a**: giovanbattista Giovanbattista Oliveri - -- ÔÇö https://www.linkedin.com/in/giovanbattista-giovanbattista-oliveri-956a9829
+- **obs_634e6472648c51e7**: Giovanbattista Cutolo - Open ÔÇö https://www.open.online/temi/giovanbattista-cutolo
+- **obs_6ff2b03eb187c794**: Giovanbattista Castellano - Medico Chirurgo - Specialista in Odontostomatologia presso Dott. Giovanbattista Castellano ÔÇö https://be.linkedin.com/in/giovanbattista-castellano-a7423556
+- **obs_3b0629a3a629b6a8**: Giovanbattista Catalano - stats, career and market value ÔÇö https://www.fotmob.com/players/446369/giovanbattista-catalano
+- **obs_8d722d3b48f7e1da**: Giovanbattista Fazzolari - Wikipedia ÔÇö https://en.wikipedia.org/wiki/Giovanbattista_Fazzolari
+- **obs_0c04ccc775b4200b**: giovanbattista belzoni Archivi - Fortunadrago.it ÔÇö https://www.fortunadrago.it/tag/giovanbattista-belzoni
+- **obs_c18edb8245cf2294**: Curiazzi, caccia al Tricolore. ÔÇö https://ecodibergamo.it/stories/premium/Sport/curiazzi-caccia-al-tricolore-e-un-appello-ai-ladri-ridatemi-il-passaporto-o_3606275_11
+- **obs_a7714e73e58d9631**: La firma di Curiazzi sullÔÇÖargento iridato a squadre di marcia - Zonamista Magazine ÔÇö https://zonamistamagazine.com/la-firma-di-curiazzi-sullargento-iridato-a-squadre-di-marcia
+- **obs_be4de6fff15960f6**: Francesco Wann├á Curiazzi - -- ÔÇö https://www.linkedin.com/in/francesco-wann%C3%A0-curiazzi-16199a144
+- **obs_69cd1b73d4f6b4dd**: GIOVANBATTISTA | Casa Newton ÔÇö https://www.casa-newton.com/en/rooms/giovanbattista
+- **obs_b24234d1be4fd8a9**: Federica Curiazzi - Insegnante-Atleta - Universit├á degli Studi di Bergamo ÔÇö https://www.linkedin.com/in/federica-curiazzi-635060200
+- **obs_a1f2fd2c2452e0ac**: massimo curiazzi - responsabile centri sportivi presso Hservizi Spa ÔÇö https://www.linkedin.com/in/massimo-curiazzi-9a226415b
+- **obs_48f3b7d72fe47dae**: Giovanbattista Rigamonti - Capgemini ÔÇö https://www.linkedin.com/in/giovanbattista-rigamonti-514724a
+- **obs_f543d375b83ad167**: Giovanbattista Angelini ÔÇö https://www.linkedin.com/in/giovanbattista-angelini
+- **obs_fec628a4ed8c0f3e**: ROBERTA CURIAZZI - Project Office support / Graduate in Management Engineering - Aruba SpA ÔÇö https://www.linkedin.com/in/roberta-curiazzi-45847194/en
+- **obs_ad6f18c62f71ab3a**: Giovanbattista Tusa ÔÇö https://www.mimesisedizioni.it/catalogo/autore/10870/giovanbattista-tusa
+- **obs_80033b1a28174cc6**: Giovanbattista Greco - Italy - Freelancer on Guru ÔÇö https://guru.com/freelancers/giovanbattista-greco
+- **obs_4f00988e08f74b25**: Giovanbattista Franciosi Storia della famiglia e documenti storici ÔÇö https://www.myheritage.it/names/giovanbattista_franciosi
+- **obs_64fb50bb00467c15**: GIOVANBATTISTA FAZZOLARI - Il Mattino ÔÇö https://www.ilmattino.it/t/giovanbattista-fazzolari
+- **obs_40835e5544aa1c76**: Giovanbattista Catalano ┬╗ Perfil ÔÇö https://www.livefutbol.com/person/pe314194/giovanbattista-catalano
+- **obs_901a8b2ffa3a26e9**: giovanbattista Giovanbattista Oliveri - -- ÔÇö https://www.linkedin.com/in/giovanbattista-giovanbattista-oliveri-956a9829
+- **obs_0ea14bd92c04ed8e**: Giovanbattista Cutolo - Open ÔÇö https://www.open.online/temi/giovanbattista-cutolo
+- **obs_035e95990709d959**: Giovanbattista Castellano - Medico Chirurgo - Specialista in Odontostomatologia presso Dott. Giovanbattista Castellano ÔÇö https://be.linkedin.com/in/giovanbattista-castellano-a7423556
+- **obs_9917a4f6b1289d7a**: Giovanbattista Catalano - stats, career and market value ÔÇö https://www.fotmob.com/players/446369/giovanbattista-catalano
+- **obs_8d75086ac08a8731**: Giovanbattista Fazzolari - Wikipedia ÔÇö https://en.wikipedia.org/wiki/Giovanbattista_Fazzolari
+- **obs_4232a6754890a7de**: giovanbattista belzoni Archivi - Fortunadrago.it ÔÇö https://www.fortunadrago.it/tag/giovanbattista-belzoni
+
+---
+## Provenienza
+- Snapshot: snap_v7_a511c7d66ba80af6
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Identity Resolution (legacy): RESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: cluster_a3b840198769
+- Person Claims: 14
+- Context Claims: 3
+- Candidate Identities: 0
+- Provider Ledger: 57 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto ├¿ stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 2/5: PELLEGRINI GIACOMO
+======================================================================
+2026-08-09 22:57:38,986 [INFO] LocalDbAdapter: 91 observations
+2026-08-09 22:57:40,293 [INFO] WebSearchAdapter[tavily]: 10 observations in 1.31s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-09 22:57:42,540 [INFO] FederationAdapter: 46 observations
+2026-08-09 22:57:43,941 [INFO] WebSearchAdapter[tavily]: 10 observations in 1.40s
+2026-08-09 22:57:44,986 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_13c535316c2c', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_2266c363ac54', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_cde456c538b7', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_7265ab905b91', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_5a77e99e6c36', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_1701680d8a68', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_ef34a608eb44']
+2026-08-09 22:57:46,910 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:57:46,911 [INFO] Retrying request to /chat/completions in 0.375688 seconds
+2026-08-09 22:57:47,527 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:57:47,527 [INFO] Retrying request to /chat/completions in 0.791529 seconds
+2026-08-09 22:57:48,553 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:57:48,555 [WARNING] AI provider openai failed: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}
+2026-08-09 22:57:48,855 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 401 Unauthorized"
+2026-08-09 22:57:48,855 [WARNING] AI provider anthropic failed: Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'API key is invalid.'}, 'request_id': None}
+2026-08-09 22:57:55,721 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:57:55,771 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-09 22:57:55,771 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 8 blocks
+2026-08-09 22:57:55,771 [INFO] NARRATE_V2: mode=ai, provider=mistral, status=validated_ai, claims_used=14, omitted=10, repair=yes
+Identity: RESOLVED_IDENTITY | Obs: 157 | Elapsed: 16.8s
+
+--- REPORT ---
+
+Pellegrini Giacomo fu un soldato italiano arruolato nel 9┬░ Reggimento Alpini durante la Seconda guerra mondiale, catturato dai tedeschi dopo l'8 settembre 1943 e sopravvissuto alla prigionia.
+
+Nacque il 27 luglio 1911 a Capetrano, in provincia dell'Aquila, da Giuseppe, classe 1893.
+
+Mor├¼ in combattimento nel 1917 a Codroipo, durante la Prima guerra mondiale, prima ancora di partecipare al conflitto successivo.
+
+Venne catturato il 9 settembre 1943 sul fronte greco, durante la campagna dei Balcani, e fu internato nello Stalag X B in Germania.
+
+Rientr├▓ in Italia il 2 settembre 1945, dopo oltre due anni di prigionia.
+
+Il 9┬░ Reggimento Alpini, reparto di appartenenza, era un'unit├á specializzata nella guerra di montagna, impiegata sui fronti dolomitico e carnico durante il primo conflitto mondiale. Composto da pi├╣ battaglioni, rappresentava una delle colonne portanti del Corpo degli Alpini, corpo d'├®lite dell'esercito italiano noto per la sua capacit├á operativa in ambienti estremi.
+
+Il grado di soldato, assegnato a Giacomo Pellegrini, indicava la posizione di truppa: il combattente di prima linea incaricato di eseguire gli ordini, difendere le posizioni e sostenere il peso maggiore delle operazioni belliche.
+
+Non risultano informazioni dettagliate sulle specifiche operazioni cui partecip├▓ durante la prigionia o sulle condizioni vissute nello Stalag X B, n├® sulla sua attivit├á dopo il rientro in Italia.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_6e1ff8e94feafaea
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 31
+- Context Claims: 7
+- Provider Ledger: 157 observations
+
+## Fonti
+- **obs_6459843e609e998d**: Giacomo Pellegrini ÔÇö [/goto?url=CAESaAHuR6pNVNuNsR_m-mWP2h_cJQgPYaLXNf5X2IxnrNg2ur6nuO-g40PaxxrCL5J2Ra7SAByuZcmOREj6-DCVZW00esKoapAJ7kgEu1UznYGmsYrtsXdG6-LpPBcCILx4cQyRZ6g6IO_e](/goto?url=CAESaAHuR6pNVNuNsR_m-mWP2h_cJQgPYaLXNf5X2IxnrNg2ur6nuO-g40PaxxrCL5J2Ra7SAByuZcmOREj6-DCVZW00esKoapAJ7kgEu1UznYGmsYrtsXdG6-LpPBcCILx4cQyRZ6g6IO_e)
+- **obs_0cb3b22133a2b5f5**: Giacomo Pellegrini - Film Director & Screenwriter ÔÇö [/goto?url=CAESWwHuR6pNxS68jlRyKWR0IkPYsk1Qdkqr-GboDrTzIebTLsZRuG4DBpHN9xoew5dMytxExK08rsZiADCsj9W4C8kn9e2YbxS9uuEjfgdsRJSyTbS7WXcAdVAdqo4%3D](/goto?url=CAESWwHuR6pNxS68jlRyKWR0IkPYsk1Qdkqr-GboDrTzIebTLsZRuG4DBpHN9xoew5dMytxExK08rsZiADCsj9W4C8kn9e2YbxS9uuEjfgdsRJSyTbS7WXcAdVAdqo4%3D)
+- **obs_b6201442ab7af7bc**: Giacomo Pellegrini CEO & Founder , Fankee (IT) ÔÇö [/goto?url=CAESgAEB7keqTXlBDwdbDzU2QgH1u2vy66ie1JSlDtXUYqiAma5mxsDBK5bHmpBAvCjcYmCzDtmr-2tUiHeVHgN3nEsihehDrYe_KztOFrrxjWRU2eLxy6DUZ_61XVI_sVdErAs_SApiPvdUSA4HcFm2c2AAlpkv7xUiUIfljMQQrS_oUQ%3D%3D](/goto?url=CAESgAEB7keqTXlBDwdbDzU2QgH1u2vy66ie1JSlDtXUYqiAma5mxsDBK5bHmpBAvCjcYmCzDtmr-2tUiHeVHgN3nEsihehDrYe_KztOFrrxjWRU2eLxy6DUZ_61XVI_sVdErAs_SApiPvdUSA4HcFm2c2AAlpkv7xUiUIfljMQQrS_oUQ%3D%3D)
+- **obs_ee7d6c787b1db980**: Giacomo Pellegrini ÔÇö [/goto?url=CAESZgHuR6pNe0swd1SuSnHzd5wCucxvaXFLqQnE2qFDbYLAwjjUSWhD11fBHThhgSemKIuNoUxRxhTcjfFNUVbygI1W8Tjlf4aMA1dxBzPk6181JtEMl_ttPP1K_utckhaQioyNtkSM4w%3D%3D](/goto?url=CAESZgHuR6pNe0swd1SuSnHzd5wCucxvaXFLqQnE2qFDbYLAwjjUSWhD11fBHThhgSemKIuNoUxRxhTcjfFNUVbygI1W8Tjlf4aMA1dxBzPk6181JtEMl_ttPP1K_utckhaQioyNtkSM4w%3D%3D)
+- **obs_f400429dba799d27**: Giacomo Pellegrini ÔÇö [/goto?url=CAESZwHuR6pNkWQO5pDczZA0fx1deX9uhGbK9VLAy7CZ12me1PBhDTWbfKQ_oxBQkVupk7B4y0Frb85hAt-ZtXjivTkkdMsUTasIvl-oOwjS_vT7KYH2nbG1uBa4QJsdVv4OAAQDNbe3w5c%3D](/goto?url=CAESZwHuR6pNkWQO5pDczZA0fx1deX9uhGbK9VLAy7CZ12me1PBhDTWbfKQ_oxBQkVupk7B4y0Frb85hAt-ZtXjivTkkdMsUTasIvl-oOwjS_vT7KYH2nbG1uBa4QJsdVv4OAAQDNbe3w5c%3D)
+- **obs_621b7306ecbe148d**: Giacomo Pellegrini - Senior Analyst at Canyon Partners, LLC ÔÇö [/goto?url=CAESZgHuR6pNvsqyP-_XjkWD88gFnpIkXU00ohDGwc-1-xxgDikbC8Qp72V33SOW1I317KRVwup1VQCe2KMkpFGGaRMzsUZ84pUgNG5em-tV5rnl1eqJjQMRtBXMSD9m8ruGlXZgKFFuZg%3D%3D](/goto?url=CAESZgHuR6pNvsqyP-_XjkWD88gFnpIkXU00ohDGwc-1-xxgDikbC8Qp72V33SOW1I317KRVwup1VQCe2KMkpFGGaRMzsUZ84pUgNG5em-tV5rnl1eqJjQMRtBXMSD9m8ruGlXZgKFFuZg%3D%3D)
+- **obs_b177793b57849a2d**: Giacomo Claudio Pellegrini ÔÇö [/goto?url=CAESegHuR6pNEYSg849yRlqdsGwsg4bRTRZ_svuesGse5dia-ctU3wWnrDvWHqTwXXZEphIsaI5O1BPjVde18dkNFAqN-0VaD7Q0Rvx_veUfus5gTpz6_xMl-QMhb4Lvmm0sQnEYxPixVL0w4gYKNwWcToj6gNYK3Dv4R3x8](/goto?url=CAESegHuR6pNEYSg849yRlqdsGwsg4bRTRZ_svuesGse5dia-ctU3wWnrDvWHqTwXXZEphIsaI5O1BPjVde18dkNFAqN-0VaD7Q0Rvx_veUfus5gTpz6_xMl-QMhb4Lvmm0sQnEYxPixVL0w4gYKNwWcToj6gNYK3Dv4R3x8)
+- **obs_235ed7f505dff6d7**: Giacomo Pellegrini (@giacomopellegrini_filmdirector) ┬À Milan ÔÇö [/goto?url=CAEScQHuR6pNZu9eQtjwgQh_coGdI8_E2pMGGsSpZ-ReJe3GbZh5s3JSojiRyjmt-TYZz6zrmiSqdfLfzrX3JF4gtvws0Ya614RKWeR0WwTRCvIbduh7F8FCj1Wd8W5SPeYXF-QXyinLSlHr1_L0zvIJhZWe](/goto?url=CAEScQHuR6pNZu9eQtjwgQh_coGdI8_E2pMGGsSpZ-ReJe3GbZh5s3JSojiRyjmt-TYZz6zrmiSqdfLfzrX3JF4gtvws0Ya614RKWeR0WwTRCvIbduh7F8FCj1Wd8W5SPeYXF-QXyinLSlHr1_L0zvIJhZWe)
+- **obs_68440da9562994a5**: Giacomo PELLEGRINI | Post Doctoral Research Associate ÔÇö [/goto?url=CAEScQHuR6pN0iAedFwkrrlWIg1BybEOFYNyOyGOuVrBgfUiLMemUPLUg7nmp3TTFsXKwzOxTLH_L1szJt7WY3HysPdyFQqYBQc-c20uBGvVYn8qjJXciFsk_SdnRxzkpxObqom5DKdQLj4I9uw2W5QWA7ir](/goto?url=CAEScQHuR6pN0iAedFwkrrlWIg1BybEOFYNyOyGOuVrBgfUiLMemUPLUg7nmp3TTFsXKwzOxTLH_L1szJt7WY3HysPdyFQqYBQc-c20uBGvVYn8qjJXciFsk_SdnRxzkpxObqom5DKdQLj4I9uw2W5QWA7ir)
+- **obs_b2863b768a23836c**: Giacomo Pellegrini ÔÇö [https://scholar.google.com/citations?user=tHsTYfMAAAAJ&hl=it](https://scholar.google.com/citations?user=tHsTYfMAAAAJ&hl=it)
+- **obs_851050555f426adc**: Giacomo Pellegrini ÔÇö [/goto?url=CAESaAHuR6pNvtSf-axp4HSL7whM-dW11ukyNyaSFAwbwXGDbqd1yu7gpZ8flIupWfSImftIOQ9y14mHU1hot1di0GGFOp_-OilPfPEdHXnH1G0Ya8DFjayJXQPX5h3S529nQEo9inz-w9Dc](/goto?url=CAESaAHuR6pNvtSf-axp4HSL7whM-dW11ukyNyaSFAwbwXGDbqd1yu7gpZ8flIupWfSImftIOQ9y14mHU1hot1di0GGFOp_-OilPfPEdHXnH1G0Ya8DFjayJXQPX5h3S529nQEo9inz-w9Dc)
+- **obs_032f1c8e3a78ac32**: Giacomo Pellegrini - Film Director & Screenwriter ÔÇö [/goto?url=CAESWwHuR6pNTKa1y8s6A2tQDNnCPpGfMX114UqboDADRyqM4zhCmXG-jMvIMeWvUtewNvAlj2-nBp8NI3u3GTwvlxfyLKMM0gkLRDyN64WKSR8tjM5pzSs11w6ntac%3D](/goto?url=CAESWwHuR6pNTKa1y8s6A2tQDNnCPpGfMX114UqboDADRyqM4zhCmXG-jMvIMeWvUtewNvAlj2-nBp8NI3u3GTwvlxfyLKMM0gkLRDyN64WKSR8tjM5pzSs11w6ntac%3D)
+- **obs_ac4cf759081e878c**: Giacomo Pellegrini CEO & Founder , Fankee (IT) ÔÇö [/goto?url=CAESgAEB7keqTYspKJ60Wm70UOFQP8JszRR0lZedIoUNxYLSdaEmldNwGMJxdNM-OGXr9RXmp49ps4SVFSBAbtOscNABSNkyapkYeFmz1DgLhvRk6PmTIRdyagLKlVGY4YLAyr9cHIZDpJIoY9oKvplvFdpcIC4JwwZtjTaExEli_LdUgQ%3D%3D](/goto?url=CAESgAEB7keqTYspKJ60Wm70UOFQP8JszRR0lZedIoUNxYLSdaEmldNwGMJxdNM-OGXr9RXmp49ps4SVFSBAbtOscNABSNkyapkYeFmz1DgLhvRk6PmTIRdyagLKlVGY4YLAyr9cHIZDpJIoY9oKvplvFdpcIC4JwwZtjTaExEli_LdUgQ%3D%3D)
+- **obs_7825ce90809c1e95**: Giacomo Pellegrini ÔÇö [/goto?url=CAESZgHuR6pNnmExLiWXGxFvK7Je60YcNEML821Zp2onU8sjyYRiqhmHfBuSpm2RyzB6MbxhKWIjEPA7jKWePqnMiABNy3ckVu74BvKCobdzkaUK5WPJyK1356xW3PuU90OsjdRVAESpbQ%3D%3D](/goto?url=CAESZgHuR6pNnmExLiWXGxFvK7Je60YcNEML821Zp2onU8sjyYRiqhmHfBuSpm2RyzB6MbxhKWIjEPA7jKWePqnMiABNy3ckVu74BvKCobdzkaUK5WPJyK1356xW3PuU90OsjdRVAESpbQ%3D%3D)
+- **obs_fd653d06c1814b96**: Giacomo Pellegrini ÔÇö [/goto?url=CAESZwHuR6pNuCO1UN1WcCJEehlSGlHzRAqHXrdayPhrMYZavZK6u3lU0xpdrcEZgZjkZz9W6KbUIRdN9BGxxImObcs9HwutzcrsBbBDeNt2mo7Y8jnZKoME9pAHf8gmf7XKXpJYz98_-_k%3D](/goto?url=CAESZwHuR6pNuCO1UN1WcCJEehlSGlHzRAqHXrdayPhrMYZavZK6u3lU0xpdrcEZgZjkZz9W6KbUIRdN9BGxxImObcs9HwutzcrsBbBDeNt2mo7Y8jnZKoME9pAHf8gmf7XKXpJYz98_-_k%3D)
+- **obs_43c9e74df759ffea**: Giacomo Pellegrini - Senior Analyst at Canyon Partners, LLC ÔÇö [/goto?url=CAESZgHuR6pN9kUXkcg-VDUIg_v0BW2etHYSuNpgDD-3LuyobJaHs0nHcyxMJRQVeGYemoGgt_uIVT65fE-KCtKluGKePDd7awtG3Iz3ENMFfiOufbecq8lZqPxL_jHFNeu-wjxe6__5vg%3D%3D](/goto?url=CAESZgHuR6pN9kUXkcg-VDUIg_v0BW2etHYSuNpgDD-3LuyobJaHs0nHcyxMJRQVeGYemoGgt_uIVT65fE-KCtKluGKePDd7awtG3Iz3ENMFfiOufbecq8lZqPxL_jHFNeu-wjxe6__5vg%3D%3D)
+- **obs_843cc0d25caa0a12**: Giacomo Claudio Pellegrini ÔÇö [/goto?url=CAESegHuR6pN6C9iVuF4PoDbKxIYMztzoE1ijQx2eR0rNfYXbuNjJn90sLSmBjggYdmyxzUSWymr3pcjeXcZNciet3KuKyyfY-waYyzYAdcTAQ8CiKJEscomZ6uj8yn4_ufySm1EgCaUzAE9npppXy2I57HPlE4Hv9dtJz4F](/goto?url=CAESegHuR6pN6C9iVuF4PoDbKxIYMztzoE1ijQx2eR0rNfYXbuNjJn90sLSmBjggYdmyxzUSWymr3pcjeXcZNciet3KuKyyfY-waYyzYAdcTAQ8CiKJEscomZ6uj8yn4_ufySm1EgCaUzAE9npppXy2I57HPlE4Hv9dtJz4F)
+- **obs_0fafef76cfc0421b**: Giacomo Pellegrini (@giacomopellegrini_filmdirector) ┬À Milan ÔÇö [/goto?url=CAEScQHuR6pNjzRu4DEBscMTXi93DLz5sF7gxqQpth1G0kxBkIy26D4pDIhIwN_32IEyFVUl-lGLDDBIUtFg2kKWnAwjC8ycOyuSL3oLaBts8PFMcpJN3z1_JeyMsBGDyBih8MP5OPW9ij-WyssVfwwfHs1d](/goto?url=CAEScQHuR6pNjzRu4DEBscMTXi93DLz5sF7gxqQpth1G0kxBkIy26D4pDIhIwN_32IEyFVUl-lGLDDBIUtFg2kKWnAwjC8ycOyuSL3oLaBts8PFMcpJN3z1_JeyMsBGDyBih8MP5OPW9ij-WyssVfwwfHs1d)
+- **obs_0adf5750e3011c22**: Giacomo PELLEGRINI | Post Doctoral Research Associate ÔÇö [/goto?url=CAEScQHuR6pNBgzgHg99znHr9v0s4mcI8j10EjMxIadAAFNyd9CAJS99xR9EOlDKLmCgf1l-9eRfGrpAAFn2FqGYueTorRme0Wz2nr4VLpzJuKd6hgxRBlvyIZvrltt5b3hZJZLqEnJyga_2zr3n9s9OJVkX](/goto?url=CAEScQHuR6pNBgzgHg99znHr9v0s4mcI8j10EjMxIadAAFNyd9CAJS99xR9EOlDKLmCgf1l-9eRfGrpAAFn2FqGYueTorRme0Wz2nr4VLpzJuKd6hgxRBlvyIZvrltt5b3hZJZLqEnJyga_2zr3n9s9OJVkX)
+- **obs_15bfeb4f7f19281b**: Giacomo Pellegrini ÔÇö [https://scholar.google.com/citations?user=tHsTYfMAAAAJ&hl=it](https://scholar.google.com/citations?user=tHsTYfMAAAAJ&hl=it)
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 3/5: BULGARELLI ERMANNO
+======================================================================
+2026-08-09 22:57:55,902 [INFO] LocalDbAdapter: 52 observations
+2026-08-09 22:57:59,718 [INFO] WebSearchAdapter[tavily]: 19 observations in 3.82s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-09 22:58:01,873 [INFO] FederationAdapter: 16 observations
+2026-08-09 22:58:05,040 [INFO] WebSearchAdapter[tavily]: 19 observations in 3.17s
+2026-08-09 22:58:05,931 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_c2130d08a8ce', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_b9ebcb6182c9', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_fa75ceecd374']
+2026-08-09 22:58:07,903 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:58:07,903 [INFO] Retrying request to /chat/completions in 0.476472 seconds
+2026-08-09 22:58:08,821 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:58:08,821 [INFO] Retrying request to /chat/completions in 0.998542 seconds
+2026-08-09 22:58:10,058 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-08-09 22:58:10,058 [WARNING] AI provider openai failed: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}
+2026-08-09 22:58:10,314 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 401 Unauthorized"
+2026-08-09 22:58:10,318 [WARNING] AI provider anthropic failed: Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'API key is invalid.'}, 'request_id': None}
+2026-08-09 22:58:15,013 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:58:15,021 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-09 22:58:15,021 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 7 blocks
+2026-08-09 22:58:15,027 [INFO] NARRATE_V2: mode=ai, provider=mistral, status=validated_ai, claims_used=8, omitted=0, repair=yes
+Identity: RESOLVED_IDENTITY | Obs: 106 | Elapsed: 19.3s
+
+--- REPORT ---
+
+Ermanno Bulgarelli fu un soldato italiano catturato durante la Seconda guerra mondiale.
+
+Nacque il 31 agosto 1923 a Carpi, in provincia di Modena.
+
+Il 13 settembre 1943 fu catturato dalle forze tedesche a Firenze, mentre era inquadrato nei reparti di pionieri.
+
+Dopo la cattura fu internato in diversi campi tedeschi: Stalag XI A, Arbeitskommando 427 e Stalag IV F.
+
+I soldati del Genio pionieri erano specializzati nella costruzione di fortificazioni, nella posa di ponti e nella manutenzione delle vie di comunicazione, operando spesso in prima linea per garantire la mobilit├á delle truppe.
+
+Gli Arbeitskommando erano comandi di lavoro forzato istituiti dalle autorit├á tedesche per impiegare i prigionieri di guerra italiani in attivit├á di supporto logistico e costruzione, spesso in condizioni estreme.
+
+Non risultano ulteriori dettagli sulla sua carriera militare prima della cattura o sulle condizioni della prigionia nei campi tedeschi.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_6ffd74461cd75027
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 11
+- Context Claims: 3
+- Provider Ledger: 106 observations
+
+## Fonti
+- **obs_6dde3a8dd3517eaf**: Ermanno Bulgarelli - Facebook ÔÇö [https://www.facebook.com/ermanno.bulgarelli](https://www.facebook.com/ermanno.bulgarelli)
+- **obs_31743a4dafad4a03**: Adelmo Bulgarelli - Wikipedia ÔÇö [https://en.wikipedia.org/wiki/Adelmo_Bulgarelli](https://en.wikipedia.org/wiki/Adelmo_Bulgarelli)
+- **obs_43a5adc150895f66**: ERMANNO BULGARELLI a Modena (MO): Numero Telefono e Mappa ÔÇö [https://www.paginebianche.it/scheda/modena/ermanno-bulgarelli.afjdbagjf](https://www.paginebianche.it/scheda/modena/ermanno-bulgarelli.afjdbagjf)
+- **obs_11c71629d4fdeef2**: EVELYNE STATION DI BULGARELLI ERMANNO, Partita IVA ÔÇö [https://www.ufficiocamerale.it/1122/evelyne-station-di-bulgarelli-ermanno](https://www.ufficiocamerale.it/1122/evelyne-station-di-bulgarelli-ermanno)
+- **obs_19d681a6e30ef7b5**: Lucio Bulgarelli | Artwork value, appraisals and valuations ÔÇö [https://www.capitoliumart.com/en/artist/bulgarelli-lucio-1932/xar-4195](https://www.capitoliumart.com/en/artist/bulgarelli-lucio-1932/xar-4195)
+- **obs_fe8955fe4fb74e60**: BIANCHINI / ERMANNO - Via Via Bulgarelli, 4/A, Reggio Emilia, Italy ÔÇö [https://www.yelp.com/biz/bianchini-ermanno-reggio-emilia](https://www.yelp.com/biz/bianchini-ermanno-reggio-emilia)
+- **obs_fa6e5c61eba1b987**: Ermanno Bulgarelli - Onoranze Funebri Parini ÔÇö [https://www.parinionoranzefunebri.it/ermanno-bulgarelli](https://www.parinionoranzefunebri.it/ermanno-bulgarelli)
+- **obs_a526573a34bf7ce0**: EVELYNE STATION DI BULGARELLI (MO) | 03879060360 ÔÇö [https://www.reportaziende.it/evelyne_station_di_bulgarelli_ermanno_mo_03879060360](https://www.reportaziende.it/evelyne_station_di_bulgarelli_ermanno_mo_03879060360)
+- **obs_fe18e25559cf6c26**: Evelyne Station Di Bulgarelli Ermanno Spritpreise heute | G├╝nstigste ... ÔÇö [https://aktueller-spritpreis.de/company/evelyne-station-di-bulgarelli-ermanno](https://aktueller-spritpreis.de/company/evelyne-station-di-bulgarelli-ermanno)
+- **obs_f5ae1fa1d1a33a38**: Tuscany Landscape Photo Tour - Workshop by Marco Bulgarelli ÔÇö [https://tuscanyphototours.it/about](https://tuscanyphototours.it/about)
+- **obs_2af0e9f067ad7ef5**: Rome photo tours & workshops - Marco Bulgarelli photographer ÔÇö [https://travelphototoursinrome.com/marco-bulgarelli-photographer](https://travelphototoursinrome.com/marco-bulgarelli-photographer)
+- **obs_6d55c0232a42390b**: Ventas - Ventas Announces Planned Retirement of Peter J. Bulgarelli, EVP, Outpatient Medical & Research and CEO of Lillibridge Healthcare Services ÔÇö [https://ir.ventasreit.com/news/news-details/2025/Ventas-Announces-Planned-Retirement-of-Peter-J--Bulgarelli-EVP-Outpatient-Medical--Research-and-CEO-of-Lillibridge-Healthcare-Services/default.aspx](https://ir.ventasreit.com/news/news-details/2025/Ventas-Announces-Planned-Retirement-of-Peter-J--Bulgarelli-EVP-Outpatient-Medical--Research-and-CEO-of-Lillibridge-Healthcare-Services/default.aspx)
+- **obs_c572f9e974c9e43f**: Marco Bulgarelli Photographer in Rome | Workshops & ToursMarco Bulgarelli Professional Photographer ÔÇö [https://marcobulgarelli.com](https://marcobulgarelli.com)
+- **obs_e6c39e003a7584f1**: Peter Bulgarelli | Ardent Health ÔÇö [https://ardenthealth.com/who-we-are/leadership/board-of-directors/peter-bulgarelli](https://ardenthealth.com/who-we-are/leadership/board-of-directors/peter-bulgarelli)
+- **obs_83bf266c1c1e8c09**: Bulgarelli (@bulgarelliband) ÔÇó Instagram photos and videos ÔÇö [https://www.instagram.com/bulgarelliband](https://www.instagram.com/bulgarelliband)
+- **obs_77244619ef7f522b**: Gabby Bulgarelli ÔÇö [https://gabriellabulgarelli.com](https://gabriellabulgarelli.com)
+- **obs_04747feafe9b307e**: Martina Bulgarelli - Professional Profile, Photos on Backstage ÔÇö [https://www.backstage.com/u/martina-bulgarelli](https://www.backstage.com/u/martina-bulgarelli)
+- **obs_569b8568eedca511**: Martina Bulgarelli ÔÇö [https://www.linkedin.com/in/martina-bulgarelli](https://www.linkedin.com/in/martina-bulgarelli)
+- **obs_f828c42a87a3242c**: ERMANNO FIRENZE┬« | Official Store | Women's Clothing ÔÇö [https://ermannoscervino.com/pages/homepage-firenze](https://ermannoscervino.com/pages/homepage-firenze)
+- **obs_ebd8656c65500994**: ERMANNO BULGARELLI a Modena (MO): Numero Telefono e Mappa ÔÇö [https://www.paginebianche.it/scheda/modena/ermanno-bulgarelli.afjdbagjf](https://www.paginebianche.it/scheda/modena/ermanno-bulgarelli.afjdbagjf)
+- **obs_fb1196c25cc4ceed**: EVELYNE STATION DI BULGARELLI ERMANNO, Partita IVA ÔÇö [https://www.ufficiocamerale.it/1122/evelyne-station-di-bulgarelli-ermanno](https://www.ufficiocamerale.it/1122/evelyne-station-di-bulgarelli-ermanno)
+- **obs_23808743859a39e2**: Ermanno Bulgarelli - Facebook ÔÇö [https://www.facebook.com/ermanno.bulgarelli](https://www.facebook.com/ermanno.bulgarelli)
+- **obs_69466f50ea385f8a**: BIANCHINI / ERMANNO - Via Via Bulgarelli, 4/A, Reggio Emilia, Italy ÔÇö [https://www.yelp.com/biz/bianchini-ermanno-reggio-emilia](https://www.yelp.com/biz/bianchini-ermanno-reggio-emilia)
+- **obs_e9a55f07bf3e6ec8**: Germano Bulgarelli - Allianz Bank Financial Advisors ÔÇö [https://www.allianzbankfa.it/germanobulgarelli](https://www.allianzbankfa.it/germanobulgarelli)
+- **obs_e346862575ca36ec**: EVELYNE STATION DI BULGARELLI (MO) | 03879060360 ÔÇö [https://www.reportaziende.it/evelyne_station_di_bulgarelli_ermanno_mo_03879060360](https://www.reportaziende.it/evelyne_station_di_bulgarelli_ermanno_mo_03879060360)
+- **obs_ce985aa1459b0bb2**: NEWS - Bulgarelli Production ÔÇö [https://bulgarelliproduction.com/en/news](https://bulgarelliproduction.com/en/news)
+- **obs_a0fef56cc7b29b22**: Marianna Bulgarelli - Wikipedia ÔÇö [https://en.wikipedia.org/wiki/Marianna_Bulgarelli](https://en.wikipedia.org/wiki/Marianna_Bulgarelli)
+- **obs_725e824b9829bc71**: Bulgarelli (@bulgarelliband) ÔÇó Instagram photos and videos ÔÇö [https://www.instagram.com/bulgarelliband](https://www.instagram.com/bulgarelliband)
+- **obs_feaec7c1ba9dea0e**: Marco Bulgarelli - Documentary, Travel & Fine Art PhotographerMarco Bulgarelli Professional Photographer ÔÇö [https://marcobulgarelli.com/biography](https://marcobulgarelli.com/biography)
+- **obs_cbdb8a77b55ab552**: Ventas Announces Planned Retirement of Peter J. Bulgarelli ... ÔÇö [https://ir.ventasreit.com/news/news-details/2025/Ventas-Announces-Planned-Retirement-of-Peter-J--Bulgarelli-EVP-Outpatient-Medical--Research-and-CEO-of-Lillibridge-Healthcare-Services/default.aspx](https://ir.ventasreit.com/news/news-details/2025/Ventas-Announces-Planned-Retirement-of-Peter-J--Bulgarelli-EVP-Outpatient-Medical--Research-and-CEO-of-Lillibridge-Healthcare-Services/default.aspx)
+- **obs_04adf450e04c4af7**: Peter Bulgarelli - Ardent Health ÔÇö [https://ardenthealth.com/who-we-are/leadership/board-of-directors/peter-bulgarelli](https://ardenthealth.com/who-we-are/leadership/board-of-directors/peter-bulgarelli)
+- **obs_87d21b4db88e5afd**: Andrea Bulgarelli - Inspire HEP ÔÇö [https://inspirehep.net/authors/2650743](https://inspirehep.net/authors/2650743)
+- **obs_cd83addb209bd419**: Gabby Bulgarelli ÔÇö [https://gabriellabulgarelli.com](https://gabriellabulgarelli.com)
+- **obs_5eb8504cff3b857c**: Deborah Bulgarelli - ArteMatriz ÔÇö [https://www.artematriz.art/artists/deborah-bulgarelli](https://www.artematriz.art/artists/deborah-bulgarelli)
+- **obs_80f6e4b3d3f71d57**: Matteo Bulgarelli - LAND Italia ÔÇö [https://www.landsrl.com/en/people/matteo-bulgarelli](https://www.landsrl.com/en/people/matteo-bulgarelli)
+- **obs_cd137364233349be**: Peter Bulgarelli ÔÇö [https://www.linkedin.com/in/peterbulgarelli](https://www.linkedin.com/in/peterbulgarelli)
+- **obs_694ba97ba33e88d4**: ÔÇ¬Andrea BulgarelliÔÇ¼ - ÔÇ¬Google ScholarÔÇ¼ ÔÇö [https://scholar.google.com/citations?user=1-LPvsoAAAAJ&hl=en](https://scholar.google.com/citations?user=1-LPvsoAAAAJ&hl=en)
+- **obs_4c7bd460a9e0430d**: Martina Bulgarelli - Professional Profile, Photos on Backstage ÔÇö [https://www.backstage.com/u/martina-bulgarelli](https://www.backstage.com/u/martina-bulgarelli)
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 4/5: GERMANO GUIDO
+======================================================================
+2026-08-09 22:58:15,084 [INFO] LocalDbAdapter: 71 observations
+2026-08-09 22:58:17,044 [INFO] WebSearchAdapter[tavily]: 20 observations in 1.96s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-09 22:58:19,268 [INFO] FederationAdapter: 46 observations
+2026-08-09 22:58:20,005 [INFO] WebSearchAdapter[tavily]: 20 observations in 0.73s
+2026-08-09 22:58:20,929 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_birth_place_ec178fd7', 'CLAIM_NOT_IN_SNAPSHOT:claim_rank_6b30c059', 'CLAIM_NOT_IN_SNAPSHOT:claim_unit_f65189f9', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_f9aaef919408', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_3718e8a0740b', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_8b944b55d9a2', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_75c420b4ab05', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_566adaebf67e']
+2026-08-09 22:58:29,523 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:58:29,540 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 5 blocks
+2026-08-09 22:58:29,540 [WARNING] NARRATE_V2: Hallucination check found 9 warnings: ['HALLUCINATED_PLACE_OR_NAME:Germania in block b1 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Nacque in block b2 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Barletta in block b2 ÔÇö not in evidence']
+2026-08-09 22:58:29,540 [WARNING] NARRATE_V2: Severe hallucination (9 warnings), falling back to deterministic
+2026-08-09 22:58:29,542 [INFO] NARRATE_V2: mode=deterministic, provider=, status=validated_deterministic, claims_used=22, omitted=24, repair=no
+Identity: RESOLVED_IDENTITY | Obs: 157 | Elapsed: 14.5s
+
+--- REPORT ---
+
+# Rapporto di Ricerca ÔÇö snap_v7_aacd7fe28599695f
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: GERMANO GUIDO
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: RESOLVED_IDENTITY
+## Corroborazione: PARTIAL
+
+## Identita Candidati (caso ambiguo)
+  - GERMANO GUIDO: discriminanti=['arma', 'anno_decorazione']
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - birth_date: 23-09-1915
+  - birth_place: Castel Del Monte
+  - birth_province: Barletta-andria-trani
+  - rank: Caporale
+  - military_unit: 9 Rgt. Alp.
+  - military_branch: Alpini
+  - capture_front: Greco
+  - capture_date: 08-09-1943
+  - internment_place: ["Stalag X B"]
+  - fate: sopravvissuto
+  - return_date: 18-08-1945
+  - birth_date: 01-04-1922
+  - birth_place: Napoli
+  - birth_province: Napoli
+  - rank: Soldato
+  - military_unit: 123 Rgt. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Balcanico
+  - capture_date: 08-09-1943
+  - fate: sopravvissuto
+  - return_date: 12-11-1945
+  - military_branch: Esercito
+  - decoration_year: 1940
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1939
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1952
+  - decoration_type: Medaglia di Bronzo
+
+## PROBABLE (fonte valida, incertezza su OCR/normalizzazione)
+  - fate: sopravvissuto
+
+## Claim di Contesto (non attribuibili alla persona)
+  - [EVENT] source_url: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/show/251268
+  - [EVENT] source_document: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/showpdf/251268
+  - [EVENT] source_id: 251268
+  - [EVENT] source_url: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/show/288837
+  - [EVENT] source_document: https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/showpdf/288837
+  - [EVENT] source_id: 288837
+  - [EVENT] source_ref: 82512
+  - [EVENT] source_ref: 85700
+  - [EVENT] source_ref: 267472
+
+## Claim in Conflitto
+  - birth_place: Castel Del Monte (CONFLICTING)
+  - birth_place: Napoli (CONFLICTING)
+  - rank: Caporale (CONFLICTING)
+  - rank: Soldato (CONFLICTING)
+  - unit: 9 Rgt. Alp. (CONFLICTING)
+  - unit: 123 Rgt. Ftr. (CONFLICTING)
+
+## Claim Asserti (origine, non corroborati)
+  - fate: sopravvissuto
+  - birth_date: 23-09-1915
+  - birth_place: Castel Del Monte
+  - birth_province: Barletta-andria-trani
+  - rank: Caporale
+  - military_unit: 9 Rgt. Alp.
+  - military_branch: Alpini
+  - capture_front: Greco
+  - capture_date: 08-09-1943
+  - internment_place: ["Stalag X B"]
+  - fate: sopravvissuto
+  - return_date: 18-08-1945
+  - birth_date: 01-04-1922
+  - birth_place: Napoli
+  - birth_province: Napoli
+  - rank: Soldato
+  - military_unit: 123 Rgt. Ftr.
+  - military_branch: Fanteria
+  - capture_front: Balcanico
+  - capture_date: 08-09-1943
+  - fate: sopravvissuto
+  - return_date: 12-11-1945
+  - military_branch: Esercito
+  - decoration_year: 1940
+  - decoration_type: Medaglia d'Argento
+  - military_branch: Esercito
+  - decoration_year: 1939
+  - decoration_type: Croce di Guerra al Valor Militare
+  - military_branch: Esercito
+  - decoration_year: 1952
+  - decoration_type: Medaglia di Bronzo
+
+## Omonimi Respinti
+  - GERMANO GUIDO: motivi=['HOMONYM_DIFFERENT_IDENTITY', 'anno_decorazione'], conflitti=['anno_decorazione']
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - unit: Field unit not supported by accepted evidence
+  - death_date: Field death_date not supported by accepted evidence
+  - death_year: Field death_year not supported by accepted evidence
+  - death_place: Field death_place not supported by accepted evidence
+  - death_cause: Field death_cause not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+  - capture_place: Field capture_place not supported by accepted evidence
+
+## Piste di Ricerca (non verificate)
+  - Guido Germano (tavily)
+  - Guido Germano | About | University College London (tavily)
+  - Guido Germano - University College London (tavily)
+  - Guido Germano (tavily)
+  - Guido Germano (tavily)
+  - Guido GERMANO | Professor (Full) (tavily)
+  - Guido Germano, Director, Professor (tavily)
+  - Guido Germano (tavily)
+  - Guido Germano (tavily)
+  - Guido Germano - Mentibus (tavily)
+  - Guido Germano's research works | University of California ... (tavily)
+  - Guido Germano ÛÁÉýêÿ ýù░ÛÁ¼ýïñ ÔÇö ý£áÙïêÙ▓äýï£Ýï░ ý╣╝Ùª¼ýºÇ Ùƒ░Ùìÿ ý╗┤Ýô¿Ýä░ ... (tavily)
+  - Guido Germano | EXPERTISE & EXPERIENCE (tavily)
+  - Guido Germano, docente di Computational Science presso ... (tavily)
+  - 7 "Guido Germano" profiles (tavily)
+  - Guido Germano | Teaching | University College London (tavily)
+  - Guido Carlomagno - University (tavily)
+  - UCLA professor sentenced to 5 years of probation for child ... (tavily)
+  - Guido H├╝lsmann (tavily)
+  - Guido Herrmann (tavily)
+  - Guido Germano (tavily)
+  - Guido Germano | About | University College London (tavily)
+  - Guido Germano - University College London (tavily)
+  - Guido Germano (tavily)
+  - Guido Germano (tavily)
+  - Guido GERMANO | Professor (Full) (tavily)
+  - Guido Germano, Director, Professor (tavily)
+  - Guido Germano (tavily)
+  - Guido Germano (tavily)
+  - Guido Germano - Mentibus (tavily)
+  - Guido Germano's research works | University of California ... (tavily)
+  - Guido Germano ÛÁÉýêÿ ýù░ÛÁ¼ýïñ ÔÇö ý£áÙïêÙ▓äýï£Ýï░ ý╣╝Ùª¼ýºÇ Ùƒ░Ùìÿ ý╗┤Ýô¿Ýä░ ... (tavily)
+  - Guido Germano | EXPERTISE & EXPERIENCE (tavily)
+  - Guido Germano, docente di Computational Science presso ... (tavily)
+  - 7 "Guido Germano" profiles (tavily)
+  - Guido Germano | Teaching | University College London (tavily)
+  - Guido Carlomagno - University (tavily)
+  - UCLA professor sentenced to 5 years of probation for child ... (tavily)
+  - Guido H├╝lsmann (tavily)
+  - Guido Herrmann (tavily)
+
+---
+## Fonti
+- **obs_a905d107041aca5b**: Guido Germano ÔÇö https://www.radcliffecardiology.com/authors/guido-germano?language_content_entity=en
+- **obs_3494e3e228548fcc**: Guido Germano | About | University College London ÔÇö https://profiles.ucl.ac.uk/40453-guido-germano
+- **obs_e8878ed06f0e6f04**: Guido Germano - University College London ÔÇö https://informaconnect.com/quantminds-international/speakers/guido-germano
+- **obs_26085c02bf4aacba**: Guido Germano ÔÇö http://www.cs.ucl.ac.uk/staff/g.germano
+- **obs_71fd28a8d1f117c9**: Guido Germano ÔÇö https://scholar.google.com/citations?user=8zCKUmoAAAAJ&hl=en
+- **obs_7c903346d75e1660**: Guido GERMANO | Professor (Full) ÔÇö https://www.researchgate.net/profile/Guido-Germano
+- **obs_6ef4a47ee2936b9b**: Guido Germano, Director, Professor ÔÇö https://www.emedevents.com/speaker-profile/guido-germano
+- **obs_732dce4e92a44b39**: Guido Germano ÔÇö https://uk.linkedin.com/in/guidogermano
+- **obs_b873eefaf31212fa**: Guido Germano ÔÇö http://www.cs.ucl.ac.uk/people/G.Germano
+- **obs_03bb7b666663a7b9**: Guido Germano - Mentibus ÔÇö https://www.mentibus.xyz/people/guido-germano
+- **obs_9b58e3dc4ead7e32**: Guido Germano's research works | University of California ... ÔÇö https://www.researchgate.net/scientific-contributions/Guido-Germano-39916358
+- **obs_d3e46eb3bf81fd60**: Guido Germano ÛÁÉýêÿ ýù░ÛÁ¼ýïñ ÔÇö ý£áÙïêÙ▓äýï£Ýï░ ý╣╝Ùª¼ýºÇ Ùƒ░Ùìÿ ý╗┤Ýô¿Ýä░ ... ÔÇö https://labmate.cloud/ko/labs/15525
+- **obs_d9a70afc537fca9c**: Guido Germano | EXPERTISE & EXPERIENCE ÔÇö https://profiles.ucl.ac.uk/40453-guido-germano/professional
+- **obs_ca55c19d3bbeee77**: Guido Germano, docente di Computational Science presso ... ÔÇö https://www.youtube.com/shorts/UK1bhBHan4k
+- **obs_cfb34dda7c24daed**: 7 "Guido Germano" profiles ÔÇö https://www.linkedin.com/pub/dir/Guido/Germano
+- **obs_6ea1633de5ac9141**: Guido Germano | Teaching | University College London ÔÇö https://profiles.ucl.ac.uk/40453-guido-germano/teaching
+- **obs_28a64819c0df6cf2**: Guido Carlomagno - University ÔÇö https://www.unilink.it/en/university/teaching-staff/guido-carlomagno
+- **obs_648dd667806345b9**: UCLA professor sentenced to 5 years of probation for child ... ÔÇö https://dailybruin.com/2019/09/23/ucla-professor-sentenced-to-5-years-of-probation-for-child-pornography-charges
+- **obs_ade1c1935bae8724**: Guido H├╝lsmann ÔÇö http://guidohulsmann.com
+- **obs_4f59f325c2fc8e70**: Guido Herrmann ÔÇö https://scholar.google.com/citations?user=FXy74boAAAAJ&hl=en
+- **obs_cf505ee428fed1f9**: Guido Germano ÔÇö https://www.radcliffecardiology.com/authors/guido-germano?language_content_entity=en
+- **obs_b6eba95ea3bd5110**: Guido Germano | About | University College London ÔÇö https://profiles.ucl.ac.uk/40453-guido-germano
+- **obs_8350be9eed018e8f**: Guido Germano - University College London ÔÇö https://informaconnect.com/quantminds-international/speakers/guido-germano
+- **obs_0b385b69a1f2d2ad**: Guido Germano ÔÇö http://www.cs.ucl.ac.uk/staff/g.germano
+- **obs_a8d0e4393100d951**: Guido Germano ÔÇö https://scholar.google.com/citations?user=8zCKUmoAAAAJ&hl=en
+- **obs_05175b54c6eb2b41**: Guido GERMANO | Professor (Full) ÔÇö https://www.researchgate.net/profile/Guido-Germano
+- **obs_f034ae86fe80fb9f**: Guido Germano, Director, Professor ÔÇö https://www.emedevents.com/speaker-profile/guido-germano
+- **obs_9dff77c4b09f561e**: Guido Germano ÔÇö https://uk.linkedin.com/in/guidogermano
+- **obs_24185427169eeb4b**: Guido Germano ÔÇö http://www.cs.ucl.ac.uk/people/G.Germano
+- **obs_82b7165d96460f7f**: Guido Germano - Mentibus ÔÇö https://www.mentibus.xyz/people/guido-germano
+- **obs_6f333b0f8b1396da**: Guido Germano's research works | University of California ... ÔÇö https://www.researchgate.net/scientific-contributions/Guido-Germano-39916358
+- **obs_940e098502a7affd**: Guido Germano ÛÁÉýêÿ ýù░ÛÁ¼ýïñ ÔÇö ý£áÙïêÙ▓äýï£Ýï░ ý╣╝Ùª¼ýºÇ Ùƒ░Ùìÿ ý╗┤Ýô¿Ýä░ ... ÔÇö https://labmate.cloud/ko/labs/15525
+- **obs_d4786285eeadd89d**: Guido Germano | EXPERTISE & EXPERIENCE ÔÇö https://profiles.ucl.ac.uk/40453-guido-germano/professional
+- **obs_f0204e9ba8321585**: Guido Germano, docente di Computational Science presso ... ÔÇö https://www.youtube.com/shorts/UK1bhBHan4k
+- **obs_280c64e1bb6651cf**: 7 "Guido Germano" profiles ÔÇö https://www.linkedin.com/pub/dir/Guido/Germano
+- **obs_795164c7469263f7**: Guido Germano | Teaching | University College London ÔÇö https://profiles.ucl.ac.uk/40453-guido-germano/teaching
+- **obs_59da81910ff7cdbd**: Guido Carlomagno - University ÔÇö https://www.unilink.it/en/university/teaching-staff/guido-carlomagno
+- **obs_2597ecca7ca234e8**: UCLA professor sentenced to 5 years of probation for child ... ÔÇö https://dailybruin.com/2019/09/23/ucla-professor-sentenced-to-5-years-of-probation-for-child-pornography-charges
+- **obs_02d72a40605cda1a**: Guido H├╝lsmann ÔÇö http://guidohulsmann.com
+- **obs_82e7d4e8ca1fdf06**: Guido Herrmann ÔÇö https://scholar.google.com/citations?user=FXy74boAAAAJ&hl=en
+
+---
+## Provenienza
+- Snapshot: snap_v7_aacd7fe28599695f
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Identity Resolution (legacy): RESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: cluster_8e66acc816c7
+- Person Claims: 31
+- Context Claims: 9
+- Candidate Identities: 1
+- Provider Ledger: 157 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto ├¿ stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+
+--- END REPORT ---
+
+
+======================================================================
+TEST 5/5: BRUTTI ALFIO
+======================================================================
+2026-08-09 22:58:29,671 [INFO] LocalDbAdapter: 31 observations
+2026-08-09 22:58:32,996 [INFO] WebSearchAdapter[tavily]: 19 observations in 3.33s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.internetculturale.it'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-09 22:58:35,355 [INFO] FederationAdapter: 16 observations
+2026-08-09 22:58:38,917 [INFO] WebSearchAdapter[tavily]: 20 observations in 3.56s
+2026-08-09 22:58:39,863 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_e2f2b0d057f7', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_80a4b6b34b78', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_829a2e7d5204']
+2026-08-09 22:58:45,905 [INFO] HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-09 22:58:45,948 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-09 22:58:45,948 [INFO] NARRATE_V2: AI draft succeeded via mistral/mistral-small-latest, 6 blocks
+2026-08-09 22:58:45,948 [INFO] NARRATE_V2: mode=ai, provider=mistral, status=validated_ai, claims_used=10, omitted=0, repair=yes
+Identity: RESOLVED_IDENTITY | Obs: 86 | Elapsed: 16.4s
+
+--- REPORT ---
+
+Bruti Alfio risulta sopravvissuto alla prigionia dopo essere stato catturato durante la Seconda guerra mondiale.
+
+Bruti Alfio nacque a Maiolati Spontini, in provincia di Ancona, il 29 febbraio 1924.
+
+Fu catturato il 9 settembre 1943 a Trieste, mentre prestava servizio nel 5┬░ Reggimento Genio dell'esercito italiano.
+
+Dopo la cattura fu trasferito in Germania, dove rimase internato a Halle (Saale) fino al 28 luglio 1945, quando fece ritorno in Italia.
+
+Il 5┬░ Reggimento Genio era un'unit├á specializzata nella costruzione di fortificazioni, ponti, gallerie e opere difensive, con un ruolo cruciale sul fronte dell'Isonzo durante la Prima guerra mondiale.
+
+Non risultano ulteriori dettagli sul suo ruolo specifico all'interno del reparto o sulle circostanze della cattura.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_d007673a27142727
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 14
+- Context Claims: 3
+- Provider Ledger: 86 observations
+
+## Fonti
+- **obs_dd74e15e9f37814b**: Una Sicilia quasi western, aspra e potente, fatta di silenzi ... - Instagram ÔÇö [https://www.instagram.com/reel/DVbeB6fjCP6](https://www.instagram.com/reel/DVbeB6fjCP6)
+- **obs_480c701f8d15e519**: Prima ÔÇ£sorpresaÔÇØ per una prima puntata piena di allegria ... ÔÇö [https://www.instagram.com/reel/DOWSiinDGUo](https://www.instagram.com/reel/DOWSiinDGUo)
+- **obs_fa80c8c5f707000c**: Alfio's buon cibo Restaurant - Cincinnati, OH | OpenTable ÔÇö [https://www.opentable.com/alfios-buon-cibo](https://www.opentable.com/alfios-buon-cibo)
+- **obs_2f130e185dbdf1b9**: Compie oggi 41 anni Tommaso Berni. Buongiorno. | CALCIATORI BRUTTI ÔÇö [https://www.facebook.com/CALCIATORIBRUTTI/videos/compie-oggi-41-anni-tommaso-berni-buongiorno/411399728211938](https://www.facebook.com/CALCIATORIBRUTTI/videos/compie-oggi-41-anni-tommaso-berni-buongiorno/411399728211938)
+- **obs_f9d40881784385d0**: Alfio's Buon Cibo - Italian- Argentine Cuisine in Hyde Park Square ÔÇö [https://www.linkedin.com/company/alfios-buon-cibo](https://www.linkedin.com/company/alfios-buon-cibo)
+- **obs_3b8a2631ff64413a**: Argentine Impressions: Alfio's Buon Cibo ÔÇö [https://www.cincinnatibites.com/reviews/alfios-buon-cibo](https://www.cincinnatibites.com/reviews/alfios-buon-cibo)
+- **obs_94ea672a191b3e62**: [PDF] ATTO DI DIFFIDA (art. 37 D.L. n 76/2020) AGLI IMPRENDITORI ... ÔÇö [https://www.marche.camcom.it/gestisci-la-tua-impresa/domicili-digitali-cancellazioni-e-assegnazioni-dufficio/assegnazione-dufficio-dei-domicili-digitali/elenchi-avvio-procedimento/atto-di-diffida-prot-75534-del-24-06-2025.pdf](https://www.marche.camcom.it/gestisci-la-tua-impresa/domicili-digitali-cancellazioni-e-assegnazioni-dufficio/assegnazione-dufficio-dei-domicili-digitali/elenchi-avvio-procedimento/atto-di-diffida-prot-75534-del-24-06-2025.pdf)
+- **obs_0af57ddb48a7ce0a**: Alfio's buon cibo (@AlfiosBuonCibo) - Mentions - Cincinnati ÔÇö [https://www.facebook.com/AlfiosBuonCibo/mentions](https://www.facebook.com/AlfiosBuonCibo/mentions)
+- **obs_c629c095efbbc2cb**: Bicontinental Bites - Alfio's (Review) ÔÇö [https://www.citybeat.com/food-drink/bicontinental-bites-12215612](https://www.citybeat.com/food-drink/bicontinental-bites-12215612)
+- **obs_139e3a184bcaac22**: BRUTTI MA BUONI, Viterbo - Menu, Prices & Restaurant Reviews ... ÔÇö [https://www.tripadvisor.com/Restaurant_Review-g194950-d15010102-Reviews-or15-Brutti_ma_Buoni-Viterbo_Province_of_Viterbo_Lazio.html](https://www.tripadvisor.com/Restaurant_Review-g194950-d15010102-Reviews-or15-Brutti_ma_Buoni-Viterbo_Province_of_Viterbo_Lazio.html)
+- **obs_5f6e5ef1b22d4760**: AlfioÔÇÖs Buon Cibo (@alfiosbuoncibo) ÔÇó Instagram photos and videos ÔÇö [https://www.instagram.com/alfiosbuoncibo?hl=en](https://www.instagram.com/alfiosbuoncibo?hl=en)
+- **obs_e72c76c39af372e6**: Best Restaurants Q&A: Alfio Gulisano ÔÇö [https://www.cincinnatimagazine.com/article/best-restaurants-qa-alfio-gulisano](https://www.cincinnatimagazine.com/article/best-restaurants-qa-alfio-gulisano)
+- **obs_f9408ad1b8e4fa46**: Chef Alfio is hands down one of the best chefsÔÇì in Cincinnati to ... ÔÇö [https://www.instagram.com/reel/DNgEGwVuXTQ?hl=en](https://www.instagram.com/reel/DNgEGwVuXTQ?hl=en)
+- **obs_29042d932b625fea**: Alfio Muschio con Clarence Seedorf | Gialappa's Band - Facebook ÔÇö [https://www.facebook.com/gialappasband.official/videos/alfio-muschio-con-clarence-seedorf/1549666393165986](https://www.facebook.com/gialappasband.official/videos/alfio-muschio-con-clarence-seedorf/1549666393165986)
+- **obs_9e157cb8c5aecccf**: Alfio's Buon Cibo in Cincinnati, OH | Visit Cincy ÔÇö [https://www.visitcincy.com/listing/alfios-buon-cibo/6397](https://www.visitcincy.com/listing/alfios-buon-cibo/6397)
+- **obs_645f7598260bef7e**: Spettacoli 2014 - OperaLibera┬« ÔÇö [https://www.operalibera.net/wp/2014/01/01/spettacoli-2014](https://www.operalibera.net/wp/2014/01/01/spettacoli-2014)
+- **obs_c07dda9660c1b888**: Cinema Trevi: L'assoluto naturale. Il cinema di Mauro Bolognini ÔÇö [https://www.fondazionecsc.it/evento/cinema-trevi-l%C2%92assoluto-naturale-il-cinema-di-mauro-bolognini-2](https://www.fondazionecsc.it/evento/cinema-trevi-l%C2%92assoluto-naturale-il-cinema-di-mauro-bolognini-2)
+- **obs_4db18383b0478693**: Alfio Bardolla Training Group S.p.A.: azionisti, dirigenti e profilo societ├á ÔÇö [https://it.marketscreener.com/quotazioni/azione/ALFIO-BARDOLLA-TRAINING-G-37278268/azienda](https://it.marketscreener.com/quotazioni/azione/ALFIO-BARDOLLA-TRAINING-G-37278268/azienda)
+- **obs_ed184bc8feb25149**: Azzurri dell'atletica, si programma il 2019 - FIDAL ÔÇö [https://www.fidal.it/content/Azzurri-dell-atletica-si-programma-il-2019/117635](https://www.fidal.it/content/Azzurri-dell-atletica-si-programma-il-2019/117635)
+- **obs_01649434ddfe9b30**: Brutti: dizionario, significato e curiosit├á ÔÇö [https://dizy.com/it/voce/brutti](https://dizy.com/it/voce/brutti)
+- **obs_bba8f12b6bd7b75f**: Brutti S.r.l. | Creditsafe ÔÇö [https://www.creditsafe.com/business-index/en-ie/company/brutti-srl-it04326947](https://www.creditsafe.com/business-index/en-ie/company/brutti-srl-it04326947)
+- **obs_89482eb7b7d84eee**: Brutti (SRL) - Li├¿ge (4020) - BE1002861422 ÔÇö [https://www.companyweb.be/en/1002861422/brutti](https://www.companyweb.be/en/1002861422/brutti)
+- **obs_a9ae182bc6bf6a95**: Brutti Iveco - ACCETTATORE presso BRUTTI SRL ÔÇö [https://www.linkedin.com/in/brutti-iveco-94028143](https://www.linkedin.com/in/brutti-iveco-94028143)
+- **obs_3c8b2c668d8a709a**: Darceli Brutti - Propriet├írio na carvao brutti ÔÇö [https://www.linkedin.com/in/darceli-brutti-4b5706120](https://www.linkedin.com/in/darceli-brutti-4b5706120)
+- **obs_347457e444da0f82**: BRUTTI SERRAMENTI SAS DI BRUTTI ROBERTO & F.LLI | Aziende Easy ÔÇö [https://aziendeeasy.it/aziendaselezionata11106606-BRUTTI%20SERRAMENTI%20SAS%20DI%20BRUTTI%20ROBERTO%20&%20F.LLI](https://aziendeeasy.it/aziendaselezionata11106606-BRUTTI%20SERRAMENTI%20SAS%20DI%20BRUTTI%20ROBERTO%20&%20F.LLI)
+- **obs_3566c2389d900358**: Giorgio Brutti - imprenditore presso Brutti Serramenti S.n.c. ÔÇö [https://www.linkedin.com/in/giorgio-brutti-5a63289b](https://www.linkedin.com/in/giorgio-brutti-5a63289b)
+- **obs_77c44e4f7b4d2f44**: Marine Brutti ÔÇö [https://saywho.co.uk/people/marine-brutti](https://saywho.co.uk/people/marine-brutti)
+- **obs_b4078465b1b086ea**: Matteo Brutti - Titolare RIVA & BRUTTI SRL ÔÇö [https://www.linkedin.com/in/matteo-brutti-45435690](https://www.linkedin.com/in/matteo-brutti-45435690)
+- **obs_408843a23a1b93ed**: Giovanni Brutti - -- - Impresa edile Brutti ÔÇö [https://www.linkedin.com/in/giovanni-brutti-6a8765113](https://www.linkedin.com/in/giovanni-brutti-6a8765113)
+- **obs_1c2af6f5048a3845**: Brutti voti lyrics in english, Brutti voti lyrics english translation - Songmeaning ÔÇö [https://www.songmeaning.io/lyric-translation/brutti-voti](https://www.songmeaning.io/lyric-translation/brutti-voti)
+- **obs_e28ddda08deca746**: Brutti Serramenti S.a.s. di Brutti Roberto & F.lli a Sona ÔÇö [https://www.paginebianche.it/lugagnano/brutti-serramenti-brutti-roberto-f-lli.8490058](https://www.paginebianche.it/lugagnano/brutti-serramenti-brutti-roberto-f-lli.8490058)
+- **obs_f6b56d839f2193dd**: matteo brutti - Imprenditore presso Brutti Giancarlo Srl - BRUTTI GIANCARLO S.R.L. ÔÇö [https://www.linkedin.com/in/matteo-brutti-b70172a3](https://www.linkedin.com/in/matteo-brutti-b70172a3)
+- **obs_8f29b1885b9f25a6**: matteo brutti - imprenditore presso Brutti giancarlo imballaggi ÔÇö [https://www.linkedin.com/in/matteo-brutti-4487299b](https://www.linkedin.com/in/matteo-brutti-4487299b)
+- **obs_6bcc753982c70c5a**: Paolo Brutti - Socio presso Brutti Serramenti ÔÇö [https://www.linkedin.com/in/paolo-brutti-63005b50](https://www.linkedin.com/in/paolo-brutti-63005b50)
+- **obs_5a4b7cb4ed74ec51**: emanuele brutti - PERITO ELETTRONICO presso BRUTTI ENRICO ÔÇö [https://www.linkedin.com/in/emanuele-brutti-94031a25](https://www.linkedin.com/in/emanuele-brutti-94031a25)
+- **obs_497415a51e97bdbc**: Brutti, Valeria Brutti - -- ÔÇö [https://www.linkedin.com/in/brutti-valeria-brutti-0b8a71125](https://www.linkedin.com/in/brutti-valeria-brutti-0b8a71125)
+- **obs_1d7b4d1e1180b0c5**: The song meanings of Brutti sogni & Brutti sogni's means from Nayt - Songmeaning ÔÇö [https://songmeaning.io/song/brutti-sogni](https://songmeaning.io/song/brutti-sogni)
+- **obs_b718b85f34db0fe1**: Martina Brutti - Avvocato - Studio Legale Brutti ÔÇö [https://it.linkedin.com/in/martina-brutti-030995a1](https://it.linkedin.com/in/martina-brutti-030995a1)
+- **obs_06d810e28f9748e6**: Chiara Brutti - Impiegato presso Brutti Serramenti ÔÇö [https://www.linkedin.com/in/chiara-brutti-8664151a2](https://www.linkedin.com/in/chiara-brutti-8664151a2)
+
+--- END REPORT ---
+

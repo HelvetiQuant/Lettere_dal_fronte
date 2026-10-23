@@ -1,0 +1,179 @@
+{
+  "PIERROBONE Cesare": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 53,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 8,
+    "narration_mode": "unknown",
+    "narration_provider": "unknown",
+    "report_length": 6873,
+    "report_preview": "Cesare Pierrobone risulta residente a Frosinone.\n\nLa documentazione archivistica attesta il decesso di Pierrobone Cesare nel mese di ottobre del 1943.\n\nSulla base delle fonti disponibili, la morte risulta avvenuta probabilmente nel corso del 1943.\n\nL'unica traccia documentaria diretta è rintracciabile nell'Elenco_P.pdf, pagina 84.\n\nNon sono disponibili ulteriori dettagli biografici o circostanze del decesso oltre a quanto riportato nel documento archivistico.\n\n---\n\n## Provenienza\n- Snapshot: sna",
+    "errors": []
+  },
+  "MOROSI Riccardo": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 70,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 9,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 9,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 9,
+    "narration_mode": "unknown",
+    "narration_provider": "unknown",
+    "report_length": 10491,
+    "report_preview": "Riccardo Morosi risulta deceduto nel 1943, probabilmente nel mese di ottobre, durante la prigionia nel campo di Lucchenwald.\n\nRiccardo Morosi era residente a Udine, in particolare nel comune di Basiliano.\n\nLa data di morte è indicata come il 22 ottobre 1943, secondo quanto riportato in un elenco documentale d'archivio.\n\nMorosi fu internato nel campo di prigionia di Lucchenwald, dove trovò la morte.\n\nLa documentazione che lo attesta proviene da un elenco archivistico denominato 'Elenco_M.pdf', al",
+    "errors": []
+  },
+  "BERNERI Pietro": {
+    "type": "PERSON",
+    "identity_status": "AMBIGUOUS_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 71,
+      "person_sources_confirmed": 2,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 3,
+      "person_candidates_rejected": 2,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 8,
+    "narration_mode": "unknown",
+    "narration_provider": "unknown",
+    "report_length": 10859,
+    "report_preview": "Pietro Berneri risulta deceduto nel novembre 1942 durante la prigionia nel Lager 100.\n\nPietro Berneri era residente a Brescia, nella località di Saresto.\n\nLa documentazione archivistica lo colloca tra i prigionieri del Lager 100, dove morì in circostanze non ulteriormente specificate.\n\nLa fonte principale che lo menziona è l'elenco denominato 'Elenco_B.pdf', pagina 49, dove compare come 'BERNERI P'.\n\nNon sono disponibili ulteriori dettagli biografici, come data di nascita o circostanze precise d",
+    "errors": []
+  },
+  "PATRONE Mario": {
+    "type": "PERSON",
+    "identity_status": "AMBIGUOUS_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 85,
+      "person_sources_confirmed": 2,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 47,
+      "person_candidates_rejected": 2,
+      "context_sources": 0,
+      "claims_accepted": 7,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 7,
+    "narration_mode": "unknown",
+    "narration_provider": "unknown",
+    "report_length": 8684,
+    "report_preview": "PATRONE Mario risulta residente a Savona, in località Legino.\n\nPATRONE Mario risulta deceduto il 14 febbraio 1944 a causa di una malattia polmonare.\n\nLa notizia della morte è riportata in un elenco documentale conservato presso archivi storici, che ne attesta la registrazione come vittima della seconda guerra mondiale.\n\nNon sono disponibili ulteriori dettagli biografici o militari su PATRONE Mario oltre a quelli registrati nell'elenco documentale consultato.\n\n---\n\n## Provenienza\n- Snapshot: snap",
+    "errors": []
+  },
+  "CATTANEO Luigi": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 92,
+      "person_sources_confirmed": 3,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 78,
+      "person_candidates_rejected": 1,
+      "context_sources": 0,
+      "claims_accepted": 24,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 24,
+    "narration_mode": "unknown",
+    "narration_provider": "unknown",
+    "report_length": 7553,
+    "report_preview": "Luigi Cattaneo risulta deceduto il 7 luglio 1944 a Hochenstein durante un bombardamento.\n\nLuigi Cattaneo era residente ad Alessandria e risulta legato anche a Tortona.\n\nIl decesso è stato registrato in un documento d'archivio datato 7 luglio 1944, che colloca l'evento a Hochenstein.\n\nIl documento di riferimento è l'Elenco_C.pdf, pagina 6, conservato nell'archivio con lettera C.\n\nNon risultano ulteriori dettagli biografici o militari oltre a quelli registrati nel documento d'archivio.\n\n---\n\n## Pr",
+    "errors": []
+  },
+  "BELLINO Guido": {
+    "type": "PERSON",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 75,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 49,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 9,
+      "claims_rejected": 0
+    },
+    "person_claims_count": 10,
+    "narration_mode": "unknown",
+    "narration_provider": "unknown",
+    "report_length": 9771,
+    "report_preview": "Guido Bellino risulta deceduto in Polonia, probabilmente nel dicembre 1944, durante il periodo della prigionia.\n\nGuido Bellino era residente a Padova e a Montagnana, in provincia di Padova.\n\nSecondo le fonti archivistiche, la data di decesso è collocata intorno all'11 dicembre 1944.\n\nLa documentazione disponibile indica che Bellino fu internato nel campo di prigionia di Kustrin, in Polonia.\n\nIl luogo di nascita di Guido Bellino non risulta chiaramente attestato nelle fonti disponibili.\n\nPer appr",
+    "errors": []
+  },
+  "Battaglie dell'Isonzo": {
+    "type": "EVENT",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 317,
+      "person_sources_confirmed": 2,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "event_claims_count": 8,
+    "narration_mode": "unknown",
+    "narration_provider": "unknown",
+    "report_length": 65024,
+    "report_preview": "Le battaglie dell'Isonzo furono dodici offensive italiane combattute tra giugno 1915 e settembre 1917 lungo il fiume Isonzo e il Carso, nell'ambito del fronte italo-austriaco della Prima guerra mondiale.\n\nL'evento si sviluppò in un arco temporale di oltre due anni, dal 23 giugno 1915 al 12 settembre 1917, con una fase di massima intensità tra il 1916 e il 1917.\n\nLe prime quattro battaglie, combattute tra luglio e novembre 1915, non produssero risultati decisivi ma logorarono entrambi gli schiera"
+  },
+  "Fronte Macedone": {
+    "type": "EVENT",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 303,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 4,
+      "claims_rejected": 0
+    },
+    "event_claims_count": 4,
+    "narration_mode": "unknown",
+    "narration_provider": "unknown",
+    "report_length": 69066,
+    "report_preview": "Il Fronte Macedone, noto anche come fronte di Salonicco o fronte meridionale, fu una delle principali campagne della Prima guerra mondiale, combattuta tra il 14 ottobre 1915 e il 30 settembre 1918 in Macedonia, con epicentro a Salonicco.\n\nNato come tentativo dell'Intesa di soccorrere la Serbia contro l'offensiva congiunta di Germania, Austria-Ungheria e Bulgaria, il fronte si stabilizzò dopo l'occupazione di Salonicco da parte di truppe anglo-francesi all'inizio di ottobre 1915. La campagna vide"
+  },
+  "Prigionia": {
+    "type": "EVENT",
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 329,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 4,
+      "claims_rejected": 0
+    },
+    "event_claims_count": 4,
+    "narration_mode": "unknown",
+    "narration_provider": "unknown",
+    "report_length": 67485,
+    "report_preview": "La prigionia dei soldati italiani durante la Prima guerra mondiale fu un evento documentato tra il 24 maggio 1915 e il 4 novembre 1918.\n\nI soldati italiani catturati vennero internati prevalentemente nei campi di prigionia situati in Austria-Ungheria e Germania, dove rimasero per tutta la durata del conflitto.\n\nLa Prima guerra mondiale rappresentò la prima occasione storica in cui gli eserciti dovettero affrontare la gestione di masse così ampie di prigionieri di guerra, mettendo in crisi le nor"
+  }
+}

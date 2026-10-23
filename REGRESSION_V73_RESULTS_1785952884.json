@@ -1,0 +1,198 @@
+{
+  "regression_run_id": "regression_v73_1785952884",
+  "run_at": "2026-08-05T20:01:24.627295",
+  "version": "V7.3-PERSON-FIX",
+  "total_targets": 5,
+  "passed": 5,
+  "failed": 0,
+  "pass_rate": 100.0,
+  "results": [
+    {
+      "target_id": "person_01",
+      "input": "BIANCQUADDIO Michele",
+      "intent": "PERSON_LOOKUP",
+      "war_period": "WWII",
+      "run_id": "run_v7_1785952768_ce19e5d9",
+      "observation_count": 67,
+      "identity_resolution": "RESOLVED",
+      "accepted_claims": 0,
+      "conflicting_claims": 0,
+      "rejected_homonyms": 0,
+      "errors": [],
+      "has_snapshot": true,
+      "has_report": true,
+      "report_length": 13961,
+      "elapsed_seconds": 25.391,
+      "passed": true,
+      "failure_reasons": [],
+      "checks": {
+        "no_errors": true,
+        "has_snapshot": true,
+        "has_report": true,
+        "has_observations": true,
+        "identity_resolved_or_review": true,
+        "homonyms_handled": true,
+        "no_legacy_leakage": true,
+        "war_period_set": true
+      }
+    },
+    {
+      "target_id": "person_02",
+      "input": "LUCENTE Mario",
+      "intent": "PERSON_LOOKUP",
+      "war_period": "WWII",
+      "run_id": "run_v7_1785952793_e21b076d",
+      "observation_count": 93,
+      "identity_resolution": "RESOLVED",
+      "accepted_claims": 0,
+      "conflicting_claims": 0,
+      "rejected_homonyms": 0,
+      "errors": [],
+      "has_snapshot": true,
+      "has_report": true,
+      "report_length": 11691,
+      "elapsed_seconds": 15.941,
+      "passed": true,
+      "failure_reasons": [],
+      "checks": {
+        "no_errors": true,
+        "has_snapshot": true,
+        "has_report": true,
+        "has_observations": true,
+        "identity_resolved_or_review": true,
+        "homonyms_handled": true,
+        "no_legacy_leakage": true,
+        "war_period_set": true
+      }
+    },
+    {
+      "target_id": "person_03",
+      "input": "BAIS Francesco",
+      "intent": "PERSON_LOOKUP",
+      "war_period": "WWII",
+      "run_id": "run_v7_1785952809_bccd08fe",
+      "observation_count": 103,
+      "identity_resolution": "RESOLVED",
+      "accepted_claims": 0,
+      "conflicting_claims": 0,
+      "rejected_homonyms": 0,
+      "errors": [],
+      "has_snapshot": true,
+      "has_report": true,
+      "report_length": 17314,
+      "elapsed_seconds": 31.232,
+      "passed": true,
+      "failure_reasons": [],
+      "checks": {
+        "no_errors": true,
+        "has_snapshot": true,
+        "has_report": true,
+        "has_observations": true,
+        "identity_resolved_or_review": true,
+        "homonyms_handled": true,
+        "no_legacy_leakage": true,
+        "war_period_set": true
+      }
+    },
+    {
+      "target_id": "person_04",
+      "input": "BOLLO Mario",
+      "intent": "PERSON_LOOKUP",
+      "war_period": "WWII",
+      "run_id": "run_v7_1785952840_f07bccb5",
+      "observation_count": 93,
+      "identity_resolution": "RESOLVED",
+      "accepted_claims": 0,
+      "conflicting_claims": 0,
+      "rejected_homonyms": 0,
+      "errors": [],
+      "has_snapshot": true,
+      "has_report": true,
+      "report_length": 10459,
+      "elapsed_seconds": 22.609,
+      "passed": true,
+      "failure_reasons": [],
+      "checks": {
+        "no_errors": true,
+        "has_snapshot": true,
+        "has_report": true,
+        "has_observations": true,
+        "identity_resolved_or_review": true,
+        "homonyms_handled": true,
+        "no_legacy_leakage": true,
+        "war_period_set": true
+      }
+    },
+    {
+      "target_id": "person_05",
+      "input": "MELLI Leandro",
+      "intent": "PERSON_LOOKUP",
+      "war_period": "WWII",
+      "run_id": "run_v7_1785952863_7608cce4",
+      "observation_count": 94,
+      "identity_resolution": "RESOLVED",
+      "accepted_claims": 0,
+      "conflicting_claims": 0,
+      "rejected_homonyms": 0,
+      "errors": [],
+      "has_snapshot": true,
+      "has_report": true,
+      "report_length": 11137,
+      "elapsed_seconds": 21.021,
+      "passed": true,
+      "failure_reasons": [],
+      "checks": {
+        "no_errors": true,
+        "has_snapshot": true,
+        "has_report": true,
+        "has_observations": true,
+        "identity_resolved_or_review": true,
+        "homonyms_handled": true,
+        "no_legacy_leakage": true,
+        "war_period_set": true
+      }
+    }
+  ],
+  "check_summary": {
+    "no_errors": {
+      "pass": 5,
+      "fail": 0
+    },
+    "has_snapshot": {
+      "pass": 5,
+      "fail": 0
+    },
+    "has_report": {
+      "pass": 5,
+      "fail": 0
+    },
+    "has_observations": {
+      "pass": 5,
+      "fail": 0
+    },
+    "identity_resolved_or_review": {
+      "pass": 5,
+      "fail": 0
+    },
+    "homonyms_handled": {
+      "pass": 5,
+      "fail": 0
+    },
+    "no_legacy_leakage": {
+      "pass": 5,
+      "fail": 0
+    },
+    "war_period_set": {
+      "pass": 5,
+      "fail": 0
+    }
+  },
+  "summary": {
+    "total_observations": 450,
+    "total_accepted_claims": 0,
+    "total_conflicting_claims": 0,
+    "total_rejected_homonyms": 0,
+    "total_errors": 0,
+    "avg_elapsed": 23.239
+  }
+}

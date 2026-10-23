@@ -1,0 +1,295 @@
+{
+  "campaign_id": "validation_20260817_v1",
+  "run_id": "tests_nt_20260817T174528",
+  "created_at": "2026-08-17T17:45:37.455170+00:00",
+  "total_tests": 7,
+  "passed": 0,
+  "failed": 7,
+  "critical_failures": 6,
+  "results": [
+    {
+      "test_id": "N",
+      "name": "temporal_gate_cross_war",
+      "description": "Verify temporal gate blocks cross-war contamination",
+      "metrics": {
+        "ww2_links_in_ww1_db": 12759,
+        "sampled": 50,
+        "blocked_by_orchestrator": 0,
+        "blocked_by_barriers_v73": 0,
+        "date_contaminated_wwi_events": 0
+      },
+      "sample_contaminated_links": [
+        {
+          "link_id": 1679309,
+          "event": "Prigionia",
+          "event_date_start": "1915-05-24",
+          "event_date_end": "1918-11-04",
+          "event_conflict": "WWI",
+          "target_table": "internati",
+          "target_id": 2351,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Lager",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        },
+        {
+          "link_id": 1679310,
+          "event": "Prigionia",
+          "event_date_start": "1915-05-24",
+          "event_date_end": "1918-11-04",
+          "event_conflict": "WWI",
+          "target_table": "internati",
+          "target_id": 2352,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Lager",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        },
+        {
+          "link_id": 1679311,
+          "event": "Prigionia",
+          "event_date_start": "1915-05-24",
+          "event_date_end": "1918-11-04",
+          "event_conflict": "WWI",
+          "target_table": "internati",
+          "target_id": 2353,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Lager",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        },
+        {
+          "link_id": 1679312,
+          "event": "Prigionia",
+          "event_date_start": "1915-05-24",
+          "event_date_end": "1918-11-04",
+          "event_conflict": "WWI",
+          "target_table": "internati",
+          "target_id": 2354,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Lager",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        },
+        {
+          "link_id": 1679313,
+          "event": "Prigionia",
+          "event_date_start": "1915-05-24",
+          "event_date_end": "1918-11-04",
+          "event_conflict": "WWI",
+          "target_table": "internati",
+          "target_id": 2355,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Lager",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        },
+        {
+          "link_id": 1679314,
+          "event": "Prigionia",
+          "event_date_start": "1915-05-24",
+          "event_date_end": "1918-11-04",
+          "event_conflict": "WWI",
+          "target_table": "internati",
+          "target_id": 2356,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Lager",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        },
+        {
+          "link_id": 1679315,
+          "event": "Prigionia",
+          "event_date_start": "1915-05-24",
+          "event_date_end": "1918-11-04",
+          "event_conflict": "WWI",
+          "target_table": "internati",
+          "target_id": 2357,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Lager",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        },
+        {
+          "link_id": 1679316,
+          "event": "Eccidio di Cefalonia",
+          "event_date_start": "1943-09-08",
+          "event_date_end": "1943-09-24",
+          "event_conflict": "WWII",
+          "target_table": "internati",
+          "target_id": 2358,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Acqui",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        },
+        {
+          "link_id": 1679317,
+          "event": "Eccidio di Cefalonia",
+          "event_date_start": "1943-09-08",
+          "event_date_end": "1943-09-24",
+          "event_conflict": "WWII",
+          "target_table": "internati",
+          "target_id": 2359,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Acqui",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        },
+        {
+          "link_id": 1679318,
+          "event": "Eccidio di Cefalonia",
+          "event_date_start": "1943-09-08",
+          "event_date_end": "1943-09-24",
+          "event_conflict": "WWII",
+          "target_table": "internati",
+          "target_id": 2360,
+          "confidence": 0.7,
+          "match_field": "luogo_text",
+          "match_value": "Acqui",
+          "war_period_column": null,
+          "usable_as_evidence": 0,
+          "blocked_by_orchestrator": false
+        }
+      ],
+      "pass_criteria": "Zero cross-war links should reach the AI narrator",
+      "passed": false,
+      "finding": "12,759 WWII internment links exist in WWI events DB. None are blocked by the orchestrator (barriers_v73 not imported). war_period column is empty on all links. 0 links blocked by temporal gate.",
+      "critical": true
+    },
+    {
+      "test_id": "O",
+      "name": "source_lineage_independence",
+      "description": "Verify source independence assessment method",
+      "checks": {
+        "has_independence_assessor": true,
+        "has_source_family_graph": true,
+        "has_db_lookup": false,
+        "has_authority_level": false,
+        "has_lineage_id": true,
+        "uses_heuristic": false
+      },
+      "pass_criteria": "Fusion should use DB-backed lineage for independence",
+      "passed": false,
+      "finding": "Fusion engine uses in-memory IndependenceAssessor with heuristic scoring. No DB lookup. No authority levels. No lineage IDs. Dependent sources (same archive, same OCR) may be counted as independent.",
+      "critical": true
+    },
+    {
+      "test_id": "P",
+      "name": "answer_evidence_gate_bypass",
+      "description": "Verify which claim statuses reach the AI narrator",
+      "checks": {
+        "includes_approved": true,
+        "includes_probable": true,
+        "includes_needs_review": true,
+        "includes_rejected": true,
+        "includes_context": true,
+        "includes_unsupported": false,
+        "has_status_filter": true,
+        "uses_answer_evidence_gate": false
+      },
+      "pass_criteria": "Only APPROVED and PROBABLE claims should reach AI",
+      "passed": false,
+      "finding": "NarrationEvidenceSelector includes APPROVED, PROBABLE, NEEDS_REVIEW, and CONTEXT claims. REJECTED are excluded. But NEEDS_REVIEW claims (which include conflicting and unverified) are passed to AI as context. No AnswerEvidenceGate grouping by verification status. No blocking of unsupported claims stated as fact.",
+      "critical": true
+    },
+    {
+      "test_id": "Q",
+      "name": "followup_rejected_claims",
+      "description": "Verify REJECTED claims are filtered in follow-up chat",
+      "checks": {
+        "has_execute_followup": true,
+        "has_build_followup_prompt": true,
+        "passes_all_person_claims": true,
+        "has_status_check": false,
+        "has_filter": false
+      },
+      "pass_criteria": "REJECTED claims should be excluded from follow-up prompt",
+      "passed": false,
+      "finding": "execute_followup passes ALL person_claims to AI without status filtering. No status check. No filter. REJECTED and UNSUPPORTED claims are included in the prompt. AI can narrate rejected claims as fact.",
+      "critical": true
+    },
+    {
+      "test_id": "R",
+      "name": "collegamenti_unquarantined",
+      "description": "Quantify exposure of unquarantined collegamenti table",
+      "metrics": {
+        "total": 2349417,
+        "has_quarantine_columns": false
+      },
+      "by_tipo_collegamento": {
+        "luogo": 810737,
+        "persona": 614620,
+        "evento": 523383,
+        "unita": 360844,
+        "fonte": 35557,
+        "periodo": 4207,
+        "menzionato": 65,
+        "decorazione": 4
+      },
+      "by_confidence_band": {
+        "high_0.9+": 1880579,
+        "medium_0.7-0.9": 468838
+      },
+      "pass_criteria": "collegamenti should have quarantine columns or be migrated",
+      "passed": false,
+      "finding": "2,349,417 entity links in collegamenti with NO quarantine columns. All are accessible as candidates. No usable_as_evidence, origin, or war_period filtering. This is the largest unquarantined legacy table.",
+      "critical": true
+    },
+    {
+      "test_id": "S",
+      "name": "narrator_hallucination_check_scope",
+      "description": "Verify scope of narrator's post-generation hallucination check",
+      "checks": {
+        "checks_dates": true,
+        "checks_places": true,
+        "checks_names": true,
+        "checks_temporal_contamination": false,
+        "checks_war_mixing": false,
+        "checks_claim_ids": false,
+        "checks_rejected_claims": false,
+        "checks_unsupported_as_fact": false,
+        "checks_provenance": false
+      },
+      "pass_criteria": "Hallucination check should cover all evidence gate violations",
+      "passed": false,
+      "finding": "Narrator's hallucination check covers: dates, places, names, temporal contamination (WWI/WWII). Does NOT check: rejected claims mentioned in output, unsupported claims stated as fact, provenance chain validation. These are exactly what AnswerEvidenceGate.verify_answer() would check.",
+      "note": "The narrator's check is a subset of what AnswerEvidenceGate provides."
+    },
+    {
+      "test_id": "T",
+      "name": "war_period_column_population",
+      "description": "Verify war_period column is populated on legacy links",
+      "metrics": {
+        "event_links_total": 1539685,
+        "event_links_war_period_empty": 1539685,
+        "event_links_war_period_set": 0,
+        "record_links_total": 169184,
+        "record_links_war_period_empty": 169184,
+        "record_links_war_period_set": 0
+      },
+      "pass_criteria": "war_period should be set on all links",
+      "passed": false,
+      "finding": "war_period is EMPTY on all 1539685 event_links and all 169184 record_links. The column exists but was never populated during quarantine migration. The orchestrator doesn't check it anyway (Test B).",
+      "critical": true
+    }
+  ]
+}

@@ -33,7 +33,8 @@ async function request<T>(
   const url = buildUrlWithParams(path, params);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  let timedOut = false;
+  const timeoutId = setTimeout(() => { timedOut = true; controller.abort('timeout'); }, timeout);
   const combinedSignal = signal || controller.signal;
 
   try {
@@ -59,10 +60,14 @@ async function request<T>(
   } catch (e) {
     if (e instanceof ApiError) throw e;
     if (e instanceof DOMException && e.name === 'AbortError') {
-      if (retry && method === 'GET') {
-        return request<T>(method, path, { ...opts, retry: false });
+      if (timedOut) {
+        if (retry && method === 'GET') {
+          timedOut = false;
+          return request<T>(method, path, { ...opts, retry: false });
+        }
+        throw new TimeoutError(url);
       }
-      throw new TimeoutError(url);
+      throw new ApiError(0, 'Richiesta cancellata', undefined, url);
     }
     throw new ApiError(0, (e as Error).message || 'Errore di rete', undefined, url);
   } finally {
@@ -70,12 +75,12 @@ async function request<T>(
   }
 }
 
-export function get<T>(path: string, params?: Record<string, string | number | boolean | undefined>, signal?: AbortSignal): Promise<T> {
-  return request<T>('GET', path, { params, signal, retry: true });
+export function get<T>(path: string, params?: Record<string, string | number | boolean | undefined>, signal?: AbortSignal, timeout?: number): Promise<T> {
+  return request<T>('GET', path, { params, signal, retry: true, timeout });
 }
 
-export function post<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
-  return request<T>('POST', path, { body, signal });
+export function post<T>(path: string, body?: unknown, signal?: AbortSignal, timeout?: number): Promise<T> {
+  return request<T>('POST', path, { body, signal, timeout });
 }
 
 export function patch<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {

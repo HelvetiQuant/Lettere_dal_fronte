@@ -127,6 +127,28 @@ _INTERNATI_FIELD_MAP = [
     ("data", "event_date", "date", "possible", 0.5),
 ]
 
+# Mappatura lebi_records (LeBI/ANRP — IMI WWII)
+_LEBI_FIELD_MAP = [
+    ("data_nascita", "born_at", "date", "probable", 0.8),
+    ("luogo_nascita", "born_at", "place", "probable", 0.8),
+    ("provincia_nascita", "born_in_province", "place", "probable", 0.7),
+    ("grado", "held_rank", "rank", "probable", 0.8),
+    ("reparto", "served_in", "unit", "probable", 0.7),
+    ("arma", "served_in_branch", "branch", "probable", 0.7),
+    ("matricola", "has_service_number", "id", "probable", 0.9),
+    ("fronte_cattura", "captured_on_front", "text", "probable", 0.7),
+    ("luogo_cattura", "captured_at", "place", "probable", 0.7),
+    ("data_cattura", "captured_at", "date", "probable", 0.7),
+    ("campi_internamento", "interned_at", "place", "probable", 0.7),
+    ("sorte", "had_fate", "fate", "probable", 0.7),
+    ("data_decesso", "died_at", "date", "probable", 0.7),
+    ("luogo_decesso", "died_at", "place", "probable", 0.7),
+    ("causa_morte", "cause_of_death", "cause", "probable", 0.7),
+    ("luogo_sepoltura", "buried_at", "place", "probable", 0.7),
+    ("data_rientro", "returned_on", "date", "probable", 0.7),
+    ("luogo_rientro", "returned_to", "place", "probable", 0.7),
+]
+
 # Mappatura caduti_albooro
 _CADUTI_FIELD_MAP = [
     ("nominativo", "has_name", "name", "confirmed", 0.9),
@@ -182,6 +204,7 @@ def extract_claims_from_record(
 
     field_map = {
         "internati": _INTERNATI_FIELD_MAP,
+        "lebi_records": _LEBI_FIELD_MAP,
         "caduti_albooro": _CADUTI_FIELD_MAP,
         "decorati": _DECORATI_FIELD_MAP,
     }.get(table, [])
@@ -190,9 +213,7 @@ def extract_claims_from_record(
         return {"error": f"no field map for table {table}"}
 
     if not entity_label:
-        if table == "internati":
-            entity_label = f"{record.get('cognome','')} {record.get('nome','')}".strip()
-        elif table == "decorati":
+        if table in ("internati", "lebi_records", "decorati"):
             entity_label = f"{record.get('cognome','')} {record.get('nome','')}".strip()
         elif table == "caduti_albooro":
             entity_label = record.get("nominativo", "")

@@ -1,0 +1,799 @@
+﻿python : C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified 
+HTTPS request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+In riga:1 car:32
++ ... THONIOENCODING="utf-8"; python run_5_random_narrative.py 2>&1 | Out-F ...
++                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\eryma\...ml#tls-warnings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+================================================================================
+RISPOSTE NARRATIVE - 5 NOMI CASUALI DAL DB
+================================================================================
+
+--------------------------------------------------------------------------------
+  [1/5] VALENTINI Bruno  (fonte: internati#22299)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:19:36,154 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_cfd6c9edceae', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_fa7877306e2f', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_7586a26aaf9d', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_c5b0bd47a773', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_d5c4740afa08']
+2026-08-06 21:19:45,445 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:19:45,495 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 5 blocks
+2026-08-06 21:19:45,495 [WARNING] NARRATE_V2: Hallucination check found 8 warnings: ['HALLUCINATED_DATE:19 in block b1 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Antonio in block b2 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Roma in block b2 ÔÇö not in evidence']
+2026-08-06 21:19:45,495 [WARNING] NARRATE_V2: Severe hallucination (8 warnings), falling back to deterministic
+2026-08-06 21:19:45,495 [INFO] NARRATE_V2: mode=deterministic, provider=, status=validated_deterministic, claims_used=20, omitted=0, repair=no
+  Identity: RESOLVED_IDENTITY
+  Observations: 149 | Errors: 0 | Warnings: 51
+  Claims: 13 | Evidence: 12 | Sources: 2
+  Elapsed: 18.1s
+
+# Rapporto di Ricerca ÔÇö snap_v7_48c7f020c46266d5
+Versione schema: 7.2
+Intent: PERSON_LOOKUP
+Target: VALENTINI Bruno
+Contratto Narratore: 7.2-narration-v2
+
+## Stato Identita: RESOLVED_IDENTITY
+## Corroborazione: PARTIAL
+
+## APPROVED (verificati, fonte autorevole, nessun conflitto)
+  - fate: deceduto
+  - internment_place: Ersembrung-camp. 2005
+  - residence: Roma,Via Della Palomba 12
+  - date_note: il 29-agosto 1944
+  - data_quality_note: luogo di internamento 'Ersembrung-camp. 2005' non verificata
+  - paternity: ANTONIO
+  - draft_class: 1869
+  - current_municipality: Estero
+  - rank: Tenente colonnello In servizio attivo
+  - military_unit: 232 reggimento fanteria
+  - death_year: 1917
+  - death_place: monte Santo
+  - death_cause: ferite riportate In combattimento
+
+## PROBABLE (fonte valida, incertezza su OCR/normalizzazione)
+  - fate: deceduto
+
+## NEEDS REVIEW (non corroborato o non leggibile)
+  - source_text: ( 57. V. )
+
+|  VASSELLI Augusto | Roma.-Sta bene,. F. 15. | -  |
+| --- | --- | --- |
+|  VEZZO Aldo | +Roma.-Deceduto il 7-3-1945 a Fl├Âssemburg F.20. | -  |
+|  VENTURI Dante | +Roma,Via Monte Verde 103.-Deceduto,di pleurite,il 17-2-1945 a Franchenans Hasog (Lipsia).-F .20. (Teodorani Renato,S.Arcangelo,Via S.Mau- ro 5,Forli).-F. 20. | -  |
+|  VALENTI ... | +Roma.-Deceduto,per tbc,il 15-8-1944. (Merli Licinio,Busseto,Parma).-F.20. | -  |
+|  VACCHI ... | +Roma.-Deceduto,per bombardamento,nel di- ce
+
+## Claim di Contesto (non attribuibili alla persona)
+  - [EVENT] archive_letter: V
+  - [EVENT] source_document: Elenco_V.pdf
+  - [EVENT] source_page: 58
+  - [EVENT] source_url: DettagliNominativi.aspx?id=SXDX%2bEg4fGt48729pSYqjQ%3d%3d
+  - [EVENT] source_volume: Veneto I - (Vol XXVI-01)
+
+## Claim Asserti (origine, non corroborati)
+  - fate: deceduto
+  - fate: deceduto
+  - internment_place: Ersembrung-camp. 2005
+  - residence: Roma,Via Della Palomba 12
+  - date_note: il 29-agosto 1944
+  - source_text: ( 57. V. )
+
+|  VASSELLI Augusto | Roma.-Sta bene,. F. 15. | -  |
+| --- | --- | --- |
+|  VEZZO Aldo | +Roma.-Deceduto il 7-3-1945 a Fl├Âssemburg F.20. | -  |
+|  VENTURI Dante | +Roma,Via Monte Verde 103.-Deceduto,di pleurite,il 17-2-1945 a Franchenans Hasog (Lipsia).-F .20. (Teodorani Renato,S.Arcangelo,Via S.Mau- ro 5,Forli).-F. 20. | -  |
+|  VALENTI ... | +Roma.-Deceduto,per tbc,il 15-8-1944. (Merli Licinio,Busseto,Parma).-F.20. | -  |
+|  VACCHI ... | +Roma.-Deceduto,per bombardamento,nel di- ce
+  - data_quality_note: luogo di internamento 'Ersembrung-camp. 2005' non verificata
+  - paternity: ANTONIO
+  - draft_class: 1869
+  - current_municipality: Estero
+  - rank: Tenente colonnello In servizio attivo
+  - military_unit: 232 reggimento fanteria
+  - death_year: 1917
+  - death_place: monte Santo
+  - death_cause: ferite riportate In combattimento
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - birth_place: Field birth_place not supported by accepted evidence [BLOCCANTE]
+  - unit: Field unit not supported by accepted evidence
+  - death_date: Field death_date not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+  - capture_place: Field capture_place not supported by accepted evidence
+  - capture_date: Field capture_date not supported by accepted evidence
+
+## Piste di Ricerca (non verificate)
+  - Bruno Valentini - Wikipedia (tavily)
+  - VALENTINI BRUNO (tavily)
+  - 40+ "Bruno Valentini" profiles - LinkedIn (tavily)
+  - Bruno VALENTINI, Fiche artiste - ARTactif (tavily)
+  - Bruno valentini Archivi (tavily)
+  - File:Bruno Valentini.png (tavily)
+  - Bruno Valentini - Facebook (tavily)
+  - Bruno Valentini: tutte le notizie (tavily)
+  - Bruno Valentini (@Valentini_Bruno) / Posts / X - Twitter (tavily)
+  - Bruno Valentini (@brunocampiano) ÔÇó Instagram photos and videos (tavily)
+  - Bruno Valentini (@brunovalentini_) ÔÇó Instagram photos and videos (tavily)
+  - bruno valentini - Senior project / program manager ... (tavily)
+  - Bruno Valentini (tavily)
+  - BRUNO VALENTINI SU ENJOY SIENA - dichiarazione (tavily)
+  - Tag: bruno valentini - sonosusannaguarino (tavily)
+  - https://www.brunovalentini.com/ (tavily)
+  - Bruno Valentini - Wikipedia (tavily)
+  - VALENTINI BRUNO (tavily)
+  - 40+ "Bruno Valentini" profiles (tavily)
+  - Bruno Valentini Email & Phone Number | Autonomo Senior Project ... (tavily)
+  - Bruno Guilherme Valentini (tavily)
+  - Bruno Valentini - Research | Innovation | Digital Transformation (tavily)
+  - Bruno VALENTINI, Fiche artiste - ARTactif (tavily)
+  - Bruno Valentini (tavily)
+  - Bruno Valentini ÔÇô Il Festival della Lingua Italiana (tavily)
+  - Bruno Guilherme Valentini (@bgvalentini) (tavily)
+  - Bruno valentini (bruno_valentini) - Perfil (tavily)
+  - Bruno Valentini: tutte le notizie (tavily)
+  - Jesi, ├¿ deceduto Bruno Valentini Amico dello sport e della solidariet├á (tavily)
+  - Soci├®t├® MONSIEUR BRUNO VALENTINI ├á TOULON (83000). ... (tavily)
+  - Bruno Valentini (@brunovalentini_) (tavily)
+  - Bruno Valentine the FrenCHI (@brunovalentinethefrenchi) (tavily)
+  - Bruno Valentini (@brunocampiano) (tavily)
+  - Bruno Valentini (tavily)
+  - Parked Domain name on Hostinger DNS system (tavily)
+
+---
+## Fonti
+- **obs_5c3ccb6227d78303**: Bruno Valentini - Wikipedia ÔÇö https://en.wikipedia.org/wiki/Bruno_Valentini
+- **obs_9874f641df447635**: VALENTINI BRUNO ÔÇö https://anci.portaletrasparenza.net/dettagli/personale/495/valentini-bruno.html
+- **obs_7df5fdaf0bd419d7**: 40+ "Bruno Valentini" profiles - LinkedIn ÔÇö https://www.linkedin.com/pub/dir/Bruno/Valentini
+- **obs_36ad316f53d2f747**: Bruno VALENTINI, Fiche artiste - ARTactif ÔÇö https://www.artactif.com/artistes/brad1980
+- **obs_6be946353c2be55c**: Bruno valentini Archivi ÔÇö https://sienanews.it/tag/bruno-valentini
+- **obs_d7d81763ced38042**: File:Bruno Valentini.png ÔÇö https://commons.wikimedia.org/wiki/File:Bruno_Valentini.png
+- **obs_25dd7b5f205eeba2**: Bruno Valentini - Facebook ÔÇö https://www.facebook.com/bruno.valentini.397
+- **obs_9623b2bb524a3999**: Bruno Valentini: tutte le notizie ÔÇö https://www.repubblica.it/protagonisti/bruno_valentini
+- **obs_6370cf23d8b9e68a**: Bruno Valentini (@Valentini_Bruno) / Posts / X - Twitter ÔÇö https://x.com/Valentini_Bruno
+- **obs_1f13b720734aa084**: Bruno Valentini (@brunocampiano) ÔÇó Instagram photos and videos ÔÇö https://www.instagram.com/brunocampiano
+- **obs_c61ead2b6c805f42**: Bruno Valentini (@brunovalentini_) ÔÇó Instagram photos and videos ÔÇö https://www.instagram.com/brunovalentini_
+- **obs_520816cc152acab8**: bruno valentini - Senior project / program manager ... ÔÇö https://it.linkedin.com/in/brunoval56
+- **obs_31c69fed59ac29b6**: Bruno Valentini ÔÇö https://onoranzefunebricamporese.it/necrologio/bruno-valentini
+- **obs_ea2ce820bc45a678**: BRUNO VALENTINI SU ENJOY SIENA - dichiarazione ÔÇö https://www.youtube.com/watch?v=XE3_xSdpJ7s
+- **obs_733562863ccf94e3**: Tag: bruno valentini - sonosusannaguarino ÔÇö https://sonosusannaguarino.com/tag/bruno-valentini
+- **obs_8d30e95b961f8632**: https://www.brunovalentini.com/ ÔÇö https://www.brunovalentini.com
+- **obs_cf0abc6742e37ab0**: Bruno Valentini - Wikipedia ÔÇö https://en.wikipedia.org/wiki/Bruno_Valentini
+- **obs_1903518e92afbaed**: VALENTINI BRUNO ÔÇö https://anci.portaletrasparenza.net/dettagli/personale/495/valentini-bruno.html
+- **obs_0a9f05c1ef05314f**: 40+ "Bruno Valentini" profiles ÔÇö https://www.linkedin.com/pub/dir/Bruno/Valentini
+- **obs_58852d173a178e8c**: Bruno Valentini Email & Phone Number | Autonomo Senior Project ... ÔÇö https://rocketreach.co/bruno-valentini-email_60946121
+- **obs_a1121d59e3fd4b91**: Bruno Guilherme Valentini ÔÇö https://www.escavador.com/sobre/224542467/bruno-guilherme-valentini
+- **obs_0dd8a7967aba3ac5**: Bruno Valentini - Research | Innovation | Digital Transformation ÔÇö https://br.linkedin.com/in/brunovalentini/pt
+- **obs_bc3ef74952ac07fe**: Bruno VALENTINI, Fiche artiste - ARTactif ÔÇö https://www.artactif.com/artistes/brad1980
+- **obs_eed0fc7472fa3ef3**: Bruno Valentini ÔÇö https://www.facebook.com/bruno.valentini.397
+- **obs_d5a4965a8bc6b1e3**: Bruno Valentini ÔÇô Il Festival della Lingua Italiana ÔÇö https://www.ilfestivaldellalinguaitaliana.it/speaker/bruno-valentini
+- **obs_45f69fbc7d5de3db**: Bruno Guilherme Valentini (@bgvalentini) ÔÇö https://www.facebook.com/bgvalentini
+- **obs_015284ff5ce90a67**: Bruno valentini (bruno_valentini) - Perfil ÔÇö https://cl.pinterest.com/bruno_valentini
+- **obs_3120ddf9e7c46623**: Bruno Valentini: tutte le notizie ÔÇö https://www.repubblica.it/protagonisti/bruno_valentini
+- **obs_876dc821b7e5774f**: Jesi, ├¿ deceduto Bruno Valentini Amico dello sport e della solidariet├á ÔÇö https://www.corriereadriatico.it/AMP/ancona/jesi_rotary_bruno_valentini_deceduto_sport-1731566.html
+- **obs_a854187b684b2f59**: Soci├®t├® MONSIEUR BRUNO VALENTINI ├á TOULON (83000). ... ÔÇö https://www.societe.com/societe/monsieur-bruno-valentini-304079817.html
+- **obs_0b02e64c509c935b**: Bruno Valentini (@brunovalentini_) ÔÇö https://www.instagram.com/brunovalentini_
+- **obs_dc5b389c700487bc**: Bruno Valentine the FrenCHI (@brunovalentinethefrenchi) ÔÇö https://www.threads.com/@brunovalentinethefrenchi
+- **obs_8bb901d71517b1a3**: Bruno Valentini (@brunocampiano) ÔÇö https://www.instagram.com/brunocampiano
+- **obs_5e53fb8af269b359**: Bruno Valentini ÔÇö https://onoranzefunebricamporese.it/necrologio/bruno-valentini
+- **obs_e3e611fbbf6df4e1**: Parked Domain name on Hostinger DNS system ÔÇö https://www.brunovalentini.com
+
+---
+## Provenienza
+- Snapshot: snap_v7_48c7f020c46266d5
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Identity Resolution (legacy): RESOLVED
+- Corroboration Status: PARTIAL
+- External Corroboration: PARTIAL
+- Resolved Cluster ID: cluster_5ea460e9e9d9
+- Person Claims: 15
+- Context Claims: 5
+- Candidate Identities: 0
+- Provider Ledger: 149 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto ├¿ stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.
+
+  [WARNINGS]: ["ANOMALY: OCR_DEFORMED_PLACE on internati.luogo_internamento: Il toponimo 'Ersembrung-camp. 2005' presenta possibili deformazioni OCR: contains_digits", "ANOMALY: OCR_DEFORMED_PLACE on internati.residenza: Il toponimo 'Roma,Via Della Palomba 12' presenta possibili deformazioni OCR: contains_digits", "ANOMALY: OCR_DEFORMED_PLACE on internati.luogo_internamento: Il toponimo 'Porstk' presenta possibili deformazioni OCR: consonant_cluster"]
+
+--------------------------------------------------------------------------------
+  [2/5] CIACCI Pietro  (fonte: internati#7879)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:19:45,636 [INFO] LocalDbAdapter: 31 observations
+2026-08-06 21:19:47,304 [INFO] WebSearchAdapter[tavily]: 20 observations in 1.67s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:19:49,544 [INFO] FederationAdapter: 28 observations
+2026-08-06 21:19:50,089 [INFO] WebSearchAdapter[tavily]: 20 observations in 0.54s
+2026-08-06 21:19:58,038 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:19:58,083 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:19:58,083 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 6 blocks
+2026-08-06 21:19:58,085 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=16, omitted=32, repair=yes
+  Identity: AMBIGUOUS_IDENTITY
+  Observations: 99 | Errors: 0 | Warnings: 23
+  Claims: 39 | Evidence: 47 | Sources: 7
+  Elapsed: 12.6s
+
+Pietro Ciacci ├¿ stato un soldato italiano del 13┬║ Reggimento Fanteria, morto nel 1917 a causa delle ferite riportate in combattimento.
+
+Pietro Ciacci era figlio di Giuseppe e risiedeva a Pesaro, Urbania. Era originario di Caccamo.
+
+Nato nella classe di leva del 1882, Pietro Ciacci serv├¼ come soldato nel 13┬║ Reggimento Fanteria durante la Prima Guerra Mondiale. Mor├¼ nel 1917 a Palermo per le ferite riportate in combattimento.
+
+Pietro Ciacci ricevette la Medaglia d'Argento per il suo servizio nell'Esercito italiano, un riconoscimento conferito nel 1918.
+
+Esistono discrepanze riguardo al luogo e alle circostanze della morte di Pietro Ciacci. Alcune fonti indicano che sia deceduto nel gennaio 1945 a Berlino per lo scoppio di una granata.
+
+Le informazioni disponibili su Pietro Ciacci presentano alcune ambiguit├á, in particolare riguardo al suo luogo di morte e alle circostanze esatte del decesso.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_d80c532efccf2855
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): AMBIGUOUS_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 48
+- Context Claims: 0
+- Provider Ledger: 99 observations
+
+## Fonti
+- **obs_cc2c7b22abbe4ac7**: Pietro Ciacci (1874ÔÇô1939) ÔÇö [https://ancestors.familysearch.org/en/GHNP-1TQ/pietro-ciacci-1874-1939](https://ancestors.familysearch.org/en/GHNP-1TQ/pietro-ciacci-1874-1939)
+- **obs_e721cd89c1fe1b22**: 4 "Pietro Ciacci" profiles ÔÇö [https://www.linkedin.com/pub/dir/Pietro/Ciacci](https://www.linkedin.com/pub/dir/Pietro/Ciacci)
+- **obs_d479fa3ac3a54925**: Urbania: ├¿ morto Pietro Ciacci, ingegnere e divulgatore ÔÇö [https://www.centropagina.it/attualita/cronaca-urbania-morto-pietro-ciacci-ingegnere-divulgatore-passato-che-non-ce-piu](https://www.centropagina.it/attualita/cronaca-urbania-morto-pietro-ciacci-ingegnere-divulgatore-passato-che-non-ce-piu)
+- **obs_c7ea11efa9c27e2e**: Ci ha lasciati Pietro Ciacci nato a Urbania da una famiglia contadina. ... ÔÇö [https://www.facebook.com/comune.urbania/posts/ci-ha-lasciati-pietro-ciacci-nato-a-urbania-da-una-famiglia-contadinapietro-si-l/1074663431356120](https://www.facebook.com/comune.urbania/posts/ci-ha-lasciati-pietro-ciacci-nato-a-urbania-da-una-famiglia-contadinapietro-si-l/1074663431356120)
+- **obs_93e3d27de7accb8b**: Il viaggio letterario - Pietro Ciacci ÔÇö [https://www.youtube.com/watch?v=_M6RqgieGfs](https://www.youtube.com/watch?v=_M6RqgieGfs)
+- **obs_0ecac2447ad06caa**: Pietro Ciucci - Wikipedia ÔÇö [https://en.wikipedia.org/wiki/Pietro_Ciucci](https://en.wikipedia.org/wiki/Pietro_Ciucci)
+- **obs_91ae08f1298a1478**: Pietro Ciacci ÔÇö [https://www.facebook.com/pietro.ciacci.35](https://www.facebook.com/pietro.ciacci.35)
+- **obs_d353c5d6f64b92f0**: Urbania in lutto per Ciacci. Scrisse libri e am├▓ la sua terra ÔÇö [https://www.ilrestodelcarlino.it/pesaro/cronaca/urbania-in-lutto-per-ciacci-fd7f5766](https://www.ilrestodelcarlino.it/pesaro/cronaca/urbania-in-lutto-per-ciacci-fd7f5766)
+- **obs_72ffc3042af9860e**: Ciacci Pietro - Titolare presso CIACCI SRL ÔÇö [https://it.linkedin.com/in/ciacci-pietro-53bb9013a](https://it.linkedin.com/in/ciacci-pietro-53bb9013a)
+- **obs_e7153c108015a78e**: Pietro Ciacci - Network Implementation & Field service ... ÔÇö [https://it.linkedin.com/in/pietro-ciacci-7879aa71](https://it.linkedin.com/in/pietro-ciacci-7879aa71)
+- **obs_53fe5ac5bdeef569**: Signoracci, Pietro J. | Paul, Weiss ÔÇö [https://www.paulweiss.com/professionals/partners-and-counsel/pietro-j-signoracci](https://www.paulweiss.com/professionals/partners-and-counsel/pietro-j-signoracci)
+- **obs_10710ab7aa38ec44**: Pagina personale di Pietro Ciacci - ÔÇö [https://www.uniurb.it/persone/pietro.ciacci](https://www.uniurb.it/persone/pietro.ciacci)
+- **obs_1ed141db0bf30d66**: Pietro Ceccacci (1898ÔÇô1978) ÔÇö [https://ancestors.familysearch.org/en/GKMW-8PK/pietro-ceccacci-1898-1978](https://ancestors.familysearch.org/en/GKMW-8PK/pietro-ceccacci-1898-1978)
+- **obs_5a81108063fc7543**: pietro.ciacci ÔÇö [https://www.instagram.com/pietro.ciacci](https://www.instagram.com/pietro.ciacci)
+- **obs_20cd8f436f8fab06**: Luca Pietro Casacci ÔÇö [https://scholar.google.com/citations?user=gs2baj0AAAAJ&hl=en](https://scholar.google.com/citations?user=gs2baj0AAAAJ&hl=en)
+- **obs_04e918ecc052b7bb**: Pietro Ciriaci ÔÇö [https://en.wikipedia.org/wiki/Pietro_Ciriaci](https://en.wikipedia.org/wiki/Pietro_Ciriaci)
+- **obs_1a688cc7556e1156**: Pietro Marcacci's research works | Ricerca Sistema Energetico and ... ÔÇö [https://www.researchgate.net/scientific-contributions/Pietro-Marcacci-82612981](https://www.researchgate.net/scientific-contributions/Pietro-Marcacci-82612981)
+- **obs_79836ee321898c55**: antonacci.pietro ÔÇö [https://www.instagram.com/antonacci.pietro](https://www.instagram.com/antonacci.pietro)
+- **obs_decafd5898659a4b**: ÔÇÿAdventurousÔÇÖ classical scholar Pietro Pucci dies at 96 | Cornell Chronicle ÔÇö [https://news.cornell.edu/stories/2024/04/adventurous-classical-scholar-pietro-pucci-dies-96](https://news.cornell.edu/stories/2024/04/adventurous-classical-scholar-pietro-pucci-dies-96)
+- **obs_0aff70d3899033e3**: Pietro Geraci at Forward Party ÔÇö [https://home.forwardparty.com/psg96](https://home.forwardparty.com/psg96)
+- **obs_1e41c324d8b612e1**: Pietro Ciacci (1874ÔÇô1939) ÔÇö [https://ancestors.familysearch.org/en/GHNP-1TQ/pietro-ciacci-1874-1939](https://ancestors.familysearch.org/en/GHNP-1TQ/pietro-ciacci-1874-1939)
+- **obs_9feee41f51715383**: 4 "Pietro Ciacci" profiles ÔÇö [https://www.linkedin.com/pub/dir/Pietro/Ciacci](https://www.linkedin.com/pub/dir/Pietro/Ciacci)
+- **obs_8a13baa1f943e0f9**: Urbania: ├¿ morto Pietro Ciacci, ingegnere e divulgatore ÔÇö [https://www.centropagina.it/attualita/cronaca-urbania-morto-pietro-ciacci-ingegnere-divulgatore-passato-che-non-ce-piu](https://www.centropagina.it/attualita/cronaca-urbania-morto-pietro-ciacci-ingegnere-divulgatore-passato-che-non-ce-piu)
+- **obs_512bc691e87a6cdd**: Ci ha lasciati Pietro Ciacci nato a Urbania da una famiglia contadina. ... ÔÇö [https://www.facebook.com/comune.urbania/posts/ci-ha-lasciati-pietro-ciacci-nato-a-urbania-da-una-famiglia-contadinapietro-si-l/1074663431356120](https://www.facebook.com/comune.urbania/posts/ci-ha-lasciati-pietro-ciacci-nato-a-urbania-da-una-famiglia-contadinapietro-si-l/1074663431356120)
+- **obs_199ce2dd479bf3bd**: Il viaggio letterario - Pietro Ciacci ÔÇö [https://www.youtube.com/watch?v=_M6RqgieGfs](https://www.youtube.com/watch?v=_M6RqgieGfs)
+- **obs_ea0293fb43d09620**: Pietro Ciucci - Wikipedia ÔÇö [https://en.wikipedia.org/wiki/Pietro_Ciucci](https://en.wikipedia.org/wiki/Pietro_Ciucci)
+- **obs_ca0778a87e25885a**: Pietro Ciacci ÔÇö [https://www.facebook.com/pietro.ciacci.35](https://www.facebook.com/pietro.ciacci.35)
+- **obs_1d73adcc6001146f**: Urbania in lutto per Ciacci. Scrisse libri e am├▓ la sua terra ÔÇö [https://www.ilrestodelcarlino.it/pesaro/cronaca/urbania-in-lutto-per-ciacci-fd7f5766](https://www.ilrestodelcarlino.it/pesaro/cronaca/urbania-in-lutto-per-ciacci-fd7f5766)
+- **obs_ee40d38bcf4317e5**: Ciacci Pietro - Titolare presso CIACCI SRL ÔÇö [https://it.linkedin.com/in/ciacci-pietro-53bb9013a](https://it.linkedin.com/in/ciacci-pietro-53bb9013a)
+- **obs_62ccaa2c7550fde6**: Pietro Ciacci - Network Implementation & Field service ... ÔÇö [https://it.linkedin.com/in/pietro-ciacci-7879aa71](https://it.linkedin.com/in/pietro-ciacci-7879aa71)
+- **obs_533f52955e12abec**: Signoracci, Pietro J. | Paul, Weiss ÔÇö [https://www.paulweiss.com/professionals/partners-and-counsel/pietro-j-signoracci](https://www.paulweiss.com/professionals/partners-and-counsel/pietro-j-signoracci)
+- **obs_90c12bf175b9e5c4**: Pagina personale di Pietro Ciacci - ÔÇö [https://www.uniurb.it/persone/pietro.ciacci](https://www.uniurb.it/persone/pietro.ciacci)
+- **obs_c54b08cc2cf1bf11**: Pietro Ceccacci (1898ÔÇô1978) ÔÇö [https://ancestors.familysearch.org/en/GKMW-8PK/pietro-ceccacci-1898-1978](https://ancestors.familysearch.org/en/GKMW-8PK/pietro-ceccacci-1898-1978)
+- **obs_75bcf75aef191970**: pietro.ciacci ÔÇö [https://www.instagram.com/pietro.ciacci](https://www.instagram.com/pietro.ciacci)
+- **obs_61f6e8373c09cf63**: Luca Pietro Casacci ÔÇö [https://scholar.google.com/citations?user=gs2baj0AAAAJ&hl=en](https://scholar.google.com/citations?user=gs2baj0AAAAJ&hl=en)
+- **obs_66926c4ff0dd59a8**: Pietro Ciriaci ÔÇö [https://en.wikipedia.org/wiki/Pietro_Ciriaci](https://en.wikipedia.org/wiki/Pietro_Ciriaci)
+- **obs_ef515430b732d4b4**: Pietro Marcacci's research works | Ricerca Sistema Energetico and ... ÔÇö [https://www.researchgate.net/scientific-contributions/Pietro-Marcacci-82612981](https://www.researchgate.net/scientific-contributions/Pietro-Marcacci-82612981)
+- **obs_bd58e476f5404e76**: antonacci.pietro ÔÇö [https://www.instagram.com/antonacci.pietro](https://www.instagram.com/antonacci.pietro)
+- **obs_ab729f78c6ba2add**: ÔÇÿAdventurousÔÇÖ classical scholar Pietro Pucci dies at 96 | Cornell Chronicle ÔÇö [https://news.cornell.edu/stories/2024/04/adventurous-classical-scholar-pietro-pucci-dies-96](https://news.cornell.edu/stories/2024/04/adventurous-classical-scholar-pietro-pucci-dies-96)
+- **obs_89afd72405fe7fa0**: Pietro Geraci at Forward Party ÔÇö [https://home.forwardparty.com/psg96](https://home.forwardparty.com/psg96)
+
+  [WARNINGS]: ['ANOMALY: INCOMPLETE_NAME on caduti_albooro.cognome: Cognome mancante o vuoto', 'ANOMALY: INCOMPLETE_NAME on caduti_albooro.nome: Nome mancante o vuoto', 'ANOMALY: INCOMPLETE_NAME on caduti_albooro.cognome: Cognome mancante o vuoto']
+
+--------------------------------------------------------------------------------
+  [3/5] FINOCCHI GAETANO  (fonte: caduti_albooro#172826)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:19:58,167 [INFO] LocalDbAdapter: 62 observations
+2026-08-06 21:20:02,238 [INFO] WebSearchAdapter[tavily]: 20 observations in 4.07s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:20:04,512 [INFO] FederationAdapter: 27 observations
+2026-08-06 21:20:05,245 [INFO] WebSearchAdapter[tavily]: 20 observations in 0.73s
+2026-08-06 21:20:06,283 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_invalid_857bb3a4159a', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_8d85ba68147b', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_488a4c8e153d', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_8c8f97f0728f', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_d1527d1a4ad5', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_7a92479b1e19', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_dd7de61b27b3', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_77495a1085d0']
+2026-08-06 21:20:10,431 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:20:10,472 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:20:10,472 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 5 blocks
+2026-08-06 21:20:10,472 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=7, omitted=111, repair=yes
+  Identity: RESOLVED_IDENTITY
+  Observations: 129 | Errors: 0 | Warnings: 47
+  Claims: 62 | Evidence: 100 | Sources: 13
+  Elapsed: 12.4s
+
+Gaetano Finocchi ├¿ stato un soldato italiano nato nel 1885 e morto nel 1916 a causa di ferite riportate in combattimento.
+
+Gaetano Finocchi era originario di Mondolfo e figlio di Luigi.
+
+Finocchi ha prestato servizio come soldato nel 205┬║ Reggimento Fanteria durante la Prima Guerra Mondiale.
+
+Durante la Prima Guerra Mondiale, molti soldati italiani furono coinvolti in scontri violenti che portarono a numerose perdite umane.
+
+Non ci sono ulteriori dettagli disponibili sulla vita personale di Gaetano Finocchi prima del suo arruolamento.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_b05b312623f12a45
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 104
+- Context Claims: 27
+- Provider Ledger: 129 observations
+
+## Fonti
+- **obs_2c8665c005021b87**: Gaetano Finocchi (Gaetano Finocchi) - ðñð©ð╗Ðîð╝Ðï ð© ÐüðÁÐÇð©ð░ð╗Ðï ÔÇö [https://film.ru/person/gaetano-finocchi](https://film.ru/person/gaetano-finocchi)
+- **obs_759f4b1b0d083574**: Martin Finocchi ÔÇö [https://linkedin.com/in/martin-finocchi-34a4441b4](https://linkedin.com/in/martin-finocchi-34a4441b4)
+- **obs_705ab1560cb5b7b8**: Dan Finocchi ÔÇö [https://www.linkedin.com/in/dan-finocchi-6878b919](https://www.linkedin.com/in/dan-finocchi-6878b919)
+- **obs_fe62cc1fbfe077b5**: Finocchi - Le Ricette pi├╣ sfiziose con Finocchi del Cucchiaio d'Argento ÔÇö [https://www.cucchiaio.it/ricette/verdure_finocchi~1/cotture_crudo~2](https://www.cucchiaio.it/ricette/verdure_finocchi~1/cotture_crudo~2)
+- **obs_85f05d6650da7e61**: Ricette con Finocchi ÔÇö [https://cucinare.meglio.it/finocchi-p1.html](https://cucinare.meglio.it/finocchi-p1.html)
+- **obs_c762a1299a0681fb**: Finocchi alla mediterranea: la ricetta ÔÇö [https://www.cookist.it/finocchi-alla-mediterranea](https://www.cookist.it/finocchi-alla-mediterranea)
+- **obs_6184628f624d8567**: Sandro Finocchi - Titolare presso impianti.lab di Sandro Finocchi ÔÇö [https://www.linkedin.com/in/sandro-finocchi-565166183](https://www.linkedin.com/in/sandro-finocchi-565166183)
+- **obs_78d79551c9856da2**: Finocchi ai formaggi | Buonissimo Ricette ÔÇö [https://www.buonissimo.it/lericette/7447_Finocchi_ai_formaggi](https://www.buonissimo.it/lericette/7447_Finocchi_ai_formaggi)
+- **obs_72236e3ab913ca05**: Alessio Finocchi ÔÇö [https://www.linkedin.com/in/alessio-finocchi-36844988](https://www.linkedin.com/in/alessio-finocchi-36844988)
+- **obs_c3dc4e0b90fbceec**: Finocchi al forno - Ricette Casa Pappagallo ÔÇö [https://www.casapappagallo.it/ricette/finocchi-al-forno](https://www.casapappagallo.it/ricette/finocchi-al-forno)
+- **obs_ad154d52e1b01c9c**: Ricette con Finocchi | Buonissimo ÔÇö [https://www.buonissimo.it/ingredienti/finocchi-192760](https://www.buonissimo.it/ingredienti/finocchi-192760)
+- **obs_55639413ddcfee3b**: Finocchi, tutte le ricette - MoltoFood ÔÇö [https://www.moltofood.it/ingrediente/finocchi](https://www.moltofood.it/ingrediente/finocchi)
+- **obs_e78f2880cde04b7b**: Finocchi gratinati | Buonissimo Ricette ÔÇö [https://www.buonissimo.it/lericette/finocchi-gratinati-senza-besciamella-272936](https://www.buonissimo.it/lericette/finocchi-gratinati-senza-besciamella-272936)
+- **obs_4b8ba566b8c7762d**: Betsy Finocchi - Attorney at Segers & Finocchi Law Office - Law Office of Gail Segers and Betsy Finocchi ÔÇö [https://www.linkedin.com/in/betsy-finocchi-b009755](https://www.linkedin.com/in/betsy-finocchi-b009755)
+- **obs_547a385b1199c11a**: Ricetta Finocchi gratinati - Cucchiaio d'Argento ÔÇö [https://cucchiaio.it/ricetta/finocchi-gratinati](https://cucchiaio.it/ricetta/finocchi-gratinati)
+- **obs_4c24c35ea0c87805**: Ricetta Finocchi gratinati - Cucchiaio d'Argento ÔÇö [https://www.cucchiaio.it/ricetta/finocchi-gratinati](https://www.cucchiaio.it/ricetta/finocchi-gratinati)
+- **obs_92d3420ad1f8484b**: Finocchi ripieni: la ricetta ÔÇö [https://www.cookist.it/finocchi-ripieni](https://www.cookist.it/finocchi-ripieni)
+- **obs_783a0d9e9db6634c**: Calorie Finocchi bolliti ÔÇö [https://www.my-personaltrainer.it/tabelle-nutrizionali/FINOCCHI-BOLLITI.htm](https://www.my-personaltrainer.it/tabelle-nutrizionali/FINOCCHI-BOLLITI.htm)
+- **obs_57e827581f8d7e7b**: Finocchi gratinati: la ricetta ÔÇö [https://www.cookist.it/finocchi-gratinati-ricetta](https://www.cookist.it/finocchi-gratinati-ricetta)
+- **obs_c709b4326f44b39e**: Ricetta finocchi al latte ÔÇö [https://www.petitchef.it/ricette/portata-principale/finocchi-al-latte-fid-1153134](https://www.petitchef.it/ricette/portata-principale/finocchi-al-latte-fid-1153134)
+- **obs_57eb19ec2915b08e**: Gaetano Finocchi (Gaetano Finocchi) - ðñð©ð╗Ðîð╝Ðï ð© ÐüðÁÐÇð©ð░ð╗Ðï ÔÇö [https://film.ru/person/gaetano-finocchi](https://film.ru/person/gaetano-finocchi)
+- **obs_be8cb854969515e4**: Martin Finocchi ÔÇö [https://linkedin.com/in/martin-finocchi-34a4441b4](https://linkedin.com/in/martin-finocchi-34a4441b4)
+- **obs_00718a315675a143**: Dan Finocchi ÔÇö [https://www.linkedin.com/in/dan-finocchi-6878b919](https://www.linkedin.com/in/dan-finocchi-6878b919)
+- **obs_b58afa36df7aeadd**: Finocchi - Le Ricette pi├╣ sfiziose con Finocchi del Cucchiaio d'Argento ÔÇö [https://www.cucchiaio.it/ricette/verdure_finocchi~1/cotture_crudo~2](https://www.cucchiaio.it/ricette/verdure_finocchi~1/cotture_crudo~2)
+- **obs_871aec107241eeda**: Ricette con Finocchi ÔÇö [https://cucinare.meglio.it/finocchi-p1.html](https://cucinare.meglio.it/finocchi-p1.html)
+- **obs_e5d2bd1d33b43387**: Finocchi alla mediterranea: la ricetta ÔÇö [https://www.cookist.it/finocchi-alla-mediterranea](https://www.cookist.it/finocchi-alla-mediterranea)
+- **obs_9142fd39e56883c1**: Sandro Finocchi - Titolare presso impianti.lab di Sandro Finocchi ÔÇö [https://www.linkedin.com/in/sandro-finocchi-565166183](https://www.linkedin.com/in/sandro-finocchi-565166183)
+- **obs_7ba1c96fb987f659**: Finocchi ai formaggi | Buonissimo Ricette ÔÇö [https://www.buonissimo.it/lericette/7447_Finocchi_ai_formaggi](https://www.buonissimo.it/lericette/7447_Finocchi_ai_formaggi)
+- **obs_45ced6efb9d2027e**: Alessio Finocchi ÔÇö [https://www.linkedin.com/in/alessio-finocchi-36844988](https://www.linkedin.com/in/alessio-finocchi-36844988)
+- **obs_50b90ea729bf6577**: Finocchi al forno - Ricette Casa Pappagallo ÔÇö [https://www.casapappagallo.it/ricette/finocchi-al-forno](https://www.casapappagallo.it/ricette/finocchi-al-forno)
+- **obs_75aca5822389f17c**: Ricette con Finocchi | Buonissimo ÔÇö [https://www.buonissimo.it/ingredienti/finocchi-192760](https://www.buonissimo.it/ingredienti/finocchi-192760)
+- **obs_ac1fae138c525355**: Finocchi, tutte le ricette - MoltoFood ÔÇö [https://www.moltofood.it/ingrediente/finocchi](https://www.moltofood.it/ingrediente/finocchi)
+- **obs_3404453c99112a67**: Finocchi gratinati | Buonissimo Ricette ÔÇö [https://www.buonissimo.it/lericette/finocchi-gratinati-senza-besciamella-272936](https://www.buonissimo.it/lericette/finocchi-gratinati-senza-besciamella-272936)
+- **obs_cda1913b190daa71**: Betsy Finocchi - Attorney at Segers & Finocchi Law Office - Law Office of Gail Segers and Betsy Finocchi ÔÇö [https://www.linkedin.com/in/betsy-finocchi-b009755](https://www.linkedin.com/in/betsy-finocchi-b009755)
+- **obs_41e845f171500860**: Ricetta Finocchi gratinati - Cucchiaio d'Argento ÔÇö [https://cucchiaio.it/ricetta/finocchi-gratinati](https://cucchiaio.it/ricetta/finocchi-gratinati)
+- **obs_21fb6992e1813c65**: Ricetta Finocchi gratinati - Cucchiaio d'Argento ÔÇö [https://www.cucchiaio.it/ricetta/finocchi-gratinati](https://www.cucchiaio.it/ricetta/finocchi-gratinati)
+- **obs_d5d598c08b1da7f2**: Finocchi ripieni: la ricetta ÔÇö [https://www.cookist.it/finocchi-ripieni](https://www.cookist.it/finocchi-ripieni)
+- **obs_31f1b17349a44adf**: Calorie Finocchi bolliti ÔÇö [https://www.my-personaltrainer.it/tabelle-nutrizionali/FINOCCHI-BOLLITI.htm](https://www.my-personaltrainer.it/tabelle-nutrizionali/FINOCCHI-BOLLITI.htm)
+- **obs_3156a34e117c1742**: Finocchi gratinati: la ricetta ÔÇö [https://www.cookist.it/finocchi-gratinati-ricetta](https://www.cookist.it/finocchi-gratinati-ricetta)
+- **obs_d423ef03e8b70c62**: Ricetta finocchi al latte ÔÇö [https://www.petitchef.it/ricette/portata-principale/finocchi-al-latte-fid-1153134](https://www.petitchef.it/ricette/portata-principale/finocchi-al-latte-fid-1153134)
+
+  [WARNINGS]: ['ANOMALY: INCOMPLETE_NAME on caduti_albooro.cognome: Cognome mancante o vuoto', 'ANOMALY: INCOMPLETE_NAME on caduti_albooro.nome: Nome mancante o vuoto', "ANOMALY: OCR_DEFORMED_PLACE on caduti_albooro.luogo_morte: Il toponimo 'Ospedaletto Da Campo N. 158' presenta possibili deformazioni OCR: contains_digits"]
+
+--------------------------------------------------------------------------------
+  [4/5] TRAINA EMANUELE  (fonte: decorati_nastroazzurro#257903)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:20:10,597 [INFO] LocalDbAdapter: 42 observations
+2026-08-06 21:20:13,111 [INFO] WebSearchAdapter[tavily]: 19 observations in 2.51s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:20:15,345 [INFO] FederationAdapter: 23 observations
+2026-08-06 21:20:16,712 [INFO] WebSearchAdapter[tavily]: 10 observations in 1.36s
+2026-08-06 21:20:17,661 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_prov_a25454fb613e', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_ce366322a537']
+2026-08-06 21:20:22,614 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:20:22,655 [WARNING] NARRATE_V2: Draft structural errors: ['FACTUAL_BLOCK_WITHOUT_CLAIM_IDS']
+2026-08-06 21:20:22,655 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 5 blocks
+2026-08-06 21:20:22,655 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=3, omitted=3, repair=yes
+  Identity: CONFLICTED_IDENTITY
+  Observations: 94 | Errors: 0 | Warnings: 41
+  Claims: 4 | Evidence: 6 | Sources: 2
+  Elapsed: 12.2s
+
+Emanuele Traina ├¿ stato insignito della Medaglia di Bronzo nel 1940 per il suo servizio nell'Esercito.
+
+Emanuele Traina ├¿ noto per il suo servizio nell'Esercito durante il periodo della Seconda Guerra Mondiale.
+
+Nel 1940, Emanuele Traina ricevette la Medaglia di Bronzo, un riconoscimento per il suo contributo significativo durante il conflitto.
+
+La Medaglia di Bronzo ├¿ un'onorificenza conferita per atti di valore militare, spesso assegnata durante periodi di guerra come la Seconda Guerra Mondiale.
+
+Le informazioni disponibili su Emanuele Traina sono limitate e non forniscono dettagli completi sulla sua vita personale o sulla carriera militare oltre il riconoscimento ricevuto.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_a6145348dc722f34
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): CONFLICTED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 6
+- Context Claims: 2
+- Provider Ledger: 94 observations
+
+## Fonti
+- **obs_4d9af1009e163b87**: Emanuel Traina (@emanuel_tr83) ÔÇö [https://www.instagram.com/emanuel_tr83](https://www.instagram.com/emanuel_tr83)
+- **obs_5517877a6c2b04c6**: 3 profili ÔÇ£Emanuel TrainaÔÇØ ÔÇö [https://it.linkedin.com/pub/dir/emanuel/traina](https://it.linkedin.com/pub/dir/emanuel/traina)
+- **obs_c01341e9a5309993**: Traina Emanuele a Viareggio (LU) ÔÇö [https://www.paginebianche.it/scheda/viareggio/geom-emanuele-traina.2217791](https://www.paginebianche.it/scheda/viareggio/geom-emanuele-traina.2217791)
+- **obs_2477ce1e7413cb60**: Emanuel Traina - Responsabile Service manager presso ... ÔÇö [https://it.linkedin.com/in/emanuel-traina-04626822a](https://it.linkedin.com/in/emanuel-traina-04626822a)
+- **obs_aecf68bc7b367bf5**: TRAINA EMANUELE ÔÇö [https://www.geometrilucca.it/iscritti-geometri/traina-emanuele](https://www.geometrilucca.it/iscritti-geometri/traina-emanuele)
+- **obs_7557031726a552b6**: Emanuele Traina in people ÔÇö [https://www.facebook.com/public/Emanuele-Traina](https://www.facebook.com/public/Emanuele-Traina)
+- **obs_8b1a5f5257c56942**: µƒÑþ£ïEmanuele Traina þÜäµø┤ÕñÜÕåàÕ«╣ ÔÇö [https://www.facebook.com/emanuele.traina.92?locale=zh_CN](https://www.facebook.com/emanuele.traina.92?locale=zh_CN)
+- **obs_7dc4205499d0eef6**: Emanuele Traina (@emanueletraina_) ÔÇö [https://www.instagram.com/emanueletraina_](https://www.instagram.com/emanueletraina_)
+- **obs_2200898abac5abf5**: µƒÑþ£ïEmanuele Traina þÜäµø┤ÕñÜÕåàÕ«╣ ÔÇö [https://www.facebook.com/emanuele.traina.927?locale=zh_CN](https://www.facebook.com/emanuele.traina.927?locale=zh_CN)
+- **obs_1a76dacd42b515f1**: Emanuele Traina - Impiegato FedEx ÔÇö [https://it.linkedin.com/in/emanuele-traina-1b44ab18b](https://it.linkedin.com/in/emanuele-traina-1b44ab18b)
+- **obs_af2608aeab356f20**: Necrologio Traina Chiarini Carlo Emanuele (Bologna) ÔÇö [https://www.ilrestodelcarlino.it/necro/ann/TRAINA%20CHIARINI%20CARLO%20EMANUELE](https://www.ilrestodelcarlino.it/necro/ann/TRAINA%20CHIARINI%20CARLO%20EMANUELE)
+- **obs_f2744d1578cb5a41**: Emanuele Traina (@trainaemanuele) ÔÇö [https://www.instagram.com/trainaemanuele](https://www.instagram.com/trainaemanuele)
+- **obs_525788a4532bd48a**: Photo by Emanuel Traina (@emanueltraina) ┬À July 29, 2025 ÔÇö [https://www.instagram.com/p/DMrjWCrsFQk](https://www.instagram.com/p/DMrjWCrsFQk)
+- **obs_50891ac538cc1b9a**: Emanuele Traina (@emanuele_traina_) ÔÇö [https://www.instagram.com/emanuele_traina_](https://www.instagram.com/emanuele_traina_)
+- **obs_494e1477914cc52d**: Le sorprese pi├╣ belle grazie Nicolas­ƒÿì­ƒÿì | Emanuele Traina ÔÇö [https://www.facebook.com/emanuele.traina/videos/le-sorprese-pi%C3%B9-belle-grazie-nicolas/24494411896841695](https://www.facebook.com/emanuele.traina/videos/le-sorprese-pi%C3%B9-belle-grazie-nicolas/24494411896841695)
+- **obs_7c2631eab3b33eb1**: Giovanna Traina Professor Professor at University of Perugia ÔÇö [https://www.researchgate.net/profile/Giovanna-Traina](https://www.researchgate.net/profile/Giovanna-Traina)
+- **obs_b3fd015ee76c1598**: Marty Emanuele ÔÇö [https://www.linkedin.com/in/martyemanuelephdmba](https://www.linkedin.com/in/martyemanuelephdmba)
+- **obs_6d4eae641bd78f5d**: Emanuele Molina | Overview | ATP Tour | Tennis ÔÇö [https://www.atptour.com/en/players/emanuele-molina/mh54/overview](https://www.atptour.com/en/players/emanuele-molina/mh54/overview)
+- **obs_7b20fb8edca587d3**: Farina aka Emanuele Farina of Stunt Pilots performs at ... ÔÇö [https://www.gettyimages.co.nz/detail/news-photo/farina-aka-emanuele-farina-of-stunt-pilots-performs-at-news-photo/1963705250](https://www.gettyimages.co.nz/detail/news-photo/farina-aka-emanuele-farina-of-stunt-pilots-performs-at-news-photo/1963705250)
+- **obs_63c79f5200936360**: Emanuele Traina in people ÔÇö [https://www.facebook.com/public/Emanuele-Traina](https://www.facebook.com/public/Emanuele-Traina)
+- **obs_1f38c438b26c1c67**: Traina Geom. Emanuele Studio Tecnico a Viareggio (55049) ÔÇö [https://www.misterimprese.it/toscana/lucca/viareggio/geometri-studi/2561468.html](https://www.misterimprese.it/toscana/lucca/viareggio/geometri-studi/2561468.html)
+- **obs_7b4d06b7f2da8449**: Traina Emanuele a Viareggio (LU) ÔÇö [https://www.paginebianche.it/scheda/viareggio/geom-emanuele-traina.2217791](https://www.paginebianche.it/scheda/viareggio/geom-emanuele-traina.2217791)
+- **obs_e39900bac9840643**: TRAINA EMANUELE ÔÇö [https://www.geometrilucca.it/iscritti-geometri/traina-emanuele](https://www.geometrilucca.it/iscritti-geometri/traina-emanuele)
+- **obs_9272bcea66728b54**: Emanuele Traina - Impiegato FedEx ÔÇö [https://it.linkedin.com/in/emanuele-traina-1b44ab18b](https://it.linkedin.com/in/emanuele-traina-1b44ab18b)
+- **obs_d3377155985c8fc4**: µƒÑþ£ïEmanuele Traina þÜäµø┤ÕñÜÕåàÕ«╣ ÔÇö [https://www.facebook.com/emanuele.traina.927?locale=zh_CN](https://www.facebook.com/emanuele.traina.927?locale=zh_CN)
+- **obs_f55f1986921fc9cb**: Emanuele Traina (@trainaemanuele) ÔÇö [https://www.instagram.com/trainaemanuele](https://www.instagram.com/trainaemanuele)
+- **obs_8fd4677da2efdf8d**: Emanuel Traina (@emanuel_tr83) ┬À Instagram þàºþëçÕÆîÞºåÚóæ ÔÇö [https://www.instagram.com/emanuel_tr83/reels?hl=zh-cn](https://www.instagram.com/emanuel_tr83/reels?hl=zh-cn)
+- **obs_fa12d22b49dacccb**: Giovanna Traina Professor Professor at University of Perugia ÔÇö [https://www.researchgate.net/profile/Giovanna-Traina](https://www.researchgate.net/profile/Giovanna-Traina)
+- **obs_1f72af7dedb95618**: Emanuele Molina | Overview | ATP Tour | Tennis ÔÇö [https://www.atptour.com/en/players/emanuele-molina/mh54/overview](https://www.atptour.com/en/players/emanuele-molina/mh54/overview)
+
+  [WARNINGS]: ['ANOMALY: INCOMPLETE_NAME on caduti_albooro.cognome: Cognome mancante o vuoto', 'ANOMALY: INCOMPLETE_NAME on caduti_albooro.nome: Nome mancante o vuoto', 'ANOMALY: INCOMPLETE_NAME on caduti_albooro.cognome: Cognome mancante o vuoto']
+
+--------------------------------------------------------------------------------
+  [5/5] GIERAS JOSEPH  (fonte: caduti_cwgc#102844)
+--------------------------------------------------------------------------------
+
+2026-08-06 21:20:22,780 [INFO] LocalDbAdapter: 1 observations
+2026-08-06 21:20:24,358 [INFO] WebSearchAdapter[tavily]: 18 observations in 1.57s
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.archives.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.wikitree.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'invenio.bundesarchiv.de'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'gallica.bnf.fr'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.googleapis.com'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'archive.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'www.abmc.gov'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'catalog.hathitrust.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'collections-server.arolsen-archives.org'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+C:\Users\eryma\AppData\Local\Programs\Python\Python311\Lib\site-packages\urllib3\connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS 
+request is being made to host 'api.awm.gov.au'. Adding certificate verification is strongly advised. See: 
+https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+2026-08-06 21:20:26,712 [INFO] FederationAdapter: 25 observations
+2026-08-06 21:20:29,068 [INFO] WebSearchAdapter[tavily]: 18 observations in 2.35s
+2026-08-06 21:20:30,001 [WARNING] NARRATE_V2: Payload validation errors: ['CLAIM_NOT_IN_SNAPSHOT:claim_invalid_c5ad3ec624b9', 'CLAIM_NOT_IN_SNAPSHOT:claim_prov_4dc5ea3adcf0']
+2026-08-06 21:20:33,264 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-06 21:20:33,312 [INFO] NARRATE_V2: AI draft succeeded via openai/gpt-4o, 4 blocks
+2026-08-06 21:20:33,312 [WARNING] NARRATE_V2: Hallucination check found 4 warnings: ['HALLUCINATED_PLACE_OR_NAME:Cannock in block b4 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Chase in block b4 ÔÇö not in evidence', 'HALLUCINATED_PLACE_OR_NAME:Regno in block b4 ÔÇö not in evidence']
+2026-08-06 21:20:33,312 [INFO] NARRATE_V2: mode=ai, provider=openai, status=validated_ai, claims_used=5, omitted=0, repair=no
+  Identity: RESOLVED_IDENTITY
+  Observations: 62 | Errors: 0 | Warnings: 4
+  Claims: 5 | Evidence: 5 | Sources: 1
+  Elapsed: 10.7s
+
+Joseph Gieras ├¿ deceduto il 26 dicembre 1942.
+
+Joseph Gieras era di nazionalit├á tedesca.
+
+Joseph Gieras ├¿ morto a un'et├á molto giovane, precisamente a 0 anni.
+
+Joseph Gieras ├¿ sepolto nel cimitero militare tedesco di Cannock Chase, situato nel Regno Unito.
+
+---
+
+## Provenienza
+- Snapshot: snap_v7_6f369f9718d5e3ff
+- Schema: 7.2
+- Narrator Contract: 7.2-narration-v2
+- Identity Status (V7.2): RESOLVED_IDENTITY
+- Corroboration Status: PARTIAL
+- Person Claims: 5
+- Context Claims: 2
+- Provider Ledger: 62 observations
+
+## Fonti
+- **obs_45ae60ef9a953202**: GIERAS, JOSEPH J., JR. ÔÇö [https://www.courant.com/1999/10/20/gieras-joseph-j-jr](https://www.courant.com/1999/10/20/gieras-joseph-j-jr)
+- **obs_1a24c970fe9a49c3**: J├│zef Gieras Historia rodziny i zapisy historyczne ÔÇö [https://www.myheritage.pl/names/j%C3%B3zef_gieras](https://www.myheritage.pl/names/j%C3%B3zef_gieras)
+- **obs_a1afdb3369f32196**: Jacek F. Gieras Chong Wang Joseph Cho Lai ÔÇö [http://jfgieras.com/DK3193_FL.pdf](http://jfgieras.com/DK3193_FL.pdf)
+- **obs_b941a8beccc8256f**: Joseph Gieras Jr. Obituary - Burbank, CA ÔÇö [https://www.dignitymemorial.com/obituaries/burbank-ca/joseph-gieras-jr-4246594](https://www.dignitymemorial.com/obituaries/burbank-ca/joseph-gieras-jr-4246594)
+- **obs_46c15bebe777841d**: Gieras Family Obituaries | Gieras Last Name Obits ÔÇö [https://www.legacy.com/obituaries/name/gieras](https://www.legacy.com/obituaries/name/gieras)
+- **obs_fe9b5c52ddacb762**: Richard Gieras Family History Records ÔÇö [https://www.ancestry.com/1940-census/usa/Illinois/Richard-Gieras_514m9d](https://www.ancestry.com/1940-census/usa/Illinois/Richard-Gieras_514m9d)
+- **obs_73f31d62b5777c11**: Gregory Gieras ÔÇö [https://m.imdb.com/name/nm0317367](https://m.imdb.com/name/nm0317367)
+- **obs_c33bc0a43356c9dc**: Noise of Polyphase Electric Motors (Electrical and Computer ... ÔÇö [https://www.amazon.com/Polyphase-Electric-Electrical-Computer-Engineering-ebook/dp/B00OD4UO6Y](https://www.amazon.com/Polyphase-Electric-Electrical-Computer-Engineering-ebook/dp/B00OD4UO6Y)
+- **obs_d4e1926db014d9b2**: Obituary information for Joseph R. Kieras ÔÇö [https://www.knollcrest.net/obituaries/Joseph-R-Kieras?obId=22652586](https://www.knollcrest.net/obituaries/Joseph-R-Kieras?obId=22652586)
+- **obs_0534764b3fcf1dd3**: Joseph Kieras Obituary - Death Notice and Service Information ÔÇö [https://www.legacy.com/obituaries/name/joseph-kieras-obituary?pid=200382513](https://www.legacy.com/obituaries/name/joseph-kieras-obituary?pid=200382513)
+- **obs_e43f01c9780bc2ec**: Joseph Kieras Obituary - New London, PA ÔÇö [https://www.dailylocal.com/obituaries/memoriam-joseph-anthony-kieras-new-london-pa](https://www.dailylocal.com/obituaries/memoriam-joseph-anthony-kieras-new-london-pa)
+- **obs_25a3a5441cbb8997**: Susan Gieras Obituary ÔÇö [https://www.courant.com/obituaries/susan-m-gieras-east-hartford-ct](https://www.courant.com/obituaries/susan-m-gieras-east-hartford-ct)
+- **obs_adf687ff5c8abc94**: 1 Report for Pamela Gieras in East Hartford, Connecticut ÔÇö [https://www.anywho.com/people/pamela+gieras/connecticut/east+hartford?age_range=31-60](https://www.anywho.com/people/pamela+gieras/connecticut/east+hartford?age_range=31-60)
+- **obs_5fa532f92937af09**: Noise of Polyphase Electric Motors | Jacek F. Gieras, Chong Wang, Jose ÔÇö [https://www.taylorfrancis.com/books/mono/10.1201/9781420027730/noise-polyphase-electric-motors-jacek-gieras-chong-wang-joseph-cho-lai](https://www.taylorfrancis.com/books/mono/10.1201/9781420027730/noise-polyphase-electric-motors-jacek-gieras-chong-wang-joseph-cho-lai)
+- **obs_cb335cb26787fd15**: Eric Gieras - Senior Project Manager at GE Healthcare ÔÇö [https://www.linkedin.com/in/eric-gieras-258b571a](https://www.linkedin.com/in/eric-gieras-258b571a)
+- **obs_f63418b5c030b371**: Electrical Machines (Paperback) by Jacek F. Gieras - Buy, Rent or Sell ÔÇö [https://booksrun.com/9780367736941-electrical-machines-fundamentals-of-electromechanical-energy-conversion-1st-edition](https://booksrun.com/9780367736941-electrical-machines-fundamentals-of-electromechanical-energy-conversion-1st-edition)
+- **obs_c4f485767a2da924**: Noise of Polyphase Electric Motors - About Google Books ÔÇö [https://books.google.ba/books?id=SUVuBwAAQBAJ&printsec=frontcover](https://books.google.ba/books?id=SUVuBwAAQBAJ&printsec=frontcover)
+- **obs_a256f94ea2966df7**: Lorraine Gieras Obituary - Altamonte Springs, FL ÔÇö [https://neptunesociety.com/obituaries/altamonte-springs-fl/lorraine-gieras-12813102](https://neptunesociety.com/obituaries/altamonte-springs-fl/lorraine-gieras-12813102)
+- **obs_a3d7982310348e89**: GIERAS, JOSEPH J., JR. ÔÇö [https://www.courant.com/1999/10/20/gieras-joseph-j-jr](https://www.courant.com/1999/10/20/gieras-joseph-j-jr)
+- **obs_6c691ad5fef19e2b**: J├│zef Gieras Historia rodziny i zapisy historyczne ÔÇö [https://www.myheritage.pl/names/j%C3%B3zef_gieras](https://www.myheritage.pl/names/j%C3%B3zef_gieras)
+- **obs_b6253039c2db4aaf**: Joseph Gieras Jr. Obituary - Burbank, CA ÔÇö [https://www.dignitymemorial.com/obituaries/burbank-ca/joseph-gieras-jr-4246594](https://www.dignitymemorial.com/obituaries/burbank-ca/joseph-gieras-jr-4246594)
+- **obs_77ade9885b1e86f4**: Gieras Family Obituaries | Gieras Last Name Obits ÔÇö [https://www.legacy.com/obituaries/name/gieras](https://www.legacy.com/obituaries/name/gieras)
+- **obs_d27df6bbd949f712**: Noise of Polyphase Electric Motors (Electrical and Computer Engineering) ÔÇö [https://www.amazon.com/Polyphase-Electric-Electrical-Computer-Engineering/dp/0824723813](https://www.amazon.com/Polyphase-Electric-Electrical-Computer-Engineering/dp/0824723813)
+- **obs_0fb5aaf65ccdd443**: Richard Gieras Family History Records ÔÇö [https://www.ancestry.com/1940-census/usa/Illinois/Richard-Gieras_514m9d](https://www.ancestry.com/1940-census/usa/Illinois/Richard-Gieras_514m9d)
+- **obs_190dc15e91b4d5ae**: Gregory Gieras ÔÇö [https://m.imdb.com/name/nm0317367](https://m.imdb.com/name/nm0317367)
+- **obs_2330fbd4aaa8c1cf**: Eric Gieras - Senior Project Manager at GE Healthcare ÔÇö [https://www.linkedin.com/in/eric-gieras-258b571a](https://www.linkedin.com/in/eric-gieras-258b571a)
+- **obs_af3962a9deedb377**: Frances Gieras (1894ÔÇô1970) ÔÇö [https://ancestors.familysearch.org/en/9DQF-MKM/frances-gieras-1894-1970](https://ancestors.familysearch.org/en/9DQF-MKM/frances-gieras-1894-1970)
+- **obs_ebbe5fdcee5cb217**: Noise of Polyphase Electric Motors - About Google Books ÔÇö [https://books.google.ba/books?id=SUVuBwAAQBAJ&printsec=frontcover](https://books.google.ba/books?id=SUVuBwAAQBAJ&printsec=frontcover)
+- **obs_fda993050079b9ea**: Lorraine Gieras Obituary - Altamonte Springs, FL ÔÇö [https://neptunesociety.com/obituaries/altamonte-springs-fl/lorraine-gieras-12813102](https://neptunesociety.com/obituaries/altamonte-springs-fl/lorraine-gieras-12813102)
+- **obs_9563d331fc3ce35f**: Joseph Irrera | Irrera Brothers ÔÇö [https://irrerabrothers.com/joseph-irrera](https://irrerabrothers.com/joseph-irrera)
+- **obs_b1116f0506b4ad69**: Joseph Dzierwa Stats, Age, Position, Height, Weight, Fantasy & News ÔÇö [https://www.milb.com/player/joseph-dzierwa-804530](https://www.milb.com/player/joseph-dzierwa-804530)
+- **obs_79baf6e969a3236d**: Joseph E. Cassara ÔÇö [https://www.gastrorockies.com/joseph-cassara](https://www.gastrorockies.com/joseph-cassara)
+- **obs_d8db0aba67f7545d**: Joseph J. Gringeri Obituary Dec 3, 2023 ÔÇö [https://www.carrierfuneralhome.com/obituary/joseph-j-gringeri](https://www.carrierfuneralhome.com/obituary/joseph-j-gringeri)
+- **obs_cac1cee8c1f0f959**: Joseph J. Sherer Obituary Sep 16, 2009 ÔÇö [https://www.eernissefuneralhome.com/obituaries/joseph-j-sherer](https://www.eernissefuneralhome.com/obituaries/joseph-j-sherer)
+- **obs_f9e199339fca3da2**: Joseph Minieri, Financial Advisor | Insurance | Elder Care ÔÇö [https://www.farmingdalenychamber.org/list/member/joseph-minieri-financial-advisor-158](https://www.farmingdalenychamber.org/list/member/joseph-minieri-financial-advisor-158)
+- **obs_a5ae3eb9c4e71d8e**: Obituary for Joseph T. Molieri, Jr., Esq. | Logan Funeral Homes ÔÇö [https://www.loganfuneralhomes.com/obituary/Joseph-MolieriJrEsq](https://www.loganfuneralhomes.com/obituary/Joseph-MolieriJrEsq)
+
+  [WARNINGS]: ['NARRATION_FLAG: HALLUCINATED_PLACE_OR_NAME:Cannock in block b4 ÔÇö not in evidence', 'NARRATION_FLAG: HALLUCINATED_PLACE_OR_NAME:Chase in block b4 ÔÇö not in evidence', 'NARRATION_FLAG: HALLUCINATED_PLACE_OR_NAME:Regno in block b4 ÔÇö not in evidence']
+
+================================================================================
+FINE
+================================================================================

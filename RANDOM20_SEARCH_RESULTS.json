@@ -1,0 +1,342 @@
+{
+  "SCIALLA GIUSEPPE": {
+    "identity_status": "AMBIGUOUS_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 70,
+      "person_sources_confirmed": 3,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 7,
+      "person_candidates_rejected": 3,
+      "context_sources": 0,
+      "claims_accepted": 4,
+      "claims_rejected": 0
+    },
+    "claims_count": 4,
+    "narrative": "Giuseppe Scialla risulta arruolato come soldato durante il Novecento.\n\nPresta servizio nel 66° Reggimento Fanteria.\n\nNon sono disponibili ulteriori informazioni sulla sua provenienza, data di nascita o altre vicende biografiche.",
+    "report_length": 8516,
+    "errors": []
+  },
+  "GIORDANI ENRICO": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 79,
+      "person_sources_confirmed": 2,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 56,
+      "person_candidates_rejected": 1,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "claims_count": 8,
+    "narrative": "Enrico Giordani risulta documentato come soldato assegnato al 4° Battaglione Mitraglieri Fiat.\n\nNon emergono dati certi sulla sua data di nascita né sulla provenienza.\n\nSecondo le fonti disponibili, sarebbe deceduto nel 1919 ad Arsoli.\n\nLa ricostruzione della sua identità e delle circostanze della morte presenta margini di incertezza, con dati parziali e non sempre coerenti tra le fonti consultate.\n\nSarebbe necessario approfondire gli archivi militari italiani del periodo per verificare la posizione di servizio e le circostanze del decesso.",
+    "report_length": 8763,
+    "errors": []
+  },
+  "EPIS BASILIO ENRICO": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 59,
+      "person_sources_confirmed": 4,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 27,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 12,
+      "claims_rejected": 0
+    },
+    "claims_count": 12,
+    "narrative": "Epis Basilio Enrico risulta documentato come soldato del 269° Reggimento Fanteria, deceduto nel 1918 durante la prigionia.\n\nNon sono disponibili informazioni certe sulla data o il luogo di nascita, né su eventuali decorazioni o riconoscimenti attribuiti a Epis Basilio Enrico.\n\nLa documentazione attesta la sua appartenenza al 269° Reggimento Fanteria, reparto attivo durante la Prima guerra mondiale, e colloca la sua morte nel 1918.\n\nLa prigionia come luogo del decesso suggerisce un contesto di conflitto prolungato, tipico delle fasi finali della Grande Guerra.\n\nLe fonti disponibili non permettono di stabilire con precisione le circostanze della morte, né eventuali ruoli specifici all'interno del reggimento.",
+    "report_length": 13171,
+    "errors": []
+  },
+  "GIACOLLO COSIMO": {
+    "identity_status": "PARTIAL_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 53,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 1,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 0,
+      "claims_rejected": 0
+    },
+    "claims_count": 0,
+    "narrative": "I dati disponibili non consentono di fornire una risposta verificabile. Motivo: Nessun claim narrabile disponibile dopo la selezione",
+    "report_length": 132,
+    "errors": []
+  },
+  "CATENA GIOVANNI": {
+    "identity_status": "PARTIAL_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 80,
+      "person_sources_confirmed": 4,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 33,
+      "person_candidates_rejected": 2,
+      "context_sources": 0,
+      "claims_accepted": 6,
+      "claims_rejected": 0
+    },
+    "claims_count": 6,
+    "narrative": "Catena Giovanni risulta arruolato come soldato durante il conflitto.\n\nSecondo le fonti disponibili, fu inquadrato nel 127 Reparto Someggiato.",
+    "report_length": 6947,
+    "errors": []
+  },
+  "MURNANE HUGH": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 59,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 0,
+      "claims_rejected": 0
+    },
+    "claims_count": 0,
+    "narrative": "I dati disponibili non consentono di fornire una risposta verificabile. Motivo: Nessun claim narrabile disponibile dopo la selezione",
+    "report_length": 132,
+    "errors": []
+  },
+  "VINCIMENGA Giuseppe": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 65,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 7,
+      "claims_rejected": 0
+    },
+    "claims_count": 8,
+    "narrative": "Giuseppe Vincimenga risulta deceduto secondo le fonti archivistiche consultate.\n\nL'unica informazione certa sulla sua provenienza è che risultava residente a Benevento.\n\nLa documentazione d'archivio lo segnala come deceduto, ma non fornisce indicazioni sulla data o sul luogo del decesso.\n\nLa traccia archivistica compare nell'Elenco_V.pdf, pagina 8, all'interno di una sezione che elenca persone associate a Benevento.\n\nI dati disponibili sono parziali: il cognome è leggibile, ma non emergono informazioni su data di nascita, grado militare o circostanze del decesso.\n\nSarebbe necessario consultare ulteriori fonti archivistiche o documenti di prima mano per ricostruire il profilo biografico completo di Giuseppe Vincimenga.",
+    "report_length": 10100,
+    "errors": []
+  },
+  "TAVERIO Alessandro": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 65,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "claims_count": 8,
+    "narrative": "Alessandro Taverio risulta deceduto nel maggio 1945 secondo le fonti archivistiche disponibili.\n\nAlessandro Taverio è attestato come residente a Belluno, specificamente a San Vito di Arsia, in Piazza Belluna.\n\nLa data di decesso riportata nei documenti è l'1 maggio 1945, anche se la fonte non specifica ulteriori dettagli sul contesto della morte.\n\nLa documentazione che lo menziona proviene dall'archivio denominato 'Elenco_T.pdf', alla pagina 10, dove compare tra i nominativi contrassegnati dalla lettera 'T'.\n\nNon sono disponibili ulteriori informazioni sul contesto della morte, né dati biografici antecedenti al 1945.",
+    "report_length": 10174,
+    "errors": []
+  },
+  "NAVA Nino": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 79,
+      "person_sources_confirmed": 15,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 40,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 43,
+      "claims_rejected": 0
+    },
+    "claims_count": 43,
+    "narrative": "Nino Nava risulta deceduto nel 1944 durante la seconda guerra mondiale, secondo le fonti archivistiche disponibili.\n\nNino Nava era residente a Modena.\n\nSecondo le registrazioni, il decesso è avvenuto l'1 settembre 1944, all'età di 23 anni, per peritonite.\n\nNava Nino era arruolato come soldato nel 259 Reggimento Fanteria.\n\nIl decesso è stato registrato presso l'Ospedale Militare di Bolzano e il corpo è stato sepolto nel cimitero di Sandbostel, in Germania, nella tomba numero 285.\n\nLe fonti presentano una discrepanza: un documento indica la morte per tubercolosi a Blumental (Brema) nell'ottobre 1944, mentre un altro attesta il decesso a Sandbostel per peritonite l'1 settembre dello stesso anno.\n\nNon sono disponibili ulteriori dettagli biografici o militari oltre a quelli estratti dalle fonti archivistiche consultate.\n\nSarebbe utile consultare ulteriori archivi militari tedeschi o italiani per verificare la causa e il luogo esatto del decesso, al fine di risolvere la contraddizione tra le fonti.",
+    "report_length": 8775,
+    "errors": []
+  },
+  "BADELLINO GIACINTO": {
+    "identity_status": "PARTIAL_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 61,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 11,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 0,
+      "claims_rejected": 0
+    },
+    "claims_count": 0,
+    "narrative": "I dati disponibili non consentono di fornire una risposta verificabile. Motivo: Nessun claim narrabile disponibile dopo la selezione",
+    "report_length": 132,
+    "errors": []
+  },
+  "BARBARINI ANGELO DI PIETRO": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 65,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 15,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 0,
+      "claims_rejected": 0
+    },
+    "claims_count": 0,
+    "narrative": "I dati disponibili non consentono di fornire una risposta verificabile. Motivo: Nessun claim narrabile disponibile dopo la selezione",
+    "report_length": 132,
+    "errors": []
+  },
+  "VINCIGUERRA Salvatore": {
+    "identity_status": "AMBIGUOUS_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 72,
+      "person_sources_confirmed": 2,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 35,
+      "person_candidates_rejected": 2,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "claims_count": 9,
+    "narrative": "Salvatore Vinciguerra risulta residente a Padova.\n\nNel novembre del 1943 risultava internato a Deblin, in Polonia.\n\nMorì durante la prigionia, come riportato nell'elenco documentale consultato.\n\nLa fonte primaria di riferimento è l'elenco denominato 'Elenco_V.pdf', pagina 48, che riporta la lettera 'V' come riferimento archivistico.\n\nTuttavia, la collocazione esatta del campo di internamento a Deblin non risulta verificata dalle fonti disponibili.\n\nNon sono emerse ulteriori informazioni biografiche o documentali su Salvatore Vinciguerra oltre a quanto riportato nell'elenco citato.",
+    "report_length": 8900,
+    "errors": []
+  },
+  "PAVAN Vittorio": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 72,
+      "person_sources_confirmed": 18,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 48,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 48,
+      "claims_rejected": 0
+    },
+    "claims_count": 48,
+    "narrative": "PAVAN Vittorio risulta deceduto durante la Seconda guerra mondiale, probabilmente a causa di una malattia polmonare contratta in prigionia.\n\nPAVAN Vittorio era originario di Rovigo e risulta residente in questa località secondo le fonti archivistiche consultate.\n\nSecondo le registrazioni d'archivio, fu ricoverato in ospedale per una malattia polmonare e morì in prigionia nel campo di Baruck.\n\nPrestò servizio come soldato nella 368ª Centuria, un'unità militare documentata nelle fonti disponibili.\n\nLe informazioni su PAVAN Vittorio derivano da un elenco documentale denominato Elenco_P.pdf, che riporta notizie su militari deceduti durante il conflitto.\n\nNon risultano disponibili dati certi sulla data esatta di decesso né sulla durata della prigionia, oltre alla localizzazione del campo di Baruck.",
+    "report_length": 7718,
+    "errors": []
+  },
+  "CREMONINI Tolmino": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 54,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 24,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 9,
+      "claims_rejected": 0
+    },
+    "claims_count": 9,
+    "narrative": "Cremonini Tolmino risulta deceduto durante la prigionia in un lager nazista.\n\nCremonini Tolmino era residente a Modena, nella zona di Castelfranco Emilia.\n\nSecondo le fonti archivistiche, Cremonini Tolmino fu internato nel lager B/VI.\n\nLa data di decesso registrata è il 22 aprile 1944, alle ore 2.\n\nLa causa del decesso non è specificata nelle fonti disponibili.\n\nPotrebbero essere approfondite le circostanze del decesso e le condizioni di prigionia nel lager B/VI.",
+    "report_length": 7062,
+    "errors": []
+  },
+  "WENSING THEODOOR": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 59,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 0,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 0,
+      "claims_rejected": 0
+    },
+    "claims_count": 0,
+    "narrative": "I dati disponibili non consentono di fornire una risposta verificabile. Motivo: Nessun claim narrabile disponibile dopo la selezione",
+    "report_length": 132,
+    "errors": []
+  },
+  "BOVERI GIUSEPPE DI GIOVANNI": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 75,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 20,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 0,
+      "claims_rejected": 0
+    },
+    "claims_count": 0,
+    "narrative": "I dati disponibili non consentono di fornire una risposta verificabile. Motivo: Nessun claim narrabile disponibile dopo la selezione",
+    "report_length": 132,
+    "errors": []
+  },
+  "LARINI ETTORE": {
+    "identity_status": "AMBIGUOUS_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 62,
+      "person_sources_confirmed": 5,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 19,
+      "person_candidates_rejected": 2,
+      "context_sources": 0,
+      "claims_accepted": 2,
+      "claims_rejected": 0
+    },
+    "claims_count": 2,
+    "narrative": "Ettore Larini risulta documentato come soldato italiano durante il Novecento.\n\nFu inquadrato nella 6ª Compagnia di Sussistenza, reparto militare adibito alla logistica e al supporto delle truppe.",
+    "report_length": 9312,
+    "errors": []
+  },
+  "PALTRINIERI ZACCARIA": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 53,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 31,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 6,
+      "claims_rejected": 0
+    },
+    "claims_count": 6,
+    "narrative": "Zaccaria Paltrinieri risulta documentato come soldato italiano durante la Prima guerra mondiale, arruolato nel 78° Reggimento Fanteria.\n\nLa sua posizione di combattimento lo portò a cadere nel 1916 sul fronte del Carso, dove trovò la morte in circostanze non ulteriormente specificate dalle fonti disponibili.\n\nL'arruolamento nel 78° Reggimento Fanteria e la successiva morte in combattimento rappresentano gli unici elementi certi della sua vicenda militare, mentre il grado di soldato è attestato con minore precisione.\n\nLe informazioni disponibili non permettono di ricostruire il percorso biografico antecedente alla guerra, né di stabilire con esattezza il contesto familiare o territoriale di origine.",
+    "report_length": 10495,
+    "errors": []
+  },
+  "BARBATO Pasquale": {
+    "identity_status": "RESOLVED_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 69,
+      "person_sources_confirmed": 1,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 61,
+      "person_candidates_rejected": 0,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "claims_count": 8,
+    "narrative": "Pasquale Barbato risulta deceduto a Napoli, probabilmente nel novembre del 1944, secondo quanto documentato in fonti archivistiche.\n\nPasquale Barbato è attestato come residente a Napoli.\n\nLa documentazione archivistica lo segnala come vittima di esecuzione, specificando che fu impiccato.\n\nLe informazioni provengono da un elenco custodito nell'archivio denominato Elenco_B.pdf, alla pagina 182, contrassegnato dalla lettera B.\n\nNon sono disponibili ulteriori dettagli sul contesto dell'esecuzione o sulle circostanze della morte oltre a quanto riportato nella fonte archivistica.",
+    "report_length": 9240,
+    "errors": []
+  },
+  "CESTARI Guido": {
+    "identity_status": "AMBIGUOUS_IDENTITY",
+    "semantic_counts": {
+      "web_candidates_seen": 67,
+      "person_sources_confirmed": 2,
+      "person_sources_probable": 0,
+      "person_sources_ambiguous": 17,
+      "person_candidates_rejected": 2,
+      "context_sources": 0,
+      "claims_accepted": 8,
+      "claims_rejected": 0
+    },
+    "claims_count": 8,
+    "narrative": "Guido Cestari risulta registrato come residente a Trento, nella località di Rovereto.\n\nGuido Cestari è registrato come deceduto nel documento denominato *Elenco_C.pdf*, alla pagina 356.\n\nSecondo le fonti archivistiche, Guido Cestari morì nel febbraio del 1945.\n\nLa documentazione indica che la morte avvenne a Landesberg, dove risultava internato.\n\nLe fonti attribuiscono la causa del decesso a un deperimento organico.",
+    "report_length": 8455,
+    "errors": []
+  }
+}

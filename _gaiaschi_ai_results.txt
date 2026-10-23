@@ -1,0 +1,32 @@
+
+================================================================================
+### OpenAI gpt-4o-mini
+================================================================================
+HTTP 429: {
+    "error": {
+        "message": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+        "type": "insufficient
+
+================================================================================
+### Claude haiku
+================================================================================
+HTTP 401: {"type":"error","error":{"type":"authentication_error","message":"invalid x-api-key"},"request_id":"req_011CgAZu3shPDwPA5Nqk9SpF"}
+
+================================================================================
+### Mistral small
+================================================================================
+HTTP 429: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300","raw_status_code":429}
+
+================================================================================
+### Gemini flash
+================================================================================
+HTTP 404: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.0-flash is no longer available. Please update your code to use models/gemini-3.8-flash for the latest features and improvemen
+
+================================================================================
+### Perplexity sonar
+================================================================================
+HTTP 401: {"error":{"message":"You exceeded your current quota, add credits at https://console.perplexity.ai/project/billing.","type":"insufficient_quota","code":401}}
+

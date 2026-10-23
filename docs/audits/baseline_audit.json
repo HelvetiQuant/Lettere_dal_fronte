@@ -1,0 +1,8118 @@
+{
+  "imi_internati.db": {
+    "description": "DB principale (internati, decorati, entita, collegamenti, fonti)",
+    "size_bytes": 1876578304,
+    "size_mb": 1789.64,
+    "integrity": "ok",
+    "fk_issues": [
+      {
+        "table": "research_subject_sources",
+        "rowid": 2310,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2312,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2313,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2314,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2331,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2333,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2334,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2335,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2352,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2354,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2355,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2356,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2373,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2375,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2376,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2377,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2394,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2396,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2397,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2398,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2415,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2418,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2419,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2420,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2437,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2439,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2440,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2441,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2458,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2460,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2461,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2462,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2479,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2481,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2482,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2483,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2500,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2502,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2503,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2504,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2521,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2523,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2524,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2525,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2542,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2544,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2545,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2546,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2563,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2565,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2566,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2567,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2584,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2586,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2587,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2588,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2605,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2607,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2608,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2609,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2626,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2629,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2630,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2631,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2648,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2650,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2651,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2652,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2669,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2671,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2672,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2673,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2690,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2692,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2693,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2694,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2711,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2713,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2714,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2715,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2732,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2734,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2735,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2736,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2753,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2758,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2759,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2760,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2777,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2780,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2781,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2782,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2799,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2801,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2802,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2803,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2820,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2824,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2825,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2826,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2843,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2845,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2846,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2847,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2849,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2850,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2852,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2853,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2854,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2856,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2857,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2859,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2860,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2861,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2863,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2864,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2866,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2867,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2868,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2870,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2871,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2874,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2875,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2876,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2878,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2879,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2881,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2882,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2883,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2885,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2886,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2888,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2889,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2890,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2892,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2893,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2895,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2896,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2897,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2899,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2900,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2906,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2907,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2908,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2910,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2911,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2913,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2914,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2915,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2917,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2918,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2920,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2921,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2922,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2924,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2925,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2927,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2928,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2929,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2931,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2932,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2934,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2935,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2936,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2938,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2939,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2941,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2942,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2943,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2945,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2946,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2950,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2951,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2952,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2954,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2955,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2957,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2958,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2959,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2961,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2962,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2964,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2965,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2966,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2968,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2969,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2971,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2972,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2973,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2975,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2976,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2978,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2979,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2980,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2982,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2983,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2986,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2987,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2988,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2990,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2991,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2993,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2994,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2995,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2997,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 2998,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3000,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3001,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3002,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3004,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3005,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3007,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3008,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3009,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3011,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3012,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3014,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3015,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3016,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3018,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3019,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3021,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3022,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3023,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3025,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3026,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3028,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3029,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3030,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3032,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3033,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3035,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3036,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3037,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3039,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3040,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3043,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3044,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3045,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3047,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3048,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3051,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3052,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3053,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3055,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3056,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3058,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3059,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3060,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3062,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3063,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3065,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3066,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3067,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3069,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3070,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3072,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3073,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3074,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3076,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3077,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3079,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3080,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3081,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3083,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3084,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3086,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3087,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3088,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3090,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3091,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3093,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3094,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3095,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3097,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3098,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3102,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3103,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3104,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3106,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3107,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3110,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3111,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3112,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3114,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3115,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3117,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3118,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3119,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3136,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3138,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3139,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3140,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3157,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3158,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3159,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3160,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3161,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3163,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3165,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3176,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3179,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3180,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3182,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3183,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3192,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3196,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3197,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3199,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3200,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3201,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3202,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3203,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3204,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3206,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3207,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3218,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3221,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3222,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3224,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3225,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3226,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3227,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3228,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3229,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3231,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3232,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3233,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3234,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3235,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3236,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3238,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3239,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3249,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3259,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3260,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3262,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3263,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3264,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3265,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3266,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3267,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3269,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3270,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3271,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3272,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3273,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3274,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3276,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3277,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3288,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3292,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3293,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3295,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3296,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3307,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3308,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3309,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3311,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3312,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3313,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3314,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3315,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3316,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3318,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3319,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3320,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3321,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3322,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3323,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3325,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3326,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3328,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3329,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3330,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3332,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3333,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3336,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3337,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3338,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3340,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3341,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3342,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3343,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3344,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3345,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3347,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3348,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3349,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3350,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3351,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3352,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3354,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3355,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3356,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3357,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3358,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3359,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3361,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3362,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3363,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3364,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3365,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3366,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3368,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3369,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3370,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3371,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3372,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3373,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3375,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3376,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3377,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3378,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3379,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3380,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3382,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3383,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3384,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3385,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3386,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3387,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3389,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3390,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3391,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3392,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3393,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3394,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3396,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3397,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3398,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3400,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3401,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3402,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3404,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3405,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3406,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3407,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3408,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3409,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3411,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3412,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3417,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3420,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3421,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3423,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3424,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3425,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3426,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3427,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3428,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3430,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3431,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3435,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3436,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3437,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3439,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3440,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3451,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3455,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3456,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3458,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3459,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3460,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3461,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3462,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3463,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3465,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3466,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3470,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3471,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3472,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3474,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3475,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3485,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3486,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3487,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3489,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3490,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3500,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3501,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3502,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3504,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3505,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3516,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3517,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3518,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3520,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3521,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3523,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3525,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3526,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3528,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3529,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3531,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3533,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3534,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3536,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3537,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3538,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3539,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3540,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3542,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3543,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3545,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3546,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3547,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3549,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3550,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3561,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3562,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3563,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3565,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3566,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3567,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3568,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3569,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3570,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3572,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3573,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3574,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3575,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3576,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3577,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3579,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3580,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3591,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3592,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3593,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3595,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3596,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3597,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3598,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3599,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3600,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3602,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3603,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3605,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3606,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3607,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3609,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3610,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3615,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3616,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3617,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3619,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3620,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3621,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3622,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3623,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3624,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3626,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3627,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3628,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3629,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3630,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3631,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3633,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3634,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3635,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3636,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3637,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3638,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3640,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3641,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3642,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3643,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3644,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3645,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3647,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3648,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3649,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3650,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3651,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3652,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3669,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3670,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3671,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3672,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3673,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3690,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3701,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3702,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3703,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3720,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3721,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3722,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3723,
+        "parent": "fonti_indice",
+        "fkid": 0
+      },
+      {
+        "table": "research_subject_sources",
+        "rowid": 3724,
+        "parent": "fonti_indice",
+        "fkid": 0
+      }
+    ],
+    "tables": {
+      "acquisitions": {
+        "count": 0,
+        "columns": [
+          "id",
+          "source_item_id",
+          "source_table",
+          "external_record_id",
+          "connector_code",
+          "acquisition_date",
+          "acquisition_method",
+          "access_mode",
+          "policy_version_id",
+          "permitted_operations_json",
+          "operator_user",
+          "notes",
+          "created_at"
+        ]
+      },
+      "ai_models": {
+        "count": 7,
+        "columns": [
+          "id",
+          "provider_id",
+          "model_identifier",
+          "capabilities_json",
+          "context_window",
+          "cost_per_unit",
+          "quality_score",
+          "latency_score",
+          "status",
+          "last_benchmarked_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "ai_providers": {
+        "count": 6,
+        "columns": [
+          "id",
+          "code",
+          "name",
+          "status",
+          "declared_capabilities_json",
+          "verified_capabilities_json",
+          "credit_detection_method",
+          "currency",
+          "budget_configured",
+          "budget_reserve",
+          "priority",
+          "last_health_check",
+          "config_json",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "ai_ricerche": {
+        "count": 217,
+        "columns": [
+          "id",
+          "query",
+          "provider",
+          "model",
+          "risposta",
+          "contesto_dati",
+          "cost_usd",
+          "elaborato_il"
+        ]
+      },
+      "ai_routing_policies": {
+        "count": 21,
+        "columns": [
+          "id",
+          "task_type",
+          "min_requirements_json",
+          "primary_model_id",
+          "fallback_model_ids_json",
+          "max_cost",
+          "min_reserve_credit",
+          "timeout_seconds",
+          "max_retries",
+          "quality_criterion",
+          "version",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "ai_task_runs": {
+        "count": 74,
+        "columns": [
+          "id",
+          "research_plan_id",
+          "session_id",
+          "cycle_id",
+          "task_type",
+          "provider_code",
+          "model_identifier",
+          "selection_reason",
+          "policy_version",
+          "input_fingerprint",
+          "input_tokens",
+          "output_tokens",
+          "cost_estimated",
+          "cost_actual",
+          "credit_before",
+          "credit_after",
+          "latency_ms",
+          "outcome",
+          "validation_result_json",
+          "fallback_from",
+          "fallback_to",
+          "idempotency_key",
+          "created_at",
+          "completed_at"
+        ]
+      },
+      "ai_usage_ledger": {
+        "count": 64,
+        "columns": [
+          "id",
+          "provider_code",
+          "model_identifier",
+          "period",
+          "units_consumed",
+          "cost",
+          "data_source",
+          "task_run_id",
+          "updated_at"
+        ]
+      },
+      "api_usage": {
+        "count": 10624,
+        "columns": [
+          "id",
+          "timestamp",
+          "provider",
+          "model",
+          "input_tokens",
+          "output_tokens",
+          "ocr_pages",
+          "cost_usd",
+          "lettera",
+          "pagina"
+        ]
+      },
+      "archive_connectors": {
+        "count": 27,
+        "columns": [
+          "id",
+          "code",
+          "name",
+          "scope",
+          "historical_periods",
+          "geographic_areas",
+          "entity_types",
+          "document_types",
+          "integration_type",
+          "capabilities_json",
+          "access_mode",
+          "authority_score",
+          "reliability_criteria",
+          "provenance_group",
+          "languages",
+          "cost_priority",
+          "config_json",
+          "status",
+          "terms_limitations",
+          "last_verified_at",
+          "version",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "archivio_documenti": {
+        "count": 433,
+        "columns": [
+          "provider",
+          "external_id",
+          "doc_type",
+          "title",
+          "description",
+          "creator",
+          "date_text",
+          "year_start",
+          "year_end",
+          "place",
+          "war",
+          "language",
+          "rights",
+          "source_url",
+          "thumbnail_url",
+          "iiif_manifest",
+          "provider_collection",
+          "retrieved_at",
+          "raw_json"
+        ]
+      },
+      "archivio_fonti": {
+        "count": 1153,
+        "columns": [
+          "id",
+          "hash_sha256",
+          "path_originale",
+          "path_storage",
+          "formato",
+          "dimensione_bytes",
+          "pagine",
+          "ocr_status",
+          "readable",
+          "htr_attempted",
+          "qualita_immagine",
+          "testo_ocr",
+          "lingua_documento",
+          "archivio",
+          "fondo",
+          "serie",
+          "busta",
+          "fascicolo",
+          "segnatura",
+          "titolo_documento",
+          "unita_principale",
+          "livello_unita",
+          "unita_superiore",
+          "teatro_operazioni",
+          "nazione_forza",
+          "data_inizio",
+          "data_fine",
+          "data_raw",
+          "tipo_documento",
+          "conflitto",
+          "unita_citate",
+          "luoghi_citati",
+          "parole_chiave",
+          "attendibilita_fonte",
+          "note",
+          "fonte_acquisizione",
+          "elaborato_il",
+          "aggiornato_il",
+          "iiif_manifest_url",
+          "url_catalogo",
+          "licenza",
+          "digitale_pubblico",
+          "htr_engine",
+          "htr_confidence",
+          "testo_htr",
+          "richiede_revisione"
+        ]
+      },
+      "budget_reservations": {
+        "count": 0,
+        "columns": [
+          "id",
+          "plan_id",
+          "task_type",
+          "provider_code",
+          "reserved_amount",
+          "consumed_amount",
+          "currency",
+          "status",
+          "expires_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "caduti_albooro": {
+        "count": 342555,
+        "columns": [
+          "id",
+          "source_id",
+          "volume_id",
+          "volume_name",
+          "nominativo",
+          "paternita",
+          "classe",
+          "comune_attuale",
+          "grado",
+          "reparto",
+          "anno_morte",
+          "luogo_morte",
+          "causa_morte",
+          "detail_url",
+          "img_url",
+          "elaborato_il"
+        ]
+      },
+      "caduti_bologna": {
+        "count": 9656,
+        "columns": [
+          "id",
+          "nome",
+          "paternita",
+          "grado",
+          "reparto",
+          "luogo_nascita",
+          "anno_nascita",
+          "luogo_dimora",
+          "causa_morte",
+          "luogo_morte",
+          "data_morte",
+          "professione",
+          "stato_civile",
+          "decorazioni",
+          "scheda_completa",
+          "elaborato_il"
+        ]
+      },
+      "caduti_cwgc": {
+        "count": 506446,
+        "columns": [
+          "id",
+          "cwgc_id",
+          "nome",
+          "cognome",
+          "initials",
+          "rank",
+          "service_number",
+          "service",
+          "regiment",
+          "nationality",
+          "data_morte",
+          "eta",
+          "cimitero",
+          "paese_cimitero",
+          "guerra",
+          "data_nascita",
+          "elaborato_il",
+          "unit_detail",
+          "memorial",
+          "grave_ref"
+        ]
+      },
+      "caduti_francia_ww1": {
+        "count": 24279,
+        "columns": [
+          "id",
+          "images_href",
+          "nom",
+          "naissance",
+          "grade",
+          "unite",
+          "lieu_naissance",
+          "bureau_recrutement",
+          "classe",
+          "matricule",
+          "date_deces",
+          "lieu_deces",
+          "lieu_deces_suite",
+          "departement_deces",
+          "pays_deces",
+          "lieu_transcription",
+          "departement_transcription",
+          "pays_transcription",
+          "source",
+          "elaborato_il"
+        ]
+      },
+      "caduti_ministero": {
+        "count": 162646,
+        "columns": [
+          "id",
+          "source_id",
+          "cognome",
+          "nome",
+          "nominativo_paternita",
+          "paternita",
+          "maternita",
+          "data_nascita",
+          "data_decesso",
+          "provincia_nascita",
+          "comune_nascita",
+          "nazione_decesso",
+          "luogo_sepoltura",
+          "codice_volume",
+          "pagina",
+          "sub",
+          "scheda_url",
+          "elaborato_il"
+        ]
+      },
+      "caduti_sardi": {
+        "count": 20435,
+        "columns": [
+          "id",
+          "source_id",
+          "cognome",
+          "nome",
+          "paternita",
+          "luogo_nascita",
+          "data_nascita",
+          "comune_residenza",
+          "guerra",
+          "grado",
+          "reparto",
+          "data_morte",
+          "luogo_morte",
+          "causa_morte",
+          "decorazioni",
+          "scheda_url",
+          "elaborato_il"
+        ]
+      },
+      "claim_evidence": {
+        "count": 505,
+        "columns": [
+          "id",
+          "claim_id",
+          "source_id",
+          "source_table",
+          "document_id",
+          "document_table",
+          "extraction_id",
+          "page_or_frame",
+          "coordinates",
+          "supporting_quote",
+          "evidence_role",
+          "source_independence_group",
+          "strength",
+          "note",
+          "created_at",
+          "content_hash",
+          "verified_at"
+        ]
+      },
+      "claim_relations": {
+        "count": 75,
+        "columns": [
+          "id",
+          "claim_a_id",
+          "claim_b_id",
+          "relation_type",
+          "confidence",
+          "motivation",
+          "method",
+          "review_status",
+          "reviewed_by",
+          "reviewed_at",
+          "created_at"
+        ]
+      },
+      "claims": {
+        "count": 40,
+        "columns": [
+          "id",
+          "stable_id",
+          "subject_type",
+          "subject_id",
+          "subject_label",
+          "predicate",
+          "object_type",
+          "object_id",
+          "object_label",
+          "object_value",
+          "original_value",
+          "temporal_range_start",
+          "temporal_range_end",
+          "temporal_precision",
+          "temporal_uncertainty",
+          "place",
+          "epistemic_status",
+          "confidence",
+          "extraction_method",
+          "extraction_id",
+          "review_status",
+          "reviewed_by",
+          "reviewed_at",
+          "review_reason",
+          "created_by",
+          "version",
+          "created_at",
+          "updated_at",
+          "unit",
+          "qualifiers_json",
+          "polarity"
+        ]
+      },
+      "collegamenti": {
+        "count": 2349417,
+        "columns": [
+          "id",
+          "entita_id",
+          "tabella_origine",
+          "record_id",
+          "tipo_collegamento",
+          "confidenza",
+          "elaborato_il"
+        ]
+      },
+      "collegamenti_backup": {
+        "count": 4894390,
+        "columns": [
+          "id",
+          "entita_id",
+          "tabella_origine",
+          "record_id",
+          "tipo_collegamento",
+          "confidenza",
+          "elaborato_il"
+        ]
+      },
+      "compliance_authorizations": {
+        "count": 0,
+        "columns": [
+          "id",
+          "source_policy_id",
+          "record_id",
+          "scope",
+          "purpose",
+          "granted_by",
+          "granted_to",
+          "protocol",
+          "valid_from",
+          "valid_until",
+          "limitations",
+          "revoked",
+          "revoked_at",
+          "revoked_by",
+          "revoke_reason",
+          "created_at"
+        ]
+      },
+      "compliance_decisions": {
+        "count": 0,
+        "columns": [
+          "id",
+          "source_record_id",
+          "digital_object_id",
+          "requested_action",
+          "decision",
+          "policy_id",
+          "rule_code",
+          "reason",
+          "limitations_json",
+          "authorization_id",
+          "decided_by",
+          "decision_source",
+          "created_at"
+        ]
+      },
+      "compliance_review_queue": {
+        "count": 0,
+        "columns": [
+          "id",
+          "item_type",
+          "record_id",
+          "source_policy_id",
+          "reason",
+          "priority",
+          "status",
+          "reviewed_by",
+          "reviewed_at",
+          "decision",
+          "motivation",
+          "created_at"
+        ]
+      },
+      "consolidated_memory": {
+        "count": 1,
+        "columns": [
+          "id",
+          "topic",
+          "summary",
+          "entities_json",
+          "sources_json",
+          "archivio_fonti_ids",
+          "query_count",
+          "confidence",
+          "last_verified_at",
+          "created_at"
+        ]
+      },
+      "content_fingerprints": {
+        "count": 0,
+        "columns": [
+          "id",
+          "source_item_id",
+          "source_table",
+          "content_hash",
+          "hash_algorithm",
+          "content_type",
+          "content_size",
+          "fingerprint_scope",
+          "created_at"
+        ]
+      },
+      "decorati": {
+        "count": 1286,
+        "columns": [
+          "id",
+          "source_id",
+          "albo_id",
+          "albo_nome",
+          "cognome",
+          "nome",
+          "comune_nascita",
+          "comune_residenza",
+          "data_nascita",
+          "data_morte",
+          "anno_nascita",
+          "anno_morte",
+          "guerra",
+          "grado",
+          "corpo_militare",
+          "reparto",
+          "decorazione",
+          "motivazione",
+          "causa_morte",
+          "luogo_morte",
+          "luogo_cattura",
+          "luogo_internamento",
+          "matricola",
+          "professione",
+          "note",
+          "url_scheda",
+          "foto_urls",
+          "raw_json",
+          "elaborato_il"
+        ]
+      },
+      "decorati_nastroazzurro": {
+        "count": 279832,
+        "columns": [
+          "id",
+          "source_id",
+          "id_arma",
+          "arma",
+          "cognome",
+          "nome",
+          "anno_decorazione",
+          "tipo_decorazione",
+          "elaborato_il"
+        ]
+      },
+      "document_extractions": {
+        "count": 0,
+        "columns": [
+          "id",
+          "document_id",
+          "document_table",
+          "version",
+          "method",
+          "original_text",
+          "ocr_text",
+          "language",
+          "coordinates",
+          "raw_structured_output_json",
+          "model_version",
+          "review_status",
+          "reviewed_by",
+          "reviewed_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "documenti_nara_catalog": {
+        "count": 272,
+        "columns": [
+          "id",
+          "na_id",
+          "title",
+          "description",
+          "record_group",
+          "series",
+          "inclusive_dates",
+          "unit",
+          "location",
+          "document_type",
+          "has_digital_objects",
+          "file_urls",
+          "search_query",
+          "source_url",
+          "elaborato_il",
+          "pdf_url",
+          "pdf_scaricato",
+          "archivio_fonti_id"
+        ]
+      },
+      "documenti_nara_t315": {
+        "count": 1153,
+        "columns": [
+          "id",
+          "roll",
+          "frame",
+          "file_immagine",
+          "tipo_documento",
+          "data_documento",
+          "data_raw",
+          "numero_documento",
+          "mittente",
+          "destinatario",
+          "unita_citate",
+          "luoghi_citati",
+          "perdite",
+          "testo_ocr",
+          "lingua",
+          "divisione",
+          "confidenza",
+          "note",
+          "elaborato_il",
+          "archivio_fonti_id"
+        ]
+      },
+      "edge_evidence": {
+        "count": 0,
+        "columns": [
+          "id",
+          "edge_id",
+          "evidence_type",
+          "source_item_id",
+          "source_table",
+          "claim_id",
+          "supporting_quote",
+          "evidence_role",
+          "strength",
+          "created_at"
+        ]
+      },
+      "edge_versions": {
+        "count": 0,
+        "columns": [
+          "id",
+          "edge_id",
+          "version",
+          "score",
+          "algorithm_version",
+          "feature_contributions_json",
+          "contrary_signals_json",
+          "status",
+          "changed_by",
+          "change_reason",
+          "created_at"
+        ]
+      },
+      "entita": {
+        "count": 688739,
+        "columns": [
+          "id",
+          "tipo",
+          "valore",
+          "valore_normalizzato",
+          "cognome",
+          "nome",
+          "data",
+          "luogo",
+          "contesto",
+          "fonte_tabella",
+          "fonte_id",
+          "elaborato_il"
+        ]
+      },
+      "entity_match_candidates": {
+        "count": 0,
+        "columns": [
+          "id",
+          "local_entity_type",
+          "local_entity_id",
+          "local_table",
+          "local_record_id",
+          "candidate_source",
+          "candidate_record_id",
+          "candidate_external_id",
+          "score",
+          "score_breakdown_json",
+          "contrary_signals_json",
+          "missing_data_json",
+          "threshold_applied",
+          "algorithm_version",
+          "status",
+          "review_decision",
+          "reviewer",
+          "review_reason",
+          "reviewed_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "entity_variants": {
+        "count": 264,
+        "columns": [
+          "id",
+          "entity_type",
+          "entity_id",
+          "field_name",
+          "original_value",
+          "variant_value",
+          "variant_type",
+          "origin",
+          "confidence",
+          "verified",
+          "created_at"
+        ]
+      },
+      "event_links": {
+        "count": 0,
+        "columns": [
+          "id",
+          "evento_id",
+          "target_table",
+          "target_id",
+          "link_type",
+          "match_field",
+          "match_value",
+          "confidence",
+          "created_at"
+        ]
+      },
+      "eventi_1gm": {
+        "count": 15,
+        "columns": [
+          "id",
+          "nome",
+          "data_inizio",
+          "data_fine",
+          "luogo",
+          "aliases",
+          "keywords",
+          "descrizione",
+          "created_at"
+        ]
+      },
+      "external_access_requests": {
+        "count": 0,
+        "columns": [
+          "id",
+          "external_source_record_id",
+          "candidate_id",
+          "research_subject_id",
+          "request_status",
+          "recipient",
+          "request_reason",
+          "requested_documents",
+          "requested_at",
+          "response_received_at",
+          "authorization_reference",
+          "authorization_date",
+          "usage_scope",
+          "publication_allowed",
+          "notes",
+          "created_by",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "external_digital_objects": {
+        "count": 0,
+        "columns": [
+          "id",
+          "external_source_record_id",
+          "external_object_id",
+          "object_type",
+          "media_type",
+          "label",
+          "viewer_url",
+          "page_url",
+          "download_url",
+          "iiif_manifest_url",
+          "thumbnail_url",
+          "digital_object_available",
+          "publicly_viewable",
+          "public_download_allowed",
+          "authorization_required",
+          "local_file_path",
+          "sha256",
+          "file_size",
+          "ocr_status",
+          "rights_statement",
+          "credit_line",
+          "retrieved_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "external_import_jobs": {
+        "count": 2,
+        "columns": [
+          "id",
+          "provider",
+          "job_type",
+          "status",
+          "total_records",
+          "processed_records",
+          "error_count",
+          "last_error",
+          "checkpoint_data",
+          "started_at",
+          "finished_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "external_person_mentions": {
+        "count": 0,
+        "columns": [
+          "id",
+          "external_source_record_id",
+          "surname_raw",
+          "name_raw",
+          "full_name_raw",
+          "normalized_surname",
+          "normalized_name",
+          "father_name_raw",
+          "mother_name_raw",
+          "birth_date_text",
+          "birth_date",
+          "birth_place_raw",
+          "residence_raw",
+          "rank_raw",
+          "military_unit_raw",
+          "service_number",
+          "prisoner_number",
+          "camp_raw",
+          "status_raw",
+          "event_date_text",
+          "event_place_raw",
+          "role_in_metadata",
+          "source_text",
+          "extraction_method",
+          "extraction_confidence",
+          "human_verified",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "external_record_links": {
+        "count": 0,
+        "columns": [
+          "id",
+          "external_source_record_id",
+          "external_person_mention_id",
+          "target_table",
+          "target_record_id",
+          "target_entity_id",
+          "link_type",
+          "match_status",
+          "match_score",
+          "match_method",
+          "matched_fields_json",
+          "conflicting_fields_json",
+          "evidence_json",
+          "explanation",
+          "review_status",
+          "reviewed_by",
+          "reviewed_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "external_source_facts": {
+        "count": 0,
+        "columns": [
+          "id",
+          "external_source_record_id",
+          "external_person_mention_id",
+          "fact_type",
+          "fact_value",
+          "date_text",
+          "date_value",
+          "place_raw",
+          "description",
+          "source_text",
+          "extraction_method",
+          "confidence",
+          "human_verified",
+          "created_at"
+        ]
+      },
+      "external_source_records": {
+        "count": 1,
+        "columns": [
+          "id",
+          "provider",
+          "archive_name",
+          "archive_branch",
+          "external_id",
+          "record_level",
+          "record_type",
+          "title",
+          "description",
+          "date_text",
+          "date_from",
+          "date_to",
+          "fonds_external_id",
+          "fonds_title",
+          "series_external_id",
+          "series_title",
+          "subseries_external_id",
+          "subseries_title",
+          "parent_external_id",
+          "reference_code",
+          "box_number",
+          "file_number",
+          "register_number",
+          "protocol_number",
+          "extent",
+          "language",
+          "people_metadata_json",
+          "places_metadata_json",
+          "military_units_metadata_json",
+          "camps_metadata_json",
+          "subjects_metadata_json",
+          "canonical_record_url",
+          "parent_record_url",
+          "digital_object_available",
+          "digital_object_url",
+          "access_status",
+          "source_notes",
+          "metadata_hash",
+          "http_status",
+          "first_seen_at",
+          "last_verified_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "fondi_archivistici": {
+        "count": 4808,
+        "columns": [
+          "id",
+          "codice_fondo",
+          "titolo",
+          "file_pdf",
+          "url",
+          "pagina",
+          "descrizione",
+          "periodo",
+          "busta",
+          "fascicolo",
+          "luoghi",
+          "raw_text",
+          "elaborato_il"
+        ]
+      },
+      "fonti_indice": {
+        "count": 35664,
+        "columns": [
+          "id",
+          "archivio",
+          "fondo",
+          "serie",
+          "segnatura",
+          "titolo",
+          "tipo_fonte",
+          "soggetti_collegati",
+          "persone_possibili",
+          "reparto",
+          "luogo",
+          "data_inizio",
+          "data_fine",
+          "url_catalogo",
+          "url_file",
+          "iiif_manifest",
+          "page_start",
+          "page_end",
+          "hash_se_disponibile",
+          "access_type",
+          "fetch_status",
+          "last_checked_at",
+          "confidence",
+          "note",
+          "created_at",
+          "url_kind",
+          "quarantined_at"
+        ]
+      },
+      "fonti_narrative": {
+        "count": 40,
+        "columns": [
+          "id",
+          "sha256",
+          "nome_file",
+          "path_locale",
+          "formato",
+          "tipo_fonte",
+          "archivio",
+          "fondo",
+          "unita_principale",
+          "teatro",
+          "data_documento",
+          "data_inizio",
+          "data_fine",
+          "autore",
+          "soggetti_json",
+          "persone_possibili",
+          "titolo",
+          "descrizione",
+          "testo_ocr",
+          "ocr_status",
+          "access_type",
+          "fetch_status",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "fonti_risorse": {
+        "count": 0,
+        "columns": [
+          "id",
+          "fonte_id",
+          "url_pagina",
+          "url_documento",
+          "tipo_risorsa",
+          "titolo",
+          "descrizione",
+          "autore",
+          "ente_titolare",
+          "data_pubblicazione",
+          "lingua",
+          "licenza",
+          "note_copyright",
+          "hash_contenuto",
+          "first_seen_at",
+          "last_checked_at",
+          "stato"
+        ]
+      },
+      "generated_narratives": {
+        "count": 0,
+        "columns": [
+          "id",
+          "entity_type",
+          "entity_id",
+          "narrative_type",
+          "audience",
+          "structured_text",
+          "claim_ids_json",
+          "gaps_json",
+          "deductions_json",
+          "confidence_level",
+          "model_version",
+          "prompt_version",
+          "review_status",
+          "reviewed_by",
+          "reviewed_at",
+          "version",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "idx_entita_search": {
+        "count": 688739,
+        "columns": [
+          "entita_id",
+          "tipo",
+          "valore",
+          "cognome",
+          "nome",
+          "luogo",
+          "contesto"
+        ]
+      },
+      "idx_entita_search_config": {
+        "count": 1,
+        "columns": [
+          "k",
+          "v"
+        ]
+      },
+      "idx_entita_search_content": {
+        "count": 688739,
+        "columns": [
+          "id",
+          "c0",
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6"
+        ]
+      },
+      "idx_entita_search_data": {
+        "count": 6590,
+        "columns": [
+          "id",
+          "block"
+        ]
+      },
+      "idx_entita_search_docsize": {
+        "count": 688739,
+        "columns": [
+          "id",
+          "sz"
+        ]
+      },
+      "idx_entita_search_idx": {
+        "count": 3973,
+        "columns": [
+          "segid",
+          "term",
+          "pgno"
+        ]
+      },
+      "internati": {
+        "count": 20465,
+        "columns": [
+          "id",
+          "lettera",
+          "file_pdf",
+          "pagina",
+          "cognome",
+          "nome",
+          "data_nascita",
+          "luogo_nascita",
+          "residenza",
+          "grado",
+          "luogo_cattura",
+          "data_cattura",
+          "luogo_internamento",
+          "matricola",
+          "arbeitskommando",
+          "mansione",
+          "sorte",
+          "data",
+          "documenti",
+          "raw_text",
+          "elaborato_il",
+          "needs_review",
+          "review_reason",
+          "luogo_validato"
+        ]
+      },
+      "lettere_personali": {
+        "count": 1,
+        "columns": [
+          "id",
+          "filename",
+          "file_path",
+          "mittente",
+          "destinatario",
+          "data_lettera",
+          "luogo",
+          "oggetto",
+          "corpo_testo",
+          "note",
+          "confidenza",
+          "lingua",
+          "raw_response",
+          "sha256",
+          "sorgente_db",
+          "sorgente_id",
+          "elaborato_il"
+        ]
+      },
+      "memory_trace": {
+        "count": 55,
+        "columns": [
+          "id",
+          "query",
+          "cue_persona",
+          "cue_luogo",
+          "cue_reparto",
+          "cue_data",
+          "cue_guerra",
+          "cue_archivio",
+          "route_selected",
+          "sources_found",
+          "image_only_found",
+          "confidence",
+          "used_fts",
+          "used_graph",
+          "used_cloud_ai",
+          "tokens_saved_estimate",
+          "response_ms",
+          "created_at"
+        ]
+      },
+      "menzioni": {
+        "count": 10976,
+        "columns": [
+          "id",
+          "fondo_id",
+          "file_pdf",
+          "pagina",
+          "tipo",
+          "cognome",
+          "nome",
+          "testo_originale",
+          "grado",
+          "reparto",
+          "luogo",
+          "data",
+          "contesto",
+          "elaborato_il"
+        ]
+      },
+      "nara_catalog_files": {
+        "count": 0,
+        "columns": [
+          "id",
+          "nara_catalog_id",
+          "na_id",
+          "url_originale",
+          "hash_sha256",
+          "archivio_fonti_id",
+          "scaricato",
+          "scaricato_il"
+        ]
+      },
+      "permitted_operations": {
+        "count": 68,
+        "columns": [
+          "id",
+          "policy_id",
+          "operation",
+          "decision",
+          "conditions_json",
+          "minimization_rules_json",
+          "destination_allowed",
+          "retention_days",
+          "ai_providers_allowed_json",
+          "attribution_required",
+          "attribution_text",
+          "expires_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "populate_progress": {
+        "count": 8516,
+        "columns": [
+          "internato_id",
+          "status",
+          "found_count",
+          "processed_at"
+        ]
+      },
+      "progress": {
+        "count": 63,
+        "columns": [
+          "lettera",
+          "total_pages",
+          "processed_pages",
+          "status",
+          "started_at",
+          "finished_at"
+        ]
+      },
+      "prompt_versions": {
+        "count": 1,
+        "columns": [
+          "id",
+          "prompt_name",
+          "version",
+          "system_prompt",
+          "user_prompt_template",
+          "variables_json",
+          "constraints_json",
+          "active",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "publication_versions": {
+        "count": 0,
+        "columns": [
+          "id",
+          "narrative_id",
+          "version",
+          "published_text",
+          "audience",
+          "review_status",
+          "reviewed_by",
+          "reviewed_at",
+          "published_by",
+          "published_at",
+          "redactions_json",
+          "claim_ids_json",
+          "created_at"
+        ]
+      },
+      "rc_administrative_cases": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "recognition_type_id",
+          "ente_destinatario",
+          "ufficio",
+          "protocollo",
+          "data_invio",
+          "modalita_trasmissione",
+          "responsabile",
+          "scadenze",
+          "stato",
+          "richieste_integrazione",
+          "esito",
+          "decreto_provvedimento",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "rc_ai_analyses": {
+        "count": 28,
+        "columns": [
+          "id",
+          "candidate_id",
+          "tipo_analisi",
+          "riepilogo_esecutivo",
+          "processo_logico_dettagliato",
+          "fonti_consultate_json",
+          "onorificenze_ipotizzabili_json",
+          "percentuali_stimate_json",
+          "precedenti_attribuzioni_json",
+          "fattori_favorevoli",
+          "fattori_sfavorevoli",
+          "raccomandazioni",
+          "livello_confidenza",
+          "modello_ai",
+          "versione_modello",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "rc_audit_log": {
+        "count": 164,
+        "columns": [
+          "id",
+          "user_id",
+          "username",
+          "azione",
+          "entita",
+          "entita_id",
+          "valore_precedente",
+          "valore_successivo",
+          "ip_address",
+          "motivazione",
+          "created_at"
+        ]
+      },
+      "rc_candidates": {
+        "count": 83,
+        "columns": [
+          "id",
+          "nome",
+          "cognome",
+          "varianti_nominativi",
+          "paternita",
+          "maternita",
+          "data_nascita",
+          "luogo_nascita",
+          "data_morte",
+          "luogo_morte",
+          "comune_residenza",
+          "grado",
+          "reparto",
+          "forza_armata",
+          "matricola",
+          "conflitto",
+          "stato",
+          "livello_certezza",
+          "note_interne",
+          "priorita_json",
+          "created_at",
+          "updated_at",
+          "created_by",
+          "life_status"
+        ]
+      },
+      "rc_communications": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "descendant_contact_id",
+          "practice_id",
+          "institutional_contact_id",
+          "document_id",
+          "thread_id",
+          "parent_communication_id",
+          "tipo",
+          "direzione",
+          "mittente",
+          "destinatari",
+          "copia_conoscenza",
+          "oggetto",
+          "contenuto",
+          "allegati",
+          "data_ora_effettiva",
+          "data_ora_registrazione",
+          "operatore",
+          "stato",
+          "ricevuta_consegna",
+          "protocollo",
+          "risposta_attesa",
+          "data_entro_rispondere",
+          "esito",
+          "note",
+          "created_at",
+          "updated_at",
+          "created_by"
+        ]
+      },
+      "rc_contact_attempts": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "destinatario_id",
+          "canale",
+          "intermediario",
+          "testo_approvato",
+          "data_invio",
+          "esito",
+          "operatore",
+          "divieto_ulteriori",
+          "prova_inoltro",
+          "approvato",
+          "approvato_da",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "rc_descendant_cases": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "discendente_referente_id",
+          "parentela_dichiarata",
+          "parentela_verificata",
+          "documenti_prova",
+          "consenso",
+          "delega",
+          "data_adesione",
+          "altri_rami_familiari",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "rc_descendant_contacts": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "nome",
+          "cognome",
+          "nome_precedente",
+          "rapporto_parentela_presunto",
+          "rapporto_parentela_verificato",
+          "ramo_familiare",
+          "comune_residenza",
+          "indirizzo_postale",
+          "email",
+          "pec",
+          "telefono",
+          "altro_canale",
+          "profilo_pubblico_url",
+          "preferenza_contatto",
+          "lingua",
+          "note",
+          "stato_verifica",
+          "fonte_contatto",
+          "url_fonte",
+          "titolo_pagina_fonte",
+          "data_consultazione_fonte",
+          "operatore_inserimento",
+          "data_reperimento",
+          "data_ultima_verifica",
+          "livello_attendibilita",
+          "consenso_acquisito",
+          "data_consenso",
+          "modalita_consenso",
+          "opposizione_contatto",
+          "richiesta_non_contattare",
+          "cancellazione_limitazione",
+          "visibilita_limitata",
+          "created_at",
+          "updated_at",
+          "created_by"
+        ]
+      },
+      "rc_descendant_packages": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "descendant_contact_id",
+          "practice_id",
+          "versione",
+          "file_path",
+          "checksum",
+          "dimensione",
+          "documenti_inclusi",
+          "documenti_esclusi",
+          "dati_personali_presenti",
+          "livello_riservatezza",
+          "approvatore",
+          "data_generazione",
+          "token_condivisione",
+          "token_scadenza",
+          "created_at",
+          "created_by"
+        ]
+      },
+      "rc_document_checklists": {
+        "count": 0,
+        "columns": [
+          "id",
+          "recognition_type_id",
+          "practice_id",
+          "nome_documento",
+          "descrizione",
+          "obbligatorietà",
+          "soggetto_produttore",
+          "ente_reperizione",
+          "modello_disponibile",
+          "stato_documento",
+          "motivazione_invalidita",
+          "data_richiesta",
+          "scadenza",
+          "operatore_responsabile",
+          "documento_collegato_id",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "rc_document_versions": {
+        "count": 1,
+        "columns": [
+          "id",
+          "document_id",
+          "versione",
+          "file_path",
+          "checksum",
+          "dimensione",
+          "motivazione_sostituzione",
+          "sostituito_da",
+          "created_at",
+          "created_by"
+        ]
+      },
+      "rc_documents": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "descendant_case_id",
+          "filename",
+          "file_path",
+          "file_checksum",
+          "file_size",
+          "mime_type",
+          "uploaded_by",
+          "visibilita",
+          "created_at"
+        ]
+      },
+      "rc_family_persons": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "nome",
+          "cognome",
+          "data_nascita",
+          "luogo_nascita",
+          "data_morte",
+          "rapporto_candidato",
+          "stato_vita",
+          "fonte_genealogica",
+          "livello_certezza",
+          "visibilita_limitata",
+          "stato_contatto",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "rc_historical_events": {
+        "count": 45,
+        "columns": [
+          "id",
+          "candidate_id",
+          "tipo_evento",
+          "data_inizio",
+          "data_fine",
+          "luogo",
+          "descrizione_verificata",
+          "testo_originale_fonte",
+          "condotta_individuale",
+          "rischio_affrontato",
+          "conseguenze",
+          "testimoni",
+          "grado_attendibilita",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "rc_institutional_contacts": {
+        "count": 0,
+        "columns": [
+          "id",
+          "ente",
+          "ministero_amministrazione",
+          "dipartimento",
+          "direzione_generale",
+          "ufficio",
+          "archivio",
+          "sede",
+          "indirizzo",
+          "email",
+          "pec",
+          "telefono",
+          "sito_ufficiale",
+          "pagina_procedura",
+          "referente_nome",
+          "referente_cognome",
+          "referente_qualifica",
+          "referente_telefono_interno",
+          "orari",
+          "ambito_competenza",
+          "territori_competenza",
+          "tipi_riconoscimento_gestiti",
+          "modalita_preferita_contatto",
+          "fonte_recapito",
+          "url_fonte_ufficiale",
+          "data_ultima_verifica",
+          "stato",
+          "note",
+          "created_at",
+          "updated_at",
+          "created_by"
+        ]
+      },
+      "rc_invitations": {
+        "count": 0,
+        "columns": [
+          "id",
+          "token",
+          "descendant_case_id",
+          "email",
+          "created_at",
+          "expires_at",
+          "accettato",
+          "data_accettazione",
+          "revocato"
+        ]
+      },
+      "rc_kinship_links": {
+        "count": 0,
+        "columns": [
+          "id",
+          "persona_origine_id",
+          "persona_destinazione_id",
+          "tipo_rapporto",
+          "fonte",
+          "grado_certezza",
+          "verificato_da",
+          "created_at"
+        ]
+      },
+      "rc_practice_deadlines": {
+        "count": 0,
+        "columns": [
+          "id",
+          "practice_id",
+          "candidate_id",
+          "tipo_scadenza",
+          "data_scadenza",
+          "descrizione",
+          "promemoria_inviato",
+          "risolta",
+          "data_risoluzione",
+          "note",
+          "created_at",
+          "created_by"
+        ]
+      },
+      "rc_practice_documents": {
+        "count": 1,
+        "columns": [
+          "id",
+          "practice_id",
+          "candidate_id",
+          "descendant_contact_id",
+          "titolo",
+          "descrizione",
+          "categoria_documentale",
+          "filename_originale",
+          "file_path",
+          "formato_mime",
+          "dimensione",
+          "numero_pagine",
+          "checksum",
+          "autore_caricamento",
+          "data_caricamento",
+          "data_documento",
+          "mittente",
+          "destinatario",
+          "ente_produttore",
+          "fonte",
+          "segnatura",
+          "protocollo",
+          "livello_riservatezza",
+          "stato_verifica",
+          "versione",
+          "documento_sostituito_id",
+          "scadenza",
+          "firma_digitale_rilevata",
+          "esito_scansione_antivirus",
+          "note",
+          "archiviato",
+          "created_at",
+          "updated_at",
+          "created_by",
+          "ocr_text",
+          "ocr_status",
+          "ocr_pages"
+        ]
+      },
+      "rc_practices": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "recognition_type_id",
+          "descendant_contact_id",
+          "institutional_contact_id",
+          "protocollo",
+          "data_invio",
+          "modalita_trasmissione",
+          "ufficio_assegnatario",
+          "responsabile_procedimento",
+          "data_apertura",
+          "termine_previsto",
+          "stato",
+          "richieste_integrazione",
+          "esito",
+          "decreto_provvedimento",
+          "data_esito",
+          "data_consegna_attestato",
+          "note_cerimonia",
+          "pronto_invio",
+          "validato_da_revisore",
+          "motivazione_eccezione",
+          "created_at",
+          "updated_at",
+          "created_by"
+        ]
+      },
+      "rc_recognition_assessments": {
+        "count": 50,
+        "columns": [
+          "id",
+          "candidate_id",
+          "recognition_type_id",
+          "riconoscimento_ipotizzato",
+          "requisiti_presenti",
+          "requisiti_mancanti",
+          "elementi_contrari",
+          "procedura",
+          "motivazione",
+          "valutatore",
+          "data_valutazione",
+          "validazione_storica",
+          "validazione_amministrativa",
+          "created_at",
+          "updated_at",
+          "processo_logico",
+          "fonti_consultate",
+          "percentuale_stimata_concessione",
+          "precedenti_storici",
+          "fattori_favorevoli",
+          "fattori_sfavorevoli",
+          "onorificenze_alternative",
+          "livello_confidenza"
+        ]
+      },
+      "rc_recognition_types": {
+        "count": 12,
+        "columns": [
+          "id",
+          "denominazione",
+          "categoria",
+          "autorita_concedente",
+          "ente_istruttore",
+          "base_normativa",
+          "requisiti",
+          "concessione_memoria",
+          "soggetti_legittimati",
+          "modalita_avvio",
+          "termini",
+          "documenti_richiesti",
+          "procedura_attiva",
+          "data_ultimo_aggiornamento",
+          "fonti_istituzionali",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "rc_sessions": {
+        "count": 44,
+        "columns": [
+          "token",
+          "user_id",
+          "created_at",
+          "expires_at",
+          "ip_address",
+          "user_agent"
+        ]
+      },
+      "rc_sources": {
+        "count": 80,
+        "columns": [
+          "id",
+          "titolo",
+          "tipologia",
+          "ente_conservatore",
+          "fondo",
+          "serie",
+          "busta",
+          "fascicolo",
+          "pagina_immagine",
+          "segnatura_completa",
+          "url_istituzionale",
+          "data_documento",
+          "file_path",
+          "file_checksum",
+          "trascrizione",
+          "estrazione_automatica",
+          "livello_attendibilita",
+          "stato_verifica",
+          "verificatore",
+          "created_at",
+          "updated_at",
+          "candidate_id"
+        ]
+      },
+      "rc_state_transitions": {
+        "count": 0,
+        "columns": [
+          "id",
+          "candidate_id",
+          "stato_precedente",
+          "stato_successivo",
+          "autore",
+          "data_ora",
+          "motivazione",
+          "allegati",
+          "approvazione_richiesta"
+        ]
+      },
+      "rc_users": {
+        "count": 2,
+        "columns": [
+          "id",
+          "username",
+          "password_hash",
+          "role",
+          "email",
+          "full_name",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "record_links": {
+        "count": 169184,
+        "columns": [
+          "id",
+          "from_table",
+          "from_id",
+          "to_table",
+          "to_id",
+          "link_type",
+          "confidence",
+          "elaborato_il",
+          "match_status",
+          "match_method",
+          "matched_fields_json",
+          "conflicting_fields_json",
+          "evidence_json",
+          "explanation",
+          "review_status",
+          "reviewed_by",
+          "reviewed_at",
+          "algorithm_version",
+          "score_breakdown_json",
+          "contrary_signals_json",
+          "legacy_unverified",
+          "nature",
+          "direction"
+        ]
+      },
+      "research_cycles": {
+        "count": 45,
+        "columns": [
+          "id",
+          "plan_id",
+          "session_id",
+          "cycle_number",
+          "initial_knowledge_json",
+          "gaps_selected_json",
+          "sources_selected_json",
+          "sources_motivation",
+          "queries_executed_json",
+          "new_fragments_json",
+          "utility_metrics_json",
+          "decision",
+          "stop_reason",
+          "created_at",
+          "completed_at"
+        ]
+      },
+      "research_gaps": {
+        "count": 472,
+        "columns": [
+          "id",
+          "subject_id",
+          "missing_field",
+          "suggested_provider",
+          "priority",
+          "status",
+          "created_at"
+        ]
+      },
+      "research_hits": {
+        "count": 0,
+        "columns": [
+          "id",
+          "query_id",
+          "connector_code",
+          "external_id",
+          "title",
+          "description",
+          "url",
+          "url_kind",
+          "metadata_json",
+          "score",
+          "status",
+          "resolved_to_source_item_id",
+          "resolved_at",
+          "locator_status",
+          "coverage_note",
+          "warnings_json",
+          "executed_at",
+          "created_at"
+        ]
+      },
+      "research_plans": {
+        "count": 45,
+        "columns": [
+          "id",
+          "original_input",
+          "entity_type",
+          "entity_id",
+          "objective",
+          "initial_context",
+          "gaps_to_fill",
+          "budget_cycles",
+          "budget_time_seconds",
+          "budget_cost_usd",
+          "status",
+          "generated_by",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "research_queries": {
+        "count": 0,
+        "columns": [
+          "id",
+          "session_id",
+          "query_text",
+          "query_language",
+          "filters_json",
+          "variant_used",
+          "generated_from_claim_id",
+          "generated_from_fragment",
+          "priority",
+          "motivation",
+          "search_tool",
+          "assisted_search_url",
+          "executed_at",
+          "outcome",
+          "created_at"
+        ]
+      },
+      "research_results": {
+        "count": 0,
+        "columns": [
+          "id",
+          "session_id",
+          "query_id",
+          "external_id",
+          "result_type",
+          "record_url",
+          "document_url",
+          "canonical_url",
+          "title",
+          "author_or_entity",
+          "publication_date",
+          "retrieved_at",
+          "raw_metadata_json",
+          "fingerprint",
+          "source_quality",
+          "authority_score",
+          "independence_group",
+          "status",
+          "status_reason",
+          "linked_source_id",
+          "linked_document_id",
+          "first_seen_at",
+          "last_seen_at"
+        ]
+      },
+      "research_sessions": {
+        "count": 45,
+        "columns": [
+          "id",
+          "plan_id",
+          "connector_id",
+          "mode",
+          "started_at",
+          "completed_at",
+          "status",
+          "cycle_number",
+          "result_count",
+          "linked_count",
+          "excluded_count",
+          "snapshot_version",
+          "stop_reason",
+          "note",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "research_subject_sources": {
+        "count": 1431,
+        "columns": [
+          "id",
+          "subject_id",
+          "source_locator_id",
+          "relation_type",
+          "confidence",
+          "evidence_note",
+          "created_at"
+        ]
+      },
+      "research_subjects": {
+        "count": 118,
+        "columns": [
+          "id",
+          "subject_type",
+          "name",
+          "normalized_name",
+          "date_start",
+          "date_end",
+          "place",
+          "unit",
+          "status",
+          "confidence",
+          "created_from_query",
+          "linked_soldier_id",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "source_access_audit": {
+        "count": 0,
+        "columns": [
+          "id",
+          "connector_code",
+          "operation",
+          "target_url",
+          "target_domain",
+          "policy_version_id",
+          "decision",
+          "response_status",
+          "response_time_ms",
+          "error_message",
+          "operator_user",
+          "ip_address",
+          "created_at"
+        ]
+      },
+      "source_fetch_cache": {
+        "count": 14,
+        "columns": [
+          "id",
+          "source_id",
+          "url_fetched",
+          "path_file",
+          "sha256",
+          "size_bytes",
+          "content_type",
+          "permanent",
+          "fetched_at",
+          "expires_at"
+        ]
+      },
+      "source_policies": {
+        "count": 4,
+        "columns": [
+          "id",
+          "provider",
+          "domain",
+          "source_name",
+          "terms_url",
+          "privacy_url",
+          "robots_url",
+          "archive_regulation_url",
+          "metadata_license",
+          "digital_object_license",
+          "commercial_use_allowed",
+          "automated_access_allowed",
+          "metadata_indexing_allowed",
+          "document_download_allowed",
+          "republication_allowed",
+          "attribution_required",
+          "required_credit_line",
+          "request_contact",
+          "policy_status",
+          "verified_by",
+          "verified_at",
+          "valid_from",
+          "review_due_at",
+          "notes",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "source_rights": {
+        "count": 0,
+        "columns": [
+          "id",
+          "source_item_id",
+          "source_table",
+          "domain",
+          "rights_type",
+          "rights_holder",
+          "license_url",
+          "license_name",
+          "valid_from",
+          "valid_until",
+          "notes",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "stable_locators": {
+        "count": 0,
+        "columns": [
+          "id",
+          "source_item_id",
+          "source_table",
+          "locator_kind",
+          "locator_value",
+          "canonical_url",
+          "permalink",
+          "persistent_id",
+          "persistent_id_type",
+          "iiif_manifest",
+          "direct_document_url",
+          "reference_code",
+          "retrieval_instruction",
+          "domain",
+          "verified_at",
+          "verified_by",
+          "redirect_target",
+          "is_stable",
+          "created_at",
+          "updated_at"
+        ]
+      }
+    },
+    "table_count": 109,
+    "index_count": 254,
+    "indexes": [
+      {
+        "name": "idx_acquisitions_source",
+        "table": "acquisitions"
+      },
+      {
+        "name": "idx_am_provider",
+        "table": "ai_models"
+      },
+      {
+        "name": "idx_am_status",
+        "table": "ai_models"
+      },
+      {
+        "name": "sqlite_autoindex_ai_providers_1",
+        "table": "ai_providers"
+      },
+      {
+        "name": "idx_ap_code",
+        "table": "ai_providers"
+      },
+      {
+        "name": "idx_ap_status",
+        "table": "ai_providers"
+      },
+      {
+        "name": "idx_arp_task",
+        "table": "ai_routing_policies"
+      },
+      {
+        "name": "idx_atr_plan",
+        "table": "ai_task_runs"
+      },
+      {
+        "name": "idx_atr_task",
+        "table": "ai_task_runs"
+      },
+      {
+        "name": "idx_atr_idem",
+        "table": "ai_task_runs"
+      },
+      {
+        "name": "idx_aul_period",
+        "table": "ai_usage_ledger"
+      },
+      {
+        "name": "sqlite_autoindex_archive_connectors_1",
+        "table": "archive_connectors"
+      },
+      {
+        "name": "idx_ac_code",
+        "table": "archive_connectors"
+      },
+      {
+        "name": "idx_ac_status",
+        "table": "archive_connectors"
+      },
+      {
+        "name": "sqlite_autoindex_archivio_documenti_1",
+        "table": "archivio_documenti"
+      },
+      {
+        "name": "idx_doc_type",
+        "table": "archivio_documenti"
+      },
+      {
+        "name": "idx_doc_year",
+        "table": "archivio_documenti"
+      },
+      {
+        "name": "idx_doc_provider",
+        "table": "archivio_documenti"
+      },
+      {
+        "name": "sqlite_autoindex_archivio_fonti_1",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_hash",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_archivio",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_unita",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_teatro",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_data",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_tipo",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_ocr",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_fondo",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_conflitto",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_segnatura",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_af_data_range",
+        "table": "archivio_fonti"
+      },
+      {
+        "name": "idx_budget_reservations_plan",
+        "table": "budget_reservations"
+      },
+      {
+        "name": "sqlite_autoindex_caduti_albooro_1",
+        "table": "caduti_albooro"
+      },
+      {
+        "name": "idx_albooro_nominativo",
+        "table": "caduti_albooro"
+      },
+      {
+        "name": "idx_albooro_volume",
+        "table": "caduti_albooro"
+      },
+      {
+        "name": "idx_albo_nominativo",
+        "table": "caduti_albooro"
+      },
+      {
+        "name": "sqlite_autoindex_caduti_bologna_1",
+        "table": "caduti_bologna"
+      },
+      {
+        "name": "idx_bologna_nome",
+        "table": "caduti_bologna"
+      },
+      {
+        "name": "sqlite_autoindex_caduti_cwgc_1",
+        "table": "caduti_cwgc"
+      },
+      {
+        "name": "idx_cwgc_cognome",
+        "table": "caduti_cwgc"
+      },
+      {
+        "name": "idx_cwgc_nome",
+        "table": "caduti_cwgc"
+      },
+      {
+        "name": "idx_cwgc_cognome_nocase",
+        "table": "caduti_cwgc"
+      },
+      {
+        "name": "idx_cwgc_guerra",
+        "table": "caduti_cwgc"
+      },
+      {
+        "name": "idx_cwgc_data",
+        "table": "caduti_cwgc"
+      },
+      {
+        "name": "idx_cwgc_nationality",
+        "table": "caduti_cwgc"
+      },
+      {
+        "name": "idx_fr_nom",
+        "table": "caduti_francia_ww1"
+      },
+      {
+        "name": "idx_fr_unite",
+        "table": "caduti_francia_ww1"
+      },
+      {
+        "name": "idx_fr_deces",
+        "table": "caduti_francia_ww1"
+      },
+      {
+        "name": "idx_fr_lieu",
+        "table": "caduti_francia_ww1"
+      },
+      {
+        "name": "sqlite_autoindex_caduti_ministero_1",
+        "table": "caduti_ministero"
+      },
+      {
+        "name": "idx_ministero_cognome",
+        "table": "caduti_ministero"
+      },
+      {
+        "name": "idx_ministero_nominativo",
+        "table": "caduti_ministero"
+      },
+      {
+        "name": "sqlite_autoindex_caduti_sardi_1",
+        "table": "caduti_sardi"
+      },
+      {
+        "name": "idx_sardi_cognome",
+        "table": "caduti_sardi"
+      },
+      {
+        "name": "idx_sardi_comune",
+        "table": "caduti_sardi"
+      },
+      {
+        "name": "idx_ce_claim",
+        "table": "claim_evidence"
+      },
+      {
+        "name": "idx_ce_role",
+        "table": "claim_evidence"
+      },
+      {
+        "name": "idx_claim_evidence_claim",
+        "table": "claim_evidence"
+      },
+      {
+        "name": "idx_cr_a",
+        "table": "claim_relations"
+      },
+      {
+        "name": "idx_cr_b",
+        "table": "claim_relations"
+      },
+      {
+        "name": "idx_cr_type",
+        "table": "claim_relations"
+      },
+      {
+        "name": "sqlite_autoindex_claims_1",
+        "table": "claims"
+      },
+      {
+        "name": "idx_claims_subject",
+        "table": "claims"
+      },
+      {
+        "name": "idx_claims_predicate",
+        "table": "claims"
+      },
+      {
+        "name": "idx_claims_epistemic",
+        "table": "claims"
+      },
+      {
+        "name": "idx_claims_review",
+        "table": "claims"
+      },
+      {
+        "name": "idx_claims_stable",
+        "table": "claims"
+      },
+      {
+        "name": "idx_claims_stable_id",
+        "table": "claims"
+      },
+      {
+        "name": "idx_collegamenti_entita",
+        "table": "collegamenti"
+      },
+      {
+        "name": "idx_collegamenti_record",
+        "table": "collegamenti"
+      },
+      {
+        "name": "idx_collegamenti_tab_rec",
+        "table": "collegamenti"
+      },
+      {
+        "name": "sqlite_autoindex_consolidated_memory_1",
+        "table": "consolidated_memory"
+      },
+      {
+        "name": "idx_cm_topic",
+        "table": "consolidated_memory"
+      },
+      {
+        "name": "idx_cm_qcount",
+        "table": "consolidated_memory"
+      },
+      {
+        "name": "sqlite_autoindex_content_fingerprints_1",
+        "table": "content_fingerprints"
+      },
+      {
+        "name": "idx_content_fp_hash",
+        "table": "content_fingerprints"
+      },
+      {
+        "name": "sqlite_autoindex_decorati_1",
+        "table": "decorati"
+      },
+      {
+        "name": "idx_decorati_cognome",
+        "table": "decorati"
+      },
+      {
+        "name": "sqlite_autoindex_decorati_nastroazzurro_1",
+        "table": "decorati_nastroazzurro"
+      },
+      {
+        "name": "idx_na_cognome",
+        "table": "decorati_nastroazzurro"
+      },
+      {
+        "name": "idx_na_arma",
+        "table": "decorati_nastroazzurro"
+      },
+      {
+        "name": "idx_na_decorazione",
+        "table": "decorati_nastroazzurro"
+      },
+      {
+        "name": "idx_nastro_cognome",
+        "table": "decorati_nastroazzurro"
+      },
+      {
+        "name": "idx_nastro_arma",
+        "table": "decorati_nastroazzurro"
+      },
+      {
+        "name": "idx_nastro_tipo_dec",
+        "table": "decorati_nastroazzurro"
+      },
+      {
+        "name": "idx_de_document",
+        "table": "document_extractions"
+      },
+      {
+        "name": "sqlite_autoindex_documenti_nara_catalog_1",
+        "table": "documenti_nara_catalog"
+      },
+      {
+        "name": "idx_nara_cat_naid",
+        "table": "documenti_nara_catalog"
+      },
+      {
+        "name": "idx_nara_cat_rg",
+        "table": "documenti_nara_catalog"
+      },
+      {
+        "name": "idx_nara_cat_type",
+        "table": "documenti_nara_catalog"
+      },
+      {
+        "name": "idx_nara_cat_date",
+        "table": "documenti_nara_catalog"
+      },
+      {
+        "name": "idx_nara_cat_unit",
+        "table": "documenti_nara_catalog"
+      },
+      {
+        "name": "idx_nara_cat_dates",
+        "table": "documenti_nara_catalog"
+      },
+      {
+        "name": "sqlite_autoindex_documenti_nara_t315_1",
+        "table": "documenti_nara_t315"
+      },
+      {
+        "name": "idx_nara_t315_frame",
+        "table": "documenti_nara_t315"
+      },
+      {
+        "name": "idx_nara_t315_data",
+        "table": "documenti_nara_t315"
+      },
+      {
+        "name": "idx_nara_t315_tipo",
+        "table": "documenti_nara_t315"
+      },
+      {
+        "name": "idx_nara_t315_mittente",
+        "table": "documenti_nara_t315"
+      },
+      {
+        "name": "idx_edge_evidence_edge",
+        "table": "edge_evidence"
+      },
+      {
+        "name": "sqlite_autoindex_edge_versions_1",
+        "table": "edge_versions"
+      },
+      {
+        "name": "idx_edge_versions_edge",
+        "table": "edge_versions"
+      },
+      {
+        "name": "idx_entita_valore",
+        "table": "entita"
+      },
+      {
+        "name": "idx_entita_tipo",
+        "table": "entita"
+      },
+      {
+        "name": "idx_entita_norm_tipo",
+        "table": "entita"
+      },
+      {
+        "name": "idx_emc_local",
+        "table": "entity_match_candidates"
+      },
+      {
+        "name": "idx_emc_status",
+        "table": "entity_match_candidates"
+      },
+      {
+        "name": "idx_entity_match_candidates_status",
+        "table": "entity_match_candidates"
+      },
+      {
+        "name": "idx_ev_entity",
+        "table": "entity_variants"
+      },
+      {
+        "name": "idx_event_links_evento",
+        "table": "event_links"
+      },
+      {
+        "name": "idx_event_links_target",
+        "table": "event_links"
+      },
+      {
+        "name": "sqlite_autoindex_eventi_1gm_1",
+        "table": "eventi_1gm"
+      },
+      {
+        "name": "idx_ear_record",
+        "table": "external_access_requests"
+      },
+      {
+        "name": "idx_ear_status",
+        "table": "external_access_requests"
+      },
+      {
+        "name": "idx_edo_record",
+        "table": "external_digital_objects"
+      },
+      {
+        "name": "idx_eij_provider",
+        "table": "external_import_jobs"
+      },
+      {
+        "name": "idx_eij_status",
+        "table": "external_import_jobs"
+      },
+      {
+        "name": "idx_epm_record",
+        "table": "external_person_mentions"
+      },
+      {
+        "name": "idx_epm_surname",
+        "table": "external_person_mentions"
+      },
+      {
+        "name": "idx_epm_name",
+        "table": "external_person_mentions"
+      },
+      {
+        "name": "idx_epm_service",
+        "table": "external_person_mentions"
+      },
+      {
+        "name": "idx_epm_prisoner",
+        "table": "external_person_mentions"
+      },
+      {
+        "name": "idx_erl_record",
+        "table": "external_record_links"
+      },
+      {
+        "name": "idx_erl_mention",
+        "table": "external_record_links"
+      },
+      {
+        "name": "idx_erl_target",
+        "table": "external_record_links"
+      },
+      {
+        "name": "idx_erl_status",
+        "table": "external_record_links"
+      },
+      {
+        "name": "idx_erl_review",
+        "table": "external_record_links"
+      },
+      {
+        "name": "idx_esf_record",
+        "table": "external_source_facts"
+      },
+      {
+        "name": "idx_esf_mention",
+        "table": "external_source_facts"
+      },
+      {
+        "name": "idx_esf_type",
+        "table": "external_source_facts"
+      },
+      {
+        "name": "sqlite_autoindex_external_source_records_1",
+        "table": "external_source_records"
+      },
+      {
+        "name": "idx_esr_provider",
+        "table": "external_source_records"
+      },
+      {
+        "name": "idx_esr_level",
+        "table": "external_source_records"
+      },
+      {
+        "name": "idx_esr_parent",
+        "table": "external_source_records"
+      },
+      {
+        "name": "idx_esr_fonds",
+        "table": "external_source_records"
+      },
+      {
+        "name": "idx_esr_url",
+        "table": "external_source_records"
+      },
+      {
+        "name": "idx_esr_hash",
+        "table": "external_source_records"
+      },
+      {
+        "name": "idx_esr_access",
+        "table": "external_source_records"
+      },
+      {
+        "name": "sqlite_autoindex_fonti_indice_1",
+        "table": "fonti_indice"
+      },
+      {
+        "name": "idx_fi_reparto",
+        "table": "fonti_indice"
+      },
+      {
+        "name": "idx_fi_luogo",
+        "table": "fonti_indice"
+      },
+      {
+        "name": "idx_fi_archivio",
+        "table": "fonti_indice"
+      },
+      {
+        "name": "idx_fi_fetch_status",
+        "table": "fonti_indice"
+      },
+      {
+        "name": "idx_fi_soggetti",
+        "table": "fonti_indice"
+      },
+      {
+        "name": "sqlite_autoindex_fonti_narrative_1",
+        "table": "fonti_narrative"
+      },
+      {
+        "name": "idx_fn_tipo_fonte",
+        "table": "fonti_narrative"
+      },
+      {
+        "name": "idx_fn_persone",
+        "table": "fonti_narrative"
+      },
+      {
+        "name": "idx_fn_archivio",
+        "table": "fonti_narrative"
+      },
+      {
+        "name": "idx_fn_data_documento",
+        "table": "fonti_narrative"
+      },
+      {
+        "name": "idx_fn_ocr_status",
+        "table": "fonti_narrative"
+      },
+      {
+        "name": "sqlite_autoindex_fonti_risorse_1",
+        "table": "fonti_risorse"
+      },
+      {
+        "name": "idx_fonti_risorse_fonte_id",
+        "table": "fonti_risorse"
+      },
+      {
+        "name": "idx_fonti_risorse_url",
+        "table": "fonti_risorse"
+      },
+      {
+        "name": "idx_fonti_risorse_stato",
+        "table": "fonti_risorse"
+      },
+      {
+        "name": "idx_gn_entity",
+        "table": "generated_narratives"
+      },
+      {
+        "name": "idx_gn_status",
+        "table": "generated_narratives"
+      },
+      {
+        "name": "idx_internati_cognome",
+        "table": "internati"
+      },
+      {
+        "name": "idx_internati_nome",
+        "table": "internati"
+      },
+      {
+        "name": "idx_internati_luogo_internamento",
+        "table": "internati"
+      },
+      {
+        "name": "idx_internati_luogo_cattura",
+        "table": "internati"
+      },
+      {
+        "name": "idx_internati_sorte",
+        "table": "internati"
+      },
+      {
+        "name": "idx_internati_luogo_nascita",
+        "table": "internati"
+      },
+      {
+        "name": "sqlite_autoindex_lettere_personali_1",
+        "table": "lettere_personali"
+      },
+      {
+        "name": "idx_lettere_mittente",
+        "table": "lettere_personali"
+      },
+      {
+        "name": "idx_lettere_destinatario",
+        "table": "lettere_personali"
+      },
+      {
+        "name": "idx_lettere_luogo",
+        "table": "lettere_personali"
+      },
+      {
+        "name": "idx_lettere_data",
+        "table": "lettere_personali"
+      },
+      {
+        "name": "idx_mt_created",
+        "table": "memory_trace"
+      },
+      {
+        "name": "idx_mt_cue_persona",
+        "table": "memory_trace"
+      },
+      {
+        "name": "idx_mt_cue_reparto",
+        "table": "memory_trace"
+      },
+      {
+        "name": "idx_menzioni_cognome",
+        "table": "menzioni"
+      },
+      {
+        "name": "idx_menzioni_luogo",
+        "table": "menzioni"
+      },
+      {
+        "name": "sqlite_autoindex_nara_catalog_files_1",
+        "table": "nara_catalog_files"
+      },
+      {
+        "name": "idx_ncf_nara",
+        "table": "nara_catalog_files"
+      },
+      {
+        "name": "idx_ncf_hash",
+        "table": "nara_catalog_files"
+      },
+      {
+        "name": "sqlite_autoindex_permitted_operations_1",
+        "table": "permitted_operations"
+      },
+      {
+        "name": "idx_permitted_ops_policy",
+        "table": "permitted_operations"
+      },
+      {
+        "name": "sqlite_autoindex_progress_1",
+        "table": "progress"
+      },
+      {
+        "name": "sqlite_autoindex_prompt_versions_1",
+        "table": "prompt_versions"
+      },
+      {
+        "name": "idx_prompt_versions_name",
+        "table": "prompt_versions"
+      },
+      {
+        "name": "sqlite_autoindex_publication_versions_1",
+        "table": "publication_versions"
+      },
+      {
+        "name": "idx_publication_versions_narr",
+        "table": "publication_versions"
+      },
+      {
+        "name": "idx_rc_ac_cand",
+        "table": "rc_administrative_cases"
+      },
+      {
+        "name": "idx_rc_ai_cand",
+        "table": "rc_ai_analyses"
+      },
+      {
+        "name": "idx_rc_audit_entita",
+        "table": "rc_audit_log"
+      },
+      {
+        "name": "idx_rc_audit_user",
+        "table": "rc_audit_log"
+      },
+      {
+        "name": "idx_rc_audit_data",
+        "table": "rc_audit_log"
+      },
+      {
+        "name": "idx_rc_cand_stato",
+        "table": "rc_candidates"
+      },
+      {
+        "name": "idx_rc_cand_cognome",
+        "table": "rc_candidates"
+      },
+      {
+        "name": "idx_rc_cand_conflitto",
+        "table": "rc_candidates"
+      },
+      {
+        "name": "idx_rc_comm_cand",
+        "table": "rc_communications"
+      },
+      {
+        "name": "idx_rc_comm_prac",
+        "table": "rc_communications"
+      },
+      {
+        "name": "idx_rc_comm_thread",
+        "table": "rc_communications"
+      },
+      {
+        "name": "idx_rc_comm_stato",
+        "table": "rc_communications"
+      },
+      {
+        "name": "idx_rc_ca_cand",
+        "table": "rc_contact_attempts"
+      },
+      {
+        "name": "idx_rc_dc_cand",
+        "table": "rc_descendant_cases"
+      },
+      {
+        "name": "idx_rc_dcon_cand",
+        "table": "rc_descendant_contacts"
+      },
+      {
+        "name": "idx_rc_dcon_stato",
+        "table": "rc_descendant_contacts"
+      },
+      {
+        "name": "idx_rc_dcon_email",
+        "table": "rc_descendant_contacts"
+      },
+      {
+        "name": "sqlite_autoindex_rc_descendant_packages_1",
+        "table": "rc_descendant_packages"
+      },
+      {
+        "name": "idx_rc_pkg_cand",
+        "table": "rc_descendant_packages"
+      },
+      {
+        "name": "idx_rc_pkg_token",
+        "table": "rc_descendant_packages"
+      },
+      {
+        "name": "idx_rc_chk_prac",
+        "table": "rc_document_checklists"
+      },
+      {
+        "name": "idx_rc_chk_rt",
+        "table": "rc_document_checklists"
+      },
+      {
+        "name": "idx_rc_dv_doc",
+        "table": "rc_document_versions"
+      },
+      {
+        "name": "idx_rc_doc_cand",
+        "table": "rc_documents"
+      },
+      {
+        "name": "idx_rc_fp_cand",
+        "table": "rc_family_persons"
+      },
+      {
+        "name": "idx_rc_hev_cand",
+        "table": "rc_historical_events"
+      },
+      {
+        "name": "idx_rc_inst_ente",
+        "table": "rc_institutional_contacts"
+      },
+      {
+        "name": "idx_rc_inst_stato",
+        "table": "rc_institutional_contacts"
+      },
+      {
+        "name": "sqlite_autoindex_rc_invitations_1",
+        "table": "rc_invitations"
+      },
+      {
+        "name": "idx_rc_inv_token",
+        "table": "rc_invitations"
+      },
+      {
+        "name": "idx_rc_dl_prac",
+        "table": "rc_practice_deadlines"
+      },
+      {
+        "name": "idx_rc_dl_data",
+        "table": "rc_practice_deadlines"
+      },
+      {
+        "name": "idx_rc_pdoc_prac",
+        "table": "rc_practice_documents"
+      },
+      {
+        "name": "idx_rc_pdoc_cand",
+        "table": "rc_practice_documents"
+      },
+      {
+        "name": "idx_rc_pdoc_cat",
+        "table": "rc_practice_documents"
+      },
+      {
+        "name": "idx_rc_prac_cand",
+        "table": "rc_practices"
+      },
+      {
+        "name": "idx_rc_prac_stato",
+        "table": "rc_practices"
+      },
+      {
+        "name": "idx_rc_prac_proto",
+        "table": "rc_practices"
+      },
+      {
+        "name": "idx_rc_ass_cand",
+        "table": "rc_recognition_assessments"
+      },
+      {
+        "name": "sqlite_autoindex_rc_sessions_1",
+        "table": "rc_sessions"
+      },
+      {
+        "name": "idx_rc_sessions_user",
+        "table": "rc_sessions"
+      },
+      {
+        "name": "idx_rc_sessions_expires",
+        "table": "rc_sessions"
+      },
+      {
+        "name": "idx_rc_src_cand",
+        "table": "rc_sources"
+      },
+      {
+        "name": "idx_rc_src_tipo",
+        "table": "rc_sources"
+      },
+      {
+        "name": "idx_rc_st_cand",
+        "table": "rc_state_transitions"
+      },
+      {
+        "name": "sqlite_autoindex_rc_users_1",
+        "table": "rc_users"
+      },
+      {
+        "name": "idx_rc_users_role",
+        "table": "rc_users"
+      },
+      {
+        "name": "sqlite_autoindex_record_links_1",
+        "table": "record_links"
+      },
+      {
+        "name": "idx_record_links_legacy",
+        "table": "record_links"
+      },
+      {
+        "name": "idx_rc_plan",
+        "table": "research_cycles"
+      },
+      {
+        "name": "idx_rc_session",
+        "table": "research_cycles"
+      },
+      {
+        "name": "idx_rg_subject",
+        "table": "research_gaps"
+      },
+      {
+        "name": "idx_rg_status",
+        "table": "research_gaps"
+      },
+      {
+        "name": "idx_research_hits_query",
+        "table": "research_hits"
+      },
+      {
+        "name": "idx_research_hits_status",
+        "table": "research_hits"
+      },
+      {
+        "name": "idx_rp_entity",
+        "table": "research_plans"
+      },
+      {
+        "name": "idx_rp_status",
+        "table": "research_plans"
+      },
+      {
+        "name": "idx_rq_session",
+        "table": "research_queries"
+      },
+      {
+        "name": "idx_rq_executed",
+        "table": "research_queries"
+      },
+      {
+        "name": "idx_rr_session",
+        "table": "research_results"
+      },
+      {
+        "name": "idx_rr_fingerprint",
+        "table": "research_results"
+      },
+      {
+        "name": "idx_rr_status",
+        "table": "research_results"
+      },
+      {
+        "name": "idx_rr_canonical",
+        "table": "research_results"
+      },
+      {
+        "name": "idx_rs_plan",
+        "table": "research_sessions"
+      },
+      {
+        "name": "idx_rss_subject",
+        "table": "research_subject_sources"
+      },
+      {
+        "name": "idx_rss_source",
+        "table": "research_subject_sources"
+      },
+      {
+        "name": "idx_rs_type",
+        "table": "research_subjects"
+      },
+      {
+        "name": "idx_rs_status",
+        "table": "research_subjects"
+      },
+      {
+        "name": "idx_rs_soldier",
+        "table": "research_subjects"
+      },
+      {
+        "name": "idx_source_access_audit_conn",
+        "table": "source_access_audit"
+      },
+      {
+        "name": "idx_sfc_source",
+        "table": "source_fetch_cache"
+      },
+      {
+        "name": "idx_source_rights_domain",
+        "table": "source_rights"
+      },
+      {
+        "name": "sqlite_autoindex_stable_locators_1",
+        "table": "stable_locators"
+      },
+      {
+        "name": "idx_stable_locators_source",
+        "table": "stable_locators"
+      }
+    ]
+  },
+  "eventi_1gm.db": {
+    "description": "DB eventi Prima Guerra Mondiale",
+    "size_bytes": 144252928,
+    "size_mb": 137.57,
+    "integrity": "ok",
+    "fk_issues": [],
+    "tables": {
+      "event_links": {
+        "count": 891874,
+        "columns": [
+          "id",
+          "evento_id",
+          "target_table",
+          "target_id",
+          "link_type",
+          "match_field",
+          "match_value",
+          "confidence",
+          "created_at"
+        ]
+      },
+      "eventi_1gm": {
+        "count": 22,
+        "columns": [
+          "id",
+          "nome",
+          "data_inizio",
+          "data_fine",
+          "luogo",
+          "aliases",
+          "keywords",
+          "descrizione",
+          "created_at"
+        ]
+      }
+    },
+    "table_count": 2,
+    "index_count": 3,
+    "indexes": [
+      {
+        "name": "idx_event_links_evento",
+        "table": "event_links"
+      },
+      {
+        "name": "idx_event_links_target",
+        "table": "event_links"
+      },
+      {
+        "name": "sqlite_autoindex_eventi_1gm_1",
+        "table": "eventi_1gm"
+      }
+    ]
+  },
+  "validazioni_ai.db": {
+    "description": "DB validazioni AI",
+    "size_bytes": 94208,
+    "size_mb": 0.09,
+    "integrity": "ok",
+    "fk_issues": [
+      {
+        "table": "record_link_validations",
+        "rowid": 1,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 2,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 3,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 4,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 5,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 6,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 7,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 8,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 9,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 10,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 11,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 12,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 13,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 14,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 15,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 16,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 17,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 18,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 19,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 20,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 21,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 22,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 23,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 24,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 25,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 26,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 27,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 28,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 29,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 30,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 31,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 32,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 33,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 34,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 35,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 36,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 37,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 38,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 39,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 40,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 41,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 42,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 43,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 44,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 45,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 46,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 47,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 48,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 49,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 50,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 51,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 52,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 53,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 54,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 55,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 56,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 57,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 58,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 59,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 60,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 61,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 62,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 63,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 64,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 65,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 66,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 67,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 68,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 69,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 70,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 71,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 72,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 73,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 74,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 75,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 76,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 77,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 78,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 79,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 80,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 81,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 82,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 83,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 84,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 85,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 86,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 87,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 88,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 89,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 90,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 91,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 92,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 93,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 94,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 95,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 96,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 97,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 98,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 99,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 100,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 101,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 102,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 103,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 104,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 105,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 106,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 107,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 108,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 109,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 110,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 111,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 112,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 113,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 114,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 115,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 116,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 117,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 118,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 119,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 120,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 121,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 122,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 123,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 124,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 125,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 126,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 127,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 128,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 129,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 130,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 131,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 132,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 133,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 134,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 135,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 136,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 137,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 138,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 139,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 140,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 141,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 142,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 143,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 144,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 145,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 146,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 147,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 148,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 149,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 150,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 151,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 152,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 153,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 154,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 155,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 156,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 157,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 158,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 159,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 160,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 161,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 162,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 163,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 164,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 165,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 166,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 167,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 168,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 169,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 170,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 171,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 172,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 173,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 174,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 175,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 176,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 177,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 178,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 179,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 180,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 181,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 182,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 183,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 184,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 185,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 186,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 187,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 188,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 189,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 190,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 191,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 192,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 193,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 194,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 195,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 196,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 197,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 198,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 199,
+        "parent": "record_links",
+        "fkid": 0
+      },
+      {
+        "table": "record_link_validations",
+        "rowid": 200,
+        "parent": "record_links",
+        "fkid": 0
+      }
+    ],
+    "tables": {
+      "record_link_validations": {
+        "count": 200,
+        "columns": [
+          "id",
+          "link_id",
+          "cycle",
+          "ai_provider",
+          "verdict",
+          "score",
+          "reason",
+          "validated_at"
+        ]
+      }
+    },
+    "table_count": 1,
+    "index_count": 0,
+    "indexes": []
+  },
+  "imi_extractor.db": {
+    "description": "DB vuoto/legacy",
+    "size_bytes": 0,
+    "size_mb": 0.0,
+    "integrity": "ok",
+    "fk_issues": [],
+    "tables": {},
+    "table_count": 0,
+    "index_count": 0,
+    "indexes": []
+  }
+}

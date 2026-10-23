@@ -20,8 +20,10 @@ except ImportError:
 
 # ─── Provider config ───
 
+import os as _os
+
 PROVIDERS = {
-    "gpt": {"label": "OpenAI GPT-4o-mini", "model": "gpt-4o-mini"},
+    "gpt": {"label": "OpenAI GPT-4.1", "model": _os.environ.get("OPENAI_MODEL", "gpt-4.1")},
     "mistral": {"label": "Mistral Small", "model": "mistral-small-latest"},
     "perplexity": {"label": "Perplexity Sonar", "model": "sonar"},
     "claude": {"label": "Anthropic Claude Sonnet", "model": "claude-sonnet-4-5-20250929"},

@@ -140,7 +140,7 @@ def _match_score(a: str, b: str) -> float:
 
 def disambiguate_event(query: str) -> Dict[str, Any]:
     """Trova il miglior evento nel DB eventi_1gm; se ambiguo ritorna matches."""
-    from event_query_engine import DB as EDB
+    from event_query_engine import EDB
 
     matches = []
     if not Path(EDB).exists():
@@ -246,28 +246,78 @@ def _local_sources_context(canonical: str, limit: int = 10) -> List[Dict[str, An
     return enriched
 
 
-def _federated_sources_context(query: str, cues: Optional[Dict] = None, limit: int = 15) -> List[Dict[str, Any]]:
+def _build_source_summary(description: str, meta: Dict[str, Any]) -> str:
+    """Costruisce un riassunto di ~5 righe dal contenuto disponibile della fonte.
+
+    Usa descrizione, titolo, data, luogo e tipo per comporre un sommario
+    informativo anche quando la descrizione e' breve o assente.
+    """
+    parts = []
+    title = meta.get("title") or meta.get("titolo") or ""
+    if title:
+        parts.append(title)
+    if description:
+        desc = description.strip().replace("\n", " ")
+        if len(desc) > 300:
+            desc = desc[:297] + "..."
+        parts.append(desc)
+    else:
+        prov = meta.get("provider", "")
+        stype = meta.get("source_type") or meta.get("type", "")
+        date = meta.get("date") or meta.get("date_start", "")
+        if prov:
+            parts.append(f"Fonte: {prov}")
+        if stype:
+            parts.append(f"Tipo: {stype}")
+        if date:
+            parts.append(f"Data: {date}")
+    summary = " — ".join(parts)
+    if len(summary) > 400:
+        summary = summary[:397] + "..."
+    return summary
+
+
+def _federated_sources_context(
+    query: str,
+    cues: Optional[Dict] = None,
+    limit: int = 15,
+    event_data: Optional[Dict[str, Any]] = None,
+) -> List[Dict[str, Any]]:
     """Fonti dai provider esterni autorizzati."""
     try:
         from source_providers.federation import federated_search
+        from source_providers.base import build_federated_search_context
+
+        ctx = None
+        if event_data:
+            ctx = build_federated_search_context(
+                subject_type="event",
+                canonical_name=event_data.get("nome", query),
+                event_data=event_data,
+            )
+
         providers = ["nara", "antenati", "cwgc", "ussme", "archivio_stato",
-                     "europeana", "internetarchive"]
-        rows = federated_search(query, cues=cues, providers=providers)
+                     "europeana", "internetarchive", "gallica", "hathitrust",
+                     "googlebooks", "internetculturale"]
+        rows = federated_search(query, cues=cues, providers=providers, context=ctx)
     except Exception:
         rows = []
     out = []
     for r in rows:
         if r.get("error"):
             continue
+        raw_desc = (r.get("snippet") or r.get("description") or "")
+        summary = _build_source_summary(raw_desc, r)
         out.append({
             "source_id": r.get("provider", "FED"),
-            "title": r.get("title") or r.get("label") or query,
+            "title": r.get("title") or r.get("titolo") or r.get("label") or query,
             "author_or_institution": r.get("provider", ""),
-            "source_type": r.get("type", "fonte esterna"),
+            "source_type": r.get("source_type") or r.get("type", "fonte esterna"),
             "url": r.get("url") or r.get("direct_url") or r.get("catalog_url", ""),
-            "archive_reference": "",
-            "date": r.get("date", ""),
-            "excerpt": (r.get("snippet") or "")[:1200],
+            "archive_reference": r.get("provider_record_id", ""),
+            "date": r.get("date") or r.get("date_start", ""),
+            "excerpt": raw_desc[:1200],
+            "summary": summary,
             "authority": r.get("provider", "esterna"),
         })
     return out[:limit]
@@ -361,7 +411,7 @@ def _build_context(canonical: str, query: str, options: Dict[str, Any]) -> str:
         for s in local:
             parts.append(json.dumps(s, ensure_ascii=False, default=str))
 
-    fed = _federated_sources_context(canonical, cues=ev_ctx.get("cues"), limit=10)
+    fed = _federated_sources_context(canonical, cues=ev_ctx.get("cues"), limit=10, event_data=ev_ctx.get("evento"))
     if fed:
         parts.append("--- FONTI ESTERNE FEDERATE ---")
         for s in fed:
@@ -449,16 +499,29 @@ def _build_evidence_matrix(json_data: Dict[str, Any], sources: List[Dict[str, An
 
 TAB_INSTRUCTIONS = {
     "panoramica": (
-        "Concentrati su una scheda panoramica sintetica: titolo, guerra, teatro, date, località, "
-        "sintesi storica, schieramenti, esito e conseguenze. Mantieni il testo leggibile e conciso."
+        "Scrivi una panoramica storica DISCORSIVA e NARRATIVA, non una lista di punti. "
+        "Componi un testo fluido e articolato che racconti la storia dell'evento come un saggio storico breve: "
+        "contesto politico e strategico che porta all'evento, svolgimento delle operazioni in forma narrativa, "
+        "protagonisti e decisioni chiave, esito e conseguenze sul piano militare e politico. "
+        "Integra date, luoghi, numeri e nomi nel discorso, non come elenchi separati. "
+        "Usa paragrafi di 4-8 righe, con transizioni logiche tra le sezioni. "
+        "Cita le fonti nel testo tra parentesi quadre [ID] in modo naturale. "
+        "Lunghezza ideale: 600-1200 parole. Evita elenchi puntati se non strettamente necessario."
     ),
     "fonti": (
         "Concentrati sulle FONTI: per ogni fonte indica titolo, ente, tipologia, cosa sostiene, "
         "limitazioni e livello di autorevolezza. Costruisci la matrice delle evidenze e minimizza la narrazione."
     ),
     "punti_di_vista": (
-        "Concentrati su CONVERGENZE e DIVERGENZE tra le fonti. Presenta i dati concordanti, poi "
-        "i dati discordanti con le relative motivazioni e fonti. Usa la matrice delle evidenze per confrontare."
+        "Scrivi un'analisi COMPARATIVA DISCORSIVA delle fonti, non un elenco. "
+        "Identifica i temi chiave su cui le fonti convergono e divergono, e per ciascuno "
+        "costruisci un paragrafo narrativo che metta a confronto le diverse prospettive. "
+        "Discuti prima i dati concordanti (cosa emerge con sicurezza), poi le discordanze "
+        "(dove le fonti si contraddicono e perché), infine i silenzi (cosa nessuna fonte menziona). "
+        "Per ogni divergenza, spiega le possibili ragioni: differenza di periodo di redazione, "
+        "prospettiva nazionale, accesso a documenti diversi, strumentalizzazione politica. "
+        "Usa paragrafi di 4-8 righe con transizioni logiche. Cita le fonti nel testo [ID]. "
+        "Lunghezza ideale: 500-1000 parole. Evita elenchi puntati se non strettamente necessario."
     ),
     "cronologia": (
         "Concentrati sulla CRONOLOGIA: sequenza temporale dettagliata, fasi principali, date alternative "
@@ -476,8 +539,8 @@ TAB_PROVIDER = {
     "cronologia": "gpt",
 }
 
-# Ordine di fallback per i report evento: OpenAI -> Perplexity -> Anthropic -> Mistral.
-EVENT_RESEARCH_FALLBACK = ["gpt", "perplexity", "claude", "mistral"]
+# Ordine di fallback: OpenAI (attivo) -> Mistral (attivo) -> altri (quota esaurita).
+EVENT_RESEARCH_FALLBACK = ["gpt", "mistral", "perplexity", "claude"]
 
 
 def _build_prompt(canonical: str, context: str, tab: str) -> str:
@@ -510,8 +573,9 @@ def research_event(query: str, options: Optional[Dict[str, Any]] = None,
         }
 
     context = _build_context(canonical, query, options)
-    prompt = _build_prompt(canonical, context[:15000], tab)
-    sources = _local_sources_context(canonical, limit=15) + _federated_sources_context(canonical, limit=15)
+    prompt = _build_prompt(canonical, context[:30000], tab)
+    ev_ctx = _event_db_context(canonical)
+    sources = _local_sources_context(canonical, limit=15) + _federated_sources_context(canonical, limit=15, event_data=ev_ctx.get("evento"))
 
     if mode == "parallel":
         return _research_parallel(bio, canonical, query, tab, prompt, sources, dis)
