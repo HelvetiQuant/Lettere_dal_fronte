@@ -98,3 +98,7 @@ codex_handoff_archives_summary.txt
 .backfill_links_checkpoint.json
 .graph_sync_checkpoint.json
 backfill_links_run.log
+
+# Personal session dumps (contain auth tokens / private conversations)
+_lina_chat_estratto.txt
+_lina_log133_dump.txt

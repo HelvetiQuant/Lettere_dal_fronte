@@ -2,7 +2,7 @@
 
 ## Presentazione Commerciale per Enti Pubblici
 
-**Prodotto**: Voci dal Fronte — IMI Extractor | Versione 1.0 | Settembre 2026
+**Prodotto**: Voci dal Fronte | Versione 1.0 | Settembre 2026
 
 ---
 
