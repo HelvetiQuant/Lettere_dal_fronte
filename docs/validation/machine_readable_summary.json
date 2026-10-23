@@ -1,0 +1,103 @@
+{
+  "campaign_id": "validation_20260817_v1",
+  "completed_at": "2026-08-17T17:48:42.413353+00:00",
+  "verdict": "FAIL",
+  "metrics": {
+    "total_tests": 26,
+    "passed": 3,
+    "failed": 23,
+    "critical_failures": 17,
+    "pass_rate": 11.5,
+    "modules_implemented": 9,
+    "modules_in_decision_path": 0,
+    "module_integration_rate": 0.0,
+    "legacy_data": {
+      "total_legacy_links": 4059286,
+      "links_with_quarantine_columns": 1710869,
+      "links_without_quarantine_columns": 2349417,
+      "quarantine_columns_checked_by_orchestrator": 0,
+      "cross_war_contaminated_links": 12759,
+      "war_period_column_populated": 0,
+      "evidence_snapshots_persisted": 0
+    },
+    "security": {
+      "answer_evidence_gate_active": false,
+      "claim_status_filtering_in_narrator": "partial",
+      "claim_status_filtering_in_followup": false,
+      "temporal_barrier_in_pipeline": false,
+      "geographic_barrier_in_pipeline": false,
+      "source_lineage_db_backed": false,
+      "snapshot_persistence_active": false,
+      "provenance_chain_validated": false,
+      "post_generation_verification": "partial"
+    },
+    "risk_assessment": {
+      "legacy_data_becoming_verified": "HIGH — orchestrator doesn't check usable_as_evidence",
+      "cross_war_contamination": "HIGH — 12,759 WWII links in WWI DB, no temporal barrier in pipeline",
+      "rejected_claims_in_narration": "MEDIUM — REJECTED excluded by NarrationEvidenceSelector, but included in follow-up",
+      "unsupported_claims_as_fact": "HIGH — no AnswerEvidenceGate.verify_answer()",
+      "dependent_sources_as_independent": "MEDIUM — in-memory heuristic only, no DB lineage",
+      "cross_linked_fields_as_original": "HIGH — 4,448 internati with cross-linked fields, no provenance distinction",
+      "snapshot_reproducibility": "CRITICAL — _stage_persist is pass, 0 snapshots saved"
+    }
+  },
+  "module_integration": {
+    "evidence_contract": {
+      "implemented": true,
+      "in_decision_path": false,
+      "classification": "IMPLEMENTED_NOT_IN_DECISION_PATH"
+    },
+    "source_lineage_service": {
+      "implemented": true,
+      "in_decision_path": false,
+      "classification": "IMPLEMENTED_NOT_IN_DECISION_PATH"
+    },
+    "legacy_relation_adapter": {
+      "implemented": true,
+      "in_decision_path": false,
+      "classification": "IMPLEMENTED_NOT_IN_DECISION_PATH"
+    },
+    "answer_evidence_gate": {
+      "implemented": true,
+      "in_decision_path": false,
+      "classification": "IMPLEMENTED_NOT_IN_DECISION_PATH"
+    },
+    "evidence_snapshot_service": {
+      "implemented": true,
+      "in_decision_path": false,
+      "classification": "IMPLEMENTED_NOT_IN_DECISION_PATH"
+    },
+    "event_ontology_service": {
+      "implemented": true,
+      "in_decision_path": false,
+      "classification": "IMPLEMENTED_NOT_IN_DECISION_PATH"
+    },
+    "barriers_v73": {
+      "implemented": true,
+      "in_decision_path": false,
+      "classification": "IMPLEMENTED_NOT_IN_DECISION_PATH"
+    },
+    "narration_planner_v73": {
+      "implemented": true,
+      "in_decision_path": false,
+      "classification": "IMPLEMENTED_NOT_IN_DECISION_PATH"
+    },
+    "v7_quarantine": {
+      "implemented": true,
+      "in_decision_path": false,
+      "classification": "IMPLEMENTED_NOT_IN_DECISION_PATH"
+    }
+  },
+  "critical_findings_count": 10,
+  "total_tests": 26,
+  "tests_passed": 3,
+  "tests_failed": 23,
+  "critical_test_failures": 17,
+  "legacy_data_total_links": 4058286,
+  "legacy_data_quarantined": 1708869,
+  "legacy_data_quarantine_checked_by_orchestrator": 0,
+  "cross_war_contaminated_links": 12759,
+  "evidence_snapshots_persisted": 0,
+  "modules_in_decision_path": 0,
+  "modules_implemented": 9
+}

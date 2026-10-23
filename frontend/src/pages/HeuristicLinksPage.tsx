@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Network, Check, X, Info } from 'lucide-react';
 import { api } from '@/api/client';
@@ -6,6 +6,7 @@ import { ApiError } from '@/api/errors';
 import type { InternatiLinksResponse, EntitaDetailResponse } from '@/api/types';
 import { Card, Tag, Input, Button, LoadingState, ErrorState, EmptyState } from '@/components/feedback/States';
 import { PageIntro, Section } from '@/components/layout/PageIntro';
+import { ForceGraph, type GraphNodeData, type GraphEdgeData } from '@/components/graph/ForceGraph';
 
 interface GraphNode {
   id: string;
@@ -163,16 +164,30 @@ export function HeuristicLinksPage() {
             </Card>
           </Section>
 
+          <Section title="Grafo interattivo">
+            <ForceGraph
+              nodes={filteredNodes as GraphNodeData[]}
+              edges={filteredEdges as GraphEdgeData[]}
+              minHeight={750}
+              maxHeight={90}
+            />
+          </Section>
+
           <Section title={`Nodi (${filteredNodes.length})`}>
-            <div className="grid grid--auto">
-              {filteredNodes.map((n) => (
-                <Card key={n.id}>
-                  <Tag variant="accent">{NODE_TYPE_LABELS[n.type] || n.type}</Tag>
-                  <div style={{ fontWeight: 600, marginTop: 6 }}>{n.label}</div>
-                  <div className="text-xs text-muted">{n.id}</div>
-                </Card>
-              ))}
-            </div>
+            <details>
+              <summary className="text-sm text-muted" style={{ cursor: 'pointer', padding: 'var(--s-1) 0' }}>
+                Mostra elenco nodi
+              </summary>
+              <div className="grid grid--auto" style={{ marginTop: 'var(--s-2)' }}>
+                {filteredNodes.map((n) => (
+                  <Card key={n.id}>
+                    <Tag variant="accent">{NODE_TYPE_LABELS[n.type] || n.type}</Tag>
+                    <div style={{ fontWeight: 600, marginTop: 6 }}>{n.label}</div>
+                    <div className="text-xs text-muted">{n.id}</div>
+                  </Card>
+                ))}
+              </div>
+            </details>
           </Section>
 
           <Section title={`Collegamenti (${filteredEdges.length})`}>

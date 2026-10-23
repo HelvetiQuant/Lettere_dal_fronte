@@ -36,7 +36,7 @@ class ProviderAntenati(SourceProvider):
         "cittadinanza": "Cittadinanza",
     }
 
-    def search(self, query: str, filters: dict = None) -> List[dict]:
+    def search(self, query: str, filters: dict = None, *, context=None) -> List[dict]:
         """Cerca registri per comune + anno + tipologia.
         Non cerca per nome (gli allegati non hanno indici nominativi affidabili).
         """

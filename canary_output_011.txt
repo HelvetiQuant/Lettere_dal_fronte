@@ -1,0 +1,38 @@
+# Rapporto di Ricerca — snap_v7_8d6b722bfafea66e
+Versione schema: 7
+Intent: AGGREGATE_QUERY
+Target: temporal_distribution_caduti
+Contratto Narratore: 7.1
+
+## Risoluzione Identità: UNRESOLVED
+## Corroborazione Esterna: NONE
+
+## Risultato Aggregato
+  Definizione: agg_d421bd6c53a02815
+  Nome: temporal_distribution_caduti
+  Righe: 8
+  - {'anno_morte': '1914', 'count': 13}
+  - {'anno_morte': '1915', 'count': 50981}
+  - {'anno_morte': '1916', 'count': 78350}
+  - {'anno_morte': '1917', 'count': 86221}
+  - {'anno_morte': '1918', 'count': 98753}
+  - {'anno_morte': '1919', 'count': 12885}
+  - {'anno_morte': '1920', 'count': 4317}
+  - {'anno_morte': '1921', 'count': 2}
+
+## Limitazioni
+  - NO_AI_PROVIDER: No AI provider available for narration. Using deterministic fallback.
+
+---
+## Provenienza
+- Snapshot: snap_v7_8d6b722bfafea66e
+- Schema: 7
+- Narrator Contract: 7.1
+- Identity Resolution: UNRESOLVED
+- External Corroboration: NONE
+- Provider Ledger: 0 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.

@@ -1,0 +1,41 @@
+# Rapporto di Ricerca — snap_v7_97125d53f410801d
+Versione schema: 7
+Intent: AGGREGATE_QUERY
+Target: count_internati_by_campo
+Contratto Narratore: 7.1
+
+## Risoluzione Identità: UNRESOLVED
+## Corroborazione Esterna: NONE
+
+## Risultato Aggregato
+  Definizione: agg_84e16c7c1b26533f
+  Nome: count_internati_by_campo
+  Righe: 50
+  - {'luogo_internamento': 'Berlino', 'count': 384}
+  - {'luogo_internamento': 'Hannover', 'count': 254}
+  - {'luogo_internamento': 'Amburgo', 'count': 247}
+  - {'luogo_internamento': 'Linz', 'count': 186}
+  - {'luogo_internamento': 'Vienna', 'count': 166}
+  - {'luogo_internamento': 'Gusen', 'count': 164}
+  - {'luogo_internamento': 'Wassungen', 'count': 159}
+  - {'luogo_internamento': 'Kassel', 'count': 115}
+  - {'luogo_internamento': 'Lipsia', 'count': 110}
+  - {'luogo_internamento': 'lager 38 Reni Russia Bessarabia', 'count': 98}
+  ... e altre 40 righe
+
+## Limitazioni
+  - NO_AI_PROVIDER: No AI provider available for narration. Using deterministic fallback.
+
+---
+## Provenienza
+- Snapshot: snap_v7_97125d53f410801d
+- Schema: 7
+- Narrator Contract: 7.1
+- Identity Resolution: UNRESOLVED
+- External Corroboration: NONE
+- Provider Ledger: 0 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.

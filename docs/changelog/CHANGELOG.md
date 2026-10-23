@@ -1,5 +1,1315 @@
 # CHANGELOG - IMI Extractor
 
+## 2026-10-12 — Grafo canonico + Backfill reale + War-period data-verified + Arolsen
+
+### Grafo canonico popolato e sincronizzato
+- `populate_graph.py`: materializzazione additiva da entita/collegamenti/record_links/event_links
+- Locale: **1.513.299 graph_nodes**, **4.058.351 graph_edges**
+- `sync_graph_to_supabase.py`: sync batch con checkpoint restartabile — **0 errori**
+- Remoto verificato: 1.513.299 nodi + 4.058.351 archi (pari al locale)
+
+### Backfill canonical schema — migrazioni reali implementate
+Le funzioni erano stub count-only; ora eseguono INSERT reali idempotenti:
+- `evidence.link_quarantine`: **1.708.934 righe** (event_links + record_links, checkpoint/resume)
+- `archive.external_items`: 1.146 | `evidence.claims`: 51 | `ai.datasets`: 7 | `archive.repositories`: NARA
+
+### War-period corretto su dati reali (errore storico fixato)
+| Tabella | Prima | Ora | Prova |
+|---------|-------|-----|-------|
+| caduti_ministero | WWII | **WWI** | anno_morte 1914-1921, difesa.it/assets/albooro = Albo d'Oro Grande Guerra |
+| decorati_nastroazzurro | WWI | **BOTH** | 37% decorazioni >= 1939 |
+| caduti_albooro | WWI | WWI | confermato (morti 1915-1921) |
+
+Allineati: `person_source_schemas.py`, `v7_identity_model.py` (TABLE_WAR_PERIOD), `run_regression_v73.py`, `test_person_v73_fix.py`.
+
+### Regression benchmark V7.3 — 17/23 PASS
+- no_errors 23/23, homonyms_handled 23/23 (9 omonimi respinti), no_legacy_leakage 23/23, war_period_set 23/23
+- Fix check: accettati stati terminali v7.2 {RESOLVED, PARTIAL, UNRESOLVED} — UNRESOLVED su nomi oscuri e' comportamento corretto
+- Fix invariante quarantine: righe = quarantined OR verified (65 link VERIFIED da AUSTRIAN_IMPORT/ussme_import legittimi)
+
+### Arolsen enrichment LeBI (in corso, checkpoint)
+- `enrich_lebi_arolsen.py`: match storico nome+dob/varianti traslitterazione (CESARE->Cesar, ORESTE->Oresto)
+- Tabella `arolsen_matches` dedicata — provenance separata, colonna canonica non toccata
+- Parziale: ~930/2.640 linked record, ~1.860 match, 15 matricole prigioniero reali trovate
+
+---
+
+## 2026-10-12 — Fix priorità 2: Supabase schema/core, snapshot persist, skip list, cross-link matricola
+
+### Cross-link internati↔lebi (nuovo script `cross_link_lebi_v2.py`)
+- Semantica verificata: `internati.matricola` = numero prigioniero ↔ `lebi.matricola_cattura`
+- 4 nuovi link matricola+nome; 2.401 enrichment (1.315 prigioniero, 554 Arb.Kdo, 482 militari)
+- Nuova colonna `internati.matricola_militare` — domini separati correttamente
+
+### Supabase
+- `internati`: +14 colonne remote, full upsert 20.465 righe (0 errori)
+- Schema `core` esposto via `ALTER ROLE authenticator SET pgrst.db_schemas` + reload
+- Verificato remoto: event_links 2.7M, lebi_records 166K, caduti/decorati completi
+
+### Persistenza snapshot V7.8 (execute_followup sopravvive a restart)
+- `_stage_persist`: salva `EvidenceSnapshotV7` su tabella `research_snapshots` (imi_internati.db)
+- `execute_followup`: fallback `_load_snapshot_from_db` se run non in memoria
+- TTL 30 giorni automatico
+
+### AI
+- `ai_client.py`: GEMINI_MODEL default → `gemini-flash-lite-latest` (unico provider funzionante)
+- OpenAI/Anthropic/Mistral/Perplexity ancora non operativi (quota/chiave)
+
+### Qualità
+- `v7_narrator.py`: skip list +Ancona, Germania, Austria, Polonia, storia/contesto
+
+### Docs
+- `docs/LEBI_IMI_ARCHIVE.md` §3bis: semantica matricole + risultati cross-link
+- `docs/todo/TODO.md`: sezioni A/D aggiornate a stato reale
+- `ARCHITECTURE.md` root: ripristinato (era corrotto a "v")
+
+---
+
+## 2026-10-04 — Banca dati LeBI IMI: matricole divise, impiego, archivio definitivo
+
+### Schema dati (SQLite `imi_internati.db` + Supabase `lebi_records`)
+- `matricola` → rinominata `matricola_militare` (matricola Distretto/Marina/GdF/Aeronautica/Carabinieri)
+- `numero_interno_campo` → rinominata `matricola_cattura` (matricola da prigioniero)
+- Nuova colonna `impiego` — voci `Arb. Kdo.`/`impiegato...` estratte da `campi_internamento`
+- `campi_internamento` pulito: solo campi di prigionia, voci lavoro spostate in `impiego`
+- `matricola_cattura` esportata come solo numeri (label `Matricola ...:` rimossa)
+
+### Classificazione (parser section-aware)
+- `Matricola:` generica in sezione CATTURA/INTERNAMENTO → `matricola_cattura` (59.738)
+- Label militari in POSIZIONE MILITARE → `matricola_militare` (45.027)
+- `Matricola <campo>:` (Stalag/KZ/Dachau) → `matricola_cattura`
+- Mai inferire prigioniero da codice campo (es. `Stalag 307`)
+
+### Conteggi finali
+- Record: 166.112 | Militare: 45.027 | Cattura: 59.738 | Impiego: 17.347
+- Verifiche: 20/20 assegnazioni corrette su pagine live, 0 errori push Supabase
+
+### Export
+- `C:\Users\eryma\Downloads\lebi_export_MATRICOLE_IMPIEGO_20261004.xlsx` (unico file valido)
+- 27 colonne, wrap text, filtri, freeze riga 1, ordine cognome→nome
+
+### File
+- Nuovo: `push_lebi_matricole_supabase.py`, `docs/LEBI_IMI_ARCHIVE.md` (documento archivio)
+- Aggiornati: `import_lebi_bulk.py`, `update_lebi_matricole.py`, `sync_lebi_to_supabase.py`,
+  `cross_link_safe.py`, `populate_internati_v2.py` (alias `matricola_militare AS matricola`)
+- Eliminati: 8 export Excel obsoleti da Downloads
+
+### Riferimento
+Documento completo archivio: `docs/LEBI_IMI_ARCHIVE.md`
+
+## 2026-08-20 — USSME Sources + Viewpoints V2 + Cross-Faction Caporetto
+
+### Contesto
+Integrazione delle fonti dell'Ufficio Storico Stato Maggiore dell'Esercito (USSME) nel sistema, con particolare focus sull'evento Caporetto (event_id=16). Implementazione del sist ema viewpoints v2 per la ricostruzione storica comparativa multi-fazione, e completamento dell'architettura evidence-centric (Fasi 2-7).
+
+### Fonti USSME importate (49 record)
+
+| Collezione | Piattaforma | Documenti |
+|------------|-------------|-----------|
+| L'Esercito Italiano nella Grande Guerra (7 voll., 37 tomi) | issuu.com | 39 tomi |
+| Dall'Isonzo al Piave — Commissione d'Inchiesta (1919) | Internet Archive | 2 voll. |
+| Inventario Fondo H-4 (Gionfrida, 2015) | difesa.it / archive.org | 2 |
+| I Reparti d'Assalto Italiani (1915-18) | Internet Archive | 1 |
+| La Grande Guerra Segreta — Communication Intelligence | musei.difesa.it | 1 |
+| Esercito Italiano 1961 — Storia generale | Internet Archive | 1 |
+| Archivio Fotografico USSME | esercito.difesa.it | 1 |
+| Fondo H-4 — Documenti archivistici | AUSSME Roma | 1 |
+
+- 48 documenti linkati a event_id=16 (Caporetto) con `status=VERIFIED`, `usable_as_evidence=1`, `war_period=WWI`
+- Confidence: 0.95 (Vol. IV, Commissione d'Inchiesta), 0.90 (Caporetto keyword), 0.85 (Isonzo), 0.70 (grande_guerra collection)
+
+### Viewpoints V2 — Ricostruzione Comparativa
+
+Sistema di ricostruzione storica multi-fazione che raggruppa fonti per allineamento politico-militare (ITALIAN, GERMAN, AUSTRO_HUNGARIAN, UNKNOWN), estrae claim strutturati, identifica fatti comuni, divergenze e omissioni.
+
+**Risultati test Caporetto (event_id=16):**
+
+| Fazione | Fonti | Claim | Narrative |
+|---------|-------|-------|-----------|
+| ITALIAN | 467 | 424 | 5730 char |
+| GERMAN | 28 | 18 | 104 char |
+| AUSTRO_HUNGARIAN | 3 | 2 | 112 char |
+| UNKNOWN | 2 | 2 | 103 char |
+
+- **Common Ground**: 0 fatti comuni (divergenza totale tra fazioni)
+- **Divergences**: 2 (location_reference: 27 fonti, date_reference: 11 fonti)
+- **Omissions**: 446 (ITALIAN menziona Piave/Caporetto/Bari/Tolmino non menzionati da altre fazioni)
+
+**Provider per fazione:**
+- ITALIAN: USSME (42), USSME-SMD (1), WikimediaCommons (11), OeNB-ANNO (4), + 408 legacy
+- GERMAN: WikimediaCommons (12), USSME (4), KriegsarchivWien (4), LibraryOfCongress (2), Europeana (3), BayerischesHauptstaatsarchiv (1)
+- AUSTRO_HUNGARIAN: OeNB-ANNO (2), Europeana (1)
+- UNKNOWN: InternetArchive (2)
+
+### File creati
+
+| File | Descrizione |
+|------|-------------|
+| `import_ussme_sources.py` | Import metadata USSME (39 tomi EIGG + 2 Commissione + 4 altre pub.) |
+| `_link_ussme_to_caporetto.py` | Link 48 documenti USSME a event_id=16 |
+| `source_faction_classifier.py` | Classificatore fazione per provider (USSME=ITALIAN, Kriegsarchiv=AUSTRO_HUNGARIAN, ecc.) |
+| `viewpoints_service_v2.py` | Servizio ricostruzione comparativa multi-fazione |
+| `viewpoint_models.py` | Modelli tipizzati (FactionBundle, CommonFact, Divergence, Omission) |
+| `comparative_narrator.py` | Narratore comparativo con AI (Mistral/OpenAI) + fallback deterministico |
+| `common_fact_resolver.py` | Risoluzione fatti comuni tra fazioni (CROSS_FACTION_CONFIRMED, COMPATIBLE) |
+| `divergence_engine.py` | Rilevamento divergenze tra fazioni (UNKNOWN_CONFLICT, CONTRADICTION) |
+| `omission_detector.py` | Rilevamento omissioni (cosa una parte racconta e l'altra no) |
+| `faction_bundle_builder.py` | Costruttore bundle per fazione con classificazione fonti |
+| `evidence_contract.py` | 10 invarianti architetturali evidence-centric |
+| `source_lineage_service.py` | Lineage registry + independence scoring |
+| `legacy_relation_adapter.py` | Adapter legacy → canonical con quarantine |
+| `answer_evidence_gate.py` | Gate pre/post generazione AI |
+| `evidence_snapshot_service.py` | Persistenza snapshot con hash integrità |
+| `event_ontology_service.py` | Gerarchia eventi con parent_event_id |
+| `import_austrian_sources.py` | Import fonti austro-tedesche (Kriegsarchiv, ÖNB ANNO, Bayerisches) |
+
+### File modificati
+
+| File | Modifica |
+|------|----------|
+| `archivio_documenti.py` | +8 collezioni USSME in SOURCES, +entry austro-tedesche |
+| `config/archive_providers.yml` | Provider USSME, Kriegsarchiv, ÖNB-ANNO, Bayerisches |
+| `viewpoints_api.py` | Endpoint V2: POST /v2/create, GET /v2/{event_id} |
+| `linking/schema_v2.py` | Fix _safe_alter() comment parsing, CHECK constraint |
+
+### Evidence-Centric Architecture (Fasi 2-7)
+
+Migrazione da pipeline V7 ad modello evidence-centric: SOURCE → OBSERVATION → EVIDENCE → CLAIM → RELATION → ANSWER.
+
+- **Fase 2**: Evidence Contract (10 invarianti, ClaimStatus 8 livelli)
+- **Fase 3**: Source Lineage (12 lineages, independence scoring DB-backed)
+- **Fase 4**: Legacy Quarantine (3 tabelle legacy, gate revalidazione, non-distruttivo)
+- **Fase 5**: AnswerEvidenceBundle (pre/post generation gate, context_hash + answer_hash)
+- **Fase 6**: EvidenceSnapshot Persistente (save/load/verify, idempotente)
+- **Fase 7**: Event Ontology Gerarchica (parent_event_id, alias, ciclo detection)
+- **Totale test**: 64 (10+9+10+10+15+10)
+
+### Documentazione nuova
+
+- `docs/architecture/EVIDENCE_CONTRACT.md`
+- `docs/architecture/SOURCE_LINEAGE.md`
+- `docs/architecture/LEGACY_QUARANTINE.md`
+- `docs/architecture/ANSWER_EVIDENCE_BUNDLE.md`
+- `docs/architecture/EVIDENCE_SNAPSHOT_PERSISTENT.md`
+- `docs/architecture/EVENT_ONTOLOGY.md`
+- `docs/architecture/EVIDENCE_MODEL.md`
+- `docs/analysis/EVIDENCE_ARCHITECTURE_AUDIT.md`
+- `docs/audit/AUDIT_LOG_EVIDENCE_CENTRIC.md`
+- `docs/validation/INTEGRATION_AUDIT.md`
+
+---
+
+## 2026-08-17 — Evidence-Centric Architecture: Fasi 2-7
+
+### Contesto
+Migrazione dell'architettura da pipeline V7 ad modello evidence-centric: SOURCE → OBSERVATION → EVIDENCE → CLAIM → RELATION → ANSWER. Implementazione sequenziale di 6 fasi con 64 test totali.
+
+### Fasi completate
+
+#### Fase 2: Evidence Contract (`evidence_contract.py`)
+- 10 invarianti architetturali (no claim without evidence, no AI answer without bundle, ecc.)
+- Dataclass: `SourceRef`, `ObservationRef`, `EvidenceRef`, `ClaimRef`, `RelationRef`, `AnswerEvidenceBundle`
+- `ClaimStatus` (8 livelli): unsupported → candidate → supported → probable → verified / disputed / rejected
+- `EvidenceContract` validator con `build_answer_bundle()` e `to_prompt_context()`
+- Documentazione: `docs/architecture/EVIDENCE_CONTRACT.md`
+
+#### Fase 3: Source Lineage (`source_lineage_service.py`)
+- `LineageRegistry`: CRUD per `source_lineages` / `source_lineage_members`
+- `LineageBootstrap`: 12 lineages da `source_authority_registry` (ANRP, CICR, Ministero Difesa, Albo d'Oro, CWGC, ecc.)
+- `LineageAwareAssessor`: DB-backed independence scoring (same lineage = 0.05-0.2, different = 0.9)
+- `LineageSync`: sincronizza `SourceFamilyGraph` → DB
+- 10/10 test PASS
+- Documentazione: `docs/architecture/SOURCE_LINEAGE.md`
+
+#### Fase 4: Legacy Quarantine (`legacy_relation_adapter.py`)
+- `LegacyRelationAdapter`: scan, import, revalidation, quarantine report
+- 3 tabelle legacy gestite: `record_links`, `collegamenti`, `event_links`
+- Gate di revalidazione: confidence + temporal + identity → accepted/needs_review/rejected
+- Safety checks: `is_safe_for_verified()`, `is_safe_for_ai_context()`
+- Non-distruttivo, reversibile, idempotente
+- Fix schema: `temporal_gate`/`identity_gate` CHECK constraint + `_safe_alter()` parsing
+- 9/9 test PASS
+- Documentazione: `docs/architecture/LEGACY_QUARANTINE.md`
+
+#### Fase 5: AnswerEvidenceBundle (`answer_evidence_gate.py`)
+- `AnswerEvidenceGate`: converte `EvidenceSnapshotV7` → `AnswerEvidenceBundle`
+- Mapping status ClaimV7 → EvidenceContract (10 mapping)
+- Pre-generation gate: `validate_bundle()` (VERIFIED senza evidence, REJECTED in verified)
+- Post-generation gate: `verify_answer()` (UNSUPPORTED as fact, REJECTED mentioned, DISPUTED without conflict)
+- AI prompt generation con `context_hash` + `answer_hash`
+- Authority tier inference da provider name
+- 10/10 test PASS
+- Documentazione: `docs/architecture/ANSWER_EVIDENCE_BUNDLE.md`
+
+#### Fase 6: EvidenceSnapshot Persistente (`evidence_snapshot_service.py`)
+- `EvidenceSnapshotService`: save/load/list/link/verify/delete
+- `save_snapshot()`: serializza con `context_hash` + `answer_hash`
+- `load_snapshot()`: deserializza → `EvidenceSnapshotV7`
+- `verify_integrity()`: ricalcola hash e verifica
+- Idempotente: stesso contenuto → stesso hash → no duplicati
+- `link_relations()`: collega relazioni via `snapshot_id` FK
+- 10/10 test PASS
+- Documentazione: `docs/architecture/EVIDENCE_SNAPSHOT_PERSISTENT.md`
+
+#### Fase 7: Event Ontology Gerarchica (`event_ontology_service.py`)
+- `EventOntologyService`: gerarchia eventi con `parent_event_id` persistente
+- Query: `get_children()`, `get_descendants()`, `get_ancestors()`, `get_siblings()`, `get_full_tree()`
+- Management: `set_parent()`, `remove_parent()` con validazione
+- Alias management: `add_alias()`, `get_aliases()`, `remove_alias()`
+- Validazioni: ciclo detection, contenimento temporale, tipo gerarchia (campaign > battle > phase > skirmish)
+- `bootstrap_from_resolver()`: popola da `event_resolver.py` HIERARCHY dict
+- 15/15 test PASS
+- Documentazione: `docs/architecture/EVENT_ONTOLOGY.md`
+
+### Moduli nuovi (6)
+| File | Class | Test |
+|------|-------|------|
+| `evidence_contract.py` | `EvidenceContract`, `ClaimRef`, `AnswerEvidenceBundle` | — |
+| `source_lineage_service.py` | `LineageRegistry`, `LineageBootstrap`, `LineageAwareAssessor` | 10 |
+| `legacy_relation_adapter.py` | `LegacyRelationAdapter` | 9 |
+| `answer_evidence_gate.py` | `AnswerEvidenceGate` | 10 |
+| `evidence_snapshot_service.py` | `EvidenceSnapshotService` | 10 |
+| `event_ontology_service.py` | `EventOntologyService` | 15 |
+
+### Moduli modificati (1)
+| File | Modifica |
+|------|----------|
+| `linking/schema_v2.py` | Fix `_safe_alter()` comment parsing; fix `temporal_gate`/`identity_gate` CHECK constraint (aggiunto 'unknown') |
+
+### Documentazione nuova (6)
+- `docs/architecture/EVIDENCE_CONTRACT.md`
+- `docs/architecture/SOURCE_LINEAGE.md`
+- `docs/architecture/LEGACY_QUARANTINE.md`
+- `docs/architecture/ANSWER_EVIDENCE_BUNDLE.md`
+- `docs/architecture/EVIDENCE_SNAPSHOT_PERSISTENT.md`
+- `docs/architecture/EVENT_ONTOLOGY.md`
+
+### Totale test: 54 (10+9+10+10+15)
+
+---
+
+## 2026-08-14 — V7.8: Conversational Follow-Up via OpenAI Chat Completions
+
+### Funzionalità
+Il sistema supporta ora domande di follow-up conversazionali che riutilizzano lo snapshot e i claim di una ricerca precedente, senza dover ri-eseguire l'intera pipeline V7.
+
+### Implementazione
+
+| File | Modifica |
+|------|----------|
+| `ai_client.py` | `call_ai_chat()` — Multi-turn chat con OpenAI/Mistral/Anthropic, messages array con conversation history, fallback provider |
+| `ai_client.py` | `_call_openai_chat()`, `_call_mistral_chat()`, `_call_anthropic_chat()` — Provider-specific multi-turn implementations |
+| `unified_orchestrator_v7.py` | `execute_followup()` — Recupera snapshot da run precedente, costruisce system prompt con claim/evidenze, chiama `call_ai_chat` |
+| `unified_orchestrator_v7.py` | `_build_followup_system_prompt()` — Template con claim documentali, contesto, report precedente, regole anti-allucinazione |
+| `v7_api.py` | `POST /api/v7/followup` — Endpoint con `run_id`, `question`, `conversation_history` |
+
+### API
+
+```
+POST /api/v7/followup
+{
+  "run_id": "run_v7_...",
+  "question": "Puoi darmi i dettagli non documentati?",
+  "conversation_history": [
+    {"role": "user", "content": "Luigi Gaiaschi"},
+    {"role": "assistant", "content": "Luigi Gaiaschi fu..."}
+  ]
+}
+```
+
+### Test
+- Luigi Gaiaschi: ricerca iniziale (gpt-4o, 17.8s) → follow-up "dettagli non documentati" (gpt-4o-mini, 3.8s) → follow-up "fonti cattura Grecia" (gpt-4o-mini, 3.8s)
+- Risposte context-aware, anti-allucinazione, citazione fonti [ID]
+
+---
+
+## 2026-08-13 — V7.8: Fix Contaminazione Cross-War e Name Parsing
+
+### Contesto
+La pipeline V7.2 restituiva risultati completamente errati per ricerche di persone WWII (es. "Luigi Gaiaschi"): claim da tabelle WWI (`caduti_albooro`, `decorati_nastroazzurro`) venivano inclusi nei dossier WWII, causando narrazioni storiche inaccurate con dati della Prima Guerra Mondiale attribuiti a internati della Seconda.
+
+### Problemi identificati (6 root cause)
+
+1. **Case sensitivity SQLite** — `v7_provider_adapters.py` e `unified_orchestrator_v7.py` usavano query `=` con nome in case misto ("Gaiaschi") ma il DB memorizza uppercase ("GAIASCHI"). SQLite `=` è case-sensitive per TEXT → nessun match trovato.
+
+2. **Assunzione ordine nome** — Tutti i componenti assumevano `parts[0]=cognome, parts[1:]=nome`. L'utente digita "Luigi Gaiaschi" (nome cognome) ma il DB ha cognome="GAIASCHI", nome="LUIGI" → match mancante.
+
+3. **Legacy fallback per PERSON_LOOKUP** — `unified_orchestrator_v7.py:604-609`: quando `classify_observation` restituiva `IRRELEVANT` (nome non corrisponde), il legacy `resolve_observation` promuoveva comunque il record a `SOURCE_CANDIDATE` se aveva un cognome → claim WWI di omonimi inclusi.
+
+4. **war_period errato in schema** — `person_source_schemas.py`: `caduti_albooro` e `decorati_nastroazzurro` erano classificati `WAR_PERIOD_WWII` invece di `WAR_PERIOD_WWI` → bypass dei filtri temporali.
+
+5. **`lebi_records` mancante in `TABLE_WAR_PERIOD`** — `v7_identity_model.py`: la tabella non era mappata → war_period default "UNKNOWN".
+
+6. **Web observations senza filtro WWI** — Observation da web search contenenti marker WWI (1915-1918, Caporetto, Isonzo, Piave) non venivano filtrate per target WWII.
+
+### Soluzioni applicate
+
+| File | Modifica |
+|------|----------|
+| `v7_provider_adapters.py` | Uppercase di cognome/nome/query; tentativo entrambi ordini (standard + reversed) per full-name e surname match |
+| `unified_orchestrator_v7.py` | Uppercase in `_lookup_origin_record` e `_stage_extract`; rilevamento ordine nome via DB lookup; filtro WWI marker su web obs per target WWII; skip legacy fallback per PERSON_LOOKUP |
+| `v7_identity_model.py` | Aggiunto `lebi_records: WWII` in `TABLE_WAR_PERIOD`; match reversed name in `classify_observation` |
+| `person_source_schemas.py` | Corretto `caduti_albooro` → `WAR_PERIOD_WWI`, `decorati_nastroazzurro` → `WAR_PERIOD_WWI` |
+
+### Risultati verificati (Luigi Gaiaschi)
+- **Before**: 63 person claims da 8 tabelle diverse (WWI+WWII), identity UNRESOLVED, narrazione con dati Caporetto/Isonzo/Piave
+- **After**: 5 person claims esclusivamente da `internati:22808` (WWII), identity RESOLVED_IDENTITY, zero contaminazione WWI
+- **Narrative**: AI discorsiva via gpt-4o (5 blocchi, 18.4s) con contesto storico Operazione Achse, divergenza fonti Belgrado/Grecia, conferma luogo nascita Nibbiano
+
+### Fix hallucination check (V7.8-FIX)
+Il narratore AI (`v7_narrator.py`) falliva la hallucination check su "19" (estratto da "1912") e "Grecia" (presente nel `source_text` claim) → fallback a deterministic. Root cause: `_post_gen_hallucination_check` raccoglieva date/luoghi/nomi solo da predicati strutturati (`birth_date`, `birth_place`, ecc.) ignorando `source_text`, `date_note`, `data_quality_note`.
+
+**Fix** (`v7_narrator.py:1198-1237`): estrazione date (`(18|19)\d{2}`), luoghi (capitalized words ≥4 chars) e nomi anche da `source_text`, `date_note`, `data_quality_note`. L'AI ora genera correttamente la narrazione discorsiva senza false-positive.
+
+### Warning residui (non bloccanti, ≤5)
+L'hallucination check flagga ancora parole italiane comuni come "Molti", "Internati", "Tuttavia" come `HALLUCINATED_PLACE_OR_NAME`. Da aggiungere alla skip list in `v7_narrator.py:1245-1265`.
+
+---
+
+## 2026-08-12 — V7.6: Cross-Linking Sicuro con Reversibilità
+
+### Contesto
+I record `internati` (20.465) avevano copertura molto bassa per campi chiave: `data_nascita` 4%, `luogo_nascita` 1%, `grado` 28%, `reparto` 26%. Le tabelle `lebi_records` (166K), `caduti_ministero` (162K) e `decorati_nastroazzurro` (280K) contengono dati militari e biografici completi per le stesse persone. Obiettivo: arricchire `internati` con dati verificabili, senza mescolare omonimi.
+
+### Problema identificato
+Il primo tentativo (`populate_internati_v2.py`) usava match deboli (`fuzzy_first3`, `name_unique` senza validazione anno) che hanno prodotto **278 record con anno di nascita implausibile** (< 1890 o > 1928) — probabili omonimi di altre epoche. Nessun tracciamento delle modifiche: operazione non reversibile.
+
+### Soluzione: cross-linking sicuro con audit table
+
+#### 1. Audit table (`cross_link_audit`)
+Tabella SQLite che traccia ogni singola modifica con:
+- `internati_id`, `column_name`, `old_value`, `new_value`
+- `source_table`, `source_record_id` (provenienza del dato)
+- `match_method`, `match_score` (strategia di matching usata)
+- `reverted`, `reverted_at` (per rollback)
+- `created_at` (timestamp)
+
+#### 2. Script `cross_link_safe.py` — 4 comandi
+```
+python cross_link_safe.py --audit    # Registra baseline (valori pre-cross-link)
+python cross_link_safe.py --run      # Esegue cross-linking sicuro (solo match forti)
+python cross_link_safe.py --revert   # Reverte tutte le modifiche (ripristina old_value)
+python cross_link_safe.py --status   # Mostra stato audit (attivi/revertiti per metodo)
+```
+
+#### 3. Strategie di matching (solo sicure)
+| Metodo | Score | Requisiti |
+|--------|-------|-----------|
+| `name+year` | 100 | Cognome+nome esatto + stesso anno di nascita in entrambe le tabelle |
+| `name+place` | 90 | Cognome+nome esatto + stesso luogo di nascita |
+| `name_unique+year_verified` | 85 | Nome esatto + candidato unico + anno coincide |
+| `name_unique+lebi_year_plausible` | 75 | Nome esatto + candidato unico in LeBI + anno WWII plausibile (1895-1928) |
+| `name_ambiguous+single_plausible_year` | 70 | Nome esatto + multipli candidati ma solo 1 con anno WWII plausibile |
+| `name+deco_year_wwii` | 90 | Nome esatto + anno decorazione 1940-1947 |
+
+**Strategie escluse** (troppo rischiose): `fuzzy_first3`, `name_unique` senza validazione anno, `cognome_single_partial`.
+
+#### 4. Regole anti-mixing
+- **Solo nome esatto**: niente fuzzy matching, niente prefissi parziali
+- **Validazione anno WWII**: filtra omonimi di epoche diverse (WWI vs WWII)
+- **Candidato unico o singolo plausibile**: niente ambiguità nella selezione
+- **Solo campi vuoti popolati**: nessuna sovrascrittura di dati esistenti
+- **Anno di nascita plausibile**: 1895-1928 (internee WWII avevano 15-48 anni nel 1943)
+
+### Reversibilità
+
+#### Revert completo
+```bash
+python cross_link_safe.py --revert
+```
+Ripristina ogni campo al `old_value` registrato in `cross_link_audit`. Marca ogni record come `reverted=1` con timestamp.
+
+#### Revert selettivo (per tabella fonte)
+```sql
+-- Revert solo modifiche da lebi_records
+UPDATE internati SET data_nascita = NULL 
+WHERE id IN (
+  SELECT internati_id FROM cross_link_audit 
+  WHERE source_table='lebi_records' AND reverted=0
+);
+UPDATE cross_link_audit SET reverted=1, reverted_at=datetime('now')
+WHERE source_table='lebi_records' AND reverted=0;
+```
+
+#### Revert per metodo di match
+```sql
+-- Revert solo match deboli (se si vuole stringere ulteriormente)
+UPDATE cross_link_audit SET reverted=1, reverted_at=datetime('now')
+WHERE match_method='name_ambiguous+single_plausible_year' AND reverted=0;
+-- Poi ripristinare i valori:
+SELECT internati_id, column_name, old_value FROM cross_link_audit
+WHERE match_method='name_ambiguous+single_plausible_year' AND reverted=1;
+```
+
+### Risultati
+
+| Metrica | Valore |
+|---------|--------|
+| Record internati arricchiti | 4.438 / 20.465 (21%) |
+| Aggiornamenti totali | 40.587 |
+| Match da lebi_records | 4.438 |
+| Match da caduti_ministero | 13 |
+| Match da decorati_nastroazzurro | 353 |
+
+#### Copertura campi prima → dopo
+| Campo | Prima | Dopo | Delta |
+|-------|-------|------|-------|
+| data_nascita | 2% | 21% | +19% |
+| luogo_nascita | 15% | 21% | +6% |
+| grado | 11% | 19% | +8% |
+| reparto | 9% | 19% | +10% |
+| arma | 18% | 21% | +3% |
+| data_decesso | 0% | 17% | +17% |
+| luogo_morte | 0% | 17% | +17% |
+| luogo_sepoltura | 0% | 14% | +14% |
+| campi_internamento | 0% | 10% | +10% |
+| fronte_cattura | 0% | 8% | +8% |
+| data_cattura | 2% | 8% | +6% |
+| causa_morte | 0% | 7% | +7% |
+| luogo_cattura | 2% | 6% | +4% |
+| data_rientro | 0% | 3% | +3% |
+| decorazione | 0% | 1% | +1% |
+
+### File creati/modificati
+- `cross_link_safe.py` — **NUOVO**: script cross-linking sicuro con audit + revert
+- `cross_link_audit` table — **NUOVA**: tabella SQLite per tracciamento modifiche
+- `internati` table — **MODIFICATA**: 11 nuove colonne aggiunte (data_decesso, causa_morte, luogo_morte, luogo_sepoltura, campi_internamento, fronte_cattura, data_rientro, decorazione, anno_decorazione, anno_morte)
+- `docs/ARCHITETTURA_COMPLETA.md` — **AGGIORNATO**: v4.0 con pipeline V7, cross-linking, pipeline di ragionamento
+
+### File temporanei (da pulire)
+- `_tmp_analyze_rawtext.py` — analisi raw_text OCR
+- `_tmp_reapply_rawtext.py` — re-apply estrazione raw_text
+- `_tmp_check_all_schemas.py` — audit copertura campi
+- `_tmp_audit_crosslink.py` — audit qualità match
+- `_tmp_revert_untracked.py` — revert manuale modifiche non tracciate
+- `parse_internati_rawtext.py` — parser raw_text OCR (primo tentativo, non tracciato)
+- `populate_internati_v2.py` — primo cross-linking non sicuro (sostituito da cross_link_safe.py)
+
+---
+
+## 2026-08-12 (sera) — V7.6.1: Test Pipeline Eventi + Personale su Dati Reali
+
+### Contesto
+Verifica end-to-end del backend discorsivo su eventi storici e persone reali, dopo il cross-linking sicuro V7.6.
+
+### Test 1: 3 eventi via `event_research_engine.research_event()`
+
+| Evento | Provider | Fonti | Tempo | Confidence | Dati disputati | Non verificati |
+|--------|----------|-------|-------|------------|----------------|----------------|
+| Caporetto | gpt | 15 | 59s | ALTA (date/luogo/esito), MEDIA (perdite) | 0 | 2 (perdite, comandanti) |
+| Isonzo | gpt | 16 | 196s | ALTA (cronologia/luogo), MEDIA (perdite) | 1 (11 vs 12 offensive) | 1 (perdite) |
+| Asiago | gpt | 17 | 84s | MEDIA | 2 (comandanti, perdite) | 2 (perdite, comandanti) |
+
+**Risultati**: 3/3 OK. Disambiguazione corretta via `eventi_1gm.db`. Ogni fatto citato con `[ID]` fonte. Dati non verificati esplicitamente dichiarati. Fonti: USSME (archivio militare), OPAC SBN (bibliografiche), Internet Archive, cadutigrandeguerra.it, cadutisardi.it.
+
+### Test 2: 5 nomi casuali via `UnifiedResearchOrchestratorV7.execute()`
+
+| # | Tabella | Nome | Time | Obs | Identity | Claims | Errors |
+|---|---------|------|------|-----|----------|--------|--------|
+| 1 | internati | VILLERA Beniamino | 21.1s | 17 | RESOLVED | 6 | 0 |
+| 2 | lebi_records | DI CARLO Nicola | 15.6s | 101 | UNRESOLVED | 71 | 0 |
+| 3 | caduti_ministero | BERTANO Maurizio | 11.4s | 25 | RESOLVED | 3 | 0 |
+| 4 | decorati_nastroazzurro | RICCIOLI Francesco | 13.8s | 42 | CONFLICTED | 14 | 0 |
+| 5 | caduti_albooro | RAGGI Luigi | 13.3s | 121 | AMBIGUOUS | 96 | 0 |
+
+**Risultati**: 5/5 OK, 0 errori, 0 contaminazioni cross-war. Identity resolution corretta:
+- **RESOLVED** (Villera, Bertano): identità univoca, dati coerenti
+- **UNRESOLVED** (Di Carlo): omonimia non risolvibile con dati disponibili (9 fonti confermate, 34 ambigue)
+- **CONFLICTED** (Riccioli): due omonimi distinti correttamente (caduto WWI 1916 vs. decorato 1937)
+- **AMBIGUOUS** (Raggi): multipli candidati, 1 rigettato per omonimia (12 fonti confermate, 63 ambigue)
+
+### File temporanei (creati e rimossi)
+- `_tmp_test_3events.py` — test 3 eventi (cancellato)
+- `_tmp_print_3events.py` — stampa completa 3 eventi su file (cancellato)
+- `_tmp_3events_output.md` — output 3 eventi (cancellato)
+- `_tmp_test_5persons.py` — test 5 nomi casuali (cancellato)
+- `_tmp_5persons_output.md` — output 5 nomi (cancellato)
+
+### File modificati
+- `docs/ARCHITETTURA_COMPLETA.md` — sezione 5.1b aggiornata con cross-linking sicuro V7.6
+
+---
+
+## 2026-08-11 (sera) — V7.5.1: Anti-Duplicazione Narrazione + AMBIGUOUS_IDENTITY Fix
+
+### Contesto
+L'output narrativo AI presentava due problemi: (1) frasi duplicate tra blocchi narrativi (stesso fatto ripetuto con parole diverse in `direct_answer` e `identity`), e (2) contaminazione cross-persona in casi di omonimia (RIZZA GIOVANNI: 3 persone diverse WWI/WWII mescolate in un unico report AI).
+
+### Fix implementati (3)
+
+1. **Prompt anti-duplicazione** (`v7_narrator_prompt_v2.py:130-137`)
+   - Nuova sezione "REGOLA ANTI-DUPLICAZIONE OBBLIGATORIA" con istruzioni esplicite
+   - Esempi corretti/errati per guidare l'AI a non ripetere fatti tra blocchi
+   - Regola: ogni fatto in UN SOLO blocco; blocchi successivi devono AGGIUNGERE informazioni
+
+2. **Dedup nel renderer** (`v7_narrator.py:1533-1571` — `_render_blocks_to_markdown`)
+   - Token overlap ratio ≥ 0.55 → blocco scartato
+   - Shared 4-gram ≥ 2 → blocco scartato
+   - Safety net programmatico anche se l'AI ignora le istruzioni del prompt
+
+3. **Block AI per AMBIGUOUS_IDENTITY** (`v7_narrator.py:851-865`)
+   - Quando `identity_status == AMBIGUOUS_IDENTITY` con cluster conflittuali → forza deterministic
+   - Previene contaminazione cross-persona: l'AI riceveva 132 claim da 3 persone diverse
+   - `fallback_reason = "ambiguous_identity_conflicting_clusters"`
+
+### Bug RIZZA GIOVANNI — Root Cause Analysis
+- **3 cluster distinti** trovati: WWII (Modica, 9° Rgt Ftr, naufragio Crete 1943), WWI (Caporale, 223° Rgt Ftr, gas 1917), WWI decorato (Medaglia d'Argento)
+- `NarrationEvidenceSelector` non filtra per `identity_cluster_id` → 132 claim da tutti i cluster inviati all'AI
+- L'AI mescolava: "padre Angelo" (cluster WWI) attribuito alla persona WWII
+- **Fix**: bloccare AI quando AMBIGUOUS + cluster conflittuali → deterministic mostra cluster separati
+
+### Test
+- **ALBERINI ANTONIO** (RESOLVED_IDENTITY): 2 blocchi puliti, nessuna duplicazione, AI via openai/gpt-4o
+- **RIZZA GIOVANNI** (AMBIGUOUS_IDENTITY): deterministic fallback, 3 cluster separati, 14.1s (vs 22.7s AI)
+- **20 nomi casuali** (5 tabelle: lebi, internati, caduti_ministero, caduti_albooro, decorati):
+  - 15/20 validated_ai (gpt-4o) — nessuna duplicazione visibile
+  - 3/20 deterministic (AMBIGUOUS_IDENTITY: PALMERI, MOSCHETTI, VOLTOLINA) — correttamente bloccati
+  - 2/20 validated_ai con UNRESOLVED/CONFLICTED identity
+  - 0 errori, 0 duplicazioni
+- **5 eventi** (eventi_1gm): 3/5 validated_ai (Caporetto, Asiago, Fronte Macedone), 2/5 blocked (Tobruk=WWII, Piave=claim non validati)
+
+### File modificati
+- `v7_narrator_prompt_v2.py` — sezione anti-duplicazione
+- `v7_narrator.py` — dedup renderer + AMBIGUOUS_IDENTITY block
+
+---
+
+## 2026-08-11 — V7.5: OpenAI Primary for Report Generation
+
+### Contesto
+Crediti OpenAI ricaricati. Generazione narrativa e reportistica spostata su OpenAI (`gpt-4o`) come provider primario, con Mistral (`mistral-small-latest`) come fallback. Ollama/Gemma escluso esplicitamente dalla generazione reportistica in quanto il modello `gemma4:e2b-it-qat` (3B) su CPU ha dimostrato qualità insufficiente per JSON strutturato con claim_ids e una forte tendenza alle allucinazioni.
+
+### Routing aggiornato
+- **narration** → OpenAI primary, Mistral fallback
+- **generate_biography** → OpenAI primary, Mistral fallback
+- **generate_viewpoints** → OpenAI primary, Mistral fallback
+- **generate_timeline** → OpenAI primary, Mistral fallback
+- **generate_research_plan** → OpenAI primary, Mistral fallback
+- **generate_followup_queries** → OpenAI primary, Mistral fallback
+- **validate_output** → OpenAI primary, Mistral fallback
+- **verify_citations** → OpenAI primary, Mistral fallback
+- Policy version: `v7.5-openai-primary`
+
+### Azioni DB
+- `ai_routing_policies`: primary_model_id='openai', fallback_model_ids_json='["mistral","anthropic","gemini"]'
+- `ai_models`: `gemma4:e2b-it-qat` → status='disabled'
+
+### Test iniziale (ALBERINI ANTONIO)
+- Provider: openai/gpt-4o
+- Tempo: ~40s
+- Blocks: 5
+- Claims: 6
+- Status: validated_ai
+
+---
+
+## 2026-08-10 — V7.4: Ollama Integration + AI Cross-Validation
+
+### Contesto
+Integrazione di Ollama come provider AI locale per generazione narrativa, con modello Gemma 4 (e2b-it-qat, 4.3GB). Ollama sostituisce OpenAI come generatore primario per task di narrazione e generazione biografica. OpenAI diventa validatore primario del output generato, con Mistral come fallback per la validazione. Questo riduce i costi API (generazione locale gratuita) e mantiene un layer di quality assurance via cloud.
+
+### Componenti implementati (5)
+
+1. **Provider Ollama in `ai_client.py`**
+   - Funzione `_call_ollama()`: usa OpenAI-compatible API su `http://localhost:11434`
+   - Registrato in `_PROVIDER_FUNCS` e `_DEFAULT_MODELS`
+   - Timeout 300s (CPU-only, no GPU)
+   - Supporto `json_mode` e `json_schema` nativo via Ollama API
+
+2. **Routing AI con Policy DB in `ai_router.py`**
+   - `select_model()` ora rispetta `primary_model_id` della policy DB (non solo combined score)
+   - `check_budget_before_task()`: skip per provider locali (cost=0, budget=0)
+   - Nuovo task type `narration` aggiunto a `TASK_TYPES` e `_GENERATION_TASKS`
+   - Policy DB aggiornata: Ollama primary per generation, OpenAI primary per validation
+   - Policy version: `v7.4-ollama-e2b`
+
+3. **AI Cross-Validation in `v7_narrator.py`**
+   - Metodo `_ai_cross_validate()`: dopo generazione + hallucination check, valida il testo generato
+   - Usa `validate_ai_output()` da `ai_client.py` (OpenAI primary, Mistral fallback)
+   - Skip del provider generatore (no self-validation)
+   - Severity: minor → flags, major → flags, critical → fallback deterministico
+   - Metadata salvato in `GenerationInfo.ai_validation`
+
+4. **Funzione `validate_ai_output()` in `ai_client.py`**
+   - Valida accuratezza storica, coerenza con claim, allucinazioni residue
+   - Prompt strutturato con claims_context e war_period
+   - Ritorna: `{ok, valid, severity, issues, suggestions, provider, model}`
+
+5. **Modello DB in `narration_models.py`**
+   - `GenerationInfo`: aggiunto campo `ai_validation: Optional[Dict[str, Any]]`
+   - Memorizza provider/modello validatore, severity, issues, suggestions
+
+### Fix di routing (3 bug)
+
+1. **Budget check bloccava Ollama**: `est_cost=0.01` hardcoded > `available=0.0` per Ollama (budget=0, reserve=0). Fix: `est_cost=0.0` per provider locali + `check_budget_before_task` skip quando `estimated_cost=0`.
+
+2. **Policy DB ignorata**: `select_model()` selezionava solo per combined score, ignorando `primary_model_id` della routing policy. Fix: priorità ai candidati del provider primario della policy.
+
+3. **Task type `narration` mancante**: non era registrato in `TASK_TYPES` né `_GENERATION_TASKS`, quindi non veniva mai instradato a Ollama. Fix: aggiunto a entrambi.
+
+### Modelli Ollama
+
+| Modello | Size | Params | Status | Note |
+|---------|------|--------|--------|------|
+| `gemma4:e4b` | 9.6 GB | 8B (Q4_K_M) | disabled | Troppo lento su CPU (170s/196 chars) |
+| `gemma4:e2b-it-qat` | 4.3 GB | ~3B (QAT) | enabled | Primary generatore (95s/991 chars) |
+
+### File modificati (5)
+- `ai_client.py` — `_call_ollama()`, `validate_ai_output()`, budget fix, default model, timeout 300s
+- `ai_router.py` — `select_model()` policy respect, `check_budget_before_task()` zero-cost fix, `narration` task type
+- `v7_narrator.py` — `_ai_cross_validate()`, integrazione in `narrate()`
+- `narration_models.py` — `GenerationInfo.ai_validation` field
+- `research_engine_schema.py` — Ollama provider seed
+
+### File temporanei (test)
+- `_tmp_test_multi.py` — Test pipeline: 2 nomi casuali per tabella DB (10 nomi totali)
+- `_tmp_test_results.json` — Risultati test salvati
+
+### Configurazione DB
+- `ai_providers`: Ollama (id=7, code='ollama', priority=6, budget=0, capabilities=text/vision/structured_output)
+- `ai_models`: gemma4:e2b-it-qat (provider_id=7, quality=0.65, cost=0.0, latency=0.8, context=128K)
+- `ai_routing_policies`: narration → mistral primary, ollama/gemini/anthropic/openai fallback
+- Policy version: `v7.4-mistral-primary`
+
+### Note prestazionali
+- `gemma4:e4b` (8B, 9.6GB) su CPU: 170s/196 chars — impraticabile
+- `gemma4:e2b-it-qat` (3B, 4.3GB) su CPU: 95-280s per generazione — streaming previene timeout
+- Qualità modello 3B: insufficiente per JSON strutturato con claim_ids (0 claims, allucinazioni frequenti)
+- **Routing finale**: Mistral generatore primario (25-35s, 3-15 claims validi), Ollama fallback locale quando API cloud non disponibili
+
+---
+
+## 2026-08-10 — V7.3-FIX: Temporal Contamination Prevention in AI Narration
+
+### Contesto
+Il narratore AI generava contesto storico sui reparti militari mescolando conflitti: per un soldato WWII (Bruti Alfio, 5° Reggimento Genio) citava il fronte dell'Isonzo e la Prima guerra mondiale. Fix strutturale su 3 livelli: prompt AI, payload dati, validatore post-generazione.
+
+### Fix implementati (3)
+
+1. **Payload AI con `war_period`** (`v7_narrator.py:1042-1060`)
+   - `_infer_war_period()` da `military_ontology.py` ora chiamato nel `_build_ai_input`
+   - Il payload AI include `"war_period": "WWI | WWII | unknown"` dedotto dai claim (date, keyword)
+   - Il narratore sa esplicitamente in quale conflitto ha servito la persona
+
+2. **Sezione AMBITO TEMPORALE OBBLIGATORIO nel prompt** (`v7_narrator_prompt_v2.py:57-63`)
+   - Nuova sezione con regole esplicite: TUTTO il contesto storico limitato al `war_period`
+   - Esempi concreti: se WWII → no Isonzo/Caporetto/Piave/1915-1918; se WWI → no 8 settembre/Stalag/IMI/1940-1945
+   - Regola: non usare conoscenze generali sul reparto da addestramento se riguardano altro conflitto
+   - Aggiornata anche sezione CONTESTO MILITARE con riferimento al war_period
+
+3. **Validatore post-generazione con temporal contamination check** (`v7_narrator.py:1232-1263`)
+   - `_post_gen_hallucination_check` ora accetta `war_period` parameter
+   - Rileva marker WWI in testi WWII (`TEMPORAL_CONTAMINATION_WWI_IN_WWII`)
+   - Rileva marker WWII in testi WWI (`TEMPORAL_CONTAMINATION_WWII_IN_WWI`)
+   - Se >5 warning → fallback deterministico (come per hallucination standard)
+   - Eccezione: marker che corrispondono a claim reali (es. capture_date 1943 in report WWI) non vengono flaggati
+
+### File modificati (2)
+- `v7_narrator.py` — `_build_ai_input` (payload + war_period), `narrate` (inferenza war_period), `_post_gen_hallucination_check` (nuovo parametro + temporal check)
+- `v7_narrator_prompt_v2.py` — Schema input (war_period), sezione AMBITO TEMPORALE OBBLIGATORIO, aggiornamento CONTESTO MILITARE
+
+### Verifica
+- Test su BRUTTI ALFIO (WWII, 5° Reggimento Genio): report AI Mistral ora descrive il reparto **esclusivamente nel contesto WWII** ("Durante la Seconda guerra mondiale, il 5º Reggimento Genio era un'unità specializzata nelle costruzioni militari..."). Nessun riferimento a Isonzo/Caporetto/Prima guerra mondiale.
+
+---
+
+## 2026-08-09 — LeBI Bulk Import + Supabase Sync + Narrative Pipeline Integration
+
+### Contesto
+Integrazione completa del database LeBI (Lessico Biografico degli IMI — ANRP) nel sistema: bulk import di 166K+ record dal portale `lessicobiograficoimi.it`, sincronizzazione a Supabase, e integrazione nella pipeline discorsiva V7 per generazione narrazioni AI arricchite.
+
+### Task completate (6/6)
+
+1. **Bulk Import SQLite** (`import_lebi_bulk.py`)
+   - 166K+ record importati (ID range 2345–330027) in `lebi_records` table in `imi_internati.db`
+   - ThreadPoolExecutor (20 thread), BeautifulSoup HTML parsing, checkpoint/resume (`lebi_import_checkpoint.json`)
+   - Fix `sqlite3.OperationalError`: 27 colonne vs 26 placeholder → aggiunto `enriched_at`
+
+2. **Supabase Sync** (`sync_lebi_to_supabase.py`)
+   - Schema `lebi_records` creato su Supabase
+   - Batch upsert con `on_conflict=lebi_id` + `Prefer: return=minimal,resolution=merge-duplicates`
+   - Checkpoint resumable (`sync_lebi_supabase_checkpoint.json`)
+   - Verifica conteggi SQLite ↔ Supabase: match confermato
+
+3. **LocalDbAdapter** (`v7_provider_adapters.py:183-190`)
+   - Aggiunto `("lebi_records", "cognome", "nome")` alla lista tabelle `PERSON_LOOKUP`
+   - LeBI records ora restituiti come `SOURCE_CANDIDATE` observations
+
+4. **PERSON_SOURCE_SCHEMAS** (`person_source_schemas.py:351-392`)
+   - Schema completo `lebi_records`: 18 claim_fields, 4 provenance_fields, 7 identity_fields, 6 conflict_fields
+   - `war_period=WWII`, `authority_tier=1` (fonte ufficiale ANRP)
+   - Nuovi predicate: `capture_front`, `return_date`, `return_place` con validatori/normalizzatori
+
+5. **Research Orchestrator + Fact Extractor**
+   - `research_orchestrator.py:84,505` — `lebi_records` aggiunto a ricerche entità e tabelle dirette
+   - `fact_extractor.py:130-150` — `_LEBI_FIELD_MAP` con 18 mapping field→predicate
+   - `unified_orchestrator_v7.py:565` — docstring aggiornata
+
+6. **Test Pipeline Discorsiva** (5 nomi casuali, 5/5 RESOLVED_IDENTITY)
+   - CURIAZZI GIOVANBATTISTA: 57 obs, 17 claims, deterministic (LeBI: Innsbruck/Stalag III D)
+   - PELLEGRINI GIACOMO: 157 obs, 31 claims, AI Mistral (LeBI: 9° Reggimento Alpini, Stalag X B)
+   - BULGARELLI ERMANNO: 106 obs, 11 claims, AI Mistral (LeBI: Carpi, Stalag XI A, Arb. Kdo. 427)
+   - GERMANO GUIDO: 157 obs, 31 claims, deterministic (LeBI: Castel Del Monte, 9 Rgt. Alp.) + omonimo rilevato
+   - BRUTTI ALFIO: 86 obs, 14 claims, AI Mistral (LeBI: Maiolati Spontini, 5° Reggimento Genio, Halle/Saale)
+
+### File modificati (6)
+- `v7_provider_adapters.py` — LocalDbAdapter PERSON_LOOKUP table list
+- `person_source_schemas.py` — Schema registry + validatori/normalizzatori
+- `unified_orchestrator_v7.py` — Docstring PERSON tables
+- `research_orchestrator.py` — Entity search + direct table search
+- `fact_extractor.py` — _LEBI_FIELD_MAP + field_map lookup + entity_label
+
+### File nuovi (3)
+- `import_lebi_bulk.py` — Bulk import script con checkpoint
+- `sync_lebi_to_supabase.py` — Sync SQLite → Supabase con upsert
+- `_test_lebi_narrative.py` — Test pipeline discorsiva su nomi casuali LeBI
+
+### Verifiche chiave
+- LocalDbAdapter interroga `lebi_records` → `SOURCE_CANDIDATE` observations
+- `extract_claims_from_record` processa `lebi_records` tramite `PERSON_SOURCE_SCHEMAS`
+- Provenance corretta: URL LeBI, PDF, source_id estratti dai campi `detail_url`, `pdf_url`, `lebi_id`
+- Identity resolution: RESOLVED per nomi univoci, AMBIGUOUS per omonimi (es. GERMANO GUIDO)
+- URL LeBI nei context claims: `https://www.lessicobiograficoimi.it/frontend_prodimi.php/caduti/show/{id}`
+- AI provider: OpenAI esaurito (429), Anthropic non autorizzato (401), Mistral attivo (200)
+
+---
+
+## 2026-08-05 — V7.3-PERSON-FIX: Evidence-Locked Narration, Multi-Table Retrieval, Script Security
+
+### Contesto
+Refactoring completo del pipeline V7: retrieval multi-tabella (5 fonti PERSON), identity resolution cluster-based con identificatori forti, narratore evidence-locked con payload validation e post-generation hallucination detection, migrazioni DB additive (data_corrections + Supabase parity), sicurezza script non-distruttiva (quarantena invece di DELETE), regression benchmark.
+
+### Task completate (14/14)
+1. Diagnosi call graph + baseline 20 nomi
+2. Modelli tipizzati (PersonCandidate, PersonFact, FactEvidence, etc.)
+3. PERSON_SOURCE_SCHEMAS: mapping 5 tabelle con validator/normalizer
+4. Fix retrieval: 5 tabelle queryate, word boundary, normalizzazione nominativo
+5. Fix schema OpenAI + circuit breaker provider AI
+6. Separazione fatti/evidenze/provenance con dedup
+7. Identity resolver cluster-based, no fusione omonimi
+8. Unit test: 43/43 PASS
+9. _gen_record_links.py: quarantena, CLI, pairwise linking
+10. _gen_event_links.py: word boundary, barriere temporali, incremental
+11. Narratore evidence-locked: _validate_payload, _compute_evidence_hash, _post_gen_hallucination_check
+12. Migrazioni DB: data_corrections table, sync_parity_audit, Supabase parity (6/8 OK)
+13. Sicurezza script: _clean_bad_links (DELETE→quarantine), _fix_gaiaschi_db (UPDATE→overlay)
+14. Regression benchmark: 5/5 PASS, 6/6 backend test, 0 errori
+
+### File nuovi (5)
+- `person_source_schemas.py`, `person_pipeline_models.py`, `test_person_v73_fix.py`
+- `migrate_v73_data_corrections.py`, `run_regression_v73.py`
+
+### File modificati (10)
+- `unified_orchestrator_v7.py`, `v7_narrator.py`, `ai_client.py`, `narration_models.py`
+- `v7_identity_model.py`, `_gen_record_links.py`, `_gen_event_links.py`
+- `_clean_bad_links.py`, `_fix_gaiaschi_db.py`
+
+### Dettagli: [CHANGELOG_V73_PERSON_FIX.md](../../CHANGELOG_V73_PERSON_FIX.md)
+
+---
+
+## 2026-08-01 — V4 Post-Audit: API, Fetch Integration, Archive Expansion, Canary Live
+
+### Contesto
+Dopo il completamento del V4 audit (13/13 task), eseguita integrazione post-audit: API per il conversational report provider, fetch HTTP nel relevance gate, espansione registry archivistico, canary live con Tavily + AI su 10 target.
+
+### Modifiche
+
+**File nuovi (2):**
+- `report_conversation_api.py` — 3 endpoint FastAPI: POST create conversation, POST send message, GET conversation; Pydantic models per request/response
+- `generate_conversational_reports.py` — script per generare report discorsivi per ogni target usando ReportConversationProvider con AI
+
+**File modificati (3):**
+- `app.py`:
+  - Import `report_conversation_api.router`
+  - `app.include_router(report_conversation_router)`
+- `relevance_gate_v4.py`:
+  - `_extract_text_from_html()` — estrazione testo da HTML (rimuove script/style, decodifica entità, collapse whitespace)
+  - `fetch_and_classify()` — HTTP GET con timeout 15s, estrazione contenuto, classificazione con `fetch_status=SUCCESS` + `fetched_content`; gestisce HTTPError, URLError, TimeoutError
+- `archive_jurisdiction_registry.py`:
+  - +5 comuni verificati: Modica (Siracusa), San Lorenzo (Reggio Calabria), Casaluce (Caserta), Brienza (Potenza), Lettere (Napoli)
+  - Totale: 16 comuni mappati (era 11)
+- `run_canary.py`:
+  - Fix encoding Windows cp1252: `sys.stdout.reconfigure(encoding="utf-8", errors="replace")`
+
+### Canary V4 Live (Tavily + AI)
+- 10/10 target completati con `use_ai=True`
+- Tavily web search attiva su 9/10 target (VENEZIANO NICOLA: 0 sources)
+- AI attiva su tutti i 10 target (Mistral)
+- 0 fallimenti, stato: SUCCESS
+- `CANARY_RESULTS.json` + `CANARY_DOSSIERS.json` + `CANARY_REPORT.md` generati
+
+### Risultati canary live
+
+| # | Target | Stato | Candidates | Tavily sources | AI | Elapsed |
+|---|--------|-------|------------|----------------|-----|---------|
+| 1 | LARI GIUSEPPE | dati_insufficienti | 51 | 7 | si | 36.6s |
+| 2 | FEDERICO LUIGI | dati_insufficienti | 89 | 6 | si | 21.4s |
+| 3 | GIUNTA GIUSEPPE | dati_insufficienti | 36 | 6 | si | 22.3s |
+| 4 | VENEZIANO NICOLA | dati_insufficienti | 30 | 0 | si | 22.8s |
+| 5 | FANTUZ ANTONIO | dati_insufficienti | 30 | 6 | si | 24.4s |
+| 6 | FEDELE AGOSTINO | dati_insufficienti | 34 | 4 | si | 24.6s |
+| 7 | RUSSO GAETANO | dati_insufficienti | 38 | 3 | si | 26.3s |
+| 8 | PAPINI PUBLIO | dati_insufficienti | 31 | 1 | si | 25.8s |
+| 9 | FOLLADOR GIOVANNI | dati_insufficienti | 30 | 7 | si | 24.3s |
+| 10 | SIFANNO TOMMASO | dati_insufficienti | 30 | 5 | si | 24.1s |
+
+### Issue note
+- `Discovery persistence failed: no such column: idempotency_key` — colonna mancante nella tabella `source_registry` SQLite, non bloccante
+- `AI provider perplexity failed: 401 Unauthorized` — chiave API Perplexity non valida, fallback a Mistral
+- `AI provider mistral failed: Server disconnected` — intermittente, fallback deterministico attivo
+- Warning `InsecureRequestWarning` su HTTPS senza certificato — non bloccante
+
+---
+
+## 2026-07-31 — V4 EvidenceSnapshot Reconstruction (12 Defect Categories Fixed)
+
+### Contesto
+Audit completo del backend del protocollo di ricerca. Identificate e corrette 12 categorie di difetti semantici e strutturali. Implementati 7 nuovi moduli, integrate le correzioni in `research_protocol.py`, scritti 149 test (82 V4 + 67 V3), eseguito canary offline su 10 target con 0 violazioni.
+
+### Moduli nuovi (7)
+
+| File | Scopo |
+|------|-------|
+| `evidence_snapshot_v4.py` | DTO unificato e validato con origin_record, accepted_claims, provider_ledger, reconciliation, `to_conversational_context` (source_id only, no URL) |
+| `source_capability_registry.py` | Registry unificato per 25 provider con routing per conflitto (ww1/ww2/both), sostituisce i set hardcoded `_WWI_ONLY_PROVIDERS` / `_WWII_ONLY_PROVIDERS` |
+| `archive_jurisdiction_registry.py` | 16 mapping verificati comune→archivio (11 originali + 5 post-audit); comuni non verificati → statement generico, nessun archivio inventato |
+| `relevance_gate_v4.py` | Pipeline multi-stage: result_kind → name_match → period_compatibility → geographic_scope → fetch_status; 4 bucket (evidence, context, leads, rejected) |
+| `name_parser_v4.py` | Parser corretto per pattern `COGNOME NOME DI PADRE`; preserva raw_value, parser_version, field_provenance; flag `needs_field_review` |
+| `ai_output_validator.py` | Validatore post-generazione: detection contraddizioni, URL allucinati, archivi non verificati; fallback deterministico |
+| `report_conversation_provider.py` | Interfaccia conversazionale report — Mistral/local only, OpenAI hardcoded disabled, persistenza SQLite |
+
+### Moduli modificati (2)
+
+- `research_protocol.py`:
+  - Import V4 modules
+  - `_web_search_enrich`: usa V4 relevance gate + invia snapshot unificato ad AI (no candidati grezzi/Tavily results)
+  - `_generate_archival_requests`: usa `ArchiveJurisdictionRegistry` verificata invece di template generation
+  - `apply_resolution_gate`: `SOURCE_RECORD_ONLY` richiede lineage verificata (URL assoluta)
+  - `compute_typed_counts`: URL relative contate come lead, non source_record
+  - `get_provider_capabilities`: delega a `source_capability_registry`
+  - `score_candidate`: usa V4 name parser per paternity extraction da display_name
+  - `research_person`: build V4 snapshot, validate invariants, downgrade su violazione
+  - Post-AI validation con `ai_output_validator` + fallback deterministico
+- `test_research_protocol_v3_master.py`:
+  - 3 test aggiornati per comportamento V4 (routing unknown conflict, SOURCE_RECORD_ONLY con URL verificata, paternity parser V4)
+
+### 12 Difetti corretti
+
+1. **EvidenceSnapshot V4** — DTO unificato con origin_record, claims, provider_ledger, `to_conversational_context` senza URL
+2. **SOURCE_RECORD_ONLY invariants** — richiede URL assoluta verificata; URL relative → lead; `compute_typed_counts` riconciliato
+3. **Relevance gate multi-stage** — sostituisce gate binario V3 con pipeline 6-stage (result_kind, name_match, period, geo, fetch, state)
+4. **False negative proofs** — `CONSULTED_NO_MATCH` richiede `fetch_status=SUCCESS` + nome assente nel content
+5. **URL dedup e rendering** — AI riceve source_id solo; nessuna estrazione URL da AI text; renderer genera link da snapshot
+6. **missing_claims** — computed da `CLAIM_FIELDS` set minus claim accettati/partial
+7. **Unified capability routing** — singolo registry per retrieval, suggestions, report, UI; LeBI skipped per WWI
+8. **ArchiveJurisdictionRegistry** — no template-generated archives; 16 comuni verificati (11 + 5 post-audit); comuni non mappati → statement generico
+9. **Parser COGNOME NOME DI PADRE** — `PAPINI PUBLIO DI GIOVANNI` correttamente split in surname=PAPINI, given=PUBLIO, father=GIOVANNI
+10. **Post-generation validator** — schema, grounding, contradiction detection, hallucinated URL/archive detection, deterministic fallback
+11. **Conversational report** — `ReportConversationProvider` con SQLite, Mistral/local only, OpenAI disabled
+12. **Tests** — 82 test V4 (fixture-based, property-based, parametrized regression) + 67 test V3 aggiornati = 149 PASS
+
+### Test
+- `test_research_protocol_v4_master.py` — 82 test su 12 categorie + property-based + regression
+- `test_research_protocol_v3_master.py` — 67 test (3 aggiornati per V4)
+- **149/149 PASS** in 0.58s
+
+### Canary V4 Offline
+- `run_canary_v4_offline.py` — 10/10 target completati, 0 violazioni, 0 chiamate OpenAI
+- `CANARY_V4_OFFLINE_RESULTS.json` — risultati strutturati
+- `CANARY_V4_BEFORE_AFTER.md` — report before/after con verifica features
+
+### Vincoli enforceati
+- No OpenAI API calls (hardcoded disabled)
+- No template-generated archives (verified registry only)
+- No false negative proofs without verified fetch
+- No counting suggestion URLs as sources
+- No homonyms from uncertain parser data (`needs_field_review` flag)
+- No URLs in AI conversational context (`source_id` only)
+
+### File generati
+- `CANARY_V4_OFFLINE_RESULTS.json`
+- `CANARY_V4_BEFORE_AFTER.md`
+
+---
+
+## 2026-07-30 — Discovery Persistence Pipeline (Web Search Archival System)
+
+### Contesto
+Implementata la pipeline completa di acquisizione, classificazione e persistenza delle fonti scoperte via web search. Ogni risultato di ricerca web viene ora sistematicamente classificato, deduplicato, collegato a oggetti storici, e persistito localmente (SQLite) con sync idempotente a Supabase via outbox pattern.
+
+### File principale
+- `discovery_persistence.py` (nuovo, ~1400 righe) — dataclasses, schema SQLite, pipeline completa
+
+### Dataclasses
+- `ArchivalDecision` — policy archivistica + diritti/licenze
+- `SourceMetadata` — metadati provenienza completi
+- `SourceObjectLink` — collegamento tipato fonte-oggetto
+- `HistoricalClaim` — claim versionato con conflict detection
+- `DiscoveredEntity` — entità candidata con entity resolution
+- `ResearchLead` — pista di ricerca persistente
+- `SyncState` — stato sync locale-Supabase
+- `DiscoveryPersistenceResult` — output aggregato per dossier API
+
+### Tabelle SQLite create
+- `source_registry`, `historical_claims`, `discovered_entities`, `research_leads`, `source_object_links`, `sync_outbox`, `ingestion_runs`
+
+### Funzioni
+- `classify_archival_policy()` — classificazione via compliance_gate
+- `deduplicate_sources()` — dedup per URL canonico, hash, ID
+- `extract_claims_from_text()` — estrazione claim strutturati con clean encoding
+- `detect_conflicting_claims()` — conflict detection vs DB esistente
+- `resolve_or_create_entity()` — entity resolution + nuove entità
+- `extract_research_leads()` — piste archivistiche + URL deduplicati
+- `sync_outbox_to_supabase()` — sync idempotente via `insert_batch_schema`
+- `process_web_search_results()` — orchestrazione pipeline
+
+### Integrazione
+- `research_protocol.py`: `_web_search_enrich()` chiama `process_web_search_results()`
+- `Dossier` dataclass: campo `discovery_persistence` aggiunto
+- API `/api/research-protocol`: output include `discovery_persistence`
+
+### Fix applicati durante test
+1. Column count mismatch in `_persist_source()`: 38→39 placeholder
+2. Supabase sync: sostituito `get_supabase_client()` (inesistente) con `supabase_client.insert_batch_schema()`
+3. Encoding mojibake: pulizia UTF-8 (Â°, Ã, etc.) su testo web search
+4. Claim garbage filter: filtrati valori non informativi
+5. Claim deduplicazione per predicate+normalized_value
+6. Entity section headers esclusi ("CONFERMA CANDIDATI", etc.)
+7. Lead deduplicazione per dominio URL e institution name
+
+### Test end-to-end (query "damioli giovanni, nato 1899")
+- 1 fonte creata (metadata_only), 6 claim estratti, 12 entità scoperte, 8 piste, 11 item in outbox
+- Local persistence: completed | Supabase sync: failed (schema `core` non esposto)
+
+### PENDING
+- Vedi TODO.md sezione "Discovery Persistence — PENDING"
+
+---
+
+## 2026-07-27 — Audit bootstrap Internet Archive + Schema `core.events` su Supabase
+
+### Contesto
+Richiesta di avviare il bootstrap automatico Internet Archive → Supabase (28 sezioni di specifica). Prima di scrivere qualunque job/worker è stato eseguito un audit reale: verifica materiale (query dirette PostgREST, non solo lettura di file `.sql`) di cosa esiste davvero su Supabase vs cosa presupponeva la specifica.
+
+### Finding critico
+Il modello `core.events`/`core.entities` presupposto dal prompt **non esisteva** su Supabase (verificato: `Invalid schema: core` via PostgREST). Gli eventi storici vivevano solo in SQLite (`eventi_1gm.db`, 22 righe: 15 WWI, 7 WWII). Le tabelle `archive.*`/`ops.*`/`evidence.*`/`ai.*` esistevano già (migrazione `001_supabase_historical_archive_core.sql`) ma erano vuote, senza alcun worker/consumer applicativo.
+
+### Audit
+- `docs/audit/internet-archive-bootstrap-preflight.md` — tabella di audit con 15 aree (provider IA, Advanced Search, Metadata Read, job queue, valutazione pertinenza, registry, ecc.), stato reale verificato, gap, azione.
+
+### Modifiche
+
+#### `sql/002_supabase_core_events.sql` (nuovo, additivo)
+- Schema `core` con `entities`, `events`, `entity_names`
+- Trigger `updated_at` (riusa `archive.set_updated_at()` da `001_...sql`, nessuna duplicazione)
+- RLS pattern identico a `001_supabase_historical_archive_core.sql`
+- RPC `exec_sql_query` (SELECT semplici) ed `exec_sql_returning` (query con CTE `INSERT...RETURNING`, necessaria perché Postgres richiede che un WITH con data-modifying statement sia al livello top — `exec_sql_query` lo avvolge in una subquery e fallisce con `0A000`)
+
+#### `apply_migration_002.py` (nuovo)
+- Riusa `split_sql_statements`/`is_meaningful_statement` da `apply_migration_v2.py` (nessun parser duplicato)
+- Eseguito: **41/41 statement OK**
+
+#### `migrate_events_to_core.py` (nuovo)
+- Migrazione dati idempotente `eventi_1gm.db` → `core.entities`/`core.events`/`core.entity_names` (upsert su `stable_id`/`source_id`)
+- Risoluzione automatica `parent_event_id` in seconda passata (i riferimenti in SQLite sono per `stable_id` testuale, es. `evt_0017`)
+- Eseguito due volte per verificare idempotenza: stesso risultato, zero duplicati
+
+### Risultati verificati (non simulati)
+- **22 eventi** migrati (15 WWI, 7 WWII)
+- **84 alias** in `core.entity_names`
+- **7 relazioni parent/child** risolte correttamente (es. `evt_0018` Battaglia del Carso → parent `evt_0017` Battaglie dell'Isonzo; `evt_0024` Monte San Michele → parent `evt_0018`)
+- Idempotenza confermata su doppia esecuzione
+
+### Azione manuale richiesta (non completabile da codice)
+Schema `core` da aggiungere in **Supabase Dashboard → Settings → API → Exposed Schemas** (necessario per usare `repository_layer.py`/`supabase_client.select_schema` via REST diretto; le RPC `exec_sql_query`/`exec_sql_returning` funzionano già perché vivono in `public`, già esposto).
+
+### Non fatto (fuori scope, dichiarato esplicitamente)
+Job queue con worker reali, admin UI popolamento, estrazione/dedup nuovi eventi WWI/WWII con AI, sincronizzazione incrementale, claim/evidence review — stimati settimane di lavoro, non implementabili in modo credibile e verificabile in un'unica sessione. Prossimo passo: collegare `ia_pipeline.py`/`ia_evaluation.py` per scrivere in `archive.external_items`/`archive.representations` su un evento pilota (Battaglia del Carso, `evt_0018`).
+
+---
+
+## 2026-07-25 (sera) — Fix Internet Archive: Context Propagation + Query Planner + Evaluation Integration
+
+### Problema
+`ProviderInternetArchive.search()` usava filtri hardcoded `date:[1940 TO 1946]` e fallback `_IT_MILITARY` generico per qualsiasi query, inclusi eventi WWI. Il contesto evento (conflitto, date, luogo, alias) non veniva propagato dalla pipeline al provider. `ia_evaluation.evaluate_candidates()` esisteva ma non era integrato nel percorso runtime. `get_event_by_id()` non selezionava la colonna `conflict` dal DB.
+
+Risultato: eventi WWI come "Battaglia del Carso" ricevevano risultati WWII irrilevanti (es. `TacticalAndTechnicalTrendsNos1-20`).
+
+### Soluzione
+Pipeline end-to-end con contesto tipizzato propagato da `_web_sources()` → `federated_search()` → `ProviderInternetArchive.search()` → query planner → evaluation.
+
+### Modifiche
+
+#### `source_providers/base.py`
+- Aggiunto `FederatedSearchContext` (dataclass frozen): `subject_type`, `canonical_name`, `aliases`, `conflict` (ww1/ww2/other/unknown), `start_date`, `end_date`, `places`, `keywords`, `context_fingerprint`
+- Aggiunto `build_federated_search_context()`: costruisce context da event_data, normalizza conflitto, inferenza date-based fallback (1914-1918 → ww1, 1939-1946 → ww2) solo quando conflict è unknown
+- Aggiunto `_normalize_conflict()`: mappa varianti (WWI, 1GM, Prima guerra mondiale, WW2, 2GM, ecc.) a codici normalizzati
+- Aggiunto `_parse_event_date()`: parse ISO e year-only
+- Firma `SourceProvider.search()` aggiornata: `context: Optional[FederatedSearchContext] = None`
+
+#### `source_providers/federation.py`
+- `federated_search()` accetta e propaga `context` a ogni provider
+
+#### `source_providers/providers.py`
+- `ProviderInternetArchive.search()` riscritto: usa `build_internet_archive_query_plan()`, nessun filtro hardcoded, campi `discovery_score`/`discovery_strategy`/`query_plan_version`
+- `_IT_MILITARY` fallback gated: solo `subject_type in (person, unit, document) AND conflict == ww2`
+- Tutti gli altri provider (15 classi) aggiornati con nuova firma `search()`
+
+#### `ia_evaluation.py`
+- Aggiunto `build_internet_archive_query_plan()`: genera strategie multiple (exact_event, alias, place, contemporary, contextual) basate su FederatedSearchContext
+- Aggiunto `evaluate_candidates_from_context()`: wrapper che mappa FederatedSearchContext → event_data dict per evaluate_candidates
+- Aggiunto `IAQueryPlanEntry` dataclass: `query`, `strategy`, `reason`, `event_scope`, `publication_date_filter`
+- Versioni cache: `IA_QUERY_PLAN_VERSION = "ia_query_plan_v2"`, `IA_RELEVANCE_VERSION = "ia_relevance_v2"`
+- Fix mapping conflict: `ww1 → WWI`, `ww2 → WW2` (compatibile con _detect_conflict)
+
+#### `event_evidence_pipeline.py`
+- `_web_sources()` riscritto: costruisce `FederatedSearchContext`, passa a `federated_search()`, separa risultati IA, valuta con `evaluate_candidates_from_context()`, filtra rejected, assegna `verification_status` basato su evaluation (accepted → probabile, candidate → candidata)
+
+#### `event_resolver.py`
+- `get_event_by_id()`: aggiunta colonna `conflict` alla SELECT query
+
+#### Provider aggiornati (firma search)
+`antenati.py`, `cri_milano.py`, `cwgc.py`, `deutsche_digitale_bibliothek.py`, `grand_memorial.py`, `icrc_ww1.py`, `iwm_lives.py`, `lebi.py`, `memoire_des_hommes.py`, `nara.py`, `wikitree.py`
+
+#### Frontend
+- `frontend/src/pages/EventResearchPage.tsx`: `VerificationBadge` gestisce `probabile`, summary mostra conteggio Probabili
+
+#### Test
+- `test_event_research_master.py`: 31 test (unitari, integrazione, regressione live). **31/31 PASS**
+  - `TestFederatedSearchContext` (10 test): context building, conflict normalization, date parsing, immutability, fingerprint
+  - `TestIAQueryPlanner` (9 test): strategie, no hardcoded WW2 dates, no IT_MILITARY terms, date derivate dall'evento, versioning
+  - `TestIAEvaluation` (7 test): TacticalAndTechnicalTrends rejected, rejection non basata su identifier, post-war WWI book non rejected, search page rejected, evaluate_candidates_from_context, discovery/relevance separation, versioning
+  - `TestContextPropagation` (2 test): spy provider riceve context, provider senza context funziona
+  - `TestRegressionTacticalTrends` (3 test): no TacticalAndTechnicalTrends in Carso sources, no search page URLs, no WW2 items for WW1 event
+
+### Validazioni chiave
+- `TacticalAndTechnicalTrendsNos1-20` → rejected (war mismatch: WW2 item vs WW1 event)
+- `lalettura170301031917_art_02` → non rejected (WWI, pertinente)
+- Nessun filtro `date:[1940 TO 1946]` nelle query del piano
+- Nessun termine `_IT_MILITARY` per eventi (solo person/unit WW2)
+- Cache versioning: `ia_query_plan_v2`, `ia_relevance_v2`
+- Zero risultati è valido: nessun fallback a contenuto generico per eventi
+- Discovery score separato da historical relevance score
+
+### Regole rispettate
+- No dati mock o simulati: test usano DB reale e API IA live
+- No redesign full pipeline: fix mirato su context propagation
+- No cancellazione dati legacy: audit non distruttivo
+- No hardcoding event-specific identifiers: query planner generico
+- Conflict unknown non inferisce WW2: marcato unknown esplicitamente
+
+## 2026-07-25 (sera) — Internet Archive Integration (in progress)
+
+### Riepilogo
+Integrazione di Internet Archive come fonte esterna strutturata per ricerca storica eventi. Pipeline completa: discovery, valutazione storica, asset selection, locator pagina/passaggio, ingestion preview, conferma archiviazione, ricostruzione eventi. Moduli nuovi riusano componenti esistenti (fonti_indice, archivio_documenti, event_links, claim_service, event_resolver).
+
+### Nuovi moduli backend
+- **`ia_evaluation.py`** — Valutazione storica candidati IA: rilevamento conflitto (WWI/WW2/interwar), compatibilità temporale, geografica, pertinenza storiografica, qualità documento (OCR/DjVu/PDF). Score 0.0–1.0, stati accepted/candidate/rejected. Filtra search page URL generiche.
+- **`ia_locator.py`** — Asset selection (priorità hOCR > DjVu > PDF > text) e locator pagina/passaggio. Parser hOCR (microformat HTML con bbox), parser DjVu text layer, page count da metadata. `locate_passage()` pipeline completa con fallback.
+- **`ia_pipeline.py`** — Pipeline end-to-end: `discover()` (advancedsearch + evaluation), `analyze_item()` (metadata + asset + locator), `build_ingestion_preview()` (form precompilato), `confirm_ingestion()` (upsert fonti_indice + archivio_documenti + event_links + claim), `reconstruct_from_ia()` (ricostruzione da fonti IA accettate).
+
+### Componenti riusati
+- `source_providers/providers.py:ProviderInternetArchive` — search/metadata base (esteso con query dinamiche in ia_pipeline)
+- `event_resolver.py` — risoluzione evento, get_event_by_id, get_related_events
+- `archivio_documenti.py` — upsert_documenti, create_schema
+- `claim_service.py` — create_claim, add_evidence
+- `event_evidence_pipeline.py` — Source, Claim, EvidencePackage, _temporal_overlap, _geographic_overlap
+- `mass_index.py:_is_search_page_url` — modello per filtro URL search page
+- `_clean_bad_links.py` — modello per audit non distruttivo
+- `event_link_audit.py` — modello per audit event_links
+
+### Endpoint API pianificati
+| Endpoint | Metodo | Descrizione |
+|---|---|---|
+| `/api/ia/discover` | GET | Discovery item IA per evento |
+| `/api/ia/item/{identifier}` | GET | Metadati + asset + locator item IA |
+| `/api/ia/analyze` | GET | Analisi completa item (evaluation + locator) |
+| `/api/ia/ingestion-preview` | GET | Form precompilato per conferma |
+| `/api/ia/confirm` | POST | Conferma ingestion (archivia + collega) |
+| `/api/ia/reconstruct` | GET | Ricostruzione evento da fonti IA |
+| `/api/ia/audit` | GET | Audit non distruttivo vecchi link IA |
+
+### Stato implementazione
+- [x] `ia_evaluation.py` — completato, compila OK
+- [x] `ia_locator.py` — completato, compila OK
+- [x] `ia_pipeline.py` — completato, compila OK
+- [ ] API endpoints in `app.py` — da implementare
+- [ ] Frontend (tab IA in EventResearchPage) — da implementare
+- [ ] Audit non distruttivo vecchi link IA — da implementare
+- [ ] Test master — da implementare
+
+### Regole rispettate
+- No dati mock o simulati: tutti i metadati provengono da API IA reali
+- No download forzato di asset: solo metadati + link diretto
+- Filtro search page URL: niente pagine di ricerca generiche salvate
+- War mismatch: item IA con conflitto diverso dall'evento vengono rifiutati
+- Non distruttivo: audit vecchi link marca, non cancella
+
+## 2026-07-25 — AI Historical Integration: Phases A–K (branch `devin/ai-storica-eventi-mappe`)
+
+### Riepilogo
+Integrazione completa di sistema AI storico specializzato per WWI/WII nel repository principale. 11 fasi, ~20 nuovi file backend, ~10 nuovi file frontend. Schema additive, nessuna cancellazione dati.
+
+### Phase A — Audit baseline
+- `_audit_baseline.py`: ispezione tabelle, conteggi, integrità FK, indici
+- `docs/AI_HISTORICAL_INTEGRATION_BASELINE.md`: documentazione completa (312 righe)
+- `docs/adr/ADR-AI-HISTORICAL-RAG-EVENT-MAPS.md`: ADR architetturale
+- `.gitignore`: regole per modelli, dati, cache, refactor, handoff
+
+### Phase B — Sicurezza e contratti
+- `_check_keys.py`: verifica chiavi API senza esporre valori
+- `canonical_models.py`: modelli Pydantic canonici (Event, Claim, Map, Graph, ResearchJob, Report, StructuredError)
+- `frontend/src/api/canonical-types.ts`: equivalenti TypeScript
+- `ai_runtime.py`: interfaccia InferenceAdapter con LMStudio, Remote, Test adapter
+- `config/ai_runtime.yaml`: configurazione runtime (no segreti)
+- `research_orchestrator.py`: `classify_url` espansa con 10 tipi (document, record, catalog_entry, search_page, homepage, download, viewer, broken, unknown)
+
+### Phase C — Provenance e claims
+- `graph_schema.py`: migrazione additiva (6 tabelle, 8 indici) con `--dry-run` e `--rollback`
+- `graph_models.py`: modelli Pydantic per GraphNode, GraphEdge, GraphEvidence, GraphReview, etc.
+- `graph_service.py`: adapter read-through per record_links, event_links, collegamenti, external_record_links, claims — preserva provenance legacy, mai promuove candidati a confirmed senza review
+- `graph_api.py`: router FastAPI `/api/graph/entity/{table}/{id}` e edge review
+- `database_registry.py`: registry tabelle canonico con TableSpec, connessioni read-only, estrazione label/descrizione/URL
+
+### Phase D — Evento canonico
+- `event_schema.py`: migrazione additiva su `eventi_1gm` (12 nuove colonne: stable_id, conflict, event_type, parent_event_id, review_status, etc.) + tabella `event_aliases` (90 alias importati)
+- `event_canonical_api.py`: API REST `/api/canonical-events` con list, get, children, update
+- Classificazione conflict: 7 eventi WWII riclassificati (Operazione Achse, Cefalonia, Russia, Tobruk, Mauthausen, Lavoro forzato, Cassino)
+- Gerarchia parent_event_id: Isonzo→Carso/SanMichele/Nero/Tolmino/Caporetto, etc.
+
+### Phase E — RAG pipeline
+- `rag_pipeline.py`: pipeline completa
+  - `retrieve()`: retrieval ibrido FTS5 + filtri metadata su tabelle multiple
+  - `rerank()`: boost qualità fonte, compatibilità temporale/geografica, indipendenza
+  - `build_context()`: contesto strutturato con citazioni `[fonte: table#id]`, budget token, warning troncamento
+  - `validate_ai_output()`: check claim non citati, pattern allucinazione, dichiarazione "evidenze insufficienti"
+- `rag_api.py`: API REST `/api/rag/retrieve` e `/api/rag/validate`
+
+### Phase F — Frontend
+- `types.ts`: CanonicalEvent, GraphEntityResponse, GraphEdgeDTO, GraphEvidenceDTO, RAGContextResponse, RAGValidationResponse
+- `client.ts`: graphEntity(), graphEdgeReview(), canonicalEvents(), canonicalEvent(), ragRetrieve(), ragValidate()
+- `EventsPage.tsx`: tag conflict (WWI/WWII) e event_type su card eventi, caricamento parallelo eventi canonici
+- `EventDossierPage`: pulsante "Grafo canonico" → `/grafo/eventi_1gm/:id`
+- `GraphEntityPage.tsx`: nuova pagina con filtri stato epistemico, evidenze, segnali contrari, review status
+- `router.tsx`: route `/grafo/:sourceTable/:sourceId`
+
+### Phase G — Mappa
+- `map_schema.py`: tabella `map_features` con provenance (source_table, source_id, source_url), certainty, review_status, phase
+- `map_features_api.py`: API REST `/api/map-features` con list, create/update (upsert), review
+- Frontend: MapFeatureRecord, MapFeatureListResponse types + API client methods
+
+### Phase H — Grafo
+- `GraphEntityPage.tsx`: integrazione ForceGraph con filtri status applicati a visualizzazione e lista archi
+- ForceGraph esistente (582 righe): anti-collision, zoom/pan, fullscreen, export SVG/PNG, touch support
+
+### Phase I — Runtime locale
+- `ai_runtime_api.py`: API REST `/api/ai-runtime` con health, config, benchmark, reset
+- Frontend: AIRuntimeHealth, AIRuntimeConfig, AIRuntimeBenchmark types + API client methods
+
+### Endpoint API nuovi
+| Endpoint | Metodo | Descrizione |
+|---|---|---|
+| `/api/graph/entity/{table}/{id}` | GET | Grafo canonico per entità |
+| `/api/graph/edges/{edge_id}/review` | POST | Review arco grafo |
+| `/api/canonical-events` | GET | Lista eventi canonici |
+| `/api/canonical-events/{stable_id}` | GET/PUT | Evento canonico singolo |
+| `/api/canonical-events/{stable_id}/children` | GET | Eventi figlio |
+| `/api/rag/retrieve` | GET | RAG retrieval + reranking + context |
+| `/api/rag/validate` | POST | Validazione output AI |
+| `/api/map-features/event/{event_id}` | GET | Feature mappa per evento |
+| `/api/map-features/` | POST | Crea/aggiorna feature |
+| `/api/map-features/{id}/review` | PUT | Review feature |
+| `/api/ai-runtime/health` | GET | Stato adapter AI |
+| `/api/ai-runtime/config` | GET | Configurazione (no segreti) |
+| `/api/ai-runtime/benchmark` | POST | Benchmark latenza |
+| `/api/ai-runtime/reset` | POST | Reset adapter singleton |
+
+### Schema migrazioni (tutte additive, reversibili)
+- `imi_internati.db`: graph_nodes, graph_edges, graph_edge_reviews, graph_pipeline_runs, graph_integrity_issues, archival_metadata (6 tabelle, 8 indici)
+- `eventi_1gm.db`: 12 colonne aggiuntive su eventi_1gm + event_aliases table (2 indici) + map_features table (3 indici)
+
+### Test
+- Schema deployment verificato con `--dry-run` e esecuzione reale
+- Graph service testato con record reale (internati/22808, Gaiaschi Luigi)
+- RAG pipeline testato con query "Caporetto" (3 chunks, citazioni corrette)
+- Event canonical API testato (22 eventi, 90 alias, gerarchia corretta)
+- TypeScript compila senza errori (`tsc --noEmit`)
+
+## 2026-07-24 (sera) — Refactor grafo canonico, identity resolution e fonti (branch `codex/refactor-grafo-fonti-20260724`)
+
+### Riepilogo
+Refactor completo del sistema di collegamenti (grafo), risoluzione identità e gestione fonti. 62 file modificati, +7.568 / -2.147 righe. Branch `codex/refactor-grafo-fonti-20260724` su commit `a7e6231`. PR aperta, non mergiata.
+
+### Nuovi moduli backend
+- **`identity_resolution.py`** (475 righe) — Algoritmo di risoluzione identità con gradi di confidenza (candidate → probable → confirmed). Rifiuta cognome-only come prova. Corroborazioni: data nascita, luogo, matricola, reparto, campo, periodo. Gestione omonimi con marcatura ambiguous.
+- **`identity_link_pipeline.py`** (248 righe) — Pipeline dry-run/execute per generare collegamenti identity-resolved. Algorithm version `identity-resolution-2.0.0`. Checkpoint/resume.
+- **`graph_schema.py`** (153 righe) — Schema canonico grafo: nodi, archi, review, pipeline runs, integrity issues.
+- **`graph_service.py`** (152 righe) — Servizio grafo: lettura coordinata di `collegamenti`, `record_links`, `event_links`, `external_record_links`, claims.
+- **`graph_models.py`** (93 righe) — Modelli Pydantic per API grafo.
+- **`graph_visualization.py`** (139 righe) — Generazione grafo SVG selezionabile e scaricabile nei report.
+- **`archival_metadata_service.py`** (154 righe) — Metadati archivistici stabili con marcatura URL mancanti.
+- **`validate_graph.py`** (208 righe) — Validatore read-only su 4 sistemi di collegamento.
+- **`database_registry.py`** (265 righe) — Registry centralizzato per path DB main ed eventi.
+
+### Migrazioni additive e reversibili
+- **`20260724_001_graph_core.sql`** (129 righe) — 6 nuove tabelle in `imi_internati.db`: `graph_nodes`, `graph_edges`, `graph_edge_reviews`, `graph_pipeline_runs`, `graph_integrity_issues`, `archival_metadata`.
+- **`20260724_001_graph_core_rollback.sql`** (22 righe) — Rollback completo.
+- **`20260724_002_event_link_metadata.sql`** (24 righe) — Tabella `event_link_metadata` in `eventi_1gm.db`.
+- **`20260724_002_event_link_metadata_rollback.sql`** (3 righe) — Rollback.
+- **`apply_graph_migrations.py`** (80 righe) — Runner con dry-run, execute, rollback. Backup automatici con SHA-256.
+
+### Modifiche backend
+- **`app.py`** (+234/-234) — API canoniche: `/api/graph/search`, `/api/graph/entity/{table}/{id}`, `/api/graph/expand`, `/api/graph/metadata`, `/api/graph/review`. Endpoint `/api/internati/{id}/links` deprecato come alias con `is_graph: false`. Endpoint `/api/internati/{id}/fonti` ora esclude surname-only e homepage. Report con `visualization.nodes` e `visualization.edges`.
+- **`report_engine.py`** (+560/-) — Generazione grafo SVG nel report, narrative con grafo grounded, no dangling edges.
+- **`unified_search.py`** (+107) — Ricerca unificata con ritorno identità reale del record.
+- **`external_link_service.py`** (+314/-) — Matching con data nascita, luogo, campo. Batch linking. Detection omonimie. `review_link_with_type` per link bidirezionali.
+- **`link_pipeline.py`** (+445/-) — Audit read-only su 4 sistemi. Pipeline dry-run.
+- **`soldier_dashboard.py`** (+160/-) — Dashboard con fonti dossier filtrate, external sources con `live_search_performed: false` di default.
+- **`viewpoints_api.py`** (+174) — API per punti di vista con grafo.
+- **`search_service.py`** (+93) — Servizio ricerca con identity resolution.
+
+### Modifiche frontend
+- **`ReportGraph.tsx`** (+315) — Grafo SVG interattivo, selezione nodi, download.
+- **`PrimaryNavigation.tsx`** (nuovo, 300 righe) — Navigazione primaria refactor.
+- **`HomePage.tsx`** (+414/-) — Home page con grafo e report integrati.
+- **`HeuristicLinksPage.tsx`** (+83/-) — Pagina collegamenti euristici con nuovi contratti.
+- **`SoldierDossierPage.tsx`** (+53/-) — Dossier con fonti filtrate, external sources.
+- **`ViewpointsPage.tsx`** (+144/-) — Punti di vista con grafo.
+- **`ResearchPage.tsx`** (+199/-) — Ricerca AI con identity resolution.
+- **`AdminPage.tsx`** (+17/-) — Admin con stato migrazioni.
+- **`client.ts`** (+78/-) — Client API con tipi grafo.
+- **`types.ts`** (+36/-) — Tipi TypeScript per grafo, identity, metadata.
+
+### Test
+- **`tests/test_identity_resolution.py`** (107 righe) — 6 test: birth data corrobora, conflitto data non compensato, anno in contesto migliora match, omonimi marked ambiguous, full name non auto-confirmato, surname-only rejected.
+- **`tests/test_graph_refactor.py`** (425 righe) — 10 test: nodi/archi/legacy validi, migrazioni apply/rollback, validator 4 sistemi, fonti dossier escludono surname-only, external mentions usano birth data, archival metadata stabile, report grafo grounded no dangling, review persistita senza cambiare legacy, unified search ritorna identità reale.
+- **Totale: 16 test, 0 falliti** (0.651s).
+
+### Documentazione
+- `docs/graph-architecture-audit.md` (115 righe) — Audit architettura grafo.
+- `docs/graph-data-model.md` (137 righe) — Modello dati canonico.
+- `docs/graph-validation-report.md` (179 righe) — Report validazione.
+- `docs/external-sources-status.md` (85 righe) — Stato fonti esterne.
+- `docs/analysis/REPORT_ANALISI_E_FIX.md` (27 righe) — Analisi e fix.
+- `frontend/ARCHITECTURE.md` (+276 righe) — Architettura frontend refactor.
+
+### Verifiche eseguite
+- `compileall`: PASS
+- `unittest` (16 test): PASS
+- `npm run lint` (oxlint): 0 warnings, 0 errors
+- `npm run build` (tsc + vite): PASS (588ms, 1603 moduli)
+- Migrazioni: dry-run → execute → rollback → re-execute. Tutti i conteggi legacy invariati. Integrity check OK.
+- Caso regressione Luigi Gaiaschi (id=22808): fonti dossier corrette (no Mario/Camilla/Rosa), external sources senza live search, grafo senza undefined nodes, report con 26 nodes / 22 edges.
+- AI Mistral: `mistral-small-latest` risponde correttamente (3.739 caratteri generati).
+- `.env` e DB: gitignored, non tracciati.
+
+### Anomalie residue (preesistenti, non introdotte dalla patch)
+- `validate_graph.py` crash su `archivio_documenti` (chiave composta `provider+external_id`, no colonna `id`).
+- Conflitto `httpx<0.28` vs `mistralai>=2.0.0` in `requirements.txt` — risolto localmente aggiornando httpx a 0.28.1.
+- 589 FK violations preesistenti in `imi_internati.db` (foreign keys non abilitate in `get_conn()`).
+- OpenAI 401 (chiave scaduta), Anthropic 400 (credito insufficiente), Gemini 429 (quota superata), Perplexity 401.
+
 ## 2026-07-24 (notte) — Research Engine Fase C: Fact Extraction + Timeline Automatica
 
 ### Nuovo modulo: Fact Extractor (`fact_extractor.py`)

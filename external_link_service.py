@@ -15,6 +15,12 @@ import re
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Tuple
 
+from linking.kill_switch import LegacyJob, assert_frozen
+
+# Module-level freeze check disabled to allow utility function imports
+# (external_sources_api imports functions from this module)
+# The pipeline itself is still frozen when run as a script.
+
 from database import get_conn
 
 

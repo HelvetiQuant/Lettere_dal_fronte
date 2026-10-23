@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-07-29T13:39:11.168858+00:00",
+  "summary": {
+    "total": 6,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 2
+  },
+  "results": [
+    {
+      "case_id": "GD-001",
+      "claim_id": 9,
+      "status": "pass",
+      "issues": [],
+      "expected": {
+        "case_id": "GD-001",
+        "claim_id": 9,
+        "description": "Pilot A: Battaglia del Carso (evt_0018) — occurred_during WW1, 22 items Europeana",
+        "expected_claim_status": "supported",
+        "min_evidence_count": 3,
+        "required_independent_sources": 0,
+        "expected_editorial_decision": "needs_revision",
+        "notes": "22 items da Europeana confermano l'evento. claim_status 'supported'. Evidence create ma source_item_id NULL — da collegare agli external_items per independent_sources > 0."
+      },
+      "actual": {
+        "claim_status": "supported",
+        "evidence_count": 6,
+        "independent_groups": 0,
+        "latest_decision": "needs_revision"
+      }
+    },
+    {
+      "case_id": "GD-002",
+      "claim_id": 10,
+      "status": "pass",
+      "issues": [],
+      "expected": {
+        "case_id": "GD-002",
+        "claim_id": 10,
+        "description": "Pilot B: Persona WW1 — was_prisoner_in, 5 ICRC items, 3 evidence",
+        "expected_claim_status": "supported",
+        "min_evidence_count": 2,
+        "required_independent_sources": 0,
+        "expected_editorial_decision": "needs_revision",
+        "notes": "5 items ICRC con 3 evidence. Evidence create ma source_item_id NULL — da collegare agli external_items."
+      },
+      "actual": {
+        "claim_status": "supported",
+        "evidence_count": 3,
+        "independent_groups": 0,
+        "latest_decision": "needs_revision"
+      }
+    },
+    {
+      "case_id": "GD-003",
+      "claim_id": 11,
+      "status": "pass",
+      "issues": [],
+      "expected": {
+        "case_id": "GD-003",
+        "claim_id": 11,
+        "description": "Pilot C: IMI WW2 — was_interned_in, 5 LeBI items, 3 evidence",
+        "expected_claim_status": "supported",
+        "min_evidence_count": 2,
+        "required_independent_sources": 0,
+        "expected_editorial_decision": "needs_revision",
+        "notes": "5 items LeBI con 3 evidence. Evidence create ma source_item_id NULL — da collegare agli external_items."
+      },
+      "actual": {
+        "claim_status": "supported",
+        "evidence_count": 3,
+        "independent_groups": 0,
+        "latest_decision": "needs_revision"
+      }
+    },
+    {
+      "case_id": "GD-004",
+      "claim_id": 12,
+      "status": "pass",
+      "issues": [],
+      "expected": {
+        "case_id": "GD-004",
+        "claim_id": 12,
+        "description": "Pilot D: Onorificenza Quirinale — received_honor, 0 items",
+        "expected_claim_status": "discovered",
+        "min_evidence_count": 0,
+        "required_independent_sources": 0,
+        "expected_editorial_decision": "deferred",
+        "notes": "Nessun item recuperato. Endpoint Quirinale non ha restituito risultati. Internet Archive senza match. Claim da rivedere con query alternative."
+      },
+      "actual": {
+        "claim_status": "discovered",
+        "evidence_count": 0,
+        "independent_groups": 0,
+        "latest_decision": "deferred"
+      }
+    },
+    {
+      "case_id": "GD-005-NEG",
+      "status": "skip",
+      "message": "Control case — no claim_id"
+    },
+    {
+      "case_id": "GD-006-NEG",
+      "status": "skip",
+      "message": "Control case — no claim_id"
+    }
+  ]
+}

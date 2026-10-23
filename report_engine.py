@@ -356,8 +356,50 @@ def generate_report(query: str, tipo: str = "auto") -> dict:
             ],
         })
 
-    # 5. Genera narrative AI
+    # 5. LeBI citations (per persona IMI)
+    lebi_citations = []
+    if tipo == "persona":
+        try:
+            from sources_external_lebi import LeBIAdapter
+            from urllib.parse import urljoin
+            import re as _re
+            adapter = LeBIAdapter()
+            tokens = query.split()
+            cognome = tokens[0] if tokens else ""
+            nome = tokens[1] if len(tokens) > 1 else ""
+            search_url = f"{adapter.base_url}/frontend_prodimi.php/caduti/search"
+            full_url = f"{search_url}?d=0&q={cognome}&n={nome}&l=&y=&page=1"
+            html, status = adapter.fetch_page(full_url)
+            if html and status < 400:
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(html, "html.parser")
+                links = soup.find_all("a", href=_re.compile(r"/caduti/show/\d+"))
+                seen_ids = set()
+                for link in links[:5]:
+                    href = link.get("href", "")
+                    match = _re.search(r"/caduti/show/(\d+)", href)
+                    if not match:
+                        continue
+                    record_id = match.group(1)
+                    if record_id in seen_ids:
+                        continue
+                    seen_ids.add(record_id)
+                    lebi_citations.append({
+                        "archivio": "ANRP — LeBI",
+                        "titolo": link.get_text(strip=True),
+                        "url": urljoin(adapter.base_url, href),
+                        "pdf_url": f"{adapter.base_url}/frontend_prodimi.php/caduti/showpdf/{record_id}",
+                        "access": "online",
+                    })
+        except Exception as e:
+            log.warning("LeBI citation error: %s", e)
+
+    # 6. Genera narrative AI
     context = _build_context(query, tipo, entities, soldiers, sources)
+    if lebi_citations:
+        context += "\n\nFONTI LeBI/ANRP:\n"
+        for c in lebi_citations:
+            context += f"  - {c['titolo']} | {c['url']}\n"
     prompt  = USER_PROMPT_TEMPLATE.format(query=query, context=context)
     ai_res  = _generate_narrative(prompt)
 
@@ -378,6 +420,7 @@ def generate_report(query: str, tipo: str = "auto") -> dict:
             for s in sources
         ],
         "sources_total": len(sources),
+        "lebi_citations": lebi_citations,
         "entities": [
             {"id": e["id"], "tipo": e["tipo"], "valore": e["valore"]}
             for e in entities

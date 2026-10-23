@@ -1,0 +1,91 @@
+# Rapporto di Ricerca — snap_v7_f54fb9bbad24c115
+Versione schema: 7
+Intent: PERSON_LOOKUP
+Target: Bianchi Giovanni
+Contratto Narratore: 7.1
+
+## Risoluzione Identità: RESOLVED
+## Corroborazione Esterna: PARTIAL
+
+## Claim in Conflitto
+  - fate: deceduto (CONFLICTING)
+  - fate: rimpatriato (CONFLICTING)
+  - fate: altro (CONFLICTING)
+
+## Claim Asserti (origine, non corroborati)
+  - rank: Serg.
+
+## Omonimi Respinti
+  - BIANCHI ANGELO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI GIUSEPPE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI MODESTO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI VITTORIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI GIUSEPPE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI SERGIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ALESSANDRO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI EDEVALDO DI EVARISTI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI LUIGI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI : motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI PARIDE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI MICHELE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ALDO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI 1° ANTONIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ADELMO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ADOLFO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ADRIANO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI AGOSTINO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ALBERTO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ALBINO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ALDO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ALESSANDRO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI BRUNO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ABBONDIO DI ABRAMO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ABELE DI ARCANGELO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ABILIO DI ABILIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ABRAMO DI LUIGI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ACHILLE DI CESARE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ACHILLE DI PAOLO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ACHILLE DI PIETRO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ACHILLE DI VINCENZO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ADAMO DI ANTONIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ADAMO DI CESARE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ADELMO DI GIACOMO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ADO DI ANGELO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ADOLFO DI ZAVERIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI ADOLFO PIETRO DI CARLO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI AGOSTINO DI AMBROGIO: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI AGOSTINO DI GIUSEPPE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI AGOSTINO DI LUIGI: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+  - BIANCHI AGOSTINO DI MICHELE: motivi=['HOMONYM_DIFFERENT_IDENTITY'], conflitti=[]
+
+## Gap Condizionali
+  - birth_year: Field birth_year not supported by accepted evidence [BLOCCANTE]
+  - birth_place: Field birth_place not supported by accepted evidence [BLOCCANTE]
+  - unit: Field unit not supported by accepted evidence
+  - death_date: Field death_date not supported by accepted evidence
+  - death_year: Field death_year not supported by accepted evidence
+  - death_place: Field death_place not supported by accepted evidence
+  - death_cause: Field death_cause not supported by accepted evidence
+  - captivity: Field captivity not supported by accepted evidence
+  - internment_place: Field internment_place not supported by accepted evidence
+  - burial: Field burial not supported by accepted evidence
+  - capture_place: Field capture_place not supported by accepted evidence
+  - capture_date: Field capture_date not supported by accepted evidence
+  - fate: Field fate not supported by accepted evidence
+
+## Limitazioni
+  - NO_AI_PROVIDER: No AI provider available for narration. Using deterministic fallback.
+
+---
+## Provenienza
+- Snapshot: snap_v7_f54fb9bbad24c115
+- Schema: 7
+- Narrator Contract: 7.1
+- Identity Resolution: RESOLVED
+- External Corroboration: PARTIAL
+- Provider Ledger: 61 observations
+- Source Lineage Groups: 0
+- Independence Groups: 0
+
+Questo rapporto è stato generato deterministicamente senza AI.
+Tutti i claim sono tracciati con provenienza completa.

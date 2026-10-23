@@ -5,11 +5,14 @@ multi-provider, e gestisce fetch on-demand con cache.
 """
 
 import json
+import logging
 from datetime import datetime
 from typing import Dict, List, Optional
 
+log = logging.getLogger(__name__)
+
 from database import get_conn
-from .base import SourceProvider, score_source, _dict_factory
+from .base import SourceProvider, score_source, _dict_factory, FederatedSearchContext
 from .nara import ProviderNARA
 from .antenati import ProviderAntenati
 from .cwgc import ProviderCWGC
@@ -93,38 +96,127 @@ def list_providers() -> List[dict]:
 
 # ─── Federation search ─────────────────────────────────────────────────────────
 
-def federated_search(query: str, cues: dict = None,
-                     providers: List[str] = None,
-                     filters: dict = None) -> List[dict]:
-    """Cerca across provider. Non scarica documenti.
-    Ritorna metadati con score.
+def federated_search(
+    query: str,
+    cues: dict = None,
+    providers: List[str] = None,
+    filters: dict = None,
+    *,
+    context: Optional[FederatedSearchContext] = None,
+    timeout_per_provider: float = 8.0,
+    num_workers: int = 6,
+) -> List[dict]:
+    """Cerca across provider in parallelo con distribuzione dinamica del lavoro.
 
-    Args:
-        query: testo query
-        cues: cue estratti (persona, reparto, luogo, data)
-        providers: lista nomi provider da interrogare (None = tutti)
-        filters: filtri aggiuntivi (comune, anno, tipologia, etc.)
+    FIX: Provider capability routing — providers are filtered by conflict/subject_type/time_range
+    before being called. Skipped providers are logged with reason codes.
     """
+    import concurrent.futures
+    import threading
+    import queue
+
     reg = get_registry()
     if providers:
         targets = {k: v for k, v in reg.items() if k in providers}
     else:
         targets = reg
 
+    if not targets:
+        return []
+
+    # ── FIX: Provider capability routing ──
+    # Extract conflict/subject_type/year from context or filters
+    target_conflict = "unknown"
+    target_subject_type = "unknown"
+    target_year = None
+
+    if context:
+        target_conflict = context.conflict
+        target_subject_type = context.subject_type
+        target_year = context.start_year
+    elif filters:
+        target_conflict = filters.get("conflict", "unknown")
+        target_subject_type = filters.get("subject_type", "unknown")
+        yr = filters.get("year") or filters.get("birth_year")
+        if yr:
+            try:
+                target_year = int(yr)
+            except (ValueError, TypeError):
+                pass
+
+    skipped_providers = []
+    compatible_targets = {}
+    for pname, prov in targets.items():
+        if prov.is_compatible(target_conflict, target_subject_type, target_year):
+            compatible_targets[pname] = prov
+        else:
+            reason = "PROVIDER_CONFLICT_MISMATCH"
+            if target_subject_type != "unknown" and prov.subject_types and target_subject_type not in prov.subject_types:
+                reason = "PROVIDER_SUBJECT_TYPE_MISMATCH"
+            elif target_year is not None:
+                if prov.time_start is not None and target_year < prov.time_start:
+                    reason = "PROVIDER_TIME_RANGE_BEFORE"
+                elif prov.time_end is not None and target_year > prov.time_end:
+                    reason = "PROVIDER_TIME_RANGE_AFTER"
+            skipped_providers.append({"provider": pname, "reason": reason})
+            log.debug("FederatedSearch: skipping %s — %s (conflict=%s, subject=%s, year=%s)",
+                      pname, reason, target_conflict, target_subject_type, target_year)
+
+    targets = compatible_targets
+    if not targets:
+        log.info("FederatedSearch: all providers skipped (conflict=%s, subject=%s, year=%s)",
+                 target_conflict, target_subject_type, target_year)
+        return []
+
+    # Crea una coda con tutti i provider
+    provider_queue: queue.Queue = queue.Queue()
+    for pname, prov in targets.items():
+        provider_queue.put((pname, prov))
+
+    results_lock = threading.Lock()
     all_results = []
-    for pname, provider in targets.items():
-        try:
-            results = provider.search(query, filters or {})
-            for r in results:
-                r["provider"] = pname
-                r["score"] = score_source(r, cues or {})
-                all_results.append(r)
-        except Exception as e:
-            all_results.append({
-                "provider": pname,
-                "error": str(e),
-                "score": 0.0,
-            })
+    completed_count = 0
+    total = len(targets)
+
+    def _worker_search(worker_id: int):
+        nonlocal completed_count
+        local_results = []
+        while True:
+            try:
+                pname, provider = provider_queue.get_nowait()
+            except queue.Empty:
+                break  # No more providers to search
+
+            try:
+                results = provider.search(query, filters or {}, context=context)
+                for r in results:
+                    r["provider"] = pname
+                    r["score"] = score_source(r, cues or {})
+                    local_results.append(r)
+            except Exception as e:
+                local_results.append({"provider": pname, "error": str(e), "score": 0.0})
+
+            with results_lock:
+                completed_count += 1
+                log.debug("FederatedSearch worker %d: completed %s (%d/%d)", worker_id, pname, completed_count, total)
+
+        return local_results
+
+    num_workers = min(num_workers, len(targets))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as pool:
+        futures = [pool.submit(_worker_search, i) for i in range(num_workers)]
+
+        # Wait for all workers with global timeout
+        global_timeout = timeout_per_provider * (len(targets) // num_workers + 2)
+        for future in concurrent.futures.as_completed(futures, timeout=global_timeout):
+            try:
+                worker_results = future.result(timeout=global_timeout)
+                with results_lock:
+                    all_results.extend(worker_results)
+            except concurrent.futures.TimeoutError:
+                log.warning("FederatedSearch: worker timed out")
+            except Exception as e:
+                log.warning("FederatedSearch: worker error: %s", e)
 
     # ordina per score
     all_results.sort(key=lambda x: x.get("score", 0), reverse=True)

@@ -1,10 +1,276 @@
 # TODO — VOCI DAL FRONTE / IMI Extractor
 
-Aggiornato: 24 luglio 2026 — AI Provider Consolidation + LeBI Fase 4 + Docs.
+Aggiornato: 12 ottobre 2026 — Grafo canonico popolato+sync, backfill reale, war-period data-verified, Arolsen enrichment.
 
 ---
 
-## Giornata 2026-07-24 — AI Consolidation + LeBI Fase 4 + Docs
+## V7.8 Conversational Follow-Up — COMPLETATO (2026-08-14)
+
+### Completato
+- [x] **`call_ai_chat()` in `ai_client.py`**: multi-turn chat con OpenAI/Mistral/Anthropic, messages array con conversation history, fallback provider con circuit breaker
+- [x] **`_call_openai_chat()`, `_call_mistral_chat()`, `_call_anthropic_chat()`**: implementazioni provider-specific per multi-turn
+- [x] **`execute_followup()` in `unified_orchestrator_v7.py`**: recupera snapshot da run precedente, costruisce system prompt con claim/evidenze, chiama `call_ai_chat` con history
+- [x] **`_build_followup_system_prompt()`**: template con claim documentali, contesto, report precedente, regole anti-allucinazione
+- [x] **`POST /api/v7/followup` in `v7_api.py`**: endpoint con `run_id`, `question`, `conversation_history`
+- [x] **Test Luigi Gaiaschi**: 3 turni conversazionali (ricerca gpt-4o → follow-up gpt-4o-mini × 2), risposte context-aware
+- [x] **Test DEMARCO Giuseppe**: 3 turni conversazionali, AI cita fonti (Elenco_D.pdf, pagina 91), identifica dettagli non documentati
+- [x] **Git push**: commit `da1e9ad` + `971aae6` su `fix/provenance-linking-v2`
+- [x] **Documentazione**: CHANGELOG V7.8, ARCHITETTURA_COMPLETA.md aggiornata
+
+### Pending
+- [x] **Persistenza run snapshot**: FATTO (2026-10-12) — `_stage_persist` salva su `research_snapshots`, fallback in `execute_followup`, TTL 30gg
+- [ ] **Frontend: UI conversazionale**: aggiungere chat interface in ResearchPage.tsx per follow-up
+- [ ] **Frontend: client API**: aggiungere `v7Followup()` in `client.ts`
+- [ ] **Rate limiting follow-up**: limitare numero di follow-up per run_id per evitare abuso
+- [ ] **Token budget tracking**: tracciare costi cumulativi di follow-up per run
+
+---
+
+## PROSSIMI LAVORI BACKEND — Priorità (post 2026-08-14)
+
+### A. Persistenza & Resilienza — ✅ FATTO (2026-10-12)
+- [x] **Persistenza snapshot su DB**: `_stage_persist` salva `EvidenceSnapshotV7` su `research_snapshots` (imi_internati.db): `run_id`, `intent`, `target_name`, `snapshot_json`, `report`, `created_at`
+- [x] **Recupero run da DB**: `execute_followup` fa fallback su `_load_snapshot_from_db` se `_runs` in-memory non ha il run (warning `SNAPSHOT_RECOVERED_FROM_DB`)
+- [x] **Cleanup automatico run**: TTL 30 giorni con DELETE su ogni persist (`_SNAPSHOT_TTL_DAYS`)
+
+### B. Qualità Narrazione
+- [x] **Hallucination skip list residui**: aggiunti "Ancona", "Germania", "Austria", "Polonia", "Storia/contesto" alla skip list in `v7_narrator.py` (2026-10-12)
+- [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare claim provenance non trovati nello snapshot (log narratore)
+- [ ] **Cross-war contamination su Pellegrini**: fixare mismatch war period (WWI vs WWII) per nomi presenti in entrambi i conflitti
+- [x] **Test cross-war**: regression benchmark 2026-10-12 — 23/23 war_period_set, 23/23 homonyms_handled, 23/23 no_legacy_leakage (5 target WWI da caduti_albooro + 5 caduti_cwgc inclusi)
+- [x] **War-period data-verified**: `caduti_ministero` WWII→**WWI** (morti 1914-1921), `decorati_nastroazzurro` WWI→**BOTH** (37% >=1939) in `person_source_schemas.py` + `v7_identity_model.py`
+
+### C. API & Orchestrator
+- [ ] **Endpoint `/api/v7/conversation`**: sessione conversazionale persistente con `session_id` (più follow-up concatenati)
+- [ ] **Streaming responses**: aggiungere SSE/streaming per follow-up (risposta incrementale)
+- [ ] **Batch research API**: endpoint per ricerca multipla (lista nomi → risultati paralleli)
+- [ ] **Webhook notifications**: callback URL per notificare completamento run lunghe
+
+### D. Supabase & Sync — ✅ VERIFICATO (2026-10-12)
+- [x] **Sync `internati` (20.465 rows)**: FATTO — schema remoto esteso (+14 colonne: matricola_militare, cross_link_source, reparto, arma, morte/rientro/decorazione), full upsert 0 errori
+- [x] **Sync `event_links`**: COMPLETO — 2.725.000 righe remote (il dato "18%" era obsoleto)
+- [x] **Sync `lebi_records`**: 166.112 righe con matricola_militare/cattura/impiego (sessione 4 ott)
+- [x] **Schema `core` esposto**: `ALTER ROLE authenticator SET pgrst.db_schemas` + reload schema — core.entities(39), core.events(22), core.entity_names(84) raggiungibili via REST
+- [x] Altre tabelle remote presenti: decorati_nastroazzurro 279.832, caduti_albooro 342.555, caduti_ministero 162.646, archivio_documenti 979, eventi_1gm 49
+- [ ] **Sync `source_authority_registry`**: tabella V3 su Supabase
+- [x] **graph_nodes/graph_edges**: FATTO (2026-10-12) — `populate_graph.py` materializzato 1.513.299 nodi + 4.058.351 archi, sync Supabase 0 errori, pari al locale
+- [ ] **Vector extension Supabase**: abilitare `vector` extension per RAG embeddings
+- [x] **Backfill canonical schema**: FATTO (2026-10-12) — migrazioni reali implementate (era stub count-only): `evidence.link_quarantine` 1.708.934, `archive.external_items` 1.146, `evidence.claims` 51, `ai.datasets` 7, `archive.repositories` NARA
+
+### E. Frontend Integration
+- [ ] **Chat UI in ResearchPage.tsx**: interfaccia conversazionale per follow-up
+- [ ] **`v7Followup()` in `client.ts`**: metodo API per chiamare `/api/v7/followup`
+- [ ] **History panel**: visualizzare storico conversazione per run_id
+
+---
+
+## V7.8 Fix Contaminazione Cross-War e Hallucination Check — COMPLETATO (2026-08-13)
+
+### Completato
+- [x] **Case sensitivity SQLite**: uppercase cognome/nome/query in `v7_provider_adapters.py` e `unified_orchestrator_v7.py`
+- [x] **Name order dual-try**: tentativo entrambi ordini (cognome/nome e nome/cognome) in adapter, orchestrator, identity model
+- [x] **Legacy fallback PERSON_LOOKUP**: skip `resolve_observation` per IRRELEVANT in `unified_orchestrator_v7.py:604-609`
+- [x] **war_period schema**: corretto `caduti_albooro` e `decorati_nastroazzurro` → WWI in `person_source_schemas.py`
+- [x] **lebi_records war_period**: aggiunto `lebi_records: WWII` in `TABLE_WAR_PERIOD` in `v7_identity_model.py`
+- [x] **Web observation WWI filter**: filtro marker WWI (1915-1918, Caporetto, Isonzo, Piave) per target WWII
+- [x] **Hallucination check fix**: estrazione date/luoghi/nomi da `source_text`, `date_note`, `data_quality_note` in `v7_narrator.py:1198-1237`
+- [x] **Test backend API**: Luigi Gaiaschi → RESOLVED_IDENTITY, 5 claim da internati:22808, AI discorsiva gpt-4o
+- [x] **Documentazione**: ARCHITETTURA_COMPLETA.md v4.1, CHANGELOG V7.8
+
+### Pending
+- [ ] **Skip list parole italiane**: aggiungere "Molti", "Internati", "Tuttavia", "Comunque", "Pertanto", "Quindi", "Inoltre" alla hallucination skip list in `v7_narrator.py:1245-1265`
+- [ ] **Test su soldati WWI**: verificare che un soldato WWI (es. da `caduti_albooro`) non generi contesto WWII
+- [ ] **Test su `war_period=unknown`**: verificare comportamento narratore senza periodo bellico
+- [ ] **Test Giuseppe Gaiaschi**: verificare secondo nome della famiglia tramite API
+- [ ] **Test multi-nomi**: eseguire pipeline su 5+ nomi WWII per verificare zero contaminazione
+- [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare i warning `CLAIM_NOT_IN_SNAPSHOT` nei log narratore (claim provenance non trovati nello snapshot)
+- [x] **Pulizia file temporanei**: FATTO (commit `bf78e42`) — 75 file `_tmp_*`/`_test_*`/log/checkpoint rimossi
+- [x] **Git push**: FATTO — branch `fix/provenance-linking-v2` pushato (commit `7224c8c`, `6b51fea`)
+
+---
+
+## V7.7 Frontend Integration — COMPLETATO (2026-08-13)
+
+### Completato
+- [x] **Prompt anti-duplicazione**: sezione "REGOLA ANTI-DUPLICAZIONE OBBLIGATORIA" in `v7_narrator_prompt_v2.py:130-137` con esempi corretti/errati
+- [x] **Dedup renderer**: token overlap + n-gram filtering in `_render_blocks_to_markdown` (`v7_narrator.py:1533-1571`)
+- [x] **AMBIGUOUS_IDENTITY block**: forza deterministic quando cluster conflittuali (`v7_narrator.py:851-865`)
+- [x] **Bug RIZZA GIOVANNI**: root cause = 3 omonimi WWI/WWII mescolati, 132 claim da cluster diversi inviati all'AI
+- [x] **Test ALBERINI ANTONIO**: 2 blocchi puliti, nessuna duplicazione
+- [x] **Test RIZZA GIOVANNI**: deterministic fallback, 3 cluster separati, nessuna contaminazione
+- [x] **Test 20 nomi casuali**: 15/20 AI senza duplicazioni, 3/20 deterministic (AMBIGUOUS), 0 errori
+- [x] **Test 5 eventi**: 3/5 AI (Caporetto, Asiago, Fronte Macedone), 2/5 blocked
+
+### Pending
+- [ ] **CONFLICTED_IDENTITY**: valutare se bloccare AI anche per CONFLICTED (es. CONFALONIERI FRANCESCO usa AI con identity conflittuale)
+- [ ] **Event blocked**: indagare "Prima battaglia del Piave" (0 claim narrabili) e "Battaglia di Tobruk" (WWII, non in eventi_1gm)
+- [ ] **NarrationEvidenceSelector cluster filter**: filtrare claim per `identity_cluster_id` del cluster risolto, non solo bloccare AI
+- [ ] **Dedup threshold tuning**: valutare se 0.55 token overlap è ottimale o troppo aggressivo
+- [ ] **Test su soldati WWI**: verificare che un soldato WWI non generi contesto WWII
+- [ ] **Test su `war_period=unknown`**: verificare comportamento narratore senza periodo bellico
+
+---
+
+## V7.5 OpenAI Primary — COMPLETATO (2026-08-11)
+
+## Temporal Contamination Fix — COMPLETATO (2026-08-10)
+
+### Completato (V7.5)
+- [x] **Sezione AMBITO TEMPORALE OBBLIGATORIO nel prompt**: regole esplicite per scoping temporale del contesto storico (`v7_narrator_prompt_v2.py`)
+- [x] **Validatore post-generazione**: `_post_gen_hallucination_check` rileva `TEMPORAL_CONTAMINATION_WWI_IN_WWII` e `TEMPORAL_CONTAMINATION_WWII_IN_WWI` → fallback deterministico
+- [x] **Test verificato**: BRUTTI ALFIO (WWII) ora genera contesto reparto corretto senza riferimenti WWI
+
+### Pending
+- [ ] **Test su soldati WWI**: verificare che un soldato WWI non generi contesto WWII (es. nome da `caduti_albooro`)
+- [ ] **Test su `war_period=unknown`**: verificare che il narratore non aggiunga contesto di alcun conflitto
+- [ ] **Threshold tuning**: valutare se 5 warning è la soglia corretta per il fallback (temporal contamination potrebbe richiedere soglia più bassa, es. 3)
+- [ ] **Estendere a report deterministici**: il report deterministico attualmente non ha il check temporale (solo AI draft)
+
+---
+
+## LeBI Integration — COMPLETATO (2026-08-09)
+
+### Completato
+- [x] **Bulk import**: 166K+ record da `lessicobiograficoimi.it` → `lebi_records` in `imi_internati.db` (ID 2345–330027, 20 thread, checkpoint/resume)
+- [x] **Supabase sync**: `lebi_records` su Supabase con upsert (`on_conflict=lebi_id`), checkpoint resumable
+- [x] **LocalDbAdapter**: `lebi_records` aggiunto a `PERSON_LOOKUP` in `v7_provider_adapters.py`
+- [x] **PERSON_SOURCE_SCHEMAS**: schema completo `lebi_records` (18 claim_fields, 4 provenance, 7 identity, 6 conflict, WWII, authority_tier=1)
+- [x] **Validatori/normalizzatori**: `capture_front`, `return_date`, `return_place` in `person_source_schemas.py`
+- [x] **Research orchestrator**: `lebi_records` in entity search + direct table search
+- [x] **Fact extractor**: `_LEBI_FIELD_MAP` con 18 mapping, registrato in `field_map` lookup
+- [x] **Unified orchestrator**: docstring aggiornata con `lebi_records`
+- [x] **Test pipeline discorsiva**: 5/5 nomi RESOLVED_IDENTITY, 3 AI Mistral + 2 deterministic, dati LeBI nei report
+
+### Pending
+- [ ] **FTS indexing**: aggiungere `lebi_records` agli indici FTS SQLite per ricerca full-text
+- [x] **Cross-linking ASBZ ↔ LeBI**: FATTO (2026-10-12) — `cross_link_lebi_v2.py`: semantica verificata (`internati.matricola`=n.prigioniero ↔ `lebi.matricola_cattura`), 4 nuovi link + 2.401 enrichment, colonna `matricola_militare` aggiunta
+- [ ] **Frontend dossier**: verificare che il tab LeBI nel dossier mostri anche i dati della pipeline discorsiva
+- [ ] **Supabase query**: verificare che le query Supabase includano `lebi_records` nei filtri PERSON
+- [ ] **CLAIM_NOT_IN_SNAPSHOT warning**: indagare i warning `CLAIM_NOT_IN_SNAPSHOT` nei log narratore (claim provenance non trovati nello snapshot)
+- [~] **AI provider keys**: PARZIALE (2026-10-12) — Gemini ripristinato (`gemini-flash-lite-latest`); OpenAI 0 crediti, Anthropic chiave invalida, Mistral 429, Perplexity quota — ricaricare per qualità AI
+
+---
+
+## Supabase Sync — STATO (2026-08-09)
+
+### Completato
+- [x] Schema canonico `001_supabase_historical_archive_core.sql`: 6 schemi, 21 tabelle, 40+ indici, RLS, trigger, pgcrypto
+- [x] `archivio_documenti`: 979 rows synced
+- [x] `eventi_1gm`: 49 rows synced
+- [x] `event_aliases`: 161 rows synced
+- [x] `lebi_records`: 166K+ rows synced (upsert con merge-duplicates)
+
+### In corso / Pending — aggiornato 2026-10-12
+- [x] `event_links`: 2.725.000 rows remote — COMPLETO (il "18%" era dato obsoleto)
+- [x] `internati`: 20.465 rows synced con schema esteso (+14 colonne)
+- [x] `decorati`, `caduti_*`: synced (nastroazzurro 279.832, albooro 342.555, ministero 162.646)
+- [x] `graph_nodes`, `graph_edges`: synced (1.513.299 / 4.058.351, 0 errori)
+- [x] `backfill_canonical.py`: FATTO — 1.708.934 link_quarantine + items/claims/datasets/repos
+- [ ] Vector extension in Supabase dashboard per RAG embeddings
+- [ ] Storage buckets per thumbnails/representations
+
+---
+
+## Discovery Persistence — PENDING (2026-07-30)
+
+### Bug da fixare
+- [ ] **Supabase sync `core` schema**: `insert_batch_schema` rifiuta schema `core` (non in `VALID_SCHEMAS`). Aggiungere `core` a `VALID_SCHEMAS` in `supabase_client.py` o esporre `core` in Supabase Dashboard → Settings → API → Exposed Schemas
+- [ ] **Supabase sync `evidence.claims`**: errore "column subject_type does not exist" — mappare payload SQLite → schema Supabase (`evidence.claims` ha colonne diverse: `subject_entity_id` non `subject_type`)
+- [ ] **Claim extraction patterns**: affinare regex per ridurre falsi positivi su `military_unit` (es. "e vicende militari" ancora presente in alcuni edge case)
+- [ ] **Entity extraction**: `NON CONFERMATO` ancora estratto come entità person in alcuni run — ampliare `_SECTION_HEADERS`
+
+### Test da scrivere
+- [ ] **Test fonte archiviabile**: URL con policy `full_content` → verifica persistenza completa
+- [ ] **Test fonte non archiviabile**: URL con policy `link_only` → verifica solo metadati
+- [ ] **Test claim nuovo**: claim non presente in DB → status `unverified`
+- [ ] **Test claim contraddittorio**: claim con valore diverso da esistente → status `conflicting` + `manual_review_required=True`
+- [ ] **Test entità nuova**: persona/unità/luogo non in DB → status `candidate` + `review_required=True`
+- [ ] **Test deduplicazione**: stessa URL/ID/hash → non crea duplicati in `source_registry`
+- [ ] **Test Supabase down**: sync fallisce → outbox resta `retryable_error`, local persist `completed`
+- [ ] **Test pista di ricerca**: URL scoperto → `research_leads` con `lead_type=related_source`
+- [ ] **Test file voluminoso**: contenuto > soglia → policy `metadata_only` o `link_only`
+
+### Miglioramenti
+- [ ] **Object links**: implementare `_create_object_links()` effettivo (attualmente 0 link creati)
+- [ ] **ArchivedContent**: gestire file binari grandi (immagini, PDF) fuori dal DB relazionale
+- [ ] **Sync retry**: implementare retry con backoff esponenziale per `retryable_error`
+- [ ] **Sync conflict**: gestire `sync_status=conflict` (versione remota più recente)
+- [ ] **Frontend**: visualizzare `discovery_persistence` nel dossier UI (tab "Scoperte Web")
+- [ ] **API endpoint**: `GET /api/discovery/sources` per elenco fonti scoperte
+- [ ] **API endpoint**: `GET /api/discovery/claims` per elenco claim con filtri
+- [ ] **API endpoint**: `GET /api/discovery/leads` per piste di ricerca
+- [ ] **API endpoint**: `POST /api/discovery/sync` per forzare sync outbox
+
+---
+
+## Giornata 2026-07-27 — Bootstrap Internet Archive → Supabase (audit + fondamenta)
+
+Richiesta originale: bootstrap automatico completo (28 sezioni: job queue, worker, admin UI, estrazione/dedup nuovi eventi WWI/WWII con AI). Eseguito audit reale prima di scrivere codice, come richiesto dalla specifica stessa.
+
+### Completato
+- [x] **Audit materiale**: verifiche dirette via PostgREST (non solo lettura `.sql`) su Supabase. Finding: schema `core.events`/`core.entities` presupposto dal prompt **non esisteva**; le tabelle `archive.*`/`ops.*`/`evidence.*`/`ai.*` esistevano già ma vuote, senza worker.
+- [x] **`docs/audit/internet-archive-bootstrap-preflight.md`**: tabella di audit 15 aree con stato reale/riuso/gap/azione.
+- [x] **`sql/002_supabase_core_events.sql`**: schema `core` (`entities`, `events`, `entity_names`) additivo, applicato 41/41 statement OK.
+- [x] **`migrate_events_to_core.py`**: migrazione idempotente 22 eventi (15 WWI, 7 WWII), 84 alias, 7 link parent/child da SQLite a Supabase `core.*`. Idempotenza verificata (doppia esecuzione, zero duplicati).
+- [x] **RPC `exec_sql_query`/`exec_sql_returning`**: helper riusabili per letture (inclusi pattern `WITH...INSERT...RETURNING`) via Supabase, dato che `exec_sql` esistente non ritorna righe.
+
+### Azione manuale richiesta
+- [x] **Supabase Dashboard → Settings → API → Exposed Schemas**: FATTO via codice (2026-10-12) — `ALTER ROLE authenticator SET pgrst.db_schemas` + `NOTIFY pgrst, 'reload config'` + `NOTIFY pgrst, 'reload schema'`. `core.entities`/`core.events`/`core.entity_names` ora raggiungibili via REST.
+
+### Da completare (fuori scope di questa sessione — settimane di lavoro)
+- [ ] Collegare `ia_pipeline.py`/`ia_evaluation.py` per scrivere in `archive.external_items`/`archive.representations` su un evento pilota (Battaglia del Carso, `evt_0018`) — prossimo passo naturale, end-to-end reale prima di generalizzare.
+- [ ] Job queue reale con worker (`ops.job_queue` esiste ma senza consumer).
+- [ ] Estrazione/dedup nuovi eventi WWI/WWII da fonti acquisite (`research.event_candidates`, non esiste ancora).
+- [ ] Admin UI popolamento Internet Archive nel frontend.
+- [ ] Config `IA_*` (rate limit, quote, profili `test_exhaustive`) in `.env`/`archive_providers.yml`.
+- [ ] Sincronizzazione incrementale (checkpoint, ETag/Last-Modified).
+
+---
+
+## Refactor grafo e fonti — stato 2026-07-24
+
+### Completato nel codice (branch `codex/refactor-grafo-fonti-20260724`)
+
+- [x] Contratto canonico unico per nodi, archi, evidenze, divergenze, provenienza, stato e review.
+- [x] Lettura coordinata di `collegamenti`, `record_links`, `event_links` nel database eventi, `external_record_links`, claim ed evidenze.
+- [x] Separazione tra fonti esterne, locator di ricerca e relazioni interne.
+- [x] Pipeline generalizzata contro le omonimie: nome completo minimo, data e luogo di nascita, matricola, reparto, campo e periodo come corroborazioni.
+- [x] Rifiuto del solo cognome come prova di identità.
+- [x] Correzione fonti dossier e regressione reale su Luigi Gaiaschi (`internati#22808`): 2 fonti pertinenti conservate, 13 risultati impropri esclusi.
+- [x] API canoniche di ricerca, espansione grafo, metadati e review.
+- [x] Frontend Collegamenti, Dossier, Esplora, Ricerca AI e Punti di vista aggiornati ai nuovi contratti.
+- [x] Grafo SVG selezionabile e scaricabile alla fine dei report.
+- [x] Migrazioni additive e reversibili con backup e controllo integrità.
+- [x] Validazione read-only, pipeline dry-run e rigenerazione incrementale.
+- [x] Documentazione di architettura, modello dati, validazione e fonti esterne.
+- [x] Verifiche locali: compileall, 16 unittest, lint e build frontend.
+- [x] Migrazioni testate su copie: dry-run → execute → rollback → re-execute. Conteggi legacy invariati.
+- [x] Caso regressione Gaiaschi verificato via API runtime.
+- [x] AI Mistral collegata e funzionante (`mistral-small-latest`).
+
+### Prima del merge su main
+
+- [ ] **Fix `validate_graph.py`**: gestire `archivio_documenti` (chiave composta `provider+external_id`, no colonna `id`).
+- [ ] **Fix `requirements.txt`**: aggiornare `httpx>=0.28.1` per compatibilità con `mistralai>=2.0.0`.
+- [ ] **Eseguire `validate_graph.py` sui due snapshot SQLite completi** e conservare il report prima/dopo.
+- [ ] **Costruire un gold set stratificato e revisionato** per misurare precisione, richiamo e F1.
+- [ ] **Revisionare campioni per ogni `link_type`**, inclusi omonimi e relazioni tra guerre differenti.
+- [ ] **Decidere il contenitore definitivo** per gli eventi posteriori al 1918 oggi presenti nel database denominato `eventi_1gm`.
+- [ ] **Definire responsabilità e soglia documentale** per promuovere un candidato da `probable` a `confirmed`.
+- [ ] **Verificare termini d'uso, rate limit e identificatori stabili** di ogni provider prima di importazioni massive.
+- [ ] **Aggiornare chiavi AI**: OpenAI (scaduta), Anthropic (credito insufficiente), Gemini (quota superata), Perplexity (non autorizzata).
+- [ ] **Push branch + apertura PR** su GitHub con descrizione dettagliata.
+
+### Post-merge
+
+- [x] Popolare `graph_nodes` e `graph_edges` — FATTO (2026-10-12): 1.513.299 nodi / 4.058.351 archi materializzati e sincronizzati su Supabase.
+- [ ] Valutare performance grafo con 688K entità e 2.3M collegamenti (query benchmark su graph_edges).
+- [ ] Frontend: test visuale grafo SVG su browser con dataset reale.
+- [ ] Frontend: mappa geospaziale movimentazioni (Leaflet + dati luogo_internamento).
+
+---
+
+## Archivio: giornata 2026-07-24 — AI Consolidation + LeBI Fase 4 + Docs
 
 ### Completato
 - [x] **AI Provider Consolidation**: OpenAI primario per tutti i task type in `ai_router.py`, `ai_client.py`, `event_research_engine.py`, `ai_research.py`, `biography.py`. Fallback chain: OpenAI → Anthropic → Mistral → Perplexity → Gemini.
@@ -20,8 +286,8 @@ Aggiornato: 24 luglio 2026 — AI Provider Consolidation + LeBI Fase 4 + Docs.
 - [x] **TODO aggiornato**: questa sezione.
 
 ### Da completare (priorità)
-- [ ] **LeBI Fase 5**: Report, FTS, Memory Router, Source Locator, citations.
-- [ ] **LeBI Fase 7**: Test e documentazione — test su provider LeBI, adapter, API endpoint, frontend comparison.
+- [x] **LeBI Fase 5**: Report, FTS, Memory Router, Source Locator, citations — **Pipeline discorsiva integrata (2026-08-09)**, FTS pending
+- [ ] **LeBI Fase 7**: Test e documentazione — test su provider LeBI, adapter, API endpoint, frontend comparison, pipeline discorsiva
 - [ ] **Test conformità automatici**: 20 test Compliance Gate come da specifica.
 - [ ] **Test migrazione PostgreSQL su Supabase**: creare progetto, eseguire `migrate_to_pg.py --full`, verificare conteggi.
 - [ ] **Bulk import Scopri**: selezionare multipli risultati e importarli tutti insieme.

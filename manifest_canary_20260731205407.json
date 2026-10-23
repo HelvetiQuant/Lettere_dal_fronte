@@ -1,0 +1,173 @@
+{
+  "run_id": "canary_20260731205407",
+  "benchmark_version": "2026-07-31-v1-canary",
+  "scope": "people-only",
+  "expected_targets": 10,
+  "manifest_hash": "8fc120ffda2e3aab",
+  "created_at": "2026-07-31T20:54:07.984511",
+  "targets": [
+    {
+      "ordinal": 1,
+      "target_id": "WWI-001",
+      "target_hash": "eba92db713b8352e",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "LARI",
+        "nome": "GIUSEPPE",
+        "paternita": "LUIGI",
+        "anno_nascita": "1886",
+        "luogo_nascita": "Canneto sull'Oglio",
+        "grado": "Soldato",
+        "reparto": "206 Reggimento Fanteria",
+        "conflitto_presunto": "ww1"
+      }
+    },
+    {
+      "ordinal": 2,
+      "target_id": "WWI-002",
+      "target_hash": "cf10076e27c673c4",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "FEDERICO",
+        "nome": "LUIGI",
+        "paternita": "RAFFAELE",
+        "anno_nascita": "1885",
+        "luogo_nascita": "Longobucco",
+        "grado": "Soldato",
+        "reparto": "138 Reggimento Fanteria",
+        "conflitto_presunto": "ww1"
+      }
+    },
+    {
+      "ordinal": 3,
+      "target_id": "WWI-003",
+      "target_hash": "0e5ba7aa1a8acebd",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "GIUNTA",
+        "nome": "GIUSEPPE",
+        "paternita": "FRANCESCO",
+        "anno_nascita": "1879",
+        "luogo_nascita": "Modica",
+        "grado": "Soldato",
+        "reparto": "2 Reggimento Granatieri",
+        "conflitto_presunto": "ww1"
+      }
+    },
+    {
+      "ordinal": 4,
+      "target_id": "WWI-004",
+      "target_hash": "190da811d3e567c9",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "VENEZIANO",
+        "nome": "NICOLA",
+        "paternita": "TOMMASO",
+        "anno_nascita": "1898",
+        "luogo_nascita": "Lioni",
+        "grado": "Soldato",
+        "reparto": "4 Reggimento Fanteria",
+        "conflitto_presunto": "ww1"
+      }
+    },
+    {
+      "ordinal": 5,
+      "target_id": "WWI-005",
+      "target_hash": "00c3a5664b1974de",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "FANTUZ",
+        "nome": "ANTONIO",
+        "paternita": "EUGENIO",
+        "anno_nascita": "1896",
+        "luogo_nascita": "Pasiano di Pordenone",
+        "grado": "Soldato",
+        "reparto": "228 Reggimento Fanteria",
+        "conflitto_presunto": "ww1"
+      }
+    },
+    {
+      "ordinal": 6,
+      "target_id": "WWI-006",
+      "target_hash": "a6b3f7c207b72bdc",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "FEDELE",
+        "nome": "AGOSTINO",
+        "paternita": "ROCCO",
+        "anno_nascita": "1880",
+        "luogo_nascita": "Magnano in Riviera",
+        "grado": "Soldato",
+        "reparto": "128 Battaglione M.T.",
+        "conflitto_presunto": "ww1"
+      }
+    },
+    {
+      "ordinal": 7,
+      "target_id": "WWI-007",
+      "target_hash": "3fb4858bdcf00019",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "RUSSO",
+        "nome": "GAETANO",
+        "paternita": "ALESSIO",
+        "anno_nascita": "1888",
+        "luogo_nascita": "Misterbianco",
+        "grado": "Soldato",
+        "reparto": "48 Reggimento Fanteria",
+        "conflitto_presunto": "ww1"
+      }
+    },
+    {
+      "ordinal": 8,
+      "target_id": "WWI-008",
+      "target_hash": "a500e243899eacd9",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "PAPINI",
+        "nome": "PUBLIO",
+        "paternita": "GIOVANNI",
+        "anno_nascita": "1890",
+        "luogo_nascita": "Roccalbegna",
+        "conflitto_presunto": "ww1"
+      }
+    },
+    {
+      "ordinal": 9,
+      "target_id": "WWI-009",
+      "target_hash": "c84b493352fbcc01",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "FOLLADOR",
+        "nome": "GIOVANNI",
+        "anno_nascita": "1898",
+        "luogo_nascita": "Falcade",
+        "conflitto_presunto": "ww1"
+      }
+    },
+    {
+      "ordinal": 10,
+      "target_id": "WWI-010",
+      "target_hash": "eb2e2c0cf1a81dcd",
+      "target_type": "person",
+      "conflict": "ww1",
+      "raw_input": {
+        "cognome": "SIFANNO",
+        "nome": "TOMMASO",
+        "paternita": "GIUSEPPE",
+        "anno_nascita": "1884",
+        "luogo_nascita": "Bitonto",
+        "conflitto_presunto": "ww1"
+      }
+    }
+  ]
+}

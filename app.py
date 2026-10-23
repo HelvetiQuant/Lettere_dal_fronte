@@ -8,8 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Body, UploadFile, File, Form, BackgroundTasks
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse
 
 from config import IMI_PDFS, COLUMNS
 from database import (
@@ -73,6 +72,21 @@ from external_sources_schema import init_external_sources_schema
 from external_sources_api import router as external_sources_router
 from research_engine_schema import init_research_engine_schema
 from research_engine_api import router as research_engine_router
+from viewpoints_api import router as viewpoints_router
+from graph_api import router as graph_router
+from graph_schema import init_graph_schema
+from event_schema import init_event_schema
+from event_canonical_api import router as event_canonical_router
+from rag_api import router as rag_router
+from map_schema import init_map_schema
+from map_features_api import router as map_features_router
+from ai_runtime_api import router as ai_runtime_router
+from chat_api import router as chat_router
+from linking_v2_api import router as linking_v2_router
+from source_pipeline.admin_dashboard_api import router as admin_dashboard_router
+from report_conversation_api import router as report_conversation_router
+from capability_api import router as capability_router
+from v7_api import router as v7_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -89,6 +103,9 @@ async def lifespan(_app):
     seed_source_policies()
     init_external_sources_schema()
     init_research_engine_schema()
+    init_graph_schema()
+    init_event_schema()
+    init_map_schema()
     from archive_registry import seed_from_federation
     seed_from_federation()
     yield
@@ -107,18 +124,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_TEMPLATES = Path(__file__).parent / "templates"
-app.mount("/static", StaticFiles(directory=str(_TEMPLATES)), name="static")
-_SHARED_DIR = _TEMPLATES / "shared"
-if _SHARED_DIR.exists():
-    app.mount("/shared", StaticFiles(directory=str(_SHARED_DIR)), name="shared")
+from fastapi.staticfiles import StaticFiles
+import os as _os
+_static_dir = _os.path.join(_os.path.dirname(__file__), "static")
+if _os.path.isdir(_static_dir):
+    app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+
 app.include_router(rc_router)
 app.include_router(rc_ext_router)
 app.include_router(external_sources_router)
 app.include_router(research_engine_router)
-_DS_DIR = _TEMPLATES / "Voci dal Fronte - Redesign" / "_ds"
-if _DS_DIR.exists():
-    app.mount("/_ds", StaticFiles(directory=str(_DS_DIR)), name="ds")
+app.include_router(viewpoints_router)
+app.include_router(graph_router)
+app.include_router(event_canonical_router)
+app.include_router(rag_router)
+app.include_router(map_features_router)
+app.include_router(ai_runtime_router)
+app.include_router(chat_router)
+app.include_router(linking_v2_router)
+app.include_router(admin_dashboard_router)
+app.include_router(report_conversation_router)
+app.include_router(capability_router)
+app.include_router(v7_router)
 
 _extraction_lock = threading.Lock()
 _running_letter = None
@@ -132,26 +159,6 @@ _cwgc_lock = threading.Lock()
 _ministero_lock = threading.Lock()
 _sardi_lock = threading.Lock()
 _nara_lock = threading.Lock()
-
-
-@app.get("/", response_class=FileResponse)
-def index():
-    return FileResponse(str(_TEMPLATES / "index.html"), media_type="text/html")
-
-
-@app.get("/riconoscimenti", response_class=FileResponse)
-def rc_index():
-    return FileResponse(str(_TEMPLATES / "rc.html"), media_type="text/html")
-
-
-@app.get("/support.js")
-def static_support():
-    return FileResponse(str(_TEMPLATES / "support.js"), media_type="application/javascript")
-
-
-@app.get("/voci-data.js")
-def static_voci_data():
-    return FileResponse(str(_TEMPLATES / "voci-data.js"), media_type="application/javascript")
 
 
 @app.get("/api/search/ww1")
@@ -597,6 +604,88 @@ def api_ai_research(data: dict = Body(...)):
 @app.get("/api/ai-research/history")
 def api_ai_research_history(limit: int = 20):
     return {"ricerche": get_ai_ricerche(limit=limit)}
+
+
+@app.post("/api/ai-web-search")
+def api_ai_web_search(data: dict = Body(...)):
+    """Ricerca storica con OpenAI web search (Responses API).
+
+    Usa gpt-5.5 con web_search tool per cercare informazioni online reali.
+    Body: {query: str, context_size?: "low"|"medium"|"high", model?: str}
+    """
+    query = data.get("query", "").strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="Query vuota")
+
+    context_size = data.get("context_size", "high")
+    model = data.get("model", "gpt-5.5")
+
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    try:
+        from openai import OpenAI
+        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+
+        instructions = data.get("instructions", (
+            "Sei un ricercatore storico-archivistico specializzato in storia militare "
+            "italiana del 1900 (Prima e Seconda Guerra Mondiale, IMI, internati, caduti, "
+            "decorati). Cerca informazioni reali online negli archivi italiani. "
+            "NON inventare dati. Rispondi in italiano con formato strutturato: "
+            "DATI TROVATI, FONTI CONSULTATE (con URL), AFFIDABILITA, SUGGERIMENTI."
+        ))
+
+        resp = client.responses.create(
+            model=model,
+            tools=[{
+                "type": "web_search",
+                "search_context_size": context_size,
+                "user_location": {
+                    "type": "approximate",
+                    "country": "IT",
+                },
+            }],
+            instructions=instructions,
+            input=query,
+        )
+
+        sources = []
+        search_actions = []
+        if hasattr(resp, "output"):
+            for item in resp.output:
+                if item.type == "web_search_call":
+                    action_type = ""
+                    if hasattr(item, "action") and hasattr(item.action, "type"):
+                        action_type = item.action.type
+                    search_actions.append(action_type)
+                    if hasattr(item, "results") and item.results:
+                        for r in item.results:
+                            url = getattr(r, "url", None) or ""
+                            title = getattr(r, "title", None) or url
+                            if url:
+                                sources.append({"url": url, "title": title})
+
+        usage = {}
+        if hasattr(resp, "usage"):
+            u = resp.usage
+            usage = {
+                "input_tokens": getattr(u, "input_tokens", 0),
+                "output_tokens": getattr(u, "output_tokens", 0),
+                "total_tokens": getattr(u, "total_tokens", 0),
+            }
+
+        return {
+            "ok": True,
+            "query": query,
+            "model": model,
+            "text": resp.output_text,
+            "sources": sources,
+            "search_actions": search_actions,
+            "usage": usage,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore web search: {str(e)}")
 
 
 # ─── Caduti Albo d'Oro (Cimeetrincee) ───
@@ -1408,7 +1497,148 @@ def api_source_reindex(body: dict = Body(...)):
     return {"query": q, "found": len(results), "registered": registered}
 
 
-# ─── Soldier Dashboard ───
+# ─── Data Corrections (V7.3) ───
+
+@app.get("/api/corrections")
+def api_corrections(limit: int = 50, offset: int = 0):
+    """Lista data_corrections overlay (V7.3)."""
+    from database import get_conn
+    conn = get_conn()
+    try:
+        conn.row_factory = lambda c, r: dict(zip([col[0] for col in c.description], r))
+        try:
+            total = conn.execute("SELECT COUNT(*) FROM data_corrections").fetchone()[0]
+            rows = conn.execute(
+                "SELECT id, table_name, record_id, field_name, old_value, new_value, "
+                "correction_type, source, reason, created_at "
+                "FROM data_corrections ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                (limit, offset)
+            ).fetchall()
+        except sqlite3.OperationalError:
+            total = 0
+            rows = []
+        return {"total": total, "corrections": rows, "limit": limit, "offset": offset}
+    finally:
+        conn.close()
+
+
+@app.get("/api/corrections/stats")
+def api_corrections_stats():
+    """Statistiche aggregate data_corrections."""
+    from database import get_conn
+    conn = get_conn()
+    try:
+        try:
+            total = conn.execute("SELECT COUNT(*) FROM data_corrections").fetchone()[0]
+            by_table = conn.execute(
+                "SELECT table_name, COUNT(*) as cnt FROM data_corrections GROUP BY table_name"
+            ).fetchall()
+            by_type = conn.execute(
+                "SELECT correction_type, COUNT(*) as cnt FROM data_corrections GROUP BY correction_type"
+            ).fetchall()
+        except sqlite3.OperationalError:
+            total = 0
+            by_table = []
+            by_type = []
+        return {
+            "total": total,
+            "by_table": [{"table": r[0], "count": r[1]} for r in by_table] if by_table else [],
+            "by_type": [{"type": r[0], "count": r[1]} for r in by_type] if by_type else [],
+        }
+    finally:
+        conn.close()
+
+
+@app.get("/api/narrator/status")
+def api_narrator_status():
+    """Stato del narratore V7 (circuit breaker, provider availability)."""
+    try:
+        from v7_narrator import NarratorV7
+        narrator = NarratorV7()
+        return {
+            "version": "7.3",
+            "circuit_breaker_open": getattr(narrator, '_circuit_open', False),
+            "evidence_locked": True,
+            "hallucination_check": True,
+            "fallback_deterministic": True,
+        }
+    except Exception as e:
+        return {"version": "7.3", "error": str(e)}
+
+
+# ─── Cross-Linking Safe (V7.6) ───
+
+@app.get("/api/cross-link/status")
+def api_cross_link_status():
+    """Stato del cross-linking sicuro con audit trail."""
+    import sqlite3 as _sqlite3
+    DB = "imi_internati.db"
+    conn = _sqlite3.connect(DB)
+    conn.row_factory = _sqlite3.Row
+    try:
+        # Ensure table exists
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS cross_link_audit (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                internati_id INTEGER NOT NULL,
+                column_name TEXT NOT NULL,
+                old_value TEXT,
+                new_value TEXT,
+                source_table TEXT NOT NULL,
+                source_record_id INTEGER,
+                match_method TEXT NOT NULL,
+                match_score INTEGER,
+                reverted INTEGER DEFAULT 0,
+                reverted_at TEXT,
+                created_at TEXT NOT NULL
+            )
+        """)
+        conn.commit()
+
+        total = conn.execute("SELECT COUNT(*) as c FROM cross_link_audit").fetchone()['c']
+        active = conn.execute("SELECT COUNT(*) as c FROM cross_link_audit WHERE reverted=0").fetchone()['c']
+        reverted = conn.execute("SELECT COUNT(*) as c FROM cross_link_audit WHERE reverted=1").fetchone()['c']
+
+        by_method = []
+        for r in conn.execute("""
+            SELECT match_method as method,
+                   SUM(CASE WHEN reverted=0 THEN 1 ELSE 0 END) as active,
+                   SUM(CASE WHEN reverted=1 THEN 1 ELSE 0 END) as reverted
+            FROM cross_link_audit GROUP BY match_method ORDER BY active DESC
+        """).fetchall():
+            by_method.append({"method": r['method'], "active": r['active'], "reverted": r['reverted']})
+
+        by_source_table = []
+        for r in conn.execute("""
+            SELECT source_table as table_name,
+                   SUM(CASE WHEN reverted=0 AND match_method != 'PRE_CROSS_LINK_BASELINE' THEN 1 ELSE 0 END) as active,
+                   SUM(CASE WHEN reverted=1 AND match_method != 'PRE_CROSS_LINK_BASELINE' THEN 1 ELSE 0 END) as reverted
+            FROM cross_link_audit GROUP BY source_table ORDER BY active DESC
+        """).fetchall():
+            by_source_table.append({"table": r['table_name'], "active": r['active'], "reverted": r['reverted']})
+
+        by_column = []
+        for r in conn.execute("""
+            SELECT column_name as column_name,
+                   SUM(CASE WHEN reverted=0 AND match_method != 'PRE_CROSS_LINK_BASELINE' THEN 1 ELSE 0 END) as active,
+                   SUM(CASE WHEN reverted=1 AND match_method != 'PRE_CROSS_LINK_BASELINE' THEN 1 ELSE 0 END) as reverted
+            FROM cross_link_audit GROUP BY column_name ORDER BY active DESC
+        """).fetchall():
+            by_column.append({"column": r['column_name'], "active": r['active'], "reverted": r['reverted']})
+
+        return {
+            "total_audits": total,
+            "active": active,
+            "reverted": reverted,
+            "by_method": by_method,
+            "by_source_table": by_source_table,
+            "by_column": by_column,
+        }
+    except Exception as e:
+        return {"total_audits": 0, "active": 0, "reverted": 0, "error": str(e),
+                "by_method": [], "by_source_table": [], "by_column": []}
+    finally:
+        conn.close()
 
 @app.get("/api/soldiers/{soldier_id}/dashboard")
 def api_soldier_dashboard(soldier_id: int):
@@ -1935,10 +2165,14 @@ def api_events_1gm_list():
 
 
 @app.get("/api/events/1gm/{event_name}")
-def api_event_1gm_dossier(event_name: str):
-    """Dossier completo per un evento: caduti, decorati, documenti, fonti con link."""
+def api_event_1gm_dossier(event_name: str, include_candidates: bool = False):
+    """Dossier completo per un evento: caduti, decorati, documenti, fonti con link.
+    
+    Fonti filtrate per compatibilita temporale (WWI/WWII) via linking v2.
+    Passare include_candidates=true per includere fonti needs_review.
+    """
     nome_decoded = event_name.replace("+", " ")
-    result = events.get_evento_1gm_dossier(nome_decoded)
+    result = events.get_evento_1gm_dossier(nome_decoded, include_candidates=include_candidates)
     if not result.get("ok", True) and result.get("error"):
         raise HTTPException(status_code=404, detail=result["error"])
     return result
@@ -2185,12 +2419,12 @@ def api_graph_soldati_cluster(cluster_field: str, cluster_value: str,
 
 
 @app.get("/api/events/{event_name}")
-def api_event_dossier_unified(event_name: str):
+def api_event_dossier_unified(event_name: str, include_candidates: bool = False):
     """Dossier unificato per evento: prova prima eventi_1gm.db (event-centric),
     poi fallback su eventi curati WW2 (fonti multilaterali)."""
     nome_decoded = event_name.replace("+", " ")
     # 1. Try event-centric DB (1GM + WW2 canonical events)
-    result = events.get_evento_1gm_dossier(nome_decoded)
+    result = events.get_evento_1gm_dossier(nome_decoded, include_candidates=include_candidates)
     if result.get("evento"):
         result["ok"] = True
         return {**result, "source": "eventi_1gm"}
@@ -2205,6 +2439,63 @@ def api_event_dossier_unified(event_name: str):
             "total_fonti": fonti.get("total", 0),
         }
     raise HTTPException(status_code=404, detail=f"Evento '{nome_decoded}' non trovato")
+
+
+# ─── Event Research Pipeline (nuova architettura) ───────────────────────────
+
+@app.get("/api/event-research/resolve")
+def api_event_resolve(q: str):
+    """Risolve un nome evento con disambiguazione e classificazione."""
+    from event_resolver import resolve
+    return resolve(q)
+
+
+@app.get("/api/event-research/evidence")
+def api_event_evidence(q: str):
+    """Raccoglie il pacchetto di evidenze per un evento (4 livelli fonti)."""
+    from event_evidence_pipeline import collect_evidence
+    pkg = collect_evidence(q)
+    return pkg.to_dict()
+
+
+@app.get("/api/event-research/narrative")
+def api_event_narrative(q: str, ai: bool = True, provider: str = "mistral"):
+    """Genera il dossier narrativo completo da evidenze raccoltate."""
+    from event_narrative_builder import build_narrative
+    return build_narrative(q, use_ai=ai, provider=provider)
+
+
+@app.get("/api/event-research/audit")
+def api_event_audit():
+    """Audit completo degli event_links esistenti."""
+    from event_link_audit import get_audit_summary
+    return get_audit_summary()
+
+
+@app.get("/api/event-research/audit/{event_id}")
+def api_event_audit_by_event(event_id: int):
+    """Audit dei link di un singolo evento."""
+    from event_link_audit import audit_event
+    audits = audit_event(event_id)
+    return [a.to_dict() for a in audits]
+
+
+@app.get("/api/event-research/map")
+def api_event_map(q: str):
+    """Genera mappa storico-operativa verificabile per un evento."""
+    from event_map_builder import build_map_from_query
+    return build_map_from_query(q)
+
+
+@app.get("/api/event-research/map/svg")
+def api_event_map_svg(q: str):
+    """Restituisce direttamente l'SVG della mappa per download."""
+    from event_map_builder import build_map_from_query
+    from fastapi import Response
+    m = build_map_from_query(q)
+    return Response(content=m["svg"], media_type="image/svg+xml", headers={
+        "Content-Disposition": f'attachment; filename="mappa_{q.replace(" ", "_")}.svg"'
+    })
 
 
 # ─── CimeTrincee (storie e soldati + foto d'epoca) ────────────────────────────
@@ -2319,6 +2610,184 @@ def api_research_auto_index(body: dict = Body(...)):
         return subject
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Errore creazione soggetto: {str(e)}")
+
+
+# ─── Person Finder ────────────────────────────────────────────────────────────
+
+@app.post("/api/person-finder")
+def api_person_finder(body: dict = Body(...)):
+    """Ricerca automatica persona su tutti i DB locali + 27 provider esterni + web.
+
+    Body:
+        query: str — nome da cercare (e.g. "Siracusa Francesco classe 1886")
+        birth_year: int (optional)
+        birth_place: str (optional)
+        conflict: str — ww1/ww2 (optional)
+        search_local: bool = True
+        search_supabase: bool = True
+        search_federated: bool = True
+        search_web: bool = True
+        persist: bool = True
+    """
+    from person_finder import find_person
+
+    query = body.get("query", "").strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="query mancante")
+
+    try:
+        result = find_person(
+            query,
+            birth_year=body.get("birth_year"),
+            birth_place=body.get("birth_place", ""),
+            conflict=body.get("conflict", ""),
+            search_local=body.get("search_local", True),
+            search_supabase=body.get("search_supabase", True),
+            search_federated=body.get("search_federated", True),
+            search_web=body.get("search_web", True),
+            persist=body.get("persist", True),
+        )
+        return result.to_dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore person finder: {str(e)}")
+
+
+@app.get("/api/person-finder")
+def api_person_finder_get(
+    q: str,
+    year: int = None,
+    place: str = "",
+    conflict: str = "",
+    local: bool = True,
+    supabase: bool = True,
+    federated: bool = True,
+    web: bool = True,
+    persist: bool = True,
+):
+    """GET version of person finder for quick searches."""
+    from person_finder import find_person
+
+    if not q or len(q.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Termine di ricerca troppo corto")
+
+    try:
+        result = find_person(
+            q.strip(),
+            birth_year=year,
+            birth_place=place,
+            conflict=conflict,
+            search_local=local,
+            search_supabase=supabase,
+            search_federated=federated,
+            search_web=web,
+            persist=persist,
+        )
+        return result.to_dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore person finder: {str(e)}")
+
+
+# ─── Research Protocol ────────────────────────────────────────────────────────
+
+@app.post("/api/research-protocol")
+def api_research_protocol(body: dict = Body(...)):
+    """Esegue il protocollo completo di ricerca storico-archivistica.
+
+    Input: oggetto JSON con tutti i campi della sezione 1 del protocollo.
+    Output: dossier strutturato (sezioni A-N).
+
+    Body fields (tutti opzionali tranne cognome o nome):
+        nome, cognome, secondi_nomi[], varianti_nome[], varianti_cognome[],
+        soprannome, data_nascita, anno_nascita, luogo_nascita, provincia_nascita,
+        paese_nascita, paternita, maternita, coniuge, residenza, professione,
+        grado, arma, reparto, battaglione, compagnia, distretto_militare,
+        numero_matricola, numero_prigioniero, conflitto_presunto,
+        periodo_presunto, luogo_evento, stato_presunto,
+        informazioni_familiari, documenti_iniziali[], note_utente
+
+    Options:
+        use_ai: bool = True  (usa Qwen/LMStudio per normalizzazione e dossier)
+        persist: bool = True (salva in Supabase)
+    """
+    from research_protocol import research_person
+
+    use_ai = body.pop("use_ai", True)
+    persist = body.pop("persist", True)
+
+    if not body.get("cognome") and not body.get("nome"):
+        raise HTTPException(status_code=400, detail="Almeno cognome o nome è obbligatorio")
+
+    try:
+        dossier = research_person(body, use_ai=use_ai, persist=persist)
+        return dossier.to_dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore research protocol: {str(e)}")
+
+
+# ─── Chat Research ────────────────────────────────────────────────────────────
+
+@app.post("/api/chat/research")
+async def api_chat_research(body: dict = Body(...)):
+    """Chat con ricerca storica in linguaggio naturale.
+
+    L'utente puo' fare domande come:
+    - "cerca Francesco Siracusa nato a Messina classe 1886"
+    - "trovami informazioni su Antonio Smiraldi della prima guerra mondiale"
+    - "quali fonti hai consultato?" (follow-up nella stessa conversazione)
+
+    Body:
+        question: str — domanda in linguaggio naturale
+        conversation_id: str (optional) — per continuare una conversazione
+        use_ai: bool = True — usa Qwen per parsing e risposta
+        persist: bool = True — salva risultati in Supabase
+
+    Returns:
+        answer: str — risposta in linguaggio naturale
+        dossier: dict — dossier strutturato completo
+        parsed_input: dict — dati estratti dalla domanda
+        conversation_id: str — ID per follow-up
+        ai_used: bool
+        ai_model: str
+    """
+    import asyncio
+    from chat_research import chat_research
+
+    question = body.get("question", "").strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="question mancante")
+
+    try:
+        result = await asyncio.wait_for(
+            asyncio.to_thread(
+                lambda: chat_research(
+                    question,
+                    body.get("conversation_id"),
+                    use_ai=body.get("use_ai", True),
+                    persist=body.get("persist", True),
+                )
+            ),
+            timeout=300.0,
+        )
+        return result
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="Ricerca in timeout (300s). Il sistema sta interrogando 27 provider esterni in parallelo. Riprova con una query piu' specifica (nome + cognome + anno).")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore chat research: {str(e)}")
+
+
+@app.get("/api/chat/research")
+def api_chat_research_get(q: str, conversation_id: str = None):
+    """GET version for quick chat queries."""
+    from chat_research import chat_research
+
+    if not q or len(q.strip()) < 3:
+        raise HTTPException(status_code=400, detail="Domanda troppo corta")
+
+    try:
+        result = chat_research(q.strip(), conversation_id=conversation_id)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Errore chat research: {str(e)}")
 
 
 @app.get("/api/research/subjects")
@@ -2780,3 +3249,41 @@ def api_mass_index_status():
             "top_archivi": top,
         },
     }
+
+
+# ─── Frontend Error Log Receiver ───
+
+@app.post("/api/log/frontend")
+def api_log_frontend(data: dict = Body(...)):
+    """Riceve log errori dal frontend e li salva su file."""
+    import datetime as _dt
+    logs = data.get("logs", [])
+    log_dir = Path(__file__).parent / "logs"
+    log_dir.mkdir(exist_ok=True)
+    log_file = log_dir / f"frontend_{_dt.datetime.now():%Y%m%d}.log"
+    with open(log_file, "a", encoding="utf-8") as f:
+        for entry in logs:
+            ts = entry.get("timestamp", "")
+            level = entry.get("level", "?")
+            source = entry.get("source", "?")
+            msg = entry.get("message", "")
+            url = entry.get("url", "")
+            status = entry.get("status", "")
+            route = entry.get("route", "")
+            detail = entry.get("detail", "")
+            comp_stack = entry.get("componentStack", "")
+            ctx = entry.get("context", {})
+            f.write(f"[{ts}] [{level.upper()}] [{source}] {msg}\n")
+            if url:
+                f.write(f"  URL: {url} (status={status})\n")
+            if route:
+                f.write(f"  Route: {route}\n")
+            if detail:
+                f.write(f"  Detail: {detail}\n")
+            if comp_stack:
+                f.write(f"  ComponentStack: {comp_stack}\n")
+            if ctx:
+                import json as _json
+                f.write(f"  Context: {_json.dumps(ctx, ensure_ascii=False)}\n")
+            f.write("\n")
+    return {"ok": True, "received": len(logs)}

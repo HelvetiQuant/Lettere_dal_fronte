@@ -258,8 +258,8 @@ def _dispatch(provider: str, system: str, prompt: str):
         resp = client.chat.completions.create(
             model=model,
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
-            max_tokens=4096,
-            temperature=0.3,
+            max_tokens=16000,
+            temperature=0.5,
         )
         risposta = resp.choices[0].message.content.strip()
         cost = 0.0

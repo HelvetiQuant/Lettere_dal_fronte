@@ -11,6 +11,17 @@ import type {
   ResearchSubject, ResearchSubjectDetail, ResearchGap, ResearchStats,
   AIResearchResponse, AIResearchHistoryResponse,
   GraphLuoghiResponse, GraphMesiResponse, GraphPaesiResponse,
+  EventResolution, EvidencePackage, NarrativeReport, AuditSummary, LinkAuditEntry,
+  HistoricalMap,
+  CanonicalEvent, CanonicalEventListResponse, CanonicalEventChildrenResponse,
+  GraphEntityResponse, RAGContextResponse, RAGValidationResponse,
+  MapFeatureRecord, MapFeatureListResponse,
+  AIRuntimeHealth, AIRuntimeConfig, AIRuntimeBenchmark,
+  ChatMessageDTO, ChatResponseDTO, ChatHealthDTO,
+  ResearchChatResponse,
+  V7ResearchResult, V7HealthResponse, V7CapabilitiesResponse, V7NarrateResponse,
+  V7FollowupResponse, V7ChatMessage,
+  CrossLinkStatus,
 } from './types';
 
 export const api = {
@@ -46,7 +57,7 @@ export const api = {
   decoratiDetail: (id: number) => get<DecoratoRecord>(`/api/decorati/${id}`),
 
   // ── Events ──
-  events1gm: () => get<{ eventi: EventRecord[] }>('/api/events/1gm'),
+  events1gm: (params?: Record<string, string | number | boolean | undefined>, signal?: AbortSignal) => get<{ eventi: EventRecord[] }>('/api/events/1gm', params, signal),
   eventDossier: (eventName: string) =>
     get<EventDossierResponse>(`/api/events/1gm/${encodeURIComponent(eventName)}`),
   eventCaduti: (eventName: string, limit = 50) =>
@@ -56,13 +67,74 @@ export const api = {
   eventInternati: (eventName: string, limit = 50) =>
     get<{ internati: InternatoRecord[]; total: number }>(`/api/events/${encodeURIComponent(eventName)}/internati`, { limit }),
 
-  // ── Graph ──
+  // ── Event Research Pipeline (nuova architettura) ──
+  eventResolve: (q: string) =>
+    get<EventResolution>('/api/event-research/resolve', { q }),
+  eventEvidence: (q: string) =>
+    get<EvidencePackage>('/api/event-research/evidence', { q }),
+  eventNarrative: (q: string, ai = true, provider = 'mistral') =>
+    get<NarrativeReport>('/api/event-research/narrative', { q, ai, provider }, undefined, 120_000),
+  eventAudit: () =>
+    get<AuditSummary>('/api/event-research/audit'),
+  eventAuditByEvent: (eventId: number) =>
+    get<LinkAuditEntry[]>(`/api/event-research/audit/${eventId}`),
+  eventMap: (q: string) =>
+    get<HistoricalMap>('/api/event-research/map', { q }, undefined, 60_000),
+  eventMapSvgUrl: (q: string) =>
+    `/api/event-research/map/svg?q=${encodeURIComponent(q)}`,
+
+  // ── Graph (legacy stats) ──
   graphLuoghi: (limit = 50) => get<GraphLuoghiResponse>('/api/graph/luoghi', { limit }),
   graphMesi: () => get<GraphMesiResponse>('/api/graph/mesi'),
   graphPaesi: () => get<GraphPaesiResponse>('/api/graph/paesi'),
   graphSoldatiArch: () => get<Record<string, unknown>>('/api/graph/soldati/architecture'),
   graphSoldatiClusters: (field = 'luogo_morte', limit = 50) =>
     get<Record<string, unknown>>('/api/graph/soldati/clusters', { field, limit }),
+
+  // ── Graph (canonical) ──
+  graphEntity: (sourceTable: string, sourceId: number, opts?: { max_nodes?: number; max_edges?: number; include_candidates?: boolean; include_rejected?: boolean }) =>
+    get<GraphEntityResponse>(`/api/graph/entity/${sourceTable}/${sourceId}`, opts),
+  graphEdgeReview: (edgeId: string, body: { decision: string; status?: string; note?: string }) =>
+    post<Record<string, unknown>>(`/api/graph/edges/${encodeURIComponent(edgeId)}/review`, body),
+
+  // ── Canonical Events ──
+  canonicalEvents: (opts?: { conflict?: string; event_type?: string; limit?: number }, signal?: AbortSignal) =>
+    get<CanonicalEventListResponse>('/api/canonical-events', opts, signal),
+  canonicalEvent: (stableId: string) =>
+    get<CanonicalEvent>(`/api/canonical-events/${stableId}`),
+  canonicalEventChildren: (stableId: string) =>
+    get<CanonicalEventChildrenResponse>(`/api/canonical-events/${stableId}/children`),
+  canonicalEventUpdate: (stableId: string, body: Record<string, unknown>) =>
+    post<CanonicalEvent>(`/api/canonical-events/${stableId}`, body),
+
+  // ── RAG Pipeline ──
+  ragRetrieve: (q: string, opts?: { entity_type?: string; date_start?: string; date_end?: string; place?: string; max_chunks?: number; max_tokens?: number }) =>
+    get<RAGContextResponse>('/api/rag/retrieve', { q, ...opts }),
+  ragValidate: (body: { text: string; citations?: unknown[] }) =>
+    post<RAGValidationResponse>('/api/rag/validate', body),
+
+  // ── Map Features ──
+  mapFeatures: (eventId: string) =>
+    get<MapFeatureListResponse>(`/api/map-features/event/${eventId}`),
+  mapFeatureCreate: (body: Record<string, unknown>) =>
+    post<MapFeatureRecord>('/api/map-features/', body),
+  mapFeatureReview: (featureId: string, body: { review_status: string; reviewed_by?: string }) =>
+    post<MapFeatureRecord>(`/api/map-features/${featureId}/review`, body),
+
+  // ── AI Runtime ──
+  aiRuntimeHealth: () => get<AIRuntimeHealth>('/api/ai-runtime/health'),
+  aiRuntimeConfig: () => get<AIRuntimeConfig>('/api/ai-runtime/config'),
+  aiRuntimeBenchmark: () => post<AIRuntimeBenchmark>('/api/ai-runtime/benchmark', {}),
+  aiRuntimeReset: () => post<Record<string, unknown>>('/api/ai-runtime/reset', {}),
+
+  // ── Chat ──
+  chat: (message: string, opts?: { history?: ChatMessageDTO[]; context?: string; context_label?: string; max_tokens?: number; temperature?: number }) =>
+    post<ChatResponseDTO>('/api/chat', { message, ...opts }),
+  chatHealth: () => get<ChatHealthDTO>('/api/chat/health'),
+
+  // ── Chat Research (Person Finder) ──
+  chatResearch: (question: string, conversationId?: string) =>
+    post<ResearchChatResponse>('/api/chat/research', { question, conversation_id: conversationId }, undefined, 300_000),
 
   // ── External Sources ──
   icrcSearch: (q: string, nationality = 'italy', status = '', files = '') =>
@@ -91,7 +163,7 @@ export const api = {
   researchV2Create: (query: string, entityType?: string, entityId?: number,
                      budgetCycles = 5, budgetCostUsd = 1.0) =>
     post<ResearchV2Result>('/api/research/v2/create',
-      { query, entity_type: entityType, entity_id: entityId, budget_cycles: budgetCycles, budget_cost_usd: budgetCostUsd }),
+      { query, entity_type: entityType, entity_id: entityId, budget_cycles: budgetCycles, budget_cost_usd: budgetCostUsd }, undefined, 120_000),
   researchV2Plan: (planId: number) => get<ResearchV2PlanResponse>(`/api/research/v2/plan/${planId}`),
   researchV2Plans: (status?: string, limit = 20) =>
     get<ResearchV2PlansResponse>('/api/research/v2/plans', { ...(status ? { status } : {}), limit }),
@@ -105,9 +177,13 @@ export const api = {
 
   // ── AI Research ──
   aiResearch: (data: { query: string; provider?: string; limit?: number }) =>
-    post<AIResearchResponse>('/api/ai-research', data),
+    post<AIResearchResponse>('/api/ai-research', data, undefined, 120_000),
   aiResearchHistory: (limit = 20) =>
     get<AIResearchHistoryResponse>('/api/ai-research/history', { limit }),
+
+  // ── Viewpoints (Punti di vista) ──
+  viewpointsCreate: (query: string, useAi = false) =>
+    post<Record<string, unknown>>('/api/viewpoints/create', { query, use_ai: useAi }, undefined, 120_000),
 
   // ── Entita ──
   entitaSearch: (q: string, limit = 50) =>
@@ -131,4 +207,54 @@ export const api = {
     post<{ status: string; fonte_id: number; url: string }>('/api/fonti-risorse/scrape', { fonte_id: fonteId, url }),
   fondiAvailable: () => get<Record<string, unknown>>('/api/fondi/available'),
   fondiDownloadAll: () => post<Record<string, unknown>>('/api/fondi/download-all'),
+
+  // ── Corrections & Narrator (V7.3) ──
+  corrections: (limit = 50, offset = 0) =>
+    get<{ total: number; corrections: Record<string, unknown>[]; limit: number; offset: number }>(
+      '/api/corrections', { limit, offset }
+    ),
+  correctionsStats: () =>
+    get<{ total: number; by_table: { table: string; count: number }[]; by_type: { type: string; count: number }[] }>(
+      '/api/corrections/stats'
+    ),
+  narratorStatus: () =>
+    get<{ version: string; circuit_breaker_open?: boolean; evidence_locked?: boolean; hallucination_check?: boolean; fallback_deterministic?: boolean; error?: string }>(
+      '/api/narrator/status'
+    ),
+
+  // ── V7.3 Semantic Pipeline ──
+  v73SourceQuality: (sourceKey: string) =>
+    get<Record<string, unknown>>(`/api/v7/source-quality/${encodeURIComponent(sourceKey)}`),
+  v73ValidateSnapshot: (snapshot: Record<string, unknown>) =>
+    post<Record<string, unknown>>('/api/v7/validate-snapshot', snapshot),
+  v73ClaimStates: (data: { claims: Record<string, unknown>[]; identity_status?: string; evidence_level?: string }) =>
+    post<Record<string, unknown>>('/api/v7/claim-states', data),
+  v73BuildResponse: (data: {
+    request_type?: string; query?: string; identity_status?: string; evidence_level?: string;
+    claims: Record<string, unknown>[]; claim_states?: Record<string, unknown>[];
+    validation_errors?: string[]; caveat_summary?: string;
+  }) =>
+    post<Record<string, unknown>>('/api/v7/build-response', data, undefined, 30_000),
+  v73ResponseSchema: () =>
+    get<{ schema_version: string; sections: { id: string; title: string }[] }>('/api/v7/response-schema'),
+
+  // ── V7 Unified Pipeline (full research) ──
+  v7Research: (userInput: string, intent = 'PERSON_LOOKUP', targetId = '', conflict = 'UNKNOWN') =>
+    post<V7ResearchResult>('/api/v7/research',
+      { user_input: userInput, intent, target_id: targetId, conflict }, undefined, 300_000),
+  v7RunStatus: (runId: string) =>
+    get<Record<string, unknown>>(`/api/v7/research/${runId}`),
+  v7Health: () =>
+    get<V7HealthResponse>('/api/v7/health'),
+  v7Capabilities: () =>
+    get<V7CapabilitiesResponse>('/api/v7/system/capabilities'),
+  v7Narrate: (snapshot: Record<string, unknown>) =>
+    post<V7NarrateResponse>('/api/v7/narrate', snapshot),
+  v7Followup: (runId: string, question: string, conversationHistory?: V7ChatMessage[]) =>
+    post<V7FollowupResponse>('/api/v7/followup',
+      { run_id: runId, question, conversation_history: conversationHistory || [] }, undefined, 120_000),
+
+  // ── Cross-Linking Safe (V7.6) ──
+  crossLinkStatus: () =>
+    get<CrossLinkStatus>('/api/cross-link/status'),
 };
